@@ -1,0 +1,70 @@
+part:
+    vendor:  'Texas Instruments'
+    name:  'DAC3854'
+    interface:
+        - spi:
+            clock:
+                - CSK:
+                    max_freq: 20000000
+            data:
+                - MOSI:
+                    setup: 0.700
+                    hold: 0.500
+                    type: 'source-synchronous'
+                - CS_F:
+                    setup: 0.700
+                    hold: 0.500
+                    type: 'source-synchronous'
+                - MISO:
+                    cko_max: 1.500
+                    cko_min: 1.400
+                    type: 'source-synchronous-round-trip'
+
+device:
+    vendor: 'Xilinx'
+    name: 'ultrascale+'
+    interface:
+        - dac_control:
+            - 'source-synchronous':
+                clock:
+                    launch:
+                        name:  'internal_clock'
+                        freq:  '100 MHz'
+                        edge: 7
+                    capture:
+                        name:  'O_DAC_SCLK'
+                        freq:  '20 MHz'
+                        edge:
+                            setup: c
+                            hold: a
+                data:
+                    - O_DAC_SPI_DATA
+                    - O_DAC_CS_F
+            - 'source-synchronous-round-trip':
+                clock:
+                    launch:
+                        name:  'O_DAC_SCLK'
+                        freq:  '20 MHz'
+                        edge: 2
+                    capture:
+                        name:  'internal_clock'
+                        freq:  '100 MHz'
+                        edge:
+                            setup: k
+                            hold: a
+                data:
+                    - I_DAC_SPI_DATA
+                
+
+board:
+    trace:
+        - from_device: 'O_DAC_SPI_DATA'
+          to_part: 'MOSI'
+          delay: 0.534
+        - from_device: 'O_DAC_CS_F'
+          to_part: 'CS_F'
+          delay: 0.678
+        - from_part: 'MISO'
+          to_device: 'I_DAC_SPI_DATA'
+          delay: 0.471
+
