@@ -4,8 +4,8 @@ part:
     interface:
         - spi:
             clock:
-                - CSK:
-                    max_freq: 20000000
+                - SCK:
+                    max_freq: '20 MHz'
             data:
                 - MOSI:
                     setup: 0.700
@@ -25,22 +25,33 @@ device:
     name: 'ultrascale+'
     interface:
         - dac_control:
-            - 'source-synchronous':
+            - O_DAC_SPI_DATA:
                 clock:
                     launch:
                         name:  'internal_clock'
                         freq:  '100 MHz'
-                        edge: 7
                     capture:
                         name:  'O_DAC_SCLK'
                         freq:  '20 MHz'
-                        edge:
-                            setup: c
-                            hold: a
-                data:
-                    - O_DAC_SPI_DATA
-                    - O_DAC_CS_F
-            - 'source-synchronous-round-trip':
+                    edges:
+                        setup:
+                            - 7: 'c'
+                        hold:
+                            - 7: 'a'
+            - O_DAC_CS_F:
+                clock:
+                    launch:
+                        name:  'internal_clock'
+                        freq:  '100 MHz'
+                    capture:
+                        name:  'O_DAC_SCLK'
+                        freq:  '20 MHz'
+                    edges:
+                        setup:
+                            - 7: 'c'
+                        hold:
+                            - 7: 'a'
+            - I_DAC_SPI_DATA:
                 clock:
                     launch:
                         name:  'O_DAC_SCLK'
@@ -52,19 +63,37 @@ device:
                         edge:
                             setup: k
                             hold: a
-                data:
-                    - I_DAC_SPI_DATA
+                    edges:
+                        setup:
+                            - 2: 'k'
+                        hold:
+                            - 2: 'a'
+             - O_DAC_SCLK
                 
 
 board:
     trace:
-        - from_device: 'O_DAC_SPI_DATA'
-          to_part: 'MOSI'
-          delay: 0.534
-        - from_device: 'O_DAC_CS_F'
-          to_part: 'CS_F'
-          delay: 0.678
-        - from_part: 'MISO'
-          to_device: 'I_DAC_SPI_DATA'
-          delay: 0.471
-
+        - write_data:
+            from_device: 'O_DAC_SPI_DATA'
+            to_part: 'MOSI'
+            delay:
+                max: 0.534
+                min: 0.200
+        - chip_select:
+            from_device: 'O_DAC_CS_F'
+            to_part: 'CS_F'
+            delay:
+                max: 0.678
+                min: 0.150
+        - read_data:
+            from_part: 'MISO'
+            to_device: 'I_DAC_SPI_DATA'
+            delay:
+                max: 0.471
+                min: 0.100
+        - clock:
+            from_device: 'O_DAC_SCLK'
+            to_part: 'SCK'
+            delay:
+                max: 0.600
+                min: 0.200
