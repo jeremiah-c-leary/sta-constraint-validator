@@ -11,6 +11,7 @@ Welcome to sta-constraint-validator's documentation!
    :caption: Contents:
 
    board_data
+   part
    
 
 Indices and tables
