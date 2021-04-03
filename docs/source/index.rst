@@ -10,7 +10,8 @@ Welcome to sta-constraint-validator's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   board_data
+   
 
 Indices and tables
 ==================
