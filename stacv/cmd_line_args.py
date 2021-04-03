@@ -16,29 +16,29 @@ def parse_command_line_arguments():
     build_report_subparser(subparsers)
     build_version_parser(subparsers)
 
-    oArgs = top_parser.parse_args()
+    args = top_parser.parse_args()
 
     print_help_if_no_command_line_options_given(top_parser)
 
-    return oArgs
+    return args
 
 
-def add_file_arguments_to_parser(oParser):
-    oParser.add_argument('board_file', help='Board configuration data.')
-    oParser.add_argument('device_file', help='Device configuration data.')
-    oParser.add_argument('part_file', help='Part configuration data.')
+def add_file_arguments_to_parser(parser):
+    parser.add_argument('board_file', help='Board configuration data.')
+    parser.add_argument('device_file', help='Device configuration data.')
+    parser.add_argument('part_file', help='Part configuration data.')
 
 
-def build_report_subparser(oSubparser):
-    parser = oSubparser.add_parser('report', help='Generate reports')
+def build_report_subparser(subparser):
+    parser = subparser.add_parser('report', help='Generate reports')
     add_file_arguments_to_parser(parser)
     parser.add_argument('analysis_report', help='Output analysis file')
 
     parser.set_defaults(which='report')
 
 
-def build_version_parser(oSubparser):
-    parser = oSubparser.add_parser('version', help=f'Displays {program.upper()} version information')
+def build_version_parser(subparser):
+    parser = subparser.add_parser('version', help=f'Displays {program.upper()} version information')
 
     parser.set_defaults(which='version')
 
@@ -51,10 +51,10 @@ def create_top_parser():
     return top_parser
 
 
-def print_help_if_no_command_line_options_given(oParser):
+def print_help_if_no_command_line_options_given(parser):
     '''
     Will print the help output if no command line arguments were given.
     '''
     if len(sys.argv) == 1:
-        oParser.print_help()
+        parser.print_help()
         sys.exit(1)
