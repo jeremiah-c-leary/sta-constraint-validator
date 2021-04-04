@@ -9,8 +9,8 @@ It has the following basic structure:
     board:
         trace:
             - <trace_name>:
-                from_<source>: <pin_name>
-                to_<target>: <pin_name>
+                device_pin: <pin_name>
+                part_pin: <pin_name>
                 delay:
                     max: <max_delay>
                     min: <min_delay>
@@ -19,10 +19,6 @@ It has the following basic structure:
 | **Element** | **Type** | **Description**                                                     |
 +-------------+----------+---------------------------------------------------------------------+
 | trace_name  | string   | The name of the trace on the board.                                 |
-+-------------+----------+---------------------------------------------------------------------+
-| source      | string   | Indicates the start point of the trace.  Either 'device' or 'part'. |
-+-------------+----------+---------------------------------------------------------------------+
-| target      | string   | Indicates the end point of the trace.  Either 'device' or 'part'.   |
 +-------------+----------+---------------------------------------------------------------------+
 | pin_name    | string   | Name of the pin on the device or part the trace connects to.        |
 +-------------+----------+---------------------------------------------------------------------+
@@ -45,20 +41,20 @@ The above image would result in the following YAML file:
     board:
         trace:
             - read_data:
-                from_part: 'F'
-                to_device: 'E'
+                device_pin: 'E'
+                part_pin: 'F'
                 delay:
                     max: 1.0
                     min: 0.5
             - write_data:
-                from_device: 'C'
-                to_part: 'D'
+                device_pin: 'C'
+                part_pin: 'D'
                 delay:
                     max: 1.0
                     min: 0.5
             - clock:
-                from_device: 'A'
-                to_part: 'B'
+                device_pin: 'A'
+                part_pin : 'B'
                 delay:
                     max: 1.0
                     min: 0.5
