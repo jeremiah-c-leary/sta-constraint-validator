@@ -6,15 +6,20 @@ def new(part_dict):
 
     part = Part(part_dict['vendor'], part_dict['name'])
     
+    part.interfaces = build_interface_list(part_dict)
+
+    return part
+
+
+def build_interface_list(part_dict):
+
     interfaces = []
     for interface_dict in part_dict['interface']:
         new_interface = interface.new(interface_dict)
 
         interfaces.append(new_interface)
 
-    part.interfaces = interfaces
-
-    return part
+    return interfaces
 
 
 class Part():

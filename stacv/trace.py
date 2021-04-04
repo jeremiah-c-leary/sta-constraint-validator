@@ -1,12 +1,12 @@
 
 class New():
 
-    def __init__(self, name, device_pin, part_pin, max_delay, min_delay):
-        self.name = name
-        self.device_pin = device_pin
-        self.part_pin = part_pin
-        self.min_delay = min_delay
-        self.max_delay = max_delay
+    def __init__(self, trace_dict):
+        self.name = list(trace_dict.keys())[0]
+        self.device_pin = trace_dict[self.name]['device_pin']
+        self.part_pin = trace_dict[self.name]['part_pin']
+        self.min_delay = trace_dict[self.name]['delay']['min']
+        self.max_delay = trace_dict[self.name]['delay']['max']
 
     @property
     def min_delay(self):

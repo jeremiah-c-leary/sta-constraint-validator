@@ -13,7 +13,15 @@ class Test(unittest.TestCase):
         fMaxDelay = 1
         fMinDelay = 0.567
 
-        oTrace = trace.New(sName, sDevicePin, sPartPin, fMaxDelay, fMinDelay)
+        dTrace = {}
+        dTrace[sName] = {}
+        dTrace[sName]['device_pin'] = sDevicePin
+        dTrace[sName]['part_pin'] = sPartPin
+        dTrace[sName]['delay'] = {}
+        dTrace[sName]['delay']['max'] = fMaxDelay
+        dTrace[sName]['delay']['min'] = fMinDelay
+
+        oTrace = trace.New(dTrace)
 
         self.assertEqual(sName, oTrace.name)
         self.assertEqual(sDevicePin, oTrace.device_pin)
@@ -29,12 +37,30 @@ class Test(unittest.TestCase):
         fMaxDelay = 10
         fMinDelay = -1
 
-        self.assertRaises(ValueError, trace.New, sName, sDevicePin, sPartPin, fMaxDelay, -1)
+        dTrace = {}
+        dTrace[sName] = {}
+        dTrace[sName]['device_pin'] = sDevicePin
+        dTrace[sName]['part_pin'] = sPartPin
+        dTrace[sName]['delay'] = {}
+        dTrace[sName]['delay']['max'] = fMaxDelay
+        dTrace[sName]['delay']['min'] = fMinDelay
+
+        self.assertRaises(ValueError, trace.New, dTrace)
 
     def test_max_delay_less_than_min_delay(self):
 
         sName = 'trace'
         sDevicePin = 'device_pin'
         sPartPin = 'part_pin'
+        fMaxDelay = 2
+        fMinDelay = 3
 
-        self.assertRaises(ValueError, trace.New, sName, sDevicePin, sPartPin, 1, 2)
+        dTrace = {}
+        dTrace[sName] = {}
+        dTrace[sName]['device_pin'] = sDevicePin
+        dTrace[sName]['part_pin'] = sPartPin
+        dTrace[sName]['delay'] = {}
+        dTrace[sName]['delay']['max'] = fMaxDelay
+        dTrace[sName]['delay']['min'] = fMinDelay
+
+        self.assertRaises(ValueError, trace.New, dTrace)
