@@ -29,3 +29,9 @@ class Device():
         self.vendor = vendor
         self.name = name
         self.interfaces = []
+
+    def get_interface_named(self, name):
+        for my_interface in self.interfaces:
+            if my_interface.name == name:
+                return my_interface
+        return None
