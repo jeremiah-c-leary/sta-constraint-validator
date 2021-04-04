@@ -4,8 +4,6 @@ import unittest
 from stacv import pin
 
 
-
-
 class Test(unittest.TestCase):
 
     def test_new_clock_pin(self):

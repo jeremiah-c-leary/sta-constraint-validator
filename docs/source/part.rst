@@ -13,7 +13,7 @@ It is typically provided by a vendor.
             - <interface_name>:
                 timing_model : <interface_type>
                 clock:
-                    - <clock_pin_name>:
+                    <clock_pin_name>:
                         max_freq: '20 MHz'
                 data:
                     - <input_pin_name>:

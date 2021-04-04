@@ -8,23 +8,28 @@ from stacv import pin
 def create_part_dict():
 
     dInterface = {}
-    dInterface['timing_model'] = 'source_synchronous_with_round_trip'
+    dInterface['interface_name'] = {}
+    dInterface['interface_name']['timing_model'] = 'source_synchronous_with_round_trip'
     
-    dInterface['clock'] = {}
-    dInterface['clock']['clock_pin'] = {}
-    dInterface['clock']['clock_pin']['max_freq'] = '20 MHz'
+    dInterface['interface_name']['clock'] = {}
+    dInterface['interface_name']['clock']['clock_pin'] = {}
+    dInterface['interface_name']['clock']['clock_pin']['max_freq'] = '20 MHz'
     
-    dInterface['data'] = {}
-    dInterface['data']['input_data_pin'] = {}
-    dInterface['data']['input_data_pin']['rising'] = {}
-    dInterface['data']['input_data_pin']['rising']['setup'] = 5.0
-    dInterface['data']['input_data_pin']['rising']['hold'] = 1.0
-    
-    dInterface['data']['output_data_pin'] = {}
-    dInterface['data']['output_data_pin']['falling'] = {}
-    dInterface['data']['output_data_pin']['falling']['clock_to_out'] = {}
-    dInterface['data']['output_data_pin']['falling']['clock_to_out']['max'] = 10.5
-    dInterface['data']['output_data_pin']['falling']['clock_to_out']['min'] = 8.3
+    dInterface['interface_name']['data'] = []
+    dPin = {}
+    dPin['input_data_pin'] = {}
+    dPin['input_data_pin']['rising'] = {}
+    dPin['input_data_pin']['rising']['setup'] = 5.0
+    dPin['input_data_pin']['rising']['hold'] = 1.0
+    dInterface['interface_name']['data'].append(dPin)
+
+    dPin = {}
+    dPin['output_data_pin'] = {}
+    dPin['output_data_pin']['falling'] = {}
+    dPin['output_data_pin']['falling']['clock_to_out'] = {}
+    dPin['output_data_pin']['falling']['clock_to_out']['max'] = 10.5
+    dPin['output_data_pin']['falling']['clock_to_out']['min'] = 8.3
+    dInterface['interface_name']['data'].append(dPin)
     
     return dInterface
 
@@ -35,7 +40,7 @@ class Test(unittest.TestCase):
 
     def test_new(self):
  
-        oInterface = interface.new('interface_name', dInterface)
+        oInterface = interface.new(dInterface)
 
         self.assertEqual('interface_name', oInterface.name)
         self.assertEqual('source_synchronous_with_round_trip', oInterface.timing_model)
@@ -45,7 +50,7 @@ class Test(unittest.TestCase):
 
     def test_has_pin_named(self):
 
-        oInterface = interface.new('interface_name', dInterface)
+        oInterface = interface.new(dInterface)
 
         self.assertTrue(oInterface.has_pin_named('input_data_pin'))
         self.assertTrue(oInterface.has_pin_named('output_data_pin'))

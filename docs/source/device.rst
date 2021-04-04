@@ -10,22 +10,25 @@ The device is the FPGA or ASIC which contains your design.
         name:  <part_name>
         interface:
             <interface_name>:
-                <internal_clock_name>_int_:
-                    frequency: <clock_frequency>
-                <clock_pin_name>:
-                    frequency: <clock_frequency>
-                <output_pin_name>:
-                    launch_clock: <internal_clock_name>_int_
-                    clock_edges:
-                        from: <launching_clock_edge>
-                        setup: <capturing_clock_edge>
-                        hold: <capturing_clock_edge>
-                <input_pin_name>:
-                    capture_clock: <internal_clock_name>_int_
-                    clock_edges:
-                        from: <launching_clock_edge>
-                        setup: <capturing_clock_edge>
-                        hold: <capturing_clock_edge>
+                internal_clock:
+                    <internal_clock_name>:
+                        frequency: <clock_frequency>
+                clock:
+                    <clock_pin_name>:
+                        frequency: <clock_frequency>
+                data:
+                    <output_pin_name>:
+                        launch_clock: <internal_clock_name>_int_
+                        clock_edges:
+                            from: <launching_clock_edge>
+                            setup: <capturing_clock_edge>
+                            hold: <capturing_clock_edge>
+                    <input_pin_name>:
+                        capture_clock: <internal_clock_name>_int_
+                        clock_edges:
+                            from: <launching_clock_edge>
+                            setup: <capturing_clock_edge>
+                            hold: <capturing_clock_edge>
 
 +----------------------+----------+------------------------------------------------------------------------------+
 | **Element**          | **Type** | **Description**                                                              |

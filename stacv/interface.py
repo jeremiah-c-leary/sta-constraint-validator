@@ -2,21 +2,25 @@
 from . import pin
 
 
-def new(name, interface_dict):
-
+def new(interface_dict):
+    name = list(interface_dict.keys())[0]
     interface = Interface(name)
-    interface.timing_model = interface_dict['timing_model']
-    interface.clock_pin = pin.new(interface_dict['clock'])
+    interface.timing_model = interface_dict[name]['timing_model']
+    interface.clock_pin = pin.new(interface_dict[name]['clock'])
 
-    data_pins = []
-
-    for data_pin in interface_dict['data'].items():
-        new_data_pin = pin.new(extract_data_dict(data_pin))
-        data_pins.append(new_data_pin)
-
-    interface.data_pins = data_pins
+    interface.data_pins = build_data_pin_list(interface_dict[name]['data'])
 
     return interface
+
+
+def build_data_pin_list(data_pin_list):
+    data_pins = []
+
+    for data_pin in data_pin_list:
+        new_data_pin = pin.new(data_pin)
+        data_pins.append(new_data_pin)
+
+    return data_pins
 
 
 class Interface():
@@ -32,9 +36,3 @@ class Interface():
             if data_pin.name == pin_name:
                 return True
         return False
-
-
-def extract_data_dict(dict_key_value_pair):
-    temp = {}
-    temp[dict_key_value_pair[0]] = dict_key_value_pair[1]
-    return temp
