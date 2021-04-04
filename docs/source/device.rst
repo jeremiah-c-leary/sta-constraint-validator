@@ -9,7 +9,7 @@ The device is the FPGA or ASIC which contains your design.
         vendor:  <vendor_name>
         name:  <part_name>
         interface:
-            <interface_name>:
+            - <interface_name>:
                 internal_clock:
                     <internal_clock_name>:
                         frequency: <clock_frequency>
@@ -17,13 +17,13 @@ The device is the FPGA or ASIC which contains your design.
                     <clock_pin_name>:
                         frequency: <clock_frequency>
                 data:
-                    <output_pin_name>:
+                    - <output_pin_name>:
                         launch_clock: <internal_clock_name>_int_
                         clock_edges:
                             from: <launching_clock_edge>
                             setup: <capturing_clock_edge>
                             hold: <capturing_clock_edge>
-                    <input_pin_name>:
+                    - <input_pin_name>:
                         capture_clock: <internal_clock_name>_int_
                         clock_edges:
                             from: <launching_clock_edge>
@@ -70,18 +70,19 @@ The following example assumes using the serial interface of the DAC81404 part.
             - DAC_DATA_INTF:
                 internal_100mhz_int_:
                     frequency: '100 MHz'
-                O_DAC_SCLK:
-                    frequency: '20 MHz'
-                O_DAC_DATA:
-                    launch_clock: 'internal_100mhz_int_'
-                    clock_edges:
-                        from: 11
-                        setup: 'c'
-                        hold: 'd'
-                I_DAC_DATA:
-                    capture_clock: 'internal_100mhz_int_'
-                    clock_edges:
-                        from: 3
-                        setup: 'f'
-                        hold: 'q'
-
+                clock:
+                    O_DAC_SCLK:
+                        frequency: '20 MHz'
+                data:
+                    - O_DAC_DATA:
+                        launch_clock: 'internal_100mhz_int_'
+                        clock_edges:
+                            from: 11
+                            setup: 'c'
+                            hold: 'd'
+                    - I_DAC_DATA:
+                        capture_clock: 'internal_100mhz_int_'
+                        clock_edges:
+                            from: 3
+                            setup: 'f'
+                            hold: 'q'
