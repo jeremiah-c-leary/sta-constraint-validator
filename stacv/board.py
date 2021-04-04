@@ -38,3 +38,9 @@ class Board():
             if my_trace.device_pin == name:
                 return my_trace.part_pin
         return None
+
+    def get_trace_name_connected_to_device_pin(self, name):
+        for my_trace in self.traces:
+            if my_trace.device_pin == name:
+                return my_trace.name
+        return None
