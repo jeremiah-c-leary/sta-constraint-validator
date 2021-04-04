@@ -21,8 +21,6 @@ class Test(unittest.TestCase):
         self.assertEqual(fMaxDelay, oTrace.max_delay)
         self.assertEqual(fMinDelay, oTrace.min_delay)
 
-        blah2 = oTrace.max_delay + oTrace.min_delay
-
     def test_min_delay_less_than_0(self):
 
         sName = 'trace'
