@@ -6,13 +6,13 @@ def new(part_dict):
 
     part = Part(part_dict['vendor'], part_dict['name'])
 
-    lInterfaces = []
-    for interface_name in part_dict['interface']:
-        new_interface = interface.new(interface_name, part_dict['interface'][interface_name])
+    interfaces = []
+    for interface_dict in part_dict['interface'].items():
+        new_interface = interface.new(interface_dict[0], interface_dict[1])
 
-        lInterfaces.append(new_interface)
+        interfaces.append(new_interface)
 
-    part.interfaces = lInterfaces
+    part.interfaces = interfaces
 
     return part
 

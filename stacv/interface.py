@@ -10,11 +10,9 @@ def new(name, interface_dict):
 
     data_pins = []
 
-    for data_pin_name in interface_dict['data']:
-        dTemp = {}
-        dTemp[data_pin_name] = interface_dict['data'][data_pin_name]
-        data_pin = pin.new(dTemp)
-        data_pins.append(data_pin)
+    for data_pin in interface_dict['data'].items():
+        new_data_pin = pin.new(extract_data_dict(data_pin))
+        data_pins.append(new_data_pin)
 
     interface.data_pins = data_pins
 
@@ -26,3 +24,9 @@ class Interface():
     def __init__(self, name):
         self.name = name
         self.timing_model = None
+
+
+def extract_data_dict(dict_key_value_pair):
+    temp = {}
+    temp[dict_key_value_pair[0]] = dict_key_value_pair[1]
+    return temp

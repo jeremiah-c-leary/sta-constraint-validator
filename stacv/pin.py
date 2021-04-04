@@ -1,6 +1,4 @@
 
-#from . import interface
-
 
 def new(pin_dict):
 
