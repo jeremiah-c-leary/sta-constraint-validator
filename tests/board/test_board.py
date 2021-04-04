@@ -42,6 +42,6 @@ class Test(unittest.TestCase):
 
     def test_new_board(self):
  
-        oBoard = board.New(dBoardConfig)
+        oBoard = board.new(dBoardConfig)
 
         self.assertEqual(3, len(oBoard.traces))

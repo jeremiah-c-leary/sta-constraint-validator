@@ -2,7 +2,7 @@
 from . import trace
 
 
-def New(board_config):
+def new(board_config):
 
     board = Board()
 
