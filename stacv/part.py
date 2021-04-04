@@ -23,3 +23,9 @@ class Part():
         self.vendor = vendor
         self.name = name
         self.interfaces = []
+
+    def get_interface_with_pin_named(self, pin_name):
+        for my_interface in self.interfaces:
+            if my_interface.has_pin_named(pin_name):
+                return my_interface
+        return None

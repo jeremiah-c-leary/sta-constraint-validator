@@ -50,4 +50,12 @@ class Test(unittest.TestCase):
         self.assertEqual('part_name', oPart.name)
         self.assertEqual(1, len(oPart.interfaces))
 
+    def test_get_interface_with_pin_named(self):
 
+        oPart = part.new(dPart)
+
+        oInterface = oPart.get_interface_with_pin_named('input_data_pin')
+
+        self.assertEqual('interface_name', oInterface.name)
+
+        self.assertEqual(None, oPart.get_interface_with_pin_named('nothing'))

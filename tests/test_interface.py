@@ -42,3 +42,12 @@ class Test(unittest.TestCase):
         self.assertEqual('clock_pin', oInterface.clock_pin.name)
         self.assertTrue(isinstance(oInterface.clock_pin, pin.ClockPin))
         self.assertEqual(2, len(oInterface.data_pins))
+
+    def test_has_pin_named(self):
+
+        oInterface = interface.new('interface_name', dInterface)
+
+        self.assertTrue(oInterface.has_pin_named('input_data_pin'))
+        self.assertTrue(oInterface.has_pin_named('output_data_pin'))
+        self.assertTrue(oInterface.has_pin_named('clock_pin'))
+        self.assertFalse(oInterface.has_pin_named('nothing'))

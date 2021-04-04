@@ -25,6 +25,14 @@ class Interface():
         self.name = name
         self.timing_model = None
 
+    def has_pin_named(self, pin_name):
+        if self.clock_pin.name == pin_name:
+            return True
+        for data_pin in self.data_pins:
+            if data_pin.name == pin_name:
+                return True
+        return False
+
 
 def extract_data_dict(dict_key_value_pair):
     temp = {}
