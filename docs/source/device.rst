@@ -13,18 +13,18 @@ The device is the FPGA or ASIC which contains your design.
                 internal_clock:
                     <internal_clock_name>:
                         frequency: <clock_frequency>
-                clock:
+                external_clock:
                     <clock_pin_name>:
                         frequency: <clock_frequency>
                 data:
                     - <output_pin_name>:
-                        launch_clock: <internal_clock_name>_int_
+                        launch_clock: <internal_clock_name>
                         clock_edges:
                             from: <launching_clock_edge>
                             setup: <capturing_clock_edge>
                             hold: <capturing_clock_edge>
                     - <input_pin_name>:
-                        capture_clock: <internal_clock_name>_int_
+                        capture_clock: <internal_clock_name>
                         clock_edges:
                             from: <launching_clock_edge>
                             setup: <capturing_clock_edge>
@@ -68,9 +68,10 @@ The following example assumes using the serial interface of the DAC81404 part.
         name:  S10
         interface:
             - DAC_DATA_INTF:
-                internal_100mhz_int_:
-                    frequency: '100 MHz'
-                clock:
+                internal_clock:
+                    internal_100mhz_int_:
+                        frequency: '100 MHz'
+                external_clock:
                     O_DAC_SCLK:
                         frequency: '20 MHz'
                 data:

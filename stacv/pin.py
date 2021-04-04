@@ -6,19 +6,34 @@ def new(pin_dict):
     if 'max_freq' in pin_dict[pin_name]:
         pin = ClockPin(pin_name)
         pin.max_freq = pin_dict[pin_name]['max_freq']
+    elif 'frequency' in pin_dict[pin_name]:
+        pin = ClockPin(pin_name)
+        pin.max_freq = pin_dict[pin_name]['frequency']
     else:
-        clock_edge = list(pin_dict[pin_name].keys())[0]
-
-        if 'setup' in pin_dict[pin_name][clock_edge]:
-            pin = InputPin(pin_name)
-            pin.edge = clock_edge
-            pin.setup = pin_dict[pin_name][clock_edge]['setup']
-            pin.hold = pin_dict[pin_name][clock_edge]['hold']
+        if 'clock_edges' in pin_dict[pin_name]:
+            if 'launch_clock' in pin_dict[pin_name]:
+                pin = DeviceOutputPin(pin_name)
+                pin.launch_clock = pin_dict[pin_name]['launch_clock']
+                pin.launch_edge = pin_dict[pin_name]['clock_edges']['from']
+            else:
+                pin = DeviceInputPin(pin_name)
+                pin.capture_clock = pin_dict[pin_name]['capture_clock']
+                pin.capture_edge = pin_dict[pin_name]['clock_edges']['from']
+            pin.setup_edge = pin_dict[pin_name]['clock_edges']['setup']
+            pin.hold_edge = pin_dict[pin_name]['clock_edges']['hold']
         else:
-            pin = OutputPin(pin_name)
-            pin.edge = clock_edge
-            pin.cko_max = pin_dict[pin_name][clock_edge]['clock_to_out']['max']
-            pin.cko_min = pin_dict[pin_name][clock_edge]['clock_to_out']['min']
+            clock_edge = list(pin_dict[pin_name].keys())[0]
+    
+            if 'setup' in pin_dict[pin_name][clock_edge]:
+                pin = InputPin(pin_name)
+                pin.edge = clock_edge
+                pin.setup = pin_dict[pin_name][clock_edge]['setup']
+                pin.hold = pin_dict[pin_name][clock_edge]['hold']
+            else:
+                pin = OutputPin(pin_name)
+                pin.edge = clock_edge
+                pin.cko_max = pin_dict[pin_name][clock_edge]['clock_to_out']['max']
+                pin.cko_min = pin_dict[pin_name][clock_edge]['clock_to_out']['min']
 
     return pin
 
@@ -52,3 +67,23 @@ class OutputPin(Pin):
         self.cko_max = None
         self.cko_min = None
         self.edge = None
+
+
+class DeviceOutputPin(Pin):
+
+    def __init__(self, name):
+        Pin.__init__(self, name)
+        self.launch_clock = None
+        self.launch_edge = None
+        self.setup_edge = None
+        self.hold_edge = None
+
+
+class DeviceInputPin(Pin):
+
+    def __init__(self, name):
+        Pin.__init__(self, name)
+        self.capture_clock = None
+        self.capture_edge = None
+        self.setup_edge = None
+        self.hold_edge = None
