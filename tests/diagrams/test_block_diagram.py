@@ -5,7 +5,8 @@ from stacv import timing_model
 from stacv import part
 from stacv import board
 from stacv import device
-from stacv.diagram import block_diagram
+from stacv.diagram.block_diagram import data_structure
+from stacv.diagram.block_diagram import text_diagram
 
 from tests import utils
 
@@ -24,14 +25,14 @@ class Test(unittest.TestCase):
 
         dExpected = generate_block_diagram_dictionary()
 
-        self.assertEqual(dExpected, block_diagram.extract_data_structure(self.oTM))
+        self.assertEqual(dExpected, data_structure.extract(self.oTM))
 
 
     def test_text_renderer(self):
 
         lExpected = render_text_diagram()
 
-        lActual = block_diagram.render_text_diagram(self.oTM)
+        lActual = text_diagram.render(self.oTM)
 
         self.assertEqual(lExpected, lActual)
 
