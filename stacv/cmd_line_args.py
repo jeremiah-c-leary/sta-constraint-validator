@@ -14,6 +14,7 @@ def parse_command_line_arguments():
     subparsers = top_parser.add_subparsers()
 
     build_report_subparser(subparsers)
+    build_debug_subparser(subparsers)
     build_version_parser(subparsers)
 
     args = top_parser.parse_args()
@@ -24,17 +25,23 @@ def parse_command_line_arguments():
 
 
 def add_file_arguments_to_parser(parser):
-    parser.add_argument('board_file', help='Board configuration data.')
-    parser.add_argument('device_file', help='Device configuration data.')
-    parser.add_argument('part_file', help='Part configuration data.')
+    parser.add_argument('config_file', help='Configuration files.')
 
 
 def build_report_subparser(subparser):
     parser = subparser.add_parser('report', help='Generate reports')
-    add_file_arguments_to_parser(parser)
     parser.add_argument('analysis_report', help='Output analysis file')
+    add_file_arguments_to_parser(parser)
 
     parser.set_defaults(which='report')
+
+
+def build_debug_subparser(subparser):
+    parser = subparser.add_parser('debug', help='Alpha debug reporting.')
+    add_file_arguments_to_parser(parser)
+    parser.add_argument('output', default=None, action='store', choices=['text_block_diagram', 'blah'], help='Output text version of the block diagram')
+
+    parser.set_defaults(which='debug')
 
 
 def build_version_parser(subparser):

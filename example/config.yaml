@@ -1,0 +1,97 @@
+board:
+  trace:
+    - clock:
+        device_pin: 'O_DAC_SCLK'
+        part_pin: 'SCLK'
+        delay:
+            max: 2.0
+            min: 1.0
+    - data_out:
+        device_pin: 'O_DAC_DATA'
+        part_pin: 'SDIN'
+        delay:
+            max: 2.5
+            min: 1.5
+    - data_in:
+        device_pin: 'I_DAC_DATA'
+        part_pin: 'SDO'
+        delay:
+            max: 1.5
+            min: 0.5
+    - chip_select:
+        device_pin: 'O_DAC_CSF'
+        part_pin: 'ENABLE'
+        delay:
+            max: 1.5
+            min: 0.5
+    - data_bus:
+        device_pin: 'O_DAC_DATA_BUS[4]'
+        part_pin: 'INPUT_DATA_BUS'
+        delay:
+            max: 1.5
+            min: 0.5
+device:
+    vendor: 'Intel'
+    name: 'Arria10'
+    interface:
+        - DAC_DATA:
+            internal_clock:
+                100mhz_int:
+                    frequency: '100 MHz'
+            external_clock:
+                O_DAC_SCLK:
+                    frequency: '20 MHz'
+            data:
+                - I_DAC_DATA:
+                    capture_clock: '100mhz_int'
+                    clock_edges:
+                        from: 11
+                        setup: 'c'
+                        hold: 'd'
+                - O_DAC_DATA:
+                    launch_clock: '100mhz_int'
+                    clock_edges:
+                        from: 3
+                        setup: 'f'
+                        hold: 'q'
+                - O_DAC_CSF:
+                    launch_clock: '100mhz_int'
+                    clock_edges:
+                        from: 3
+                        setup: 'f'
+                        hold: 'q'
+                - O_DAC_DATA_BUS[4]:
+                    launch_clock: '100mhz_int'
+                    clock_edges:
+                        from: 3
+                        setup: 'f'
+                        hold: 'q'
+                    
+part:
+    vendor: 'Texas Instruments'
+    name: 'DAC81404'
+    interface:
+        - serial_data:
+            timing_model: 'source_synchronous_with_round_trip'
+            clock:
+                SCLK:
+                    max_freq: '50 MHz'
+            data:
+                - SDIN:
+                    rising:
+                        setup: 5.0
+                        hold: 5.0
+                - ENABLE:
+                    rising:
+                        setup: 5.0
+                        hold: 5.0
+                - SDO:
+                    falling:
+                        clock_to_out:
+                            max: 20.0
+                            min: 0.0
+                - INPUT_DATA_BUS:
+                    rising:
+                        setup: 5.0
+                        hold: 5.0
+                    
