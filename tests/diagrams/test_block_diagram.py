@@ -17,15 +17,23 @@ class Test(unittest.TestCase):
         self.oPart = part.new(utils.create_part_dict())
         self.oBoard = board.new(utils.create_board_dict())
         self.oDevice = device.new(utils.create_device_dict())
+        self.oTM = timing_model.new('DAC_DATA', self.oDevice, self.oBoard, self.oPart)
 
 
     def test_new_timing_model(self):
-        self.maxDiff = None
-        oTM = timing_model.new('DAC_DATA', self.oDevice, self.oBoard, self.oPart)
 
         dExpected = generate_block_diagram_dictionary()
 
-        self.assertEqual(dExpected, block_diagram.extract_data_structure(oTM))
+        self.assertEqual(dExpected, block_diagram.extract_data_structure(self.oTM))
+
+
+    def test_text_renderer(self):
+
+        lExpected = render_text_diagram()
+
+        lActual = block_diagram.render_text_diagram(self.oTM)
+
+        self.assertEqual(lExpected, lActual)
 
 
 def generate_block_diagram_dictionary():
@@ -63,3 +71,20 @@ def generate_block_diagram_dictionary():
     dReturn['traces'].append(dTrace)
 
     return dReturn
+
+
+def render_text_diagram():
+    lReturn = []
+
+    lReturn.append('--------------+                    +------------')
+    lReturn.append('   Arria10    |                    |  DAC81404  ')
+    lReturn.append('              |                    |')
+    lReturn.append('  I_DAC_DATA [ ]<--- data_in -----[ ] SDO')
+    lReturn.append('              |                    |')
+    lReturn.append('  O_DAC_DATA [ ]---- data_out --->[ ] SDIN')
+    lReturn.append('              |                    |')
+    lReturn.append('  O_DAC_SCLK [ ]----- clock ----->[ ] SCLK')
+    lReturn.append('              |                    |')
+    lReturn.append('--------------+                    +------------')
+
+    return lReturn 
