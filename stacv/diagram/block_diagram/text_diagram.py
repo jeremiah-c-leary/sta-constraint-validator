@@ -47,7 +47,7 @@ def extract_trace_width(data_struct):
     trace_width = 0
     for my_trace in data_struct['traces']:
         trace_width = max(trace_width, 1 + 4 + 1 + len(my_trace['name']) + 1 + 4 + 1)
-    return trace_width 
+    return trace_width
 
 
 def extract_part_width(data_struct):
@@ -82,7 +82,7 @@ def build_device_and_part_names(data_format, data_struct):
     line = f'{device_name:^{device_width}}'
     line += '|' + ' '*data_format['trace_width'] + '|'
     line += f'{part_name:^{part_width}}'
-    
+
 
     return line
 

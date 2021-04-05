@@ -1,4 +1,3 @@
-import sys
 
 from . import cmd_line_args
 from . import subcommand

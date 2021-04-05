@@ -10,16 +10,16 @@ from stacv.diagram.block_diagram import text_diagram
 
 def execute(cmd_line_args):
 
-    config = utils.read_config_file(cmd_line_args.config_file) 
+    config = utils.read_config_file(cmd_line_args.config_file)
 
-    oPart = part.new(config['part'])
-    oBoard = board.new(config)
-    oDevice = device.new(config['device'])
+    my_part = part.new(config['part'])
+    my_board = board.new(config)
+    my_device = device.new(config['device'])
 
 
 
-    oTM = timing_model.new('DAC_DATA', oDevice, oBoard, oPart) 
+    my_tm = timing_model.new('DAC_DATA', my_device, my_board, my_part)
 
-    block_diagram = text_diagram.render(oTM)
+    block_diagram = text_diagram.render(my_tm)
     for line in block_diagram:
         print(line)

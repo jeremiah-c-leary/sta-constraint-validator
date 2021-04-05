@@ -5,7 +5,7 @@ from . import interface
 def new(part_dict):
 
     part = Part(part_dict['vendor'], part_dict['name'])
-    
+
     part.interfaces = build_interface_list(part_dict)
 
     return part

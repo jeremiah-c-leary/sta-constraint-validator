@@ -53,7 +53,7 @@ def build_device_data_pin(pin_name, pin_dict):
     if is_device_output_data_pin(pin_dict[pin_name]):
         return build_device_output_data_pin(pin_name, pin_dict)
     else:
-        return build_device_input_data_pin(pin_name, pin_dict)   
+        return build_device_input_data_pin(pin_name, pin_dict)
 
 
 def is_device_output_data_pin(pin_dict):
@@ -82,7 +82,7 @@ def build_device_input_data_pin(pin_name, pin_dict):
 
 def build_part_data_pin(pin_name, pin_dict):
     clock_edge = list(pin_dict[pin_name].keys())[0]
-    
+
     if is_part_input_data_pin(pin_dict[pin_name][clock_edge]):
         return build_part_input_data_pin(pin_name, pin_dict)
     else:

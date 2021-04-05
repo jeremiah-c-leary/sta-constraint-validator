@@ -32,7 +32,7 @@ class Board():
 
     def add_trace(self, trace):
         self.traces.append(trace)
-   
+
     def get_part_pin_name_connected_to(self, name):
         for my_trace in self.traces:
             if my_trace.device_pin == name:
