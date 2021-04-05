@@ -9,6 +9,7 @@ def read_config_file(config_files):
        config_files : (String)
     Returns:  dictionary
     '''
+
     with open(config_files) as yaml_file:
         dReturn = yaml.full_load(yaml_file)
 
