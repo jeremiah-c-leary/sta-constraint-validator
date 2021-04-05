@@ -18,11 +18,16 @@ It is typically provided by a vendor.
                 data:
                     - <input_pin_name>:
                         <clock_edge>:
-                            setup: <setup_value>
-                            hold: <hold_value>
+                            setup:
+                                id: <timing_id>
+                                value: <setup_value>
+                            hold:
+                                id: <timing_id>
+                                value: <hold_value>
                     - <output_pin_name>:
                         <clock_edge>:
                             clock_to_out:
+                                id: <timing_id>
                                 max: <clock_to_out_max>
                                 min: <clock_to_out_min>
 
@@ -41,7 +46,9 @@ It is typically provided by a vendor.
 +------------------+----------+------------------------------------------------------------------------------+
 | input_pin_name   | string   | Each input pin will have an entry.                                           |
 +------------------+----------+------------------------------------------------------------------------------+
-| clock_edge       | string   | The edge the setup, hold or clock to out applies to.  "rising" or "falling"  |
+| clock_edge       | string   | The edge the setup, hold or clock to out applies to:  "rising_edge" or "falling_edge"  |
++------------------+----------+------------------------------------------------------------------------------+
+| timing_id        | float    | The name of the timing parameter from the part datasheet.                    |
 +------------------+----------+------------------------------------------------------------------------------+
 | setup_value      | float    | The setup requirement for the input pin.                                     |
 +------------------+----------+------------------------------------------------------------------------------+
@@ -68,7 +75,7 @@ The following example uses a Texas Instruments DAC81404 part.
             - serial_interface:
                 timing_model : 'ource synchronous with round trip'
                 clock:
-                    - SCLK:
+                    SCLK:
                         max_freq: '50 MHz'
                 data:
                     - SDIN:
