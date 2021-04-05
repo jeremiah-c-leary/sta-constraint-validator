@@ -11,9 +11,9 @@ def read_config_file(config_files):
     '''
 
     with open(config_files) as yaml_file:
-        dReturn = yaml.full_load(yaml_file)
+        my_file = yaml.full_load(yaml_file)
 
-    if dReturn is None:
-        dReturn = {}
+    if my_file is None:
+        my_file = {}
 
-    return dReturn
+    return my_file

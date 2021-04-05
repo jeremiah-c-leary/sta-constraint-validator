@@ -25,18 +25,22 @@ def create_part_dict():
 
     dPin = {}
     dPin['input_data_pin'] = {}
-    dPin['input_data_pin']['rising'] = {}
-    dPin['input_data_pin']['rising']['setup'] = 5.0
-    dPin['input_data_pin']['rising']['hold'] = 1.0
+    dPin['input_data_pin']['rising_edge'] = {}
+    dPin['input_data_pin']['rising_edge']['setup'] = {}
+    dPin['input_data_pin']['rising_edge']['setup']['id'] = 'tSDIS'
+    dPin['input_data_pin']['rising_edge']['setup']['value'] = 5.0
+    dPin['input_data_pin']['rising_edge']['hold'] = {}
+    dPin['input_data_pin']['rising_edge']['hold']['id'] = 'tSDIH'
+    dPin['input_data_pin']['rising_edge']['hold']['value'] = 1.0
     dInterface['interface_name']['data'].append(dPin)
  
     dPin = {}
     dPin['output_data_pin'] = {}
-    dPin['output_data_pin'] = {}
-    dPin['output_data_pin']['falling'] = {}
-    dPin['output_data_pin']['falling']['clock_to_out'] = {}
-    dPin['output_data_pin']['falling']['clock_to_out']['max'] = 10.5
-    dPin['output_data_pin']['falling']['clock_to_out']['min'] = 8.3
+    dPin['output_data_pin']['falling_edge'] = {}
+    dPin['output_data_pin']['falling_edge']['clock_to_out'] = {}
+    dPin['output_data_pin']['falling_edge']['clock_to_out']['id'] = 'tSDODLY'
+    dPin['output_data_pin']['falling_edge']['clock_to_out']['max'] = 10.5
+    dPin['output_data_pin']['falling_edge']['clock_to_out']['min'] = 8.3
     dInterface['interface_name']['data'].append(dPin)
 
     dPart['interface'].append(dInterface)

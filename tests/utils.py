@@ -20,17 +20,22 @@ def create_part_dict():
 
     dPin = {}
     dPin['SDIN'] = {}
-    dPin['SDIN']['rising'] = {}
-    dPin['SDIN']['rising']['setup'] = 5.0
-    dPin['SDIN']['rising']['hold'] = 5.0
+    dPin['SDIN']['rising_edge'] = {}
+    dPin['SDIN']['rising_edge']['setup'] = {}
+    dPin['SDIN']['rising_edge']['setup']['id'] = 't1'
+    dPin['SDIN']['rising_edge']['setup']['value'] = 5.0
+    dPin['SDIN']['rising_edge']['hold'] = {}
+    dPin['SDIN']['rising_edge']['hold']['id'] = 't2'
+    dPin['SDIN']['rising_edge']['hold']['value'] = 5.0
     dInterface['serial_data']['data'].append(dPin)
  
     dPin = {}
     dPin['SDO'] = {}
-    dPin['SDO']['falling'] = {}
-    dPin['SDO']['falling']['clock_to_out'] = {}
-    dPin['SDO']['falling']['clock_to_out']['max'] = 20
-    dPin['SDO']['falling']['clock_to_out']['min'] = 0
+    dPin['SDO']['falling_edge'] = {}
+    dPin['SDO']['falling_edge']['clock_to_out'] = {}
+    dPin['SDO']['falling_edge']['clock_to_out']['id'] = 't3'
+    dPin['SDO']['falling_edge']['clock_to_out']['max'] = 20
+    dPin['SDO']['falling_edge']['clock_to_out']['min'] = 0
     dInterface['serial_data']['data'].append(dPin)
 
     dPart['interface'].append(dInterface)
