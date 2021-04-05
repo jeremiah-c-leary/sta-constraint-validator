@@ -6,9 +6,9 @@ def extract_data_structure(timing_model):
 
     diagram = {}
     diagram['device'] = {}
-    diagram['device']['name'] = 'Arria10'
+    diagram['device']['name'] = timing_model.device_name
     diagram['part'] = {}
-    diagram['part']['name'] = 'DAC81404'
+    diagram['part']['name'] = timing_model.part_name
     diagram['traces'] = []
 
     clock_device_pin = timing_model.device_interface.external_clock

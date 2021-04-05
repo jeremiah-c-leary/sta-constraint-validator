@@ -21,8 +21,7 @@ class Test(unittest.TestCase):
 
     def test_new_timing_model(self):
         self.maxDiff = None
-        oDeviceInterface = self.oDevice.get_interface_named('DAC_DATA') 
-        oTM = timing_model.new(oDeviceInterface, self.oBoard, self.oPart)
+        oTM = timing_model.new('DAC_DATA', self.oDevice, self.oBoard, self.oPart)
 
         dExpected = generate_block_diagram_dictionary()
 
