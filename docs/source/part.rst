@@ -73,7 +73,7 @@ The following example uses a Texas Instruments DAC81404 part.
         name:  DAC81404
         interface:
             - serial_interface:
-                timing_model : 'ource synchronous with round trip'
+                timing_model : 'source synchronous with round trip'
                 clock:
                     SCLK:
                         max_freq: '50 MHz'
