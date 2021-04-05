@@ -26,4 +26,3 @@ class SourceSynchronousWithRoundTrip(TimingModel):
 
     def __init__(self, device_interface, traces, part_interface):
         TimingModel.__init__(self, device_interface, traces, part_interface)
-

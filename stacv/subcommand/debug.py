@@ -16,8 +16,6 @@ def execute(cmd_line_args):
     my_board = board.new(config)
     my_device = device.new(config['device'])
 
-
-
     my_tm = timing_model.new('DAC_DATA', my_device, my_board, my_part)
 
     block_diagram = text_diagram.render(my_tm)

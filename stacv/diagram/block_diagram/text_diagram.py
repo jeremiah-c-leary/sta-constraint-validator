@@ -1,6 +1,7 @@
 
 from . import data_structure
 
+
 def render(timing_model):
 
     data_struct = data_structure.extract(timing_model)
@@ -82,7 +83,6 @@ def build_device_and_part_names(data_format, data_struct):
     line = f'{device_name:^{device_width}}'
     line += '|' + ' '*data_format['trace_width'] + '|'
     line += f'{part_name:^{part_width}}'
-
 
     return line
 
