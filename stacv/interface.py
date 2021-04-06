@@ -71,3 +71,16 @@ class DeviceInterface(Interface):
         self.internal_clock = None
         self.external_clock = None
         self.data_pins = None
+
+    def get_pin_named(self, pin_name):
+        for data_pin in self.data_pins:
+            if data_pin.name == pin_name:
+                return data_pin
+        if self.internal_clock.name == pin_name:
+            return self.internal_clock
+        if self.external_clock.name == pin_name:
+            return self.external_clock
+
+    def get_clock_named(self, clock_name):
+        if self.internal_clock.name == clock_name:
+            return self.internal_clock

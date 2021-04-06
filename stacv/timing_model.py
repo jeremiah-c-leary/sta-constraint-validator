@@ -21,6 +21,12 @@ class TimingModel():
         self.part_interface = part_interface
         self.part_name = None
 
+    def get_device_pin(self, pin_name):
+        return self.device_interface.get_pin_named(pin_name)
+
+    def get_device_clock_named(self, clock_name):
+        return self.device_interface.get_clock_named(clock_name)
+
 
 class SourceSynchronousWithRoundTrip(TimingModel):
 
