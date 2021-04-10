@@ -10,33 +10,46 @@ def create_part_dict():
     
     dInterface = {}
     dInterface['serial_data'] = {}
+
     dInterface['serial_data']['timing_model'] = 'source_synchronous_with_round_trip'
     
     dInterface['serial_data']['clock'] = {}
-    dInterface['serial_data']['clock']['SCLK'] = {}
-    dInterface['serial_data']['clock']['SCLK']['max_freq'] = '50 MHz'
-    
-    dInterface['serial_data']['data'] = []
+    dInterface['serial_data']['clock']['input'] = []
+
+    dPin = {}
+    dPin['SCLK'] = {}
+    dPin['SCLK']['max_freq'] = '20 MHz'
+    dInterface['serial_data']['clock']['input'].append(dPin)
+
+
+    dInterface['serial_data']['data'] = {}
+    dInterface['serial_data']['data']['input'] = []
 
     dPin = {}
     dPin['SDIN'] = {}
-    dPin['SDIN']['rising_edge'] = {}
-    dPin['SDIN']['rising_edge']['setup'] = {}
-    dPin['SDIN']['rising_edge']['setup']['id'] = 't1'
-    dPin['SDIN']['rising_edge']['setup']['value'] = 5.0
-    dPin['SDIN']['rising_edge']['hold'] = {}
-    dPin['SDIN']['rising_edge']['hold']['id'] = 't2'
-    dPin['SDIN']['rising_edge']['hold']['value'] = 5.0
-    dInterface['serial_data']['data'].append(dPin)
- 
+    dPin['SDIN']['clock'] = 'SCLK'
+    dPin['SDIN']['rising'] = {}
+    dPin['SDIN']['rising']['setup'] = {}
+    dPin['SDIN']['rising']['setup']['id'] = 't1'
+    dPin['SDIN']['rising']['setup']['value'] = 5.0
+    dPin['SDIN']['rising']['hold'] = {}
+    dPin['SDIN']['rising']['hold']['id'] = 't2'
+    dPin['SDIN']['rising']['hold']['value'] = 1.0
+
+    dInterface['serial_data']['data']['input'].append(dPin)
+    
+    dInterface['serial_data']['data']['output'] = []
+
     dPin = {}
     dPin['SDO'] = {}
-    dPin['SDO']['falling_edge'] = {}
-    dPin['SDO']['falling_edge']['clock_to_out'] = {}
-    dPin['SDO']['falling_edge']['clock_to_out']['id'] = 't3'
-    dPin['SDO']['falling_edge']['clock_to_out']['max'] = 20
-    dPin['SDO']['falling_edge']['clock_to_out']['min'] = 0
-    dInterface['serial_data']['data'].append(dPin)
+    dPin['SDO']['clock'] = 'SCLK'
+    dPin['SDO']['falling'] = {}
+    dPin['SDO']['falling']['clock_to_out_max'] = {}
+    dPin['SDO']['falling']['clock_to_out_max']['id'] = 't3'
+    dPin['SDO']['falling']['clock_to_out_max']['value'] = 20
+    dPin['SDO']['falling']['clock_to_out_min'] = {}
+    dPin['SDO']['falling']['clock_to_out_min']['id'] = 't3'
+    dPin['SDO']['falling']['clock_to_out_min']['value'] = 0
 
     dPart['interface'].append(dInterface)
  
@@ -93,36 +106,62 @@ def create_device_dict():
     
     dInterface = {}
     dInterface['DAC_DATA'] = {}
+    ############################################################################
+    dInterface['DAC_DATA']['clock'] = {}
+    ############################################################################
+    dInterface['DAC_DATA']['clock']['internal'] = []
+ 
+    dClock = {}
+    dClock['int_clock'] = {}
+    dClock['int_clock']['frequency'] = '100 MHz'
 
-    dInterface['DAC_DATA']['internal_clock'] = {}
-    dInterface['DAC_DATA']['internal_clock']['int_clock'] = {}
-    dInterface['DAC_DATA']['internal_clock']['int_clock']['frequency'] = '100 MHz'
+    dInterface['DAC_DATA']['clock']['internal'].append(dClock)
+
+    ############################################################################
+    dInterface['DAC_DATA']['clock']['output'] = []
+ 
+    dClock = {}
+    dClock['O_DAC_SCLK'] = {}
+    dClock['O_DAC_SCLK']['frequency'] = '20 MHz'
+
+    dInterface['DAC_DATA']['clock']['output'].append(dClock)
+    ############################################################################
+    dInterface['DAC_DATA']['data'] = {}
+    ############################################################################
+    dInterface['DAC_DATA']['data']['output'] = []
     
-    dInterface['DAC_DATA']['external_clock'] = {}
-    dInterface['DAC_DATA']['external_clock']['O_DAC_SCLK'] = {}
-    dInterface['DAC_DATA']['external_clock']['O_DAC_SCLK']['frequency'] = '20 MHz'
-    
-    dInterface['DAC_DATA']['data'] = []
-
-    dPin = {}
-    dPin['I_DAC_DATA'] = {}
-    dPin['I_DAC_DATA']['capture_clock'] = 'int_clock'
-    dPin['I_DAC_DATA']['clock_edges'] = {}
-    dPin['I_DAC_DATA']['clock_edges']['from'] = 11
-    dPin['I_DAC_DATA']['clock_edges']['setup'] = 'c'
-    dPin['I_DAC_DATA']['clock_edges']['hold'] = 'd'
-    dInterface['DAC_DATA']['data'].append(dPin)
-
     dPin = {} 
     dPin['O_DAC_DATA'] = {}
-    dPin['O_DAC_DATA']['launch_clock'] = 'int_clock'
-    dPin['O_DAC_DATA']['clock_edges'] = {}
-    dPin['O_DAC_DATA']['clock_edges']['from'] = 3 
-    dPin['O_DAC_DATA']['clock_edges']['setup'] = 'f'
-    dPin['O_DAC_DATA']['clock_edges']['hold'] = 'q'
-    dInterface['DAC_DATA']['data'].append(dPin)
+    dPin['O_DAC_DATA']['launch_clock'] = {}
+    dPin['O_DAC_DATA']['launch_clock']['name'] = 'int_clock'
+    dPin['O_DAC_DATA']['launch_clock']['edge'] = 3
+
+    dPin['O_DAC_DATA']['capture_clock'] = {}
+    dPin['O_DAC_DATA']['capture_clock']['name'] = 'O_DAC_SCLK'
+    dPin['O_DAC_DATA']['capture_clock']['edge'] = {}
+    dPin['O_DAC_DATA']['capture_clock']['edge']['setup'] = 'f'
+    dPin['O_DAC_DATA']['capture_clock']['edge']['hold'] = 'q'
+
+    dInterface['DAC_DATA']['data']['output'].append(dPin)
+    ############################################################################
+    dInterface['DAC_DATA']['data']['input'] = []
+
+    dPin = {} 
+    dPin['I_DAC_DATA'] = {}
+    dPin['I_DAC_DATA']['launch_clock'] = {}
+    dPin['I_DAC_DATA']['launch_clock']['name'] = 'O_DAC_SCLK'
+    dPin['I_DAC_DATA']['launch_clock']['edge'] = 11
+
+    dPin['I_DAC_DATA']['capture_clock'] = {}
+    dPin['I_DAC_DATA']['capture_clock']['name'] = 'int_clock'
+    dPin['I_DAC_DATA']['capture_clock']['edge'] = {}
+    dPin['I_DAC_DATA']['capture_clock']['edge']['setup'] = 'c'
+    dPin['I_DAC_DATA']['capture_clock']['edge']['hold'] = 'd'
+
+    dInterface['DAC_DATA']['data']['input'].append(dPin)
+    ############################################################################
 
     dDevice['interface'].append(dInterface)    
-    
+
     return dDevice
 

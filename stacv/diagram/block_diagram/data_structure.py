@@ -62,7 +62,7 @@ def get_input_traces(timing_model):
 def get_input_pins(timing_model):
     input_device_pins = []
     for device_pin in timing_model.device_interface.data_pins:
-        if isinstance(device_pin, pin.DeviceInputPin):
+        if isinstance(device_pin, pin.DeviceInputDataPin):
             input_device_pins.append(device_pin)
     return input_device_pins
 
@@ -88,23 +88,33 @@ def get_output_traces(timing_model):
 def get_output_pins(timing_model):
     output_device_pins = []
     for device_pin in timing_model.device_interface.data_pins:
-        if isinstance(device_pin, pin.DeviceOutputPin):
+        if isinstance(device_pin, pin.DeviceOutputDataPin):
             output_device_pins.append(device_pin)
     return output_device_pins
 
 
 def get_clock_traces(timing_model):
 
-    clock_device_pin = timing_model.device_interface.external_clock
+    clock_device_pins = get_device_clock_pins(timing_model)
 
     traces = []
 
-    trace = {}
-    trace['name'] = timing_model.traces.get_trace_name_connected_to_device_pin(clock_device_pin.name)
-    trace['clock'] = True
-    trace['device_pin'] = clock_device_pin.name
-    trace['part_pin'] = timing_model.traces.get_part_pin_name_connected_to(clock_device_pin.name)
-    trace['direction'] = 'right'
-    traces.append(trace)
+    for clock_device_pin in clock_device_pins:
+        trace = {}
+        trace['name'] = timing_model.traces.get_trace_name_connected_to_device_pin(clock_device_pin.name)
+        trace['clock'] = True
+        trace['device_pin'] = clock_device_pin.name
+        trace['part_pin'] = timing_model.traces.get_part_pin_name_connected_to(clock_device_pin.name)
+        trace['direction'] = 'right'
+        traces.append(trace)
 
     return traces
+
+
+def get_device_clock_pins(timing_model):
+    clock_pins = []
+    if timing_model.device_interface.output_clocks is not None:
+        clock_pins.extend(timing_model.device_interface.output_clocks)
+    if timing_model.device_interface.input_clocks is not None:
+        clock_pins.extend(timing_model.device_interface.input_clocks)
+    return clock_pins

@@ -282,8 +282,9 @@ class DeviceInterface(Interface):
 
     def __init__(self, name):
         Interface.__init__(self, name)
-        self.internal_clock = None
-        self.external_clock = None
+        self.input_clocks = None
+        self.output_clocks = None
+        self.internal_clocks = None
         self.data_pins = None
 
     def get_pin_named(self, pin_name):
