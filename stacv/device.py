@@ -37,3 +37,13 @@ class Device():
             if my_interface.name == name:
                 return my_interface
         return None
+
+    def get_interface_names(self):
+        names = []
+        for my_interface in self.interfaces:
+            names.append(my_interface.name)
+        return names
+
+    def get_data_pins_from_interface_named(self, name):
+        my_interface = self.get_interface_named(name)
+        return my_interface.data_pins

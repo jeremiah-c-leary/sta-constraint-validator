@@ -39,7 +39,7 @@ def build_report_subparser(subparser):
 def build_debug_subparser(subparser):
     parser = subparser.add_parser('debug', help='Alpha debug reporting.')
     add_file_arguments_to_parser(parser)
-    parser.add_argument('output', default=None, action='store', choices=['text_block_diagram', 'blah'], help='Output text version of the block diagram')
+    parser.add_argument('output', default=None, action='store', choices=['text_block_diagram', 'text_clock_diagram'], help='Output text version of the block diagram')
 
     parser.set_defaults(which='debug')
 
