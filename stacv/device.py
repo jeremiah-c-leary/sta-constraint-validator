@@ -15,8 +15,12 @@ def build_interface_list(device_dict):
     interfaces = []
 
     for interface_dict in device_dict['interface']:
+        name = list(interface_dict.keys())[0]
+        my_interface = interface_dict[name]
+        my_interface['name'] = name
+        my_interface['location'] = 'device'
 
-        new_interface = interface.new(interface_dict)
+        new_interface = interface.new(my_interface)
 
         interfaces.append(new_interface)
 

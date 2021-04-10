@@ -13,23 +13,33 @@ It is typically provided by a vendor.
             - <interface_name>:
                 timing_model : <interface_type>
                 clock:
-                    <clock_pin_name>:
-                        max_freq: '20 MHz'
+                    input:
+                       - <clock_pin_name>:
+                            max_freq: <frequency>
+                    output:
+                       - <clock_pin_name>:
+                            max_freq: <frequency>
                 data:
-                    - <input_pin_name>:
-                        <clock_edge>:
-                            setup:
-                                id: <timing_id>
-                                value: <setup_value>
-                            hold:
-                                id: <timing_id>
-                                value: <hold_value>
-                    - <output_pin_name>:
-                        <clock_edge>:
-                            clock_to_out:
-                                id: <timing_id>
-                                max: <clock_to_out_max>
-                                min: <clock_to_out_min>
+                    input:
+                        - <input_pin_name>:
+                            clock: <clock_name>
+                            <clock_edge>:
+                                setup:
+                                    id: <timing_id>
+                                    value: <setup_value>
+                                hold:
+                                    id: <timing_id>
+                                    value: <hold_value>
+                    output:
+                        - <output_pin_name>:
+                            clock: <clock_name>
+                            <clock_edge>:
+                                clock_to_out_max:
+                                    id: <timing_id>
+                                    value: <clock_to_out_max>
+                                clock_to_out_min:
+                                    id: <timing_id>
+                                    min: <clock_to_out_min>
 
 +------------------+----------+------------------------------------------------------------------------------+
 | **Element**      | **Type** | **Description**                                                              |

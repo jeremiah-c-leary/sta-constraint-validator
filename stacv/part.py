@@ -15,7 +15,11 @@ def build_interface_list(part_dict):
 
     interfaces = []
     for interface_dict in part_dict['interface']:
-        new_interface = interface.new(interface_dict)
+        name = list(interface_dict.keys())[0]
+        my_interface = interface_dict[name]
+        my_interface['name'] = name
+        my_interface['location'] = 'part'
+        new_interface = interface.new(my_interface)
 
         interfaces.append(new_interface)
 
