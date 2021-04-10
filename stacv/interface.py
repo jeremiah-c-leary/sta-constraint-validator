@@ -32,6 +32,7 @@ def build_part_clock_pin_list(interface_dict):
         clock_pins.extend(build_part_output_clock_pin_list(interface_dict))
     return clock_pins
 
+
 def has_input_clocks(interface_dict):
     if 'input' in interface_dict['clock']:
         return True
@@ -115,13 +116,13 @@ def build_part_input_data_pin_list(interface_dict):
 
 def has_rising_edge(pin_dict):
     if 'rising' in pin_dict:
-       return True
+        return True
     return False
 
 
 def has_falling_edge(pin_dict):
     if 'falling' in pin_dict:
-       return True
+        return True
     return False
 
 
@@ -163,24 +164,23 @@ def build_part_output_edge(edge_dict):
 
 def build_device_interface(interface_dict):
     interface = DeviceInterface(interface_dict['name'])
-    if 'output' in interface_dict['clock']:
-        interface.output_clocks = build_output_clock_list(interface_dict['clock']['output'])
-    if 'input' in interface_dict['clock']:
-        interface.input_clocks = build_input_clock_list(interface_dict['clock']['input'])
-    if 'internal' in interface_dict['clock']:
-        interface.internal_clocks = build_internal_clock_list(interface_dict['clock']['internal'])
+    interface.output_clocks = build_output_clock_list(interface_dict)
+    interface.input_clocks = build_input_clock_list(interface_dict)
+    interface.internal_clocks = build_internal_clock_list(interface_dict)
 
     interface.data_pins = []
-    if 'output' in interface_dict['data']:
-        interface.data_pins.extend(build_output_data_pin_list(interface_dict['data']['output']))
-    if 'input' in interface_dict['data']:
-        interface.data_pins.extend(build_input_data_pin_list(interface_dict['data']['input']))
+    interface.data_pins.extend(build_output_data_pin_list(interface_dict))
+    interface.data_pins.extend(build_input_data_pin_list(interface_dict))
+
     return interface
 
 
-def build_internal_clock_list(clock_pin_list):
+def build_internal_clock_list(interface_dict):
+    if 'internal' not in interface_dict['clock']:
+        return None
+
     clock_pins = []
-    for clock_pin in clock_pin_list:
+    for clock_pin in interface_dict['clock']['internal']:
         name = list(clock_pin.keys())[0]
         my_clock_pin = clock_pin[name]
         my_clock_pin['name'] = name
@@ -193,9 +193,12 @@ def build_internal_clock_list(clock_pin_list):
     return clock_pins
 
 
-def build_output_clock_list(clock_pin_list):
+def build_output_clock_list(interface_dict):
+    if 'output' not in interface_dict['clock']:
+        return None
+
     clock_pins = []
-    for clock_pin in clock_pin_list:
+    for clock_pin in interface_dict['clock']['output']:
         name = list(clock_pin.keys())[0]
         my_clock_pin = clock_pin[name]
         my_clock_pin['name'] = name
@@ -208,9 +211,12 @@ def build_output_clock_list(clock_pin_list):
     return clock_pins
 
 
-def build_input_clock_list(clock_pin_list):
+def build_input_clock_list(interface_dict):
+    if 'input' not in interface_dict['clock']:
+        return None
+
     clock_pins = []
-    for clock_pin in clock_pin_list:
+    for clock_pin in interface_dict['clock']['input']:
         name = list(clock_pin.keys())[0]
         my_clock_pin = clock_pin[name]
         my_clock_pin['name'] = name
@@ -223,10 +229,13 @@ def build_input_clock_list(clock_pin_list):
     return clock_pins
 
 
-def build_output_data_pin_list(data_pin_list):
+def build_output_data_pin_list(interface_dict):
+    if 'output' not in interface_dict['data']:
+        return []
+
     data_pins = []
 
-    for data_pin in data_pin_list:
+    for data_pin in interface_dict['data']['output']:
         name = list(data_pin.keys())[0]
         my_data_pin = data_pin[name]
         my_data_pin['name'] = name
@@ -239,10 +248,13 @@ def build_output_data_pin_list(data_pin_list):
     return data_pins
 
 
-def build_input_data_pin_list(data_pin_list):
+def build_input_data_pin_list(interface_dict):
+    if 'input' not in interface_dict['data']:
+        return []
+
     data_pins = []
 
-    for data_pin in data_pin_list:
+    for data_pin in interface_dict['data']['input']:
         name = list(data_pin.keys())[0]
         my_data_pin = data_pin[name]
         my_data_pin['name'] = name
@@ -269,11 +281,21 @@ class PartInterface(Interface):
         self.clocks = None
 
     def has_pin_named(self, pin_name):
-        for clock_pin in self.clocks:
-            if clock_pin.name == pin_name:
-                return True
+        if self.has_clock_pin_named(pin_name):
+            return True
+        if self.has_data_pin_named(pin_name):
+            return True
+        return False
+
+    def has_data_pin_named(self, pin_name):
         for data_pin in self.data_pins:
             if data_pin.name == pin_name:
+                return True
+        return False
+
+    def has_clock_pin_named(self, pin_name):
+        for clock_pin in self.clocks:
+            if clock_pin.name == pin_name:
                 return True
         return False
 
