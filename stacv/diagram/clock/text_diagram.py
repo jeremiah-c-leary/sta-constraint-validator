@@ -80,11 +80,9 @@ def calculate_dwell_times(launch_clock, capture_clock):
 
 def calculate_fast_and_slow_dwell_times(fast_clock, slow_clock):
     fast_dwell_time = 2
-    fast_period_dwell_time = 2*fast_dwell_time
 
     ratio = int(slow_clock.period/fast_clock.period)
 
-    number_of_fast_dwells_in_half_slow_period = ratio/2
     number_of_fast_edges_in_half_slow_period = int(ratio) - 1
     slow_dwell_time = ratio*fast_dwell_time + number_of_fast_edges_in_half_slow_period
     return fast_dwell_time, slow_dwell_time
