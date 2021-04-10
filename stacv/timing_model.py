@@ -4,7 +4,9 @@ def new(interface_name, device, board, part):
     device_interface = get_device_interface_named(device, interface_name)
     part_interface = get_part_interface(device_interface, board, part)
 
-    timing_model = build_timing_model(device_interface, board, part_interface, device, part)
+    timing_model = build_timing_model(device_interface, board, part_interface)
+    timing_model.device_name = device.name
+    timing_model.part_name = part.name
 
     return timing_model
 
@@ -25,10 +27,8 @@ def get_device_clock_pin(device_interface):
         return device_interface.output_clocks[0]
 
 
-def build_timing_model(device_interface, board, part_interface, device, part):
+def build_timing_model(device_interface, board, part_interface):
     timing_model = SourceSynchronousWithRoundTrip(device_interface, board, part_interface)
-    timing_model.device_name = device.name
-    timing_model.part_name = part.name
     return timing_model
 
 
