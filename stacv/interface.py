@@ -324,4 +324,7 @@ class DeviceInterface(Interface):
         for clock_pin in self.internal_clocks:
             if clock_pin.name == clock_name:
                 return clock_pin
+        for clock_pin in self.output_clocks:
+            if clock_pin.name == clock_name:
+                return clock_pin
         

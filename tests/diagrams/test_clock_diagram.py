@@ -38,13 +38,13 @@ class Test(unittest.TestCase):
         self.assertEqual(lExpected, lActual)
 
 
-    def test_text_renderer_input_100mhz_to_20mhz(self):
-
-        lExpected = render_text_diagram_100mhz_to_50mhz()
-
-        lActual = text_diagram.render(self.oTM, 'I_DEBUG')
-
-        self.assertEqual(lExpected, lActual)
+#    def test_text_renderer_input_100mhz_to_50mhz(self):
+#
+#        lExpected = render_text_diagram_100mhz_to_50mhz()
+#
+#        lActual = text_diagram.render(self.oTM, 'I_DEBUG')
+#
+#        self.assertEqual(lExpected, lActual)
 
 
 def render_text_diagram_100mhz_to_20mhz():
