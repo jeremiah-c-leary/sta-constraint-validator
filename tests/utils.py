@@ -134,13 +134,13 @@ def create_device_dict():
     dPin['O_DAC_DATA'] = {}
     dPin['O_DAC_DATA']['launch_clock'] = {}
     dPin['O_DAC_DATA']['launch_clock']['name'] = 'int_clock'
-    dPin['O_DAC_DATA']['launch_clock']['edge'] = 3
+    dPin['O_DAC_DATA']['launch_clock']['edge'] = 6 
 
     dPin['O_DAC_DATA']['capture_clock'] = {}
     dPin['O_DAC_DATA']['capture_clock']['name'] = 'O_DAC_SCLK'
     dPin['O_DAC_DATA']['capture_clock']['edge'] = {}
-    dPin['O_DAC_DATA']['capture_clock']['edge']['setup'] = 'f'
-    dPin['O_DAC_DATA']['capture_clock']['edge']['hold'] = 'q'
+    dPin['O_DAC_DATA']['capture_clock']['edge']['setup'] = 'c'
+    dPin['O_DAC_DATA']['capture_clock']['edge']['hold'] = 'a'
 
     dInterface['DAC_DATA']['data']['output'].append(dPin)
     ############################################################################
@@ -150,13 +150,13 @@ def create_device_dict():
     dPin['I_DAC_DATA'] = {}
     dPin['I_DAC_DATA']['launch_clock'] = {}
     dPin['I_DAC_DATA']['launch_clock']['name'] = 'O_DAC_SCLK'
-    dPin['I_DAC_DATA']['launch_clock']['edge'] = 11
+    dPin['I_DAC_DATA']['launch_clock']['edge'] = 2
 
     dPin['I_DAC_DATA']['capture_clock'] = {}
     dPin['I_DAC_DATA']['capture_clock']['name'] = 'int_clock'
     dPin['I_DAC_DATA']['capture_clock']['edge'] = {}
-    dPin['I_DAC_DATA']['capture_clock']['edge']['setup'] = 'c'
-    dPin['I_DAC_DATA']['capture_clock']['edge']['hold'] = 'd'
+    dPin['I_DAC_DATA']['capture_clock']['edge']['setup'] = 'k'
+    dPin['I_DAC_DATA']['capture_clock']['edge']['hold'] = 'a'
 
     dInterface['DAC_DATA']['data']['input'].append(dPin)
     ############################################################################

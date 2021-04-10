@@ -49,10 +49,14 @@ class Test(unittest.TestCase):
 
 def render_text_diagram_100mhz_to_20mhz():
     lReturn = []
-    lReturn.append('   __    __    __    __    __    __    __    __    __    __    ')
+    lReturn.append('                             1  1  1  1  1  1  1  1  1  1  2  2')
+    lReturn.append('  1__2  3__4  5__6  7__8  9__0  1__2  3__4  5__6  7__8  9__0  1')
     lReturn.append('__|  |__|  |__|  |__|  |__|  |__|  |__|  |__|  |__|  |__|  |__|')
     lReturn.append('')
-    lReturn.append('   ______________                ______________                ')
+    lReturn.append('                 |------------->|') 
+    lReturn.append('  |<-------------|') 
+    lReturn.append('')
+    lReturn.append('  a______________b              c______________d              e')
     lReturn.append('__|              |______________|              |______________|')
 
     return lReturn 
@@ -60,10 +64,13 @@ def render_text_diagram_100mhz_to_20mhz():
 
 def render_text_diagram_20mhz_to_100mhz():
     lReturn = []
-    lReturn.append('   ______________                ______________                ')
+    lReturn.append('  1______________2              3______________4              5')
     lReturn.append('__|              |______________|              |______________|')
     lReturn.append('')
-    lReturn.append('   __    __    __    __    __    __    __    __    __    __    ')
+    lReturn.append('                 |------------->|')
+    lReturn.append('  |<-------------|')
+    lReturn.append('')
+    lReturn.append('  a__b  c__d  e__f  g__h  i__j  k__l  m__n  o__p  q__r  s__t  u')
     lReturn.append('__|  |__|  |__|  |__|  |__|  |__|  |__|  |__|  |__|  |__|  |__|')
 
     return lReturn 
