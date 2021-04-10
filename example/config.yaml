@@ -20,7 +20,7 @@ board:
             min: 0.5
     - chip_select:
         device_pin: 'O_DAC_CSF'
-        part_pin: 'ENABLE'
+        part_pin: 'SYNC_F'
         delay:
             max: 1.5
             min: 0.5
@@ -35,37 +35,52 @@ device:
     name: 'Arria10'
     interface:
         - DAC_DATA:
-            internal_clock:
-                100mhz_int:
-                    frequency: '100 MHz'
-            external_clock:
-                O_DAC_SCLK:
-                    frequency: '20 MHz'
+            clock:
+               internal:
+                   - clock_100mhz_int:
+                        frequency: '100 MHz'
+               output:
+                   - O_DAC_SCLK:
+                        frequency: '20 MHz'
             data:
-                - I_DAC_DATA:
-                    capture_clock: '100mhz_int'
-                    clock_edges:
-                        from: 11
-                        setup: 'c'
-                        hold: 'd'
-                - O_DAC_DATA:
-                    launch_clock: '100mhz_int'
-                    clock_edges:
-                        from: 3
-                        setup: 'f'
-                        hold: 'q'
-                - O_DAC_CSF:
-                    launch_clock: '100mhz_int'
-                    clock_edges:
-                        from: 3
-                        setup: 'f'
-                        hold: 'q'
-                - O_DAC_DATA_BUS[4]:
-                    launch_clock: '100mhz_int'
-                    clock_edges:
-                        from: 3
-                        setup: 'f'
-                        hold: 'q'
+                input:
+                    - I_DAC_DATA:
+                        launch_clock:
+                            name: 'O_DAC_SCLK'
+                            edge: 3
+                        capture_clock:
+                            name: 'clock_100mhz_int'
+                            edge:
+                                setup: 'q'
+                                hold: 'c'
+                output:
+                    - O_DAC_DATA:
+                        launch_clock:
+                            name: 'clock_100mhz_int'
+                            edge: 6
+                        capture_clock:
+                            name: 'O_DAC_SCLK'
+                            edge:
+                                setup: 'c'
+                                hold: 'a'
+                    - O_DAC_CSF:
+                        launch_clock:
+                            name: 'clock_100mhz_int'
+                            edge: 8
+                        capture_clock:
+                            name: 'O_DAC_SCLK'
+                            edge:
+                                setup: 'd'
+                                hold: 'b'
+                    - O_DAC_DATA_BUS[4]:
+                        launch_clock:
+                            name: 'clock_100mhz_int'
+                            edge: 14
+                        capture_clock:
+                            name: 'O_DAC_SCLK'
+                            edge:
+                                setup: 'e'
+                                hold: 'b'
                     
 part:
     vendor: 'Texas Instruments'
@@ -74,24 +89,45 @@ part:
         - serial_data:
             timing_model: 'source_synchronous_with_round_trip'
             clock:
-                SCLK:
-                    max_freq: '50 MHz'
+                input:
+                    - SCLK:
+                        max_freq: '50 MHz'
             data:
-                - SDIN:
-                    rising:
-                        setup: 5.0
-                        hold: 5.0
-                - ENABLE:
-                    rising:
-                        setup: 5.0
-                        hold: 5.0
-                - SDO:
-                    falling:
-                        clock_to_out:
-                            max: 20.0
-                            min: 0.0
-                - INPUT_DATA_BUS:
-                    rising:
-                        setup: 5.0
-                        hold: 5.0
-                    
+                input:
+                    - SDIN:
+                        clock: 'SCLK'
+                        falling:
+                            setup:
+                                id: 'tSDIS'
+                                value: 5.0
+                            hold:
+                                id: 'tSDIH'
+                                value: 5.0
+                    - SYNC_F:
+                        clock: 'SCLK'
+                        falling:
+                            setup:
+                                id: 'tCSS'
+                                value: 20.0
+                            hold:
+                                id: 'tCSH'
+                                value: 5.0
+                    - INPUT_DATA_BUS:
+                        clock: 'SCLK'
+                        rising:
+                            setup:
+                                id: 'tDebugSetup'
+                                value: 20.0
+                            hold:
+                                id: 'tDebugHold'
+                                value: 5.0
+                output:
+                    - SDO:
+                        clock: 'SCLK'
+                        rising:
+                            clock_to_out_max:
+                               id: 'tSDODLY'
+                               value: 20.0
+                            clock_to_out_min:
+                               id: 'tSDODLY'
+                               value: 0
