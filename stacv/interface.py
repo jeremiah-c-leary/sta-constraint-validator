@@ -313,11 +313,15 @@ class DeviceInterface(Interface):
         for data_pin in self.data_pins:
             if data_pin.name == pin_name:
                 return data_pin
-        if self.internal_clock.name == pin_name:
-            return self.internal_clock
-        if self.external_clock.name == pin_name:
-            return self.external_clock
+        for clock_pin in self.internal_clocks:
+            if clock_pin.name == pin_name:
+                return clock_pin
+        for clock_pin in self.output_clocks:
+            if clock_pin.name == pin_name:
+                return clock_pin
 
     def get_clock_named(self, clock_name):
-        if self.internal_clock.name == clock_name:
-            return self.internal_clock
+        for clock_pin in self.internal_clocks:
+            if clock_pin.name == clock_name:
+                return clock_pin
+        

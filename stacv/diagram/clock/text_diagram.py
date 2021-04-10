@@ -7,13 +7,11 @@ def render(timing_model, pin):
     diagram = []
 
     if pin == 'O_DAC_DATA':
-        device_pin = timing_model.get_device_pin(pin)
-        print(device_pin)
-        launch_pin = timing_model.get_device_clock_named(device_pin.nch_clock)
-        print(launch_pin)
+        device_data_pin = timing_model.get_device_pin(pin)
+        launch_clock_pin = timing_model.get_device_clock_named(device_data_pin.launch_clock)
         capture_pin = timing_model.get_device_pin('O_DAC_SCLK')
-        launch_clock = clock.new(launch_pin.max_freq)
-        capture_clock = clock.new(capture_pin.max_freq)
+        launch_clock = clock.new(launch_clock_pin.frequency)
+        capture_clock = clock.new(capture_pin.frequency)
         if launch_clock.period < capture_clock.period:
             clock.expand(capture_clock, 2)
             clock.expand(launch_clock, 10)
