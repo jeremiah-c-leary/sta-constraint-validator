@@ -184,7 +184,7 @@ def build_internal_clock_list(clock_pin_list):
         name = list(clock_pin.keys())[0]
         my_clock_pin = clock_pin[name]
         my_clock_pin['name'] = name
-        my_clock_pin['pin_type'] = 'clock' 
+        my_clock_pin['pin_type'] = 'clock'
         my_clock_pin['location'] = 'device'
         my_clock_pin['direction'] = 'internal'
         new_clock_pin = pin.new(my_clock_pin)
@@ -199,7 +199,7 @@ def build_output_clock_list(clock_pin_list):
         name = list(clock_pin.keys())[0]
         my_clock_pin = clock_pin[name]
         my_clock_pin['name'] = name
-        my_clock_pin['pin_type'] = 'clock' 
+        my_clock_pin['pin_type'] = 'clock'
         my_clock_pin['location'] = 'device'
         my_clock_pin['direction'] = 'output'
         new_clock_pin = pin.new(my_clock_pin)
@@ -214,7 +214,7 @@ def build_input_clock_list(clock_pin_list):
         name = list(clock_pin.keys())[0]
         my_clock_pin = clock_pin[name]
         my_clock_pin['name'] = name
-        my_clock_pin['pin_type'] = 'clock' 
+        my_clock_pin['pin_type'] = 'clock'
         my_clock_pin['location'] = 'device'
         my_clock_pin['direction'] = 'input'
         new_clock_pin = pin.new(my_clock_pin)

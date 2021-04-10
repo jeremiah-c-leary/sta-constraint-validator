@@ -158,15 +158,15 @@ def build_part_input_data_pin(pin_dict):
 def build_part_output_data_pin(pin_dict):
     pin = PartOutputDataPin(pin_dict['name'])
     if 'rising' in pin_dict:
-        pin.rising_cko_max_id = pin_dict['rising']['max']['id']    
-        pin.rising_cko_max = pin_dict['rising']['max']['value']    
-        pin.rising_cko_min_id = pin_dict['rising']['min']['id']    
-        pin.rising_cko_min = pin_dict['rising']['min']['value']    
+        pin.rising_cko_max_id = pin_dict['rising']['max']['id']
+        pin.rising_cko_max = pin_dict['rising']['max']['value']
+        pin.rising_cko_min_id = pin_dict['rising']['min']['id']
+        pin.rising_cko_min = pin_dict['rising']['min']['value']
     if 'falling' in pin_dict:
-        pin.falling_cko_max_id = pin_dict['falling']['max']['id']    
-        pin.falling_cko_max = pin_dict['falling']['max']['value']    
-        pin.falling_cko_min_id = pin_dict['falling']['min']['id']    
-        pin.falling_cko_min = pin_dict['falling']['min']['value']    
+        pin.falling_cko_max_id = pin_dict['falling']['max']['id']
+        pin.falling_cko_max = pin_dict['falling']['max']['value']
+        pin.falling_cko_min_id = pin_dict['falling']['min']['id']
+        pin.falling_cko_min = pin_dict['falling']['min']['value']
     return pin
 
 

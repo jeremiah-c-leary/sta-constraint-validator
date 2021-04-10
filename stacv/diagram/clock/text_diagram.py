@@ -18,15 +18,15 @@ def render(timing_model, pin):
             clock.expand(capture_clock, 2)
             clock.expand(launch_clock, 10)
         dwell_time = 2
-    
+
         line = '   '
         for edge in launch_clock.edges[:-1]:
            if edge.direction == 'rising':
-               line += '__ ' 
+               line += '__ '
            else:
                line += '   '
         diagram.append(line)
-    
+
         line = '__'
         for edge in launch_clock.edges[:-1]:
            if edge.direction == 'rising':
@@ -34,12 +34,12 @@ def render(timing_model, pin):
            else:
                line += '|__'
         line += '|'
-    
+
         diagram.append(line)
-    
+
         line = ''
         diagram.append(line)
-    
+
         line = '   '
         for edge in capture_clock.edges[:-1]:
             if edge.direction == 'rising':
@@ -47,7 +47,7 @@ def render(timing_model, pin):
             else:
                 line += ' '*(dwell_time*3 + dwell_time*2 + 4) + ' '
         diagram.append(line)
-    
+
         line = '__'
         for edge in capture_clock.edges[:-1]:
             if edge.direction == 'rising':
