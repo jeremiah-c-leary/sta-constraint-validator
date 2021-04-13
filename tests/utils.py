@@ -1,4 +1,5 @@
 
+
 def create_part_dict():
 
     dPart = {}
@@ -165,3 +166,10 @@ def create_device_dict():
 
     return dDevice
 
+
+def read_file(sFilename):
+    lLines = []
+    with open(sFilename) as oFile:
+        for sLine in oFile:
+            lLines.append(sLine.strip('\n'))
+    return lLines
