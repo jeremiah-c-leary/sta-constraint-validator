@@ -1,0 +1,70 @@
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Sun Apr 11 18:35:09 2021
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -to [get_clocks dac_sclk] -column_style variable_width -file D:/users/jerem/projects/sta-constraint-validation/dac_spi.hold.rpt -delay_type min
+| Design       : dac81404_spi
+| Device       : xa7a12t-cpg238
+| Speed File   : -2I  PRODUCTION 1.16 2018-06-13
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.272ns  (arrival time - required time)
+  Source:                 q_spi_output_data_reg/C
+                            (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            O_DAC_DATA
+                            (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=50.000ns})
+  Path Group:             dac_sclk
+  Path Type:              Min at Fast Process Corner
+  Requirement:            0.000ns  (dac_sclk rise@0.000ns - clk_100mhz rise@0.000ns)
+  Data Path Delay:        1.578ns  (logic 1.239ns (78.520%)  route 0.339ns (21.480%))
+  Logic Levels:           1  (OBUF=1)
+  Output Delay:           1.000ns
+  Clock Path Skew:        2.306ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    3.959ns
+    Source Clock Delay      (SCD):    1.408ns
+    Clock Pessimism Removal (CPR):    0.245ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock clk_100mhz rise edge)     0.000     0.000 r  
+    K18                                               0.000     0.000 r  I_CLK (IN)
+                         net (fo=0)                   0.000     0.000    I_CLK
+    K18                  IBUF (Prop_ibuf_I_O)         0.160     0.160 r  I_CLK_IBUF_inst/O
+                         net (fo=1, routed)           0.631     0.791    I_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.026     0.817 r  I_CLK_IBUF_BUFG_inst/O
+                         net (fo=13, routed)          0.591     1.408    I_CLK_IBUF_BUFG
+    SLICE_X0Y3           FDCE                                         r  q_spi_output_data_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X0Y3           FDCE (Prop_fdce_C_Q)         0.141     1.549 r  q_spi_output_data_reg/Q
+                         net (fo=1, routed)           0.339     1.888    O_DAC_DATA_OBUF
+    U16                  OBUF (Prop_obuf_I_O)         1.098     2.986 r  O_DAC_DATA_OBUF_inst/O
+                         net (fo=0)                   0.000     2.986    O_DAC_DATA
+    U16                                                               r  O_DAC_DATA (OUT)
+  -------------------------------------------------------------------    -------------------
+
+                         (clock dac_sclk rise edge)     0.000     0.000 r  
+    K18                                               0.000     0.000 r  I_CLK (IN)
+                         net (fo=0)                   0.000     0.000    I_CLK
+    K18                  IBUF (Prop_ibuf_I_O)         0.348     0.348 r  I_CLK_IBUF_inst/O
+                         net (fo=1, routed)           0.685     1.033    I_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.029     1.062 r  I_CLK_IBUF_BUFG_inst/O
+                         net (fo=13, routed)          0.862     1.924    I_CLK_IBUF_BUFG
+    SLICE_X0Y5           FDCE (Prop_fdce_C_Q)         0.175     2.099 r  q_spi_output_clock_reg/Q
+                         net (fo=1, routed)           0.572     2.671    O_DAC_SCLK_OBUF
+    U15                  OBUF (Prop_obuf_I_O)         1.288     3.959 r  O_DAC_SCLK_OBUF_inst/O
+                         net (fo=0)                   0.000     3.959    O_DAC_SCLK
+    U15                                                               r  O_DAC_SCLK (OUT)
+                         clock pessimism             -0.245     3.714    
+                         output delay                -1.000     2.714    
+  -------------------------------------------------------------------
+                         required time                         -2.714    
+                         arrival time                           2.986    
+  -------------------------------------------------------------------
+                         slack                                  0.272    
+
+
+
+

@@ -62,6 +62,7 @@ class HoldTimingReport(TimingReport):
 
 def calculate_crpr(data_path, required_path):
     crpr = 0
+    delta = 0
     for data, required in zip(data_path.delays, required_path.delays):
         if resources_match(data, required):
             delta = abs(data.delay - required.delay)
