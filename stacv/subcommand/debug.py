@@ -38,8 +38,6 @@ def print_text_clock_diagram(cmd_line_args):
 
     my_tm = timing_model.new('DAC_DATA', my_device, my_board, my_part)
 
-    interface_name = my_tm.device_interface.name
-    
     for my_pin in my_tm.device_interface.data_pins:
         print('#'*80)
         print(my_pin.name)

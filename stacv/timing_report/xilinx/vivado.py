@@ -124,7 +124,7 @@ def add_launch_edge(line, data_struct, flag):
         return True
     return False
 
-        
+
 def add_capture_edge(line, data_struct, flag):
     if is_capture_clock_edge(line, flag):
         data_struct['capture_edge'] = extract_clock_edge(line)

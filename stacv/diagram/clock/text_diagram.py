@@ -96,7 +96,7 @@ def render_ones_line(launch_clock, lines):
 def render_tens_line(launch_clock, lines):
     if len(launch_clock.edges) > 10:
         line = '   '
-        for edge_number, edge in enumerate(launch_clock.edges[:-1]):
+        for edge_number in range(len(launch_clock.edges[:-1])):
            edge_number = int((edge_number + 2) / 10)
            if edge_number > 0:
                line += ' '*launch_clock.dwell_time + str(edge_number)
@@ -154,7 +154,7 @@ def render_setup_arc(launch_clock, capture_clock):
     launch_edge_index = (launch_clock.dwell_time + 1) * (launch_clock.edge - 1) + 3- 1
     capture_edge_index = (capture_clock.dwell_time + 1) * (capture_edge - 1) + 3 - 1
     delta = capture_edge_index - launch_edge_index - 2
-    
+
     line = ' '*launch_edge_index + '|' + '-'*delta + '>|'
 
     lines.append(line)
