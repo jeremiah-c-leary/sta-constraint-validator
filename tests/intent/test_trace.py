@@ -1,7 +1,7 @@
 
 import unittest
 
-from stacv import trace
+from stacv.intent import trace
 
 
 class Test(unittest.TestCase):

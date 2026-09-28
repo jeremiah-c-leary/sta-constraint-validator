@@ -1,5 +1,5 @@
 
-from stacv import clock
+from stacv.intent import clock
 
 
 def check(timing_report, timing_model):

@@ -1,7 +1,7 @@
 
 import unittest
 
-from stacv import device
+from stacv.intent import device
 
 
 class Test(unittest.TestCase):

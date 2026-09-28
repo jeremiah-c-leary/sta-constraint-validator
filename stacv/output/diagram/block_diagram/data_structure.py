@@ -1,5 +1,5 @@
 
-from stacv import pin
+from stacv.intent import pin
 
 
 def extract(timing_model):

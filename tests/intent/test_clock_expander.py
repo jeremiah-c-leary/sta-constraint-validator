@@ -1,7 +1,7 @@
 
 import unittest
 
-from stacv import clock
+from stacv.intent import clock
 
 
 class Test(unittest.TestCase):

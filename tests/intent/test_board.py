@@ -1,7 +1,7 @@
 
 import unittest
 
-from stacv import board
+from stacv.intent import board
 
 
 

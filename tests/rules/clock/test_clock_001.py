@@ -6,7 +6,7 @@ from stacv.timing_report import timing_report as tr
 
 from stacv.timing_report.xilinx import vivado
 
-from stacv.validate.clock import clock_001
+from stacv.rules.clock import clock_001
 
 from tests import utils
 

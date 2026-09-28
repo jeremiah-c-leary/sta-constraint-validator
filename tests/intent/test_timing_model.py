@@ -1,11 +1,11 @@
 
 import unittest
 
-from stacv import timing_model
-from stacv import part
-from stacv import board
-from stacv import device
-from stacv import interface
+from stacv.intent import timing_model
+from stacv.intent import part
+from stacv.intent import board
+from stacv.intent import device
+from stacv.intent import interface
 
 from tests import utils
 

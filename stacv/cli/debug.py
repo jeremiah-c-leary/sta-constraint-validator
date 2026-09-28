@@ -1,12 +1,12 @@
 
 from stacv import utils
-from stacv import part
-from stacv import board
-from stacv import device
-from stacv import timing_model
+from stacv.intent import part
+from stacv.intent import board
+from stacv.intent import device
+from stacv.intent import timing_model
 
-from stacv.diagram.block_diagram import text_diagram as text_block_diagram
-from stacv.diagram.clock import text_diagram as text_clock_diagram
+from stacv.output.diagram.block_diagram import text_diagram as text_block_diagram
+from stacv.output.diagram.clock import text_diagram as text_clock_diagram
 
 
 def execute(cmd_line_args):

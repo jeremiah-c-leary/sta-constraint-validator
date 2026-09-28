@@ -2,16 +2,16 @@
 import os
 import unittest
 
-from stacv import timing_model
-from stacv import part
-from stacv import board
-from stacv import device
+from stacv.intent import timing_model
+from stacv.intent import part
+from stacv.intent import board
+from stacv.intent import device
 
 from stacv.timing_report import timing_report as tr
 
 from stacv.timing_report.xilinx import vivado
 
-from stacv.validate.clock import clock_002
+from stacv.rules.clock import clock_002
 
 from tests import utils
 

@@ -1,8 +1,8 @@
 import sys
 
-from . import cmd_line_args
-from stacv.subcommand import debug
-from stacv.subcommand import report
+from stacv.cli import cmd_line_args
+from stacv.cli import debug
+from stacv.cli import report
 
 
 def main():

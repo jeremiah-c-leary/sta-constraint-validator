@@ -1,7 +1,7 @@
 
 import unittest
 
-from stacv import part
+from stacv.intent import part
 
 
 def create_part_dict():

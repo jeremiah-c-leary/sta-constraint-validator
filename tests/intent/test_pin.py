@@ -1,7 +1,7 @@
 
 import unittest
 
-from stacv import pin
+from stacv.intent import pin
 
 
 class Test(unittest.TestCase):

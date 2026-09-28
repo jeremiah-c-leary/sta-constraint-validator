@@ -1,5 +1,5 @@
 
-from stacv import clock
+from stacv.intent import clock
 from stacv import utils
 
 

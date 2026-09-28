@@ -1,8 +1,8 @@
 
 import unittest
 
-from stacv import interface
-from stacv import pin
+from stacv.intent import interface
+from stacv.intent import pin
 
 
 class TestPartInterface(unittest.TestCase):
