@@ -14,6 +14,7 @@ Welcome to sta-constraint-validator's documentation!
    board_data
    device
    part
+   checks
    
 
 Indices and tables
