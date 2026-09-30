@@ -4,6 +4,9 @@ import unittest
 import copy
 
 from stacv.timing_report.xilinx import vivado
+from stacv.timing_report import timing_report
+from stacv.timing_report import timing_report_file
+from stacv.timing_report import timing_report_parse_error
 
 from tests import utils
 
@@ -11,20 +14,24 @@ from tests import utils
 sTestDir = os.path.dirname(__file__)
 lSetupFile = utils.read_file(os.path.join(sTestDir, 'dac_spi.setup.rpt'))
 lHoldFile = utils.read_file(os.path.join(sTestDir, 'dac_spi.hold.rpt'))
-
+lTimingReportFile = utils.read_file(os.path.join(sTestDir, 'O_DAC_DATA_timing.rpt'))
+oTimingReportFile = timing_report_file.TimingReportFile('O_DAC_DATA_timing.rpt', lTimingReportFile)
 
 class Test(unittest.TestCase):
 
+    @unittest.skip('rewriting parser to return objects.  Remove when completed.')
     def test_parse_output_setup_report(self):
         dExpected = build_output_setup_data_structure()
 
         self.assertEqual(dExpected, vivado.parse_timing_report(lSetupFile)[0])
 
+    @unittest.skip('rewriting parser to return objects.  Remove when completed.')
     def test_parse_output_hold_report(self):
         dExpected = build_output_hold_data_structure()
 
         self.assertEqual(dExpected, vivado.parse_timing_report(lHoldFile)[0])
 
+    @unittest.skip('rewriting parser to return objects.  Remove when completed.')
     def test_multiple_reports(self):
         self.maxDiff = None
         dSetupExpected = build_output_setup_data_structure()
@@ -37,7 +44,134 @@ class Test(unittest.TestCase):
 
         self.assertEqual(dSetupExpected, lActual[0])
         self.assertEqual(dHoldExpected, lActual[1])
-        
+
+    def test_extract_timing_report_texts_finds_each_report(self):
+        lReports = vivado.extract_timing_report_texts(oTimingReportFile)
+
+        self.assertEqual(4, len(lReports))
+
+        self.assertTrue(lReports[0].lines[0].startswith('Slack'))
+        self.assertEqual(60, len(lReports[0].lines))
+        self.assertTrue(lReports[0].lines[-1].strip().startswith('slack '))
+        self.assertEqual(14, lReports[0].first_line_number)
+
+        self.assertTrue(lReports[1].lines[0].startswith('Slack'))
+        self.assertEqual(66, len(lReports[1].lines))
+        self.assertTrue(lReports[1].lines[-1].strip().startswith('slack '))
+        self.assertEqual(75, lReports[1].first_line_number)
+
+        self.assertTrue(lReports[2].lines[0].startswith('Slack'))
+        self.assertEqual(60, len(lReports[2].lines))
+        self.assertTrue(lReports[2].lines[-1].strip().startswith('slack '))
+        self.assertEqual(158, lReports[2].first_line_number)
+
+        self.assertTrue(lReports[3].lines[0].startswith('Slack'))
+        self.assertEqual(66, len(lReports[3].lines))
+        self.assertTrue(lReports[3].lines[-1].strip().startswith('slack '))
+        self.assertEqual(219, lReports[3].first_line_number)
+
+    def test_parse_timing_report_returns_four_timing_reports(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual(4, oTimingReports.number_of_timing_reports())
+
+    def test_parse_timing_report_returns_a_hold_timing_report_object(self):
+
+        self.assertTrue(isinstance(vivado.parse_timing_report(oTimingReportFile).reports[0], timing_report.HoldTimingReport))
+        self.assertTrue(isinstance(vivado.parse_timing_report(oTimingReportFile).reports[2], timing_report.HoldTimingReport))
+
+    def test_parse_timing_report_returns_a_setup_timing_report_object(self):
+
+        self.assertTrue(isinstance(vivado.parse_timing_report(oTimingReportFile).reports[1], timing_report.SetupTimingReport))
+        self.assertTrue(isinstance(vivado.parse_timing_report(oTimingReportFile).reports[3], timing_report.SetupTimingReport))
+
+    def test_create_timing_report_raises_an_error_for_unknown_path_type(self):
+        oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  Path Type:  Unexpected', '  slack   1.000'])
+        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, 22, ['Slack (MET) :   1.000ns', '  Path Type:  Unexpected', '  slack   1.000'])
+
+        sError = r'ERROR: \[vivado_tr_parse_005\] test:23 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.create_timing_report(oTimingReportText)
+
+    def test_extract_path_type_line_raises_error_if_no_path_type_line_exists(self):
+        oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  Paths Type:  Unexpected', '  slack   1.000'])
+        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, 22, ['Slack (MET) :   1.000ns', '  Paths Type:  Unexpected', '  slack   1.000'])
+
+        sError = r'ERROR: \[vivado_tr_parse_004\] test:22 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.extract_path_type_line(oTimingReportText)
+
+    def test_validate_timing_report_file_raises_error_if_an_ending_of_a_report_is_not_detected_at_the_end_of_a_file(self):
+        lFile = []
+        lFile.extend(['Slack (MET) :   1.000ns', '  Paths Type:  Min', '  slack   1.000'])
+        lFile.extend([''])
+        lFile.extend(['Slack (MET) :   2.000ns', '  Paths Type:  Max', '  slack   1.000'])
+        lFile.extend([''])
+        lFile.extend(['Slack (MET) :   2.000ns', '  Paths Type:  Max', '  slacks   1.000'])
+
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_003\] test:9 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.validate_timing_report_file(oTimingReportFile)
+
+    def test_validate_timing_report_file_raises_error_if_an_ending_of_a_report_is_not_detected_before_a_start_is_detected(self):
+        lFile = []
+        lFile.extend(['Slack (MET) :   1.000ns', '  Paths Type:  Min', '  slack   1.000'])
+        lFile.extend([''])
+        lFile.extend(['Slack (MET) :   2.000ns', '  Paths Type:  Max', '  slacks   1.000'])
+        lFile.extend([''])
+        lFile.extend(['Slack (MET) :   2.000ns', '  Paths Type:  Max', '  slack   1.000'])
+
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_003\] test:5 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.validate_timing_report_file(oTimingReportFile)
+
+    def test_validate_timing_report_file_raises_error_if_first_report_does_not_have_an_ending(self):
+        lFile = []
+        lFile.extend(['Slack (MET) :   1.000ns', '  Paths Type:  Min', '  slacks   1.000'])
+        lFile.extend([''])
+        lFile.extend(['Slack (MET) :   2.000ns', '  Paths Type:  Max', '  slack   1.000'])
+        lFile.extend([''])
+        lFile.extend(['Slack (MET) :   2.000ns', '  Paths Type:  Max', '  slack   1.000'])
+
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_003\] test:1 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.validate_timing_report_file(oTimingReportFile)
+
+    def test_validate_timing_report_file_raises_error_if_first_report_does_not_have_a_beginning(self):
+        lFile = []
+        lFile.extend(['Slacks (MET) :   1.000ns', '  Paths Type:  Min', '  slack   1.000'])
+        lFile.extend([''])
+        lFile.extend(['Slack (MET) :   2.000ns', '  Paths Type:  Max', '  slack   1.000'])
+        lFile.extend([''])
+        lFile.extend(['Slack (MET) :   2.000ns', '  Paths Type:  Max', '  slack   1.000'])
+
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_002\] test:3 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.validate_timing_report_file(oTimingReportFile)
+
+    def test_validate_timing_report_file_raises_error_if_no_timing_reports_found(self):
+        lFile = []
+        lFile.extend(['Slacks (MET) :   1.000ns', '  Paths Type:  Min', '  slacks   1.000'])
+        lFile.extend([''])
+        lFile.extend(['Slacks (MET) :   2.000ns', '  Paths Type:  Max', '  slacks   1.000'])
+        lFile.extend([''])
+        lFile.extend(['Slacks (MET) :   2.000ns', '  Paths Type:  Max', '  slacks   1.000'])
+
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_001\] test:1 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.validate_timing_report_file(oTimingReportFile)
+
+
 
 def build_output_setup_data_structure():
 

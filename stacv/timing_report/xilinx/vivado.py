@@ -1,35 +1,140 @@
 
-def parse_timing_report(report):
-    reports = []
-    data_struct = create_data_struct()
-    found_paths = False
-    found_launch_edge = False
-    for line in report:
-        found_paths = is_this_the_start_of_the_timing_paths(line, found_paths)
-        if not found_paths:
-            if add_type(line, data_struct):
-                continue
-            if add_output_delay(line, data_struct):
-                continue
+from stacv.timing_report import timing_report
+from stacv.timing_report import timing_report_file
+from stacv.timing_report import timing_report_list
+from stacv.timing_report import timing_report_parse_error
+
+
+def parse_timing_report(oTimingReportFile):
+    validate_timing_report_file(oTimingReportFile)
+    oTimingReports = timing_report_list.TimingReportList()
+    for oTimingReportText in extract_timing_report_texts(oTimingReportFile):
+        oTimingReport = create_timing_report(oTimingReportText)
+#        populateTimingReport(oTimingReport)
+        oTimingReports.add(oTimingReport)
+    return oTimingReports
+
+
+def extract_timing_report_texts(oTimingReportFile):
+    lTimingReports = []
+    lReport = None
+    iStartLineNumber = 0
+    for iLine, sLine in enumerate(oTimingReportFile.lines, start=1):
+        if is_start_of_timing_report(sLine):
+            lReport = []
+            iStartLineNumber = iLine
+        if lReport is None:
             continue
-        if is_end_of_report(line):
-            reports.append(data_struct)
-            data_struct = create_data_struct()
-            found_paths = False
-            found_launch_edge = False
-            continue
-        if add_launch_edge(line, data_struct, found_launch_edge):
-            found_launch_edge = True
-            continue
-        if add_capture_edge(line, data_struct, found_launch_edge):
-            found_launch_edge = False
-            continue
-        if add_net_delay(line, data_struct, found_launch_edge):
-            continue
-        if ignore_line(line):
-            continue
-        add_cell_delay(line, data_struct, found_launch_edge)
-    return reports
+        lReport.append(sLine)
+        if is_end_of_timing_report(sLine):
+            oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, iStartLineNumber, lReport)
+            lTimingReports.append(oTimingReportText)
+            lReport = None
+
+    return lTimingReports
+
+
+def validate_timing_report_file(oTimingReportFile):
+    check_timing_reports_exist(oTimingReportFile)
+    check_ending_of_timing_report_without_beginning(oTimingReportFile)
+    check_beginning_of_timing_report_without_ending(oTimingReportFile)
+
+
+def check_timing_reports_exist(oTimingReportFile):
+    bStart = False
+    for sLine in oTimingReportFile.lines:
+        if is_start_of_timing_report(sLine):
+            bStart = True
+            break
+
+    if not bStart:
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_001', oTimingReportFile, 1, 'No timing reports detected')
+
+
+def check_ending_of_timing_report_without_beginning(oTimingReportFile):
+    bStart = False
+    for iLine, sLine in enumerate(oTimingReportFile.lines, start=1):
+        if is_end_of_timing_report(sLine):
+            if not bStart:
+                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_002', oTimingReportFile, iLine, 'Ending of timing report detected without a beginning detected')
+            bStart = False
+        if is_start_of_timing_report(sLine):
+            bStart = True
+
+
+def check_beginning_of_timing_report_without_ending(oTimingReportFile):
+    bStart = False
+    iStartLineNumber = 0
+    for iLine, sLine in enumerate(oTimingReportFile.lines, start=1):
+        if is_end_of_timing_report(sLine):
+            bStart = False
+        if is_start_of_timing_report(sLine):
+            if bStart:
+                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oTimingReportFile, iStartLineNumber, 'Beginning of timing report detected without an ending detected')
+            bStart = True
+            iStartLineNumber = iLine
+    if bStart:
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oTimingReportFile, iStartLineNumber, 'Beginning of timing report detected without an ending detected')
+
+
+def is_start_of_timing_report(sLine):
+    return sLine.startswith('Slack ')
+
+
+def is_end_of_timing_report(sLine):
+    return sLine.strip().startswith('slack ')
+
+
+def create_timing_report(oTimingReportText):
+    iPathTypeOffset, sPathTypeLine = extract_path_type_line(oTimingReportText)
+    if is_hold_path_type(sPathTypeLine):
+        return timing_report.HoldTimingReport()
+    if is_setup_path_type(sPathTypeLine):
+        return timing_report.SetupTimingReport()
+    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_005', oTimingReportText, oTimingReportText.location_of(iPathTypeOffset), 'Unknown Path Type in timing report.  Should be either Max or Min')
+
+
+def is_hold_path_type(sLine):
+    return extract_path_type(sLine) == 'hold'
+
+
+def is_setup_path_type(sLine):
+    return extract_path_type(sLine) == 'setup'
+
+
+def extract_path_type_line(oTimingReportText):
+    for iOffset, sLine in enumerate(oTimingReportText.lines):
+        if has_type(sLine):
+            return iOffset, sLine
+    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_004', oTimingReportText, oTimingReportText.location_of(), 'No Path Type in timing report')
+
+
+#    for line in report:
+#        found_paths = is_this_the_start_of_the_timing_paths(line, found_paths)
+#        if not found_paths:
+#            if add_type(line, data_struct):
+#                continue
+#            if add_output_delay(line, data_struct):
+#                continue
+#            continue
+#        if is_end_of_report(line):
+#            reports.append(data_struct)
+#            data_struct = create_data_struct()
+#            found_paths = False
+#            found_launch_edge = False
+#            continue
+#        if add_launch_edge(line, data_struct, found_launch_edge):
+#            found_launch_edge = True
+#            continue
+#        if add_capture_edge(line, data_struct, found_launch_edge):
+#            found_launch_edge = False
+#            continue
+#        if add_net_delay(line, data_struct, found_launch_edge):
+#            continue
+#        if ignore_line(line):
+#            continue
+#        add_cell_delay(line, data_struct, found_launch_edge)
+#    return oTimingReports
 
 
 def is_this_the_start_of_the_timing_paths(line, found_paths):
@@ -88,9 +193,9 @@ def has_type(line):
 
 
 def extract_path_type(line):
-    if 'Max' in line:
+    if 'Max ' in line:
         return 'setup'
-    elif 'Min' in line:
+    elif 'Min ' in line:
         return 'hold'
 
 

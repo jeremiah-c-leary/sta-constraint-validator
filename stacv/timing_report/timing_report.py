@@ -3,10 +3,11 @@ from stacv.timing_report import delay_path
 from stacv.timing_report import delay_element
 
 
-def new(timing_report_struct):
+def new():
 
-    if is_hold_report(timing_report_struct):
-        return build_hold_timing_report(timing_report_struct)
+    return TimingReport()
+
+#        return build_hold_timing_report(timing_report_struct)
 
 
 def is_hold_report(timing_report_struct):
@@ -42,22 +43,27 @@ def build_path(path_struct):
 
 
 class TimingReport():
-    def __init__(self, data_path, required_path):
+    def __init__(self):
         self.type = None
-        self.data_path = data_path
-        self.required_path = required_path
-        self.crpr = calculate_crpr(data_path, required_path)
+        self.data_path = None
+        self.required_path = None
+        self.crpr = None
 
 
 class HoldTimingReport(TimingReport):
-    def __init__(self, data_path, required_path):
-        TimingReport.__init__(self, data_path, required_path)
+    def __init__(self):
+        TimingReport.__init__(self)
 
-    def get_slack(self):
-        data_delay = self.launch_edge + self.data_path.total_delay()
-        required_delay = self.capture_edge + self.required_path.total_delay() - self.crpr - self.output_delay
-        slack = round(data_delay - required_delay, 3)
-        return slack
+#    def get_slack(self):
+#        data_delay = self.launch_edge + self.data_path.total_delay()
+#        required_delay = self.capture_edge + self.required_path.total_delay() - self.crpr - self.output_delay
+#        slack = round(data_delay - required_delay, 3)
+#        return slack
+
+
+class SetupTimingReport(TimingReport):
+    def __init__(self):
+        TimingReport.__init__(self)
 
 
 def calculate_crpr(data_path, required_path):
