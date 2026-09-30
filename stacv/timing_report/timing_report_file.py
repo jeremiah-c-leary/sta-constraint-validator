@@ -17,4 +17,4 @@ class TimingReportText():
         return self.first_line_number + iOffset
 
     def get_filename(self):
-        return oTimingReportFile.filename
+        return self.timing_report_file.filename

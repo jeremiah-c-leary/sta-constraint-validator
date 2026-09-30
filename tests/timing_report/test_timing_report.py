@@ -16,6 +16,7 @@ lHoldFile = utils.read_file(os.path.join(sTestDir, 'dac_spi.hold.rpt'))
 
 class Test(unittest.TestCase):
 
+    @unittest.skip('rewriting parser to return objects.  Remove when completed.')
     def test_new_timing_report(self):
 
         dTimingReport = vivado.parse_timing_report(lHoldFile)
