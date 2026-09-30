@@ -12,7 +12,9 @@ class TimingReportText():
         self.timing_report_file = oTimingReportFile
         self.first_line_number = iFirstLineNumber
         self.lines = lLines
-        self.filename = oTimingReportFile.filename
 
-    def location_of(self, iOffset=0):
+    def line_number_of(self, iOffset=0):
         return self.first_line_number + iOffset
+
+    def get_filename(self):
+        return oTimingReportFile.filename

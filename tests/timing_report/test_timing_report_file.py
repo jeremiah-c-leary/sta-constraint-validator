@@ -19,5 +19,5 @@ class Test(unittest.TestCase):
 
         oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, 32, ['my first line', 'my second line'])
 
-        self.assertEqual(oTimingReportText.location_of(0), 32)
-        self.assertEqual(oTimingReportText.location_of(10), 42)
+        self.assertEqual(oTimingReportText.line_number_of(0), 32)
+        self.assertEqual(oTimingReportText.line_number_of(10), 42)

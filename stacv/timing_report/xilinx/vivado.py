@@ -48,7 +48,7 @@ def check_timing_reports_exist(oTimingReportFile):
             break
 
     if not bStart:
-        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_001', oTimingReportFile, 1, 'No timing reports detected')
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_001', oTimingReportFile.filename, 1, 'No timing reports detected')
 
 
 def check_ending_of_timing_report_without_beginning(oTimingReportFile):
@@ -56,7 +56,7 @@ def check_ending_of_timing_report_without_beginning(oTimingReportFile):
     for iLine, sLine in enumerate(oTimingReportFile.lines, start=1):
         if is_end_of_timing_report(sLine):
             if not bStart:
-                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_002', oTimingReportFile, iLine, 'Ending of timing report detected without a beginning detected')
+                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_002', oTimingReportFile.filename, iLine, 'Ending of timing report detected without a beginning detected')
             bStart = False
         if is_start_of_timing_report(sLine):
             bStart = True
@@ -70,11 +70,11 @@ def check_beginning_of_timing_report_without_ending(oTimingReportFile):
             bStart = False
         if is_start_of_timing_report(sLine):
             if bStart:
-                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oTimingReportFile, iStartLineNumber, 'Beginning of timing report detected without an ending detected')
+                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oTimingReportFile.filename, iStartLineNumber, 'Beginning of timing report detected without an ending detected')
             bStart = True
             iStartLineNumber = iLine
     if bStart:
-        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oTimingReportFile, iStartLineNumber, 'Beginning of timing report detected without an ending detected')
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oTimingReportFile.filename, iStartLineNumber, 'Beginning of timing report detected without an ending detected')
 
 
 def is_start_of_timing_report(sLine):
@@ -91,7 +91,7 @@ def create_timing_report(oTimingReportText):
         return timing_report.HoldTimingReport()
     if is_setup_path_type(sPathTypeLine):
         return timing_report.SetupTimingReport()
-    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_005', oTimingReportText, oTimingReportText.location_of(iPathTypeOffset), 'Unknown Path Type in timing report.  Should be either Max or Min')
+    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_005', oTimingReportText.get_filename(), oTimingReportText.line_number_of(iPathTypeOffset), 'Unknown Path Type in timing report.  Should be either Max or Min')
 
 
 def is_hold_path_type(sLine):
@@ -106,7 +106,7 @@ def extract_path_type_line(oTimingReportText):
     for iOffset, sLine in enumerate(oTimingReportText.lines):
         if has_type(sLine):
             return iOffset, sLine
-    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_004', oTimingReportText, oTimingReportText.location_of(), 'No Path Type in timing report')
+    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_004', oTimingReportText.get_filename(), oTimingReportText.line_number_of(), 'No Path Type in timing report')
 
 
 #    for line in report:
