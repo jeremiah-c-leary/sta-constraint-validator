@@ -239,6 +239,15 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.parse_timing_report(oTimingReportFile)
 
+    def test_populate_timing_report_raises_error_if_source_has_no_value(self):
+        lFile = ['', 'Slack (MET) :   1.000ns', '  Path Type:  Min', '  Source:', '  slack   1.000']
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_006\] test:4 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.parse_timing_report(oTimingReportFile)
+
+
 def build_output_setup_data_structure():
 
     dReturn = {}

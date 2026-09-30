@@ -115,34 +115,28 @@ def populate_timing_report(oTimingReport):
 
 
 def update_source(oTimingReport):
-    for sLine in oTimingReport.get_lines():
-        if is_source_line(sLine):
-            oTimingReport.source = extract_source(sLine)
-            return
-    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_006', oTimingReport.get_filename(), oTimingReport.line_number_of(), 'Source was not found in timing report')
-
-
-def is_source_line(sLine):
-    return sLine.strip().startswith('Source:')
-
-
-def extract_source(sLine):
-    return sLine.split()[1]
+    oTimingReport.source = extract_field(oTimingReport, 'Source:', 'vivado_tr_parse_006')
 
 
 def update_destination(oTimingReport):
-    for sLine in oTimingReport.get_lines():
-        if is_destination_line(sLine):
-            oTimingReport.destination = extract_destination(sLine)
-            return
-    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_007', oTimingReport.get_filename(), oTimingReport.line_number_of(), 'Destination was not found in timing report')
+    oTimingReport.destination = extract_field(oTimingReport, 'Destination:', 'vivado_tr_parse_007')
 
 
-def is_destination_line(sLine):
-    return sLine.strip().startswith('Destination:')
+def extract_field(oTimingReport, sKey, sErrorId):
+    for iOffset, sLine in enumerate(oTimingReport.get_lines()):
+        if is_key_line(sLine, sKey):
+            return extract_key_value(sLine, iOffset, oTimingReport, sKey, sErrorId)
+    raise timing_report_parse_error.TimingReportParseError(sErrorId, oTimingReport.get_filename(), oTimingReport.line_number_of(), f'{sKey} was not found in timing report')
 
 
-def extract_destination(sLine):
+def is_key_line(sLine, sKey):
+    return sLine.strip().startswith(sKey)
+
+
+def extract_key_value(sLine, iOffset, oTimingReport, sKey, sErrorId):
+    lWords = sLine.split()
+    if len(lWords) < 2:
+        raise timing_report_parse_error.TimingReportParseError(sErrorId, oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset), f'{sKey} was not found in timing report')
     return sLine.split()[1]
 
 
@@ -230,12 +224,12 @@ def has_type(line):
 
 
 def extract_path_type(sLine):
-    lLine = sLine.split() 
-    if len(lLine) < 3:
+    lWords = sLine.split()
+    if len(lWords) < 3:
         return None
-    if lLine[2] == 'Max':
+    if lWords[2] == 'Max':
         return 'setup'
-    elif lLine[2] == 'Min':
+    if lWords[2] == 'Min':
         return 'hold'
     return None
 
