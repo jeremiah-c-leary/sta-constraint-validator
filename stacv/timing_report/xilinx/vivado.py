@@ -136,8 +136,8 @@ def is_key_line(sLine, sKey):
 def extract_key_value(sLine, iOffset, oTimingReport, sKey, sErrorId):
     lWords = sLine.split()
     if len(lWords) < 2:
-        raise timing_report_parse_error.TimingReportParseError(sErrorId, oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset), f'{sKey} was not found in timing report')
-    return sLine.split()[1]
+        raise timing_report_parse_error.TimingReportParseError(sErrorId, oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset), f'{sKey} has not value')
+    return lWords[1]
 
 
 #    for line in report:
