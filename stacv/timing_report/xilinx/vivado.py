@@ -111,6 +111,7 @@ def extract_path_type_line(oTimingReportText):
 
 def populate_timing_report(oTimingReport):
     update_source(oTimingReport)
+    update_destination(oTimingReport)
 
 
 def update_source(oTimingReport):
@@ -126,6 +127,22 @@ def is_source_line(sLine):
 
 
 def extract_source(sLine):
+    return sLine.split()[1]
+
+
+def update_destination(oTimingReport):
+    for sLine in oTimingReport.get_lines():
+        if is_destination_line(sLine):
+            oTimingReport.destination = extract_destination(sLine)
+            return
+    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_007', oTimingReport.get_filename(), oTimingReport.line_number_of(), 'Destination was not found in timing report')
+
+
+def is_destination_line(sLine):
+    return sLine.strip().startswith('Destination:')
+
+
+def extract_destination(sLine):
     return sLine.split()[1]
 
 

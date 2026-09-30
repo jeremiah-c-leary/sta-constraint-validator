@@ -118,7 +118,7 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.extract_path_type_line(oTimingReportText)
 
-    def test_create_timing_reportt_raises_error_if_path_type_is_missing(self):
+    def test_create_timing_report_raises_error_if_path_type_is_missing(self):
         oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  Path Type:  ', '  slack   1.000'])
         oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, 22, ['Slack (MET) :   1.000ns', '  Path Type:  ', '  slack   1.000'])
 
@@ -215,6 +215,27 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_006\] test:3 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.parse_timing_report(oTimingReportFile)
+
+    def test_populate_timing_report_reports_destination(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        oMyTimingReport = oTimingReports.reports[0]
+        self.assertEqual(oMyTimingReport.destination, 'O_DAC_DATA')
+        
+        oMyTimingReport = oTimingReports.reports[1]
+        self.assertEqual(oMyTimingReport.destination, 'O_DAC_DATA')
+        
+    def test_populate_timing_report_assert_error_if_no_destination_is_found(self):
+
+        lFile = []
+        lFile.extend([''])
+        lFile.extend(['Slack (MET) :   1.000ns', '  Path Type:  Min', '  Source: something', '  slack   1.000'])
+
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_007\] test:2 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.parse_timing_report(oTimingReportFile)
 
