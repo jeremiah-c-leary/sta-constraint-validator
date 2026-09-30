@@ -43,16 +43,27 @@ def build_path(path_struct):
 
 
 class TimingReport():
-    def __init__(self):
+    def __init__(self, oTimingReportText):
         self.type = None
+        self.text = oTimingReportText
+        self.source = None
         self.data_path = None
         self.required_path = None
         self.crpr = None
 
+    def get_lines(self):
+        return self.text.lines
+
+    def line_number_of(self, iOffset=0):
+        return self.text.line_number_of(iOffset)
+
+    def get_filename(self):
+        return self.text.get_filename()
+
 
 class HoldTimingReport(TimingReport):
-    def __init__(self):
-        TimingReport.__init__(self)
+    def __init__(self, oTimingReportText):
+        TimingReport.__init__(self, oTimingReportText)
 
 #    def get_slack(self):
 #        data_delay = self.launch_edge + self.data_path.total_delay()
@@ -62,8 +73,8 @@ class HoldTimingReport(TimingReport):
 
 
 class SetupTimingReport(TimingReport):
-    def __init__(self):
-        TimingReport.__init__(self)
+    def __init__(self, oTimingReportText):
+        TimingReport.__init__(self, oTimingReportText)
 
 
 def calculate_crpr(data_path, required_path):

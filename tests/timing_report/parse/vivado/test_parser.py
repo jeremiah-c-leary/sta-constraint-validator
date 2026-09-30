@@ -17,6 +17,7 @@ lHoldFile = utils.read_file(os.path.join(sTestDir, 'dac_spi.hold.rpt'))
 lTimingReportFile = utils.read_file(os.path.join(sTestDir, 'O_DAC_DATA_timing.rpt'))
 oTimingReportFile = timing_report_file.TimingReportFile('O_DAC_DATA_timing.rpt', lTimingReportFile)
 
+
 class Test(unittest.TestCase):
 
     @unittest.skip('rewriting parser to return objects.  Remove when completed.')
@@ -85,6 +86,22 @@ class Test(unittest.TestCase):
         self.assertTrue(isinstance(vivado.parse_timing_report(oTimingReportFile).reports[1], timing_report.SetupTimingReport))
         self.assertTrue(isinstance(vivado.parse_timing_report(oTimingReportFile).reports[3], timing_report.SetupTimingReport))
 
+    def test_parse_timing_report_adds_report_text_to_timing_report_object(self):
+
+        oTimingReportList = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual(60, len(oTimingReportList.reports[0].get_lines()))
+        self.assertEqual(14, oTimingReportList.reports[0].text.first_line_number)
+
+        self.assertEqual(66, len(oTimingReportList.reports[1].get_lines()))
+        self.assertEqual(75, oTimingReportList.reports[1].text.first_line_number)
+
+        self.assertEqual(60, len(oTimingReportList.reports[2].get_lines()))
+        self.assertEqual(158, oTimingReportList.reports[2].text.first_line_number)
+
+        self.assertEqual(66, len(oTimingReportList.reports[3].get_lines()))
+        self.assertEqual(219, oTimingReportList.reports[3].text.first_line_number)
+
     def test_create_timing_report_raises_an_error_for_unknown_path_type(self):
         oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  Path Type:  Unexpected', '  slack   1.000'])
         oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, 22, ['Slack (MET) :   1.000ns', '  Path Type:  Unexpected', '  slack   1.000'])
@@ -100,6 +117,14 @@ class Test(unittest.TestCase):
         sError = r'ERROR: \[vivado_tr_parse_004\] test:22 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.extract_path_type_line(oTimingReportText)
+
+    def test_create_timing_reportt_raises_error_if_path_type_is_missing(self):
+        oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  Path Type:  ', '  slack   1.000'])
+        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, 22, ['Slack (MET) :   1.000ns', '  Path Type:  ', '  slack   1.000'])
+
+        sError = r'ERROR: \[vivado_tr_parse_005\] test:23 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.create_timing_report(oTimingReportText)
 
     def test_validate_timing_report_file_raises_error_if_an_ending_of_a_report_is_not_detected_at_the_end_of_a_file(self):
         lFile = []
@@ -171,7 +196,27 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
+    def test_populate_timing_report_reports_source(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
 
+        oMyTimingReport = oTimingReports.reports[0]
+        self.assertEqual(oMyTimingReport.source, 'q_spi_output_data_reg/C')
+        
+        oMyTimingReport = oTimingReports.reports[1]
+        self.assertEqual(oMyTimingReport.source, 'q_spi_output_data_reg/C')
+        
+    def test_populate_timing_report_assert_error_if_no_source_is_found(self):
+
+        lFile = []
+        lFile.extend([''])
+        lFile.extend([''])
+        lFile.extend(['Slack (MET) :   1.000ns', '  Path Type:  Min', '  slack   1.000'])
+
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_006\] test:3 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.parse_timing_report(oTimingReportFile)
 
 def build_output_setup_data_structure():
 

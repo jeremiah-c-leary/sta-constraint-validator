@@ -10,7 +10,7 @@ def parse_timing_report(oTimingReportFile):
     oTimingReports = timing_report_list.TimingReportList()
     for oTimingReportText in extract_timing_report_texts(oTimingReportFile):
         oTimingReport = create_timing_report(oTimingReportText)
-#        populateTimingReport(oTimingReport)
+        populate_timing_report(oTimingReport)
         oTimingReports.add(oTimingReport)
     return oTimingReports
 
@@ -88,9 +88,9 @@ def is_end_of_timing_report(sLine):
 def create_timing_report(oTimingReportText):
     iPathTypeOffset, sPathTypeLine = extract_path_type_line(oTimingReportText)
     if is_hold_path_type(sPathTypeLine):
-        return timing_report.HoldTimingReport()
+        return timing_report.HoldTimingReport(oTimingReportText)
     if is_setup_path_type(sPathTypeLine):
-        return timing_report.SetupTimingReport()
+        return timing_report.SetupTimingReport(oTimingReportText)
     raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_005', oTimingReportText.get_filename(), oTimingReportText.line_number_of(iPathTypeOffset), 'Unknown Path Type in timing report.  Should be either Max or Min')
 
 
@@ -107,6 +107,26 @@ def extract_path_type_line(oTimingReportText):
         if has_type(sLine):
             return iOffset, sLine
     raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_004', oTimingReportText.get_filename(), oTimingReportText.line_number_of(), 'No Path Type in timing report')
+
+
+def populate_timing_report(oTimingReport):
+    update_source(oTimingReport)
+
+
+def update_source(oTimingReport):
+    for sLine in oTimingReport.get_lines():
+        if is_source_line(sLine):
+            oTimingReport.source = extract_source(sLine)
+            return
+    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_006', oTimingReport.get_filename(), oTimingReport.line_number_of(), 'Source was not found in timing report')
+
+
+def is_source_line(sLine):
+    return sLine.strip().startswith('Source:')
+
+
+def extract_source(sLine):
+    return sLine.split()[1]
 
 
 #    for line in report:
@@ -192,11 +212,15 @@ def has_type(line):
     return False
 
 
-def extract_path_type(line):
-    if 'Max ' in line:
+def extract_path_type(sLine):
+    lLine = sLine.split() 
+    if len(lLine) < 3:
+        return None
+    if lLine[2] == 'Max':
         return 'setup'
-    elif 'Min ' in line:
+    elif lLine[2] == 'Min':
         return 'hold'
+    return None
 
 
 def extract_process_corner(line):
