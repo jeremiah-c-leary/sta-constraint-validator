@@ -179,18 +179,52 @@ def update_clock_period(oLine, oClock):
     lWords = oLine.text.split()
     for sWord in lWords:
         if sWord.startswith('period='):
-            sPeriod = extract_digits(sWord)
-            validate_clock_period(sPeriod, oLine)
-            oClock.period = float(sPeriod)
+            oClock.period = extract_period(oLine, sWord)
 
 
-def validate_clock_period(sPeriod, oLine):
-    if sPeriod == '':
-        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_010', oLine, 'is missing clock period information')
+def extract_period(oLine, sWord):
+    sPeriod = remove_parenthesis(sWord)
+    sPeriod = remove_curly_braces(sPeriod)
+    sPeriod = remove_period_equals(sPeriod)
+    sPeriod = remove_ns(oLine, sPeriod)
+    check_if_period_is_negative(oLine, sPeriod)
+    check_if_period_is_zero(oLine, sPeriod)
+    try:
+        return float(sPeriod)
+    except ValueError:
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_010', oLine, 'is missing clock period')
 
 
-def extract_digits(sWord):
-    return "".join(char for char in sWord if char.isdigit() or char ==  '.')
+def remove_parenthesis(sWord):
+    return sWord.replace(')', '')
+
+
+def remove_curly_braces(sWord):
+    return sWord.replace('}', '')
+
+
+def remove_period_equals(sWord):
+    return sWord.replace('period=', '')
+
+
+def remove_ns(oLine, sWord):
+    if not sWord.endswith('ns'):
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_010', oLine, 'incorrect clock period units.  Should be ns.')
+    return sWord[:-2]
+
+
+def check_if_period_is_negative(oLine, sWord):
+    if sWord.startswith('-'):
+       raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_010', oLine, 'clock period can not be negative.')
+
+
+def check_if_period_is_zero(oLine, sWord):
+    for sChar in sWord:
+        if sChar == '0' or sChar == '.':
+           continue
+        else:
+           return
+    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_010', oLine, 'clock period can not be zero.')
 
 
 def extract_clock_line(oTimingReport, sKey):

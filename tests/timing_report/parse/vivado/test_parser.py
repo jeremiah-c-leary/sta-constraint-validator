@@ -315,6 +315,46 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
+    def test_update_clock_period_raises_error_if_period_has_two_decimal_points(self):
+        oLine = timing_report_file.ReportLine('test', '    (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=1.2.3ns})', 4)
+        oClock = timing_report.Clock()
+
+        sError = r'ERROR: \[vivado_tr_parse_010\] test:4 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.update_clock_period(oLine, oClock)
+
+    def test_update_clock_period_raises_error_if_period_contains_letters(self):
+        oLine = timing_report_file.ReportLine('test', '    (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=5x0ns})', 4)
+        oClock = timing_report.Clock()
+
+        sError = r'ERROR: \[vivado_tr_parse_010\] test:4 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.update_clock_period(oLine, oClock)
+
+    def test_update_clock_period_raises_error_if_period_is_not_in_nanoseconds(self):
+        oLine = timing_report_file.ReportLine('test', '    (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=10.000ps})', 4)
+        oClock = timing_report.Clock()
+
+        sError = r'ERROR: \[vivado_tr_parse_010\] test:4 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.update_clock_period(oLine, oClock)
+
+    def test_update_clock_period_raises_error_if_period_is_negative(self):
+        oLine = timing_report_file.ReportLine('test', '    (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=-5.000ns})', 4)
+        oClock = timing_report.Clock()
+
+        sError = r'ERROR: \[vivado_tr_parse_010\] test:4 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.update_clock_period(oLine, oClock)
+
+    def test_update_clock_period_raises_error_if_period_is_zero(self):
+        oLine = timing_report_file.ReportLine('test', '    (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=0.000ns})', 4)
+        oClock = timing_report.Clock()
+
+        sError = r'ERROR: \[vivado_tr_parse_010\] test:4 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.update_clock_period(oLine, oClock)
+
 
 def build_output_setup_data_structure():
 
