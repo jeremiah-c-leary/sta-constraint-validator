@@ -269,6 +269,19 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.parse_timing_report(oTimingReportFile)
 
+    def test_populate_timing_report_reports_launch_clock(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        oLaunchClock = oTimingReports.reports[0].launch_clock
+        self.assertEqual('clk_100mhz', oLaunchClock.name)
+        self.assertEqual(10.0, oLaunchClock.period)
+
+    def test_populate_timing_report_reports_capture_clock(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        oCaptureClock = oTimingReports.reports[0].capture_clock
+        self.assertEqual('dac_sclk', oCaptureClock.name)
+        self.assertEqual(50.0, oCaptureClock.period)
 
 
 def build_output_setup_data_structure():

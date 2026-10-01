@@ -113,6 +113,8 @@ def populate_timing_report(oTimingReport):
     update_source(oTimingReport)
     update_destination(oTimingReport)
     update_process_corner(oTimingReport)
+    update_launch_clock(oTimingReport)
+    update_capture_clock(oTimingReport)
 
 
 def update_source(oTimingReport):
@@ -150,6 +152,52 @@ def update_process_corner(oTimingReport):
     else:
         raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_008', oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset), 'has invalid process corner.  Expecting Fast or Slow.')
 
+
+def update_launch_clock(oTimingReport):
+    oClock = timing_report.Clock()
+    sLine = extract_clock_line_from_source(oTimingReport)
+    update_clock_name(sLine, oClock)
+    update_clock_period(sLine, oClock)
+    oTimingReport.launch_clock = oClock
+
+
+def update_capture_clock(oTimingReport):
+    oClock = timing_report.Clock()
+    sLine = extract_clock_line_from_destination(oTimingReport)
+    update_clock_name(sLine, oClock)
+    update_clock_period(sLine, oClock)
+    oTimingReport.capture_clock = oClock
+
+
+def update_clock_name(sLine, oClock):
+    lWords = sLine.split()
+    oClock.name = lWords[lWords.index('by') + 1]
+
+
+def update_clock_period(sLine, oClock):
+    lWords = sLine.split()
+    for sWord in lWords:
+        if sWord.startswith('period='):
+            sPeriod = sWord[7:-4]
+            oClock.period = float(sPeriod)
+
+
+def extract_clock_line_from_source(oTimingReport):
+    lLines = oTimingReport.get_lines()
+    for iOffset, sLine in enumerate(lLines):
+        if sLine.strip().startswith('Source:'):
+            if 'period' in lLines[iOffset + 1]:
+                return lLines[iOffset + 1]
+
+
+def extract_clock_line_from_destination(oTimingReport):
+    lLines = oTimingReport.get_lines()
+    for iOffset, sLine in enumerate(lLines):
+        if sLine.strip().startswith('Destination:'):
+            if 'period' in lLines[iOffset + 1]:
+                return lLines[iOffset + 1]
+
+            
 
 #    for line in report:
 #        found_paths = is_this_the_start_of_the_timing_paths(line, found_paths)

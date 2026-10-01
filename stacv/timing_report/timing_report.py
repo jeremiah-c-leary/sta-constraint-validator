@@ -49,6 +49,8 @@ class TimingReport():
         self.source = None
         self.destination = None
         self.process_corner = None
+        self.capture_clock = None
+        self.launch_clock = None
         self.data_path = None
         self.required_path = None
         self.crpr = None
@@ -77,6 +79,12 @@ class HoldTimingReport(TimingReport):
 class SetupTimingReport(TimingReport):
     def __init__(self, oTimingReportText):
         TimingReport.__init__(self, oTimingReportText)
+
+
+class Clock():
+    def __init__(self):
+        self.name = None
+        self.period = None
 
 
 def calculate_crpr(data_path, required_path):
