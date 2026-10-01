@@ -355,6 +355,33 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.update_clock_period(oLine, oClock)
 
+    def test_extract_launch_clock_path_lines_returns_lines_between_first_and_second_separator(self):
+        oTimingReportText = vivado.extract_timing_report_texts(oTimingReportFile)[0]
+
+        lLines = vivado.extract_launch_clock_path_lines(oTimingReportText)
+
+        self.assertEqual(10, len(lLines))
+        self.assertEqual(32, lLines[0].line_number)
+        self.assertEqual(41, lLines[-1].line_number)
+
+    def test_extract_data_path_lines_returns_lines_between_second_and_third_separator(self):
+        oTimingReportText = vivado.extract_timing_report_texts(oTimingReportFile)[0]
+
+        lLines = vivado.extract_data_path_lines(oTimingReportText)
+
+        self.assertEqual(6, len(lLines))
+        self.assertEqual(43, lLines[0].line_number)
+        self.assertEqual(48, lLines[-1].line_number)
+
+    def test_extract_capture_clock_path_lines_skips_blank_lines(self):
+        oTimingReportText = vivado.extract_timing_report_texts(oTimingReportFile)[0]
+
+        lLines = vivado.extract_capture_clock_path_lines(oTimingReportText)
+
+        self.assertEqual(18, len(lLines))
+        self.assertEqual(51, lLines[0].line_number)
+        self.assertEqual(68, lLines[-1].line_number)
+
 
 def build_output_setup_data_structure():
 

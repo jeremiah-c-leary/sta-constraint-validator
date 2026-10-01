@@ -238,6 +238,34 @@ def extract_clock_line(oTimingReport, sKey):
             return lLines[iOffset + 1]
 
 
+def extract_launch_clock_path_lines(oTimingReportText):
+    return extract_lines_between_keys(oTimingReportText, '----', 1)
+
+
+def extract_data_path_lines(oTimingReportText):
+    return extract_lines_between_keys(oTimingReportText, '----', 2)
+
+
+def extract_capture_clock_path_lines(oTimingReportText):
+    return extract_lines_between_keys(oTimingReportText, '----', 3)
+
+
+def extract_lines_between_keys(oTimingReportText, sKey, iStartKey):
+    bFound = False
+    lLines = []
+    iCount = 0
+    for oLine in oTimingReportText.lines:
+        if oLine.text == '':
+            continue
+        if oLine.text.strip().startswith(sKey):
+            iCount += 1 
+        if oLine.text.strip().startswith(sKey) and bFound:
+            return lLines
+        if bFound:
+            lLines.append(oLine)
+        if oLine.text.strip().startswith(sKey) and not bFound and iCount == iStartKey:
+            bFound = True
+
 #    for line in report:
 #        found_paths = is_this_the_start_of_the_timing_paths(line, found_paths)
 #        if not found_paths:
