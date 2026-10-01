@@ -154,19 +154,20 @@ def update_process_corner(oTimingReport):
 
 
 def update_launch_clock(oTimingReport):
-    oClock = timing_report.Clock()
     sLine = extract_clock_line_from_source(oTimingReport)
-    update_clock_name(sLine, oClock)
-    update_clock_period(sLine, oClock)
-    oTimingReport.launch_clock = oClock
+    oTimingReport.launch_clock = create_clock(sLine)
 
 
 def update_capture_clock(oTimingReport):
-    oClock = timing_report.Clock()
     sLine = extract_clock_line_from_destination(oTimingReport)
+    oTimingReport.capture_clock = create_clock(sLine)
+
+
+def create_clock(sLine):
+    oClock = timing_report.Clock()
     update_clock_name(sLine, oClock)
     update_clock_period(sLine, oClock)
-    oTimingReport.capture_clock = oClock
+    return oClock
 
 
 def update_clock_name(sLine, oClock):
