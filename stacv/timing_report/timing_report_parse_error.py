@@ -1,25 +1,9 @@
 
-class TimingReportFileParseError(ValueError):
-
-    def __init__(self, sIdentifier, sFilename, iLineNumber, sMessage):
-        self.identifier = sIdentifier
-        self.filename = sFilename
-        self.lineNumber = iLineNumber
-        self.message = sMessage
-        ValueError.__init__(self, f'ERROR: [{sIdentifier}] {sFilename}:{iLineNumber} {sMessage}')
-
-
 class TimingReportParseError(ValueError):
 
-    def __init__(self, sIdentifier, oLine, sMessage, oTypeReportText=None):
+    def __init__(self, sIdentifier, oLine, sMessage):
         self.identifier = sIdentifier
         self.filename = oLine.filename
-        self.line_number = set_line_number(oLine, oTypeReportText)
+        self.line_number = oLine.line_number
         self.message = sMessage
         ValueError.__init__(self, f'ERROR: [{sIdentifier}] {self.filename}:{self.line_number} {sMessage}')
-
-
-def set_line_number(oLine, oTypeReportText):
-    if oTypeReportText is None:
-        return oLine.line_number
-    return oTypeReportText.first_line_number

@@ -59,9 +59,6 @@ class TimingReport():
     def get_lines(self):
         return self.text.lines
 
-    def line_number_of(self, iOffset=0):
-        return self.text.line_number_of(iOffset)
-
     def get_filename(self):
         return self.text.get_filename()
 

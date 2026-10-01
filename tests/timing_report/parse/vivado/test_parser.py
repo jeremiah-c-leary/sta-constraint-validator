@@ -137,7 +137,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_003\] test:9 .*'
-        with self.assertRaisesRegex(timing_report_parse_error.TimingReportFileParseError, sError):
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
     def test_validate_timing_report_file_raises_error_if_an_ending_of_a_report_is_not_detected_before_a_start_is_detected(self):
@@ -151,7 +151,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_003\] test:5 .*'
-        with self.assertRaisesRegex(timing_report_parse_error.TimingReportFileParseError, sError):
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
     def test_validate_timing_report_file_raises_error_if_first_report_does_not_have_an_ending(self):
@@ -165,7 +165,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_003\] test:1 .*'
-        with self.assertRaisesRegex(timing_report_parse_error.TimingReportFileParseError, sError):
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
     def test_validate_timing_report_file_raises_error_if_first_report_does_not_have_a_beginning(self):
@@ -179,7 +179,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_002\] test:3 .*'
-        with self.assertRaisesRegex(timing_report_parse_error.TimingReportFileParseError, sError):
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
     def test_validate_timing_report_file_raises_error_if_no_timing_reports_found(self):
@@ -193,7 +193,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_001\] test:1 .*'
-        with self.assertRaisesRegex(timing_report_parse_error.TimingReportFileParseError, sError):
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
     def test_populate_timing_report_reports_source(self):

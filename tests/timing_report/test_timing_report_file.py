@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
         self.assertEqual(oTimingReportFile.lines[1].text, 'second line')
         self.assertEqual(oTimingReportFile.lines[1].line_number, 2)
 
-    def test_report_lines_point_back_to_their_timing_report_file(self):
+    def test_report_lines_carry_the_filename(self):
 
         oTimingReportFile = timing_report_file.TimingReportFile('my_file_name', ['first line'])
 
