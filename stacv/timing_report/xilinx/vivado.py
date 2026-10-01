@@ -239,32 +239,40 @@ def extract_clock_line(oTimingReport, sKey):
 
 
 def extract_launch_clock_path_lines(oTimingReportText):
-    return extract_lines_between_keys(oTimingReportText, '----', 1)
+    return extract_lines_between_keys(oTimingReportText, 1)
 
 
 def extract_data_path_lines(oTimingReportText):
-    return extract_lines_between_keys(oTimingReportText, '----', 2)
+    return extract_lines_between_keys(oTimingReportText, 2)
 
 
 def extract_capture_clock_path_lines(oTimingReportText):
-    return extract_lines_between_keys(oTimingReportText, '----', 3)
+    return extract_lines_between_keys(oTimingReportText, 3)
 
 
-def extract_lines_between_keys(oTimingReportText, sKey, iStartKey):
-    bFound = False
+def extract_lines_between_keys(oTimingReportText, iStartKey):
     lLines = []
     iCount = 0
     for oLine in oTimingReportText.lines:
-        if oLine.text == '':
+        if is_blank_line(oLine):
             continue
-        if oLine.text.strip().startswith(sKey):
-            iCount += 1 
-        if oLine.text.strip().startswith(sKey) and bFound:
-            return lLines
-        if bFound:
+        if is_separator_line(oLine):
+            iCount += 1
+            continue
+        if iCount == iStartKey:
             lLines.append(oLine)
-        if oLine.text.strip().startswith(sKey) and not bFound and iCount == iStartKey:
-            bFound = True
+    if iCount == iStartKey:
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_011', oTimingReportText.lines[0], 'is missing a timing path')
+    return lLines
+
+
+def is_separator_line(oLine):
+    return oLine.text.strip().startswith('----')
+
+
+def is_blank_line(oLine):
+    return oLine.text.strip() == ''
+
 
 #    for line in report:
 #        found_paths = is_this_the_start_of_the_timing_paths(line, found_paths)

@@ -382,6 +382,13 @@ class Test(unittest.TestCase):
         self.assertEqual(51, lLines[0].line_number)
         self.assertEqual(68, lLines[-1].line_number)
 
+    def test_extract_data_path_lines_raises_error_if_section_has_no_ending_separator(self):
+        oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  -------', '    K18   IBUF (Prop_ibuf_I_O)   0.160   0.160 r  I_CLK_IBUF_inst/O', '  -------', '  slack   1.000'])
+        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
+
+        sError = r'ERROR: \[vivado_tr_parse_011\] test:1 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.extract_data_path_lines(oTimingReportText)
 
 def build_output_setup_data_structure():
 
