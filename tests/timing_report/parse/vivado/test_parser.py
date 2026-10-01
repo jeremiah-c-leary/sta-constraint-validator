@@ -212,11 +212,9 @@ class Test(unittest.TestCase):
         lFile.extend([''])
         lFile.extend(['Slack (MET) :   1.000ns', '  Path Type:  Min', '  slack   1.000'])
 
-        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
-
         sError = r'ERROR: \[vivado_tr_parse_006\] test:3 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
-            vivado.parse_timing_report(oTimingReportFile)
+            populate_timing_report_from_lines(lFile)
 
     def test_populate_timing_report_reports_destination(self):
         oTimingReports = vivado.parse_timing_report(oTimingReportFile)
@@ -233,19 +231,16 @@ class Test(unittest.TestCase):
         lFile.extend([''])
         lFile.extend(['Slack (MET) :   1.000ns', '  Path Type:  Min', '  Source: something', '  slack   1.000'])
 
-        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
-
         sError = r'ERROR: \[vivado_tr_parse_007\] test:2 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
-            vivado.parse_timing_report(oTimingReportFile)
+            populate_timing_report_from_lines(lFile)
 
     def test_populate_timing_report_raises_error_if_source_has_no_value(self):
         lFile = ['', 'Slack (MET) :   1.000ns', '  Path Type:  Min', '  Source:', '  slack   1.000']
-        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_006\] test:4 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
-            vivado.parse_timing_report(oTimingReportFile)
+            populate_timing_report_from_lines(lFile)
 
     def test_populate_timing_report_reports_process_corner(self):
         oTimingReports = vivado.parse_timing_report(oTimingReportFile)
@@ -255,19 +250,17 @@ class Test(unittest.TestCase):
 
     def test_populate_timing_report_raises_error_if_process_corner_is_missing(self):
         lFile = ['', 'Slack (MET) :   1.000ns', '  Source: a', '  Destination: b', '  Path Type:  Min', '  slack   1.000']
-        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_008\] test:5 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
-            vivado.parse_timing_report(oTimingReportFile)
+            populate_timing_report_from_lines(lFile)
 
     def test_populate_timing_report_raises_error_if_process_corner_is_invalid(self):
         lFile = ['', 'Slack (MET) :   1.000ns', '  Source: a', '  Destination: b', '  Path Type:  Min at Typical Process Corner', '  slack   1.000']
-        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_008\] test:5 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
-            vivado.parse_timing_report(oTimingReportFile)
+            populate_timing_report_from_lines(lFile)
 
     def test_populate_timing_report_reports_launch_clock(self):
         oTimingReports = vivado.parse_timing_report(oTimingReportFile)
@@ -285,27 +278,24 @@ class Test(unittest.TestCase):
 
     def test_populate_timing_report_raises_error_if_launch_clock_is_missing(self):
         lFile = ['', 'Slack (MET) :   1.000ns', '  Source: a', '    (input port)', '  Destination: b', '    (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=50.000ns})', '  Path Type:  Min at Fast Process Corner', '  slack   1.000']
-        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_009\] test:4 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
-            vivado.parse_timing_report(oTimingReportFile)
+            populate_timing_report_from_lines(lFile)
 
     def test_populate_timing_report_raises_error_if_clock_period_is_missing(self):
         lFile = ['', 'Slack (MET) :   1.000ns', '  Source: a', '    (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns})', '  Destination: b', '    (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=50.000ns})', '  Path Type:  Min at Fast Process Corner', '  slack   1.000']
-        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_010\] test:4 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
-            vivado.parse_timing_report(oTimingReportFile)
+            populate_timing_report_from_lines(lFile)
 
     def test_populate_timing_report_raises_error_if_clock_period_is_not_a_number(self):
         lFile = ['', 'Slack (MET) :   1.000ns', '  Source: a', '    (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=ns})', '  Destination: b', '    (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=50.000ns})', '  Path Type:  Min at Fast Process Corner', '  slack   1.000']
-        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_010\] test:4 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
-            vivado.parse_timing_report(oTimingReportFile)
+            populate_timing_report_from_lines(lFile)
 
     def test_validate_timing_report_file_raises_error_if_file_is_empty(self):
 
@@ -382,21 +372,34 @@ class Test(unittest.TestCase):
         self.assertEqual(51, lLines[0].line_number)
         self.assertEqual(68, lLines[-1].line_number)
 
-    def test_extract_data_path_lines_raises_error_if_section_has_no_ending_separator(self):
+    def test_check_number_of_separators_raises_error_if_too_few_separators(self):
         oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  -------', '    K18   IBUF (Prop_ibuf_I_O)   0.160   0.160 r  I_CLK_IBUF_inst/O', '  -------', '  slack   1.000'])
         oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
 
-        sError = r'ERROR: \[vivado_tr_parse_011\] test:1 .*'
+        sError = r'ERROR: \[vivado_tr_parse_011\] test:1 expected 5 separator lines but found 2'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
-            vivado.extract_data_path_lines(oTimingReportText)
+            vivado.check_number_of_separators(oTimingReportText)
 
-    def test_extract_capture_clock_path_lines_raises_error_if_section_never_starts(self):
-        oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  -------', '    K18   IBUF (Prop_ibuf_I_O)   0.160   0.160 r  I_CLK_IBUF_inst/O', '  -------', '  slack   1.000'])
+    def test_check_number_of_separators_raises_error_if_too_many_separators(self):
+        lFile = []
+        lFile.append('Slack (MET) :   1.000ns')
+        for iSeparator in range(6):
+            lFile.append('  -------')
+        lFile.append('  slack   1.000')
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
         oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
 
-        sError = r'ERROR: \[vivado_tr_parse_011\] test:1 .*'
+        sError = r'ERROR: \[vivado_tr_parse_011\] test:1 expected 5 separator lines but found 6'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
-            vivado.extract_capture_clock_path_lines(oTimingReportText)
+            vivado.check_number_of_separators(oTimingReportText)
+
+
+def populate_timing_report_from_lines(lFile):
+    oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+    oTimingReportText = vivado.extract_timing_report_texts(oTimingReportFile)[0]
+    oTimingReport = vivado.create_timing_report(oTimingReportText)
+    vivado.populate_timing_report(oTimingReport)
+
 
 def build_output_setup_data_structure():
 

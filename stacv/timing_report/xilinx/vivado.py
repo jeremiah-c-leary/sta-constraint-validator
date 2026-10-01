@@ -5,10 +5,14 @@ from stacv.timing_report import timing_report_list
 from stacv.timing_report import timing_report_parse_error
 
 
+TOTAL_NUMBER_OF_SEPARATORS = 5
+
+
 def parse_timing_report(oTimingReportFile):
     validate_timing_report_file(oTimingReportFile)
     oTimingReports = timing_report_list.TimingReportList()
     for oTimingReportText in extract_timing_report_texts(oTimingReportFile):
+        validate_timing_report_text(oTimingReportText)
         oTimingReport = create_timing_report(oTimingReportText)
         populate_timing_report(oTimingReport)
         oTimingReports.add(oTimingReport)
@@ -261,8 +265,6 @@ def extract_lines_between_separators(oTimingReportText, iSeparatorStart):
             continue
         if iSeparatorCount == iSeparatorStart:
             lLines.append(oLine)
-    if not iSeparatorCount == 5:
-        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_011', oTimingReportText.lines[0], 'is missing a timing path')
     return lLines
 
 
@@ -272,6 +274,19 @@ def is_separator_line(oLine):
 
 def is_blank_line(oLine):
     return oLine.text.strip() == ''
+
+
+def validate_timing_report_text(oTimingReportText):
+    check_number_of_separators(oTimingReportText)
+
+
+def check_number_of_separators(oTimingReportText):
+    iSeparatorCount = 0
+    for oLine in oTimingReportText.lines:
+        if is_separator_line(oLine):
+            iSeparatorCount += 1
+    if iSeparatorCount != TOTAL_NUMBER_OF_SEPARATORS:
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_011', oTimingReportText.lines[0], f'expected {TOTAL_NUMBER_OF_SEPARATORS} separator lines but found {iSeparatorCount}')
 
 
 #    for line in report:
