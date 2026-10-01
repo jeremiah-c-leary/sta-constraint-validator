@@ -187,8 +187,11 @@ def extract_clock_line(oTimingReport, sKey):
     lLines = oTimingReport.get_lines()
     for iOffset, sLine in enumerate(lLines):
         if sLine.strip().startswith(sKey):
-            if 'period' in lLines[iOffset + 1]:
-                return lLines[iOffset + 1]
+            if 'clocked by' not in lLines[iOffset + 1]:
+                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_009', oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset + 1), 'is missing clock name information')
+            if 'period=' not in lLines[iOffset + 1]:
+                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_010', oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset + 1), 'is missing clock period information')
+            return lLines[iOffset + 1]
 
 
 #    for line in report:

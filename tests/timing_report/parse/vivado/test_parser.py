@@ -283,6 +283,22 @@ class Test(unittest.TestCase):
         self.assertEqual('dac_sclk', oCaptureClock.name)
         self.assertEqual(50.0, oCaptureClock.period)
 
+    def test_populate_timing_report_raises_error_if_launch_clock_is_missing(self):
+        lFile = ['', 'Slack (MET) :   1.000ns', '  Source: a', '    (input port)', '  Destination: b', '    (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=50.000ns})', '  Path Type:  Min at Fast Process Corner', '  slack   1.000']
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_009\] test:4 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.parse_timing_report(oTimingReportFile)
+
+    def test_populate_timing_report_raises_error_if_clock_period_is_missing(self):
+        lFile = ['', 'Slack (MET) :   1.000ns', '  Source: a', '    (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns})', '  Destination: b', '    (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=50.000ns})', '  Path Type:  Min at Fast Process Corner', '  slack   1.000']
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_010\] test:4 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.parse_timing_report(oTimingReportFile)
+
 
 def build_output_setup_data_structure():
 
