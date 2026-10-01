@@ -390,6 +390,14 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.extract_data_path_lines(oTimingReportText)
 
+    def test_extract_capture_clock_path_lines_raises_error_if_section_never_starts(self):
+        oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  -------', '    K18   IBUF (Prop_ibuf_I_O)   0.160   0.160 r  I_CLK_IBUF_inst/O', '  -------', '  slack   1.000'])
+        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
+
+        sError = r'ERROR: \[vivado_tr_parse_011\] test:1 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.extract_capture_clock_path_lines(oTimingReportText)
+
 def build_output_setup_data_structure():
 
     dReturn = {}
