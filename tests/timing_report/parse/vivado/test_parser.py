@@ -201,10 +201,10 @@ class Test(unittest.TestCase):
 
         oMyTimingReport = oTimingReports.reports[0]
         self.assertEqual(oMyTimingReport.source, 'q_spi_output_data_reg/C')
-        
+
         oMyTimingReport = oTimingReports.reports[1]
         self.assertEqual(oMyTimingReport.source, 'q_spi_output_data_reg/C')
-        
+
     def test_populate_timing_report_assert_error_if_no_source_is_found(self):
 
         lFile = []
@@ -223,10 +223,10 @@ class Test(unittest.TestCase):
 
         oMyTimingReport = oTimingReports.reports[0]
         self.assertEqual(oMyTimingReport.destination, 'O_DAC_DATA')
-        
+
         oMyTimingReport = oTimingReports.reports[1]
         self.assertEqual(oMyTimingReport.destination, 'O_DAC_DATA')
-        
+
     def test_populate_timing_report_assert_error_if_no_destination_is_found(self):
 
         lFile = []
@@ -246,6 +246,29 @@ class Test(unittest.TestCase):
         sError = r'ERROR: \[vivado_tr_parse_006\] test:4 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.parse_timing_report(oTimingReportFile)
+
+    def test_populate_timing_report_reports_process_corner(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual('Fast', oTimingReports.reports[0].process_corner)
+        self.assertEqual('Slow', oTimingReports.reports[2].process_corner)
+
+    def test_populate_timing_report_raises_error_if_process_corner_is_missing(self):
+        lFile = ['', 'Slack (MET) :   1.000ns', '  Source: a', '  Destination: b', '  Path Type:  Min', '  slack   1.000']
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_008\] test:5 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.parse_timing_report(oTimingReportFile)
+
+    def test_populate_timing_report_raises_error_if_process_corner_is_invalid(self):
+        lFile = ['', 'Slack (MET) :   1.000ns', '  Source: a', '  Destination: b', '  Path Type:  Min at Typical Process Corner', '  slack   1.000']
+        oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
+
+        sError = r'ERROR: \[vivado_tr_parse_008\] test:5 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.parse_timing_report(oTimingReportFile)
+
 
 
 def build_output_setup_data_structure():

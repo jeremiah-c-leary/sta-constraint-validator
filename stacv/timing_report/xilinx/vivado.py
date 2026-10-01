@@ -112,6 +112,7 @@ def extract_path_type_line(oTimingReportText):
 def populate_timing_report(oTimingReport):
     update_source(oTimingReport)
     update_destination(oTimingReport)
+    update_process_corner(oTimingReport)
 
 
 def update_source(oTimingReport):
@@ -136,8 +137,18 @@ def is_key_line(sLine, sKey):
 def extract_key_value(sLine, iOffset, oTimingReport, sKey, sErrorId):
     lWords = sLine.split()
     if len(lWords) < 2:
-        raise timing_report_parse_error.TimingReportParseError(sErrorId, oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset), f'{sKey} has not value')
+        raise timing_report_parse_error.TimingReportParseError(sErrorId, oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset), f'{sKey} has no value')
     return lWords[1]
+
+
+def update_process_corner(oTimingReport):
+    iOffset, sPathTypeLine = extract_path_type_line(oTimingReport.text)
+    if 'Fast Process Corner' in sPathTypeLine:
+        oTimingReport.process_corner = 'Fast'
+    elif 'Slow Process Corner' in sPathTypeLine:
+        oTimingReport.process_corner = 'Slow'
+    else:
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_008', oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset), 'has invalid process corner.  Expecting Fast or Slow.')
 
 
 #    for line in report:
@@ -209,14 +220,6 @@ def ignore_line(line):
     return False
 
 
-def add_type(line, data_struct):
-    if has_type(line):
-        data_struct['type'] = extract_path_type(line)
-        data_struct['process_corner'] = extract_process_corner(line)
-        return True
-    return False
-
-
 def has_type(line):
     if 'Path Type:' in line:
         return True
@@ -232,12 +235,6 @@ def extract_path_type(sLine):
     if lWords[2] == 'Min':
         return 'hold'
     return None
-
-
-def extract_process_corner(line):
-    temp_list = line.split(':')
-    temp_list = temp_list[1].split('at')
-    return temp_list[1].strip()
 
 
 def add_output_delay(line, data_struct):

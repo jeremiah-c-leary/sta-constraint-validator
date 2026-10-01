@@ -48,6 +48,7 @@ class TimingReport():
         self.text = oTimingReportText
         self.source = None
         self.destination = None
+        self.process_corner = None
         self.data_path = None
         self.required_path = None
         self.crpr = None
