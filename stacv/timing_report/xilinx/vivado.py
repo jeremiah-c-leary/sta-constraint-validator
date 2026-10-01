@@ -154,12 +154,12 @@ def update_process_corner(oTimingReport):
 
 
 def update_launch_clock(oTimingReport):
-    sLine = extract_clock_line_from_source(oTimingReport)
+    sLine = extract_clock_line(oTimingReport, 'Source:')
     oTimingReport.launch_clock = create_clock(sLine)
 
 
 def update_capture_clock(oTimingReport):
-    sLine = extract_clock_line_from_destination(oTimingReport)
+    sLine = extract_clock_line(oTimingReport, 'Destination:')
     oTimingReport.capture_clock = create_clock(sLine)
 
 
@@ -183,22 +183,13 @@ def update_clock_period(sLine, oClock):
             oClock.period = float(sPeriod)
 
 
-def extract_clock_line_from_source(oTimingReport):
+def extract_clock_line(oTimingReport, sKey):
     lLines = oTimingReport.get_lines()
     for iOffset, sLine in enumerate(lLines):
-        if sLine.strip().startswith('Source:'):
+        if sLine.strip().startswith(sKey):
             if 'period' in lLines[iOffset + 1]:
                 return lLines[iOffset + 1]
 
-
-def extract_clock_line_from_destination(oTimingReport):
-    lLines = oTimingReport.get_lines()
-    for iOffset, sLine in enumerate(lLines):
-        if sLine.strip().startswith('Destination:'):
-            if 'period' in lLines[iOffset + 1]:
-                return lLines[iOffset + 1]
-
-            
 
 #    for line in report:
 #        found_paths = is_this_the_start_of_the_timing_paths(line, found_paths)
