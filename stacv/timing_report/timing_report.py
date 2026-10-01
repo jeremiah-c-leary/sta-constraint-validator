@@ -51,6 +51,7 @@ class TimingReport():
         self.process_corner = None
         self.capture_clock = None
         self.launch_clock = None
+        self.first_line_number = oTimingReportText.first_line_number
         self.data_path = None
         self.required_path = None
         self.crpr = None

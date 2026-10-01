@@ -51,24 +51,24 @@ class Test(unittest.TestCase):
 
         self.assertEqual(4, len(lReports))
 
-        self.assertTrue(lReports[0].lines[0].startswith('Slack'))
+        self.assertTrue(lReports[0].lines[0].text.startswith('Slack'))
         self.assertEqual(60, len(lReports[0].lines))
-        self.assertTrue(lReports[0].lines[-1].strip().startswith('slack '))
+        self.assertTrue(lReports[0].lines[-1].text.strip().startswith('slack '))
         self.assertEqual(14, lReports[0].first_line_number)
 
-        self.assertTrue(lReports[1].lines[0].startswith('Slack'))
+        self.assertTrue(lReports[1].lines[0].text.startswith('Slack'))
         self.assertEqual(66, len(lReports[1].lines))
-        self.assertTrue(lReports[1].lines[-1].strip().startswith('slack '))
+        self.assertTrue(lReports[1].lines[-1].text.strip().startswith('slack '))
         self.assertEqual(75, lReports[1].first_line_number)
 
-        self.assertTrue(lReports[2].lines[0].startswith('Slack'))
+        self.assertTrue(lReports[2].lines[0].text.startswith('Slack'))
         self.assertEqual(60, len(lReports[2].lines))
-        self.assertTrue(lReports[2].lines[-1].strip().startswith('slack '))
+        self.assertTrue(lReports[2].lines[-1].text.strip().startswith('slack '))
         self.assertEqual(158, lReports[2].first_line_number)
 
-        self.assertTrue(lReports[3].lines[0].startswith('Slack'))
+        self.assertTrue(lReports[3].lines[0].text.startswith('Slack'))
         self.assertEqual(66, len(lReports[3].lines))
-        self.assertTrue(lReports[3].lines[-1].strip().startswith('slack '))
+        self.assertTrue(lReports[3].lines[-1].text.strip().startswith('slack '))
         self.assertEqual(219, lReports[3].first_line_number)
 
     def test_parse_timing_report_returns_four_timing_reports(self):
@@ -104,25 +104,25 @@ class Test(unittest.TestCase):
 
     def test_create_timing_report_raises_an_error_for_unknown_path_type(self):
         oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  Path Type:  Unexpected', '  slack   1.000'])
-        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, 22, ['Slack (MET) :   1.000ns', '  Path Type:  Unexpected', '  slack   1.000'])
+        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
 
-        sError = r'ERROR: \[vivado_tr_parse_005\] test:23 .*'
+        sError = r'ERROR: \[vivado_tr_parse_005\] test:2 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.create_timing_report(oTimingReportText)
 
     def test_extract_path_type_line_raises_error_if_no_path_type_line_exists(self):
         oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  Paths Type:  Unexpected', '  slack   1.000'])
-        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, 22, ['Slack (MET) :   1.000ns', '  Paths Type:  Unexpected', '  slack   1.000'])
+        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
 
-        sError = r'ERROR: \[vivado_tr_parse_004\] test:22 .*'
+        sError = r'ERROR: \[vivado_tr_parse_004\] test:1 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.extract_path_type_line(oTimingReportText)
 
     def test_create_timing_report_raises_error_if_path_type_is_missing(self):
         oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  Path Type:  ', '  slack   1.000'])
-        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, 22, ['Slack (MET) :   1.000ns', '  Path Type:  ', '  slack   1.000'])
+        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
 
-        sError = r'ERROR: \[vivado_tr_parse_005\] test:23 .*'
+        sError = r'ERROR: \[vivado_tr_parse_005\] test:2 .*'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.create_timing_report(oTimingReportText)
 
@@ -137,7 +137,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_003\] test:9 .*'
-        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportFileParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
     def test_validate_timing_report_file_raises_error_if_an_ending_of_a_report_is_not_detected_before_a_start_is_detected(self):
@@ -151,7 +151,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_003\] test:5 .*'
-        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportFileParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
     def test_validate_timing_report_file_raises_error_if_first_report_does_not_have_an_ending(self):
@@ -165,7 +165,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_003\] test:1 .*'
-        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportFileParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
     def test_validate_timing_report_file_raises_error_if_first_report_does_not_have_a_beginning(self):
@@ -179,7 +179,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_002\] test:3 .*'
-        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportFileParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
     def test_validate_timing_report_file_raises_error_if_no_timing_reports_found(self):
@@ -193,7 +193,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
 
         sError = r'ERROR: \[vivado_tr_parse_001\] test:1 .*'
-        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportFileParseError, sError):
             vivado.validate_timing_report_file(oTimingReportFile)
 
     def test_populate_timing_report_reports_source(self):

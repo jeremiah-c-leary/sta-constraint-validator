@@ -19,15 +19,15 @@ def extract_timing_report_texts(oTimingReportFile):
     lTimingReports = []
     lReport = None
     iStartLineNumber = 0
-    for iLine, sLine in enumerate(oTimingReportFile.lines, start=1):
-        if is_start_of_timing_report(sLine):
+    for oLine in oTimingReportFile.lines:
+        if is_start_of_timing_report(oLine):
             lReport = []
-            iStartLineNumber = iLine
+            iStartLineNumber = oLine.line_number
         if lReport is None:
             continue
-        lReport.append(sLine)
-        if is_end_of_timing_report(sLine):
-            oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, iStartLineNumber, lReport)
+        lReport.append(oLine)
+        if is_end_of_timing_report(oLine):
+            oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, lReport)
             lTimingReports.append(oTimingReportText)
             lReport = None
 
@@ -48,7 +48,7 @@ def check_timing_reports_exist(oTimingReportFile):
             break
 
     if not bStart:
-        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_001', oTimingReportFile.filename, 1, 'No timing reports detected')
+        raise timing_report_parse_error.TimingReportFileParseError('vivado_tr_parse_001', oTimingReportFile.filename, 1, 'No timing reports detected')
 
 
 def check_ending_of_timing_report_without_beginning(oTimingReportFile):
@@ -56,7 +56,7 @@ def check_ending_of_timing_report_without_beginning(oTimingReportFile):
     for iLine, sLine in enumerate(oTimingReportFile.lines, start=1):
         if is_end_of_timing_report(sLine):
             if not bStart:
-                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_002', oTimingReportFile.filename, iLine, 'Ending of timing report detected without a beginning detected')
+                raise timing_report_parse_error.TimingReportFileParseError('vivado_tr_parse_002', oTimingReportFile.filename, iLine, 'Ending of timing report detected without a beginning detected')
             bStart = False
         if is_start_of_timing_report(sLine):
             bStart = True
@@ -70,43 +70,43 @@ def check_beginning_of_timing_report_without_ending(oTimingReportFile):
             bStart = False
         if is_start_of_timing_report(sLine):
             if bStart:
-                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oTimingReportFile.filename, iStartLineNumber, 'Beginning of timing report detected without an ending detected')
+                raise timing_report_parse_error.TimingReportFileParseError('vivado_tr_parse_003', oTimingReportFile.filename, iStartLineNumber, 'Beginning of timing report detected without an ending detected')
             bStart = True
             iStartLineNumber = iLine
     if bStart:
-        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oTimingReportFile.filename, iStartLineNumber, 'Beginning of timing report detected without an ending detected')
+        raise timing_report_parse_error.TimingReportFileParseError('vivado_tr_parse_003', oTimingReportFile.filename, iStartLineNumber, 'Beginning of timing report detected without an ending detected')
 
 
-def is_start_of_timing_report(sLine):
-    return sLine.startswith('Slack ')
+def is_start_of_timing_report(oLine):
+    return oLine.text.startswith('Slack ')
 
 
-def is_end_of_timing_report(sLine):
-    return sLine.strip().startswith('slack ')
+def is_end_of_timing_report(oLine):
+    return oLine.text.strip().startswith('slack ')
 
 
 def create_timing_report(oTimingReportText):
-    iPathTypeOffset, sPathTypeLine = extract_path_type_line(oTimingReportText)
-    if is_hold_path_type(sPathTypeLine):
+    oPathTypeLine = extract_path_type_line(oTimingReportText)
+    if is_hold_path_type(oPathTypeLine):
         return timing_report.HoldTimingReport(oTimingReportText)
-    if is_setup_path_type(sPathTypeLine):
+    if is_setup_path_type(oPathTypeLine):
         return timing_report.SetupTimingReport(oTimingReportText)
-    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_005', oTimingReportText.get_filename(), oTimingReportText.line_number_of(iPathTypeOffset), 'Unknown Path Type in timing report.  Should be either Max or Min')
+    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_005', oPathTypeLine, 'Unknown Path Type in timing report.  Should be either Max or Min')
 
 
-def is_hold_path_type(sLine):
-    return extract_path_type(sLine) == 'hold'
+def is_hold_path_type(oLine):
+    return extract_path_type(oLine) == 'hold'
 
 
-def is_setup_path_type(sLine):
-    return extract_path_type(sLine) == 'setup'
+def is_setup_path_type(oLine):
+    return extract_path_type(oLine) == 'setup'
 
 
 def extract_path_type_line(oTimingReportText):
-    for iOffset, sLine in enumerate(oTimingReportText.lines):
-        if has_type(sLine):
-            return iOffset, sLine
-    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_004', oTimingReportText.get_filename(), oTimingReportText.line_number_of(), 'No Path Type in timing report')
+    for oLine in oTimingReportText.lines:
+        if has_type(oLine):
+            return oLine
+    raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_004', oLine, 'No Path Type in timing report', oTimingReportText)
 
 
 def populate_timing_report(oTimingReport):
@@ -126,57 +126,57 @@ def update_destination(oTimingReport):
 
 
 def extract_field(oTimingReport, sKey, sErrorId):
-    for iOffset, sLine in enumerate(oTimingReport.get_lines()):
-        if is_key_line(sLine, sKey):
-            return extract_key_value(sLine, iOffset, oTimingReport, sKey, sErrorId)
-    raise timing_report_parse_error.TimingReportParseError(sErrorId, oTimingReport.get_filename(), oTimingReport.line_number_of(), f'{sKey} was not found in timing report')
+    for oLine in oTimingReport.get_lines():
+        if is_key_line(oLine, sKey):
+            return extract_key_value(oLine, sKey, sErrorId)
+    raise timing_report_parse_error.TimingReportParseError(sErrorId, oLine, f'{sKey} was not found in timing report', oTimingReport)
 
 
-def is_key_line(sLine, sKey):
-    return sLine.strip().startswith(sKey)
+def is_key_line(oLine, sKey):
+    return oLine.text.strip().startswith(sKey)
 
 
-def extract_key_value(sLine, iOffset, oTimingReport, sKey, sErrorId):
-    lWords = sLine.split()
+def extract_key_value(oLine, sKey, sErrorId):
+    lWords = oLine.text.split()
     if len(lWords) < 2:
-        raise timing_report_parse_error.TimingReportParseError(sErrorId, oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset), f'{sKey} has no value')
+        raise timing_report_parse_error.TimingReportParseError(sErrorId, oLine, f'{sKey} has no value')
     return lWords[1]
 
 
 def update_process_corner(oTimingReport):
-    iOffset, sPathTypeLine = extract_path_type_line(oTimingReport.text)
-    if 'Fast Process Corner' in sPathTypeLine:
+    oPathTypeLine = extract_path_type_line(oTimingReport.text)
+    if 'Fast Process Corner' in oPathTypeLine.text:
         oTimingReport.process_corner = 'Fast'
-    elif 'Slow Process Corner' in sPathTypeLine:
+    elif 'Slow Process Corner' in oPathTypeLine.text:
         oTimingReport.process_corner = 'Slow'
     else:
-        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_008', oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset), 'has invalid process corner.  Expecting Fast or Slow.')
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_008', oPathTypeLine, 'has invalid process corner.  Expecting Fast or Slow.')
 
 
 def update_launch_clock(oTimingReport):
-    sLine = extract_clock_line(oTimingReport, 'Source:')
-    oTimingReport.launch_clock = create_clock(sLine)
+    oLine = extract_clock_line(oTimingReport, 'Source:')
+    oTimingReport.launch_clock = create_clock(oLine)
 
 
 def update_capture_clock(oTimingReport):
-    sLine = extract_clock_line(oTimingReport, 'Destination:')
-    oTimingReport.capture_clock = create_clock(sLine)
+    oLine = extract_clock_line(oTimingReport, 'Destination:')
+    oTimingReport.capture_clock = create_clock(oLine)
 
 
-def create_clock(sLine):
+def create_clock(oLine):
     oClock = timing_report.Clock()
-    update_clock_name(sLine, oClock)
-    update_clock_period(sLine, oClock)
+    update_clock_name(oLine, oClock)
+    update_clock_period(oLine, oClock)
     return oClock
 
 
-def update_clock_name(sLine, oClock):
-    lWords = sLine.split()
+def update_clock_name(oLine, oClock):
+    lWords = oLine.text.split()
     oClock.name = lWords[lWords.index('by') + 1]
 
 
-def update_clock_period(sLine, oClock):
-    lWords = sLine.split()
+def update_clock_period(oLine, oClock):
+    lWords = oLine.text.split()
     for sWord in lWords:
         if sWord.startswith('period='):
             sPeriod = extract_digits(sWord)
@@ -189,12 +189,12 @@ def extract_digits(sWord):
 
 def extract_clock_line(oTimingReport, sKey):
     lLines = oTimingReport.get_lines()
-    for iOffset, sLine in enumerate(lLines):
-        if sLine.strip().startswith(sKey):
-            if 'clocked by' not in lLines[iOffset + 1]:
-                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_009', oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset + 1), 'is missing clock name information')
-            if 'period=' not in lLines[iOffset + 1]:
-                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_010', oTimingReport.get_filename(), oTimingReport.line_number_of(iOffset + 1), 'is missing clock period information')
+    for iOffset, oLine in enumerate(lLines):
+        if oLine.text.strip().startswith(sKey):
+            if 'clocked by' not in lLines[iOffset + 1].text:
+                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_009', lLines[iOffset + 1], 'is missing clock name information')
+            if 'period=' not in lLines[iOffset + 1].text:
+                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_010', lLines[iOffset + 1], 'is missing clock period information')
             return lLines[iOffset + 1]
 
 
@@ -267,14 +267,14 @@ def ignore_line(line):
     return False
 
 
-def has_type(line):
-    if 'Path Type:' in line:
+def has_type(oLine):
+    if 'Path Type:' in oLine.text:
         return True
     return False
 
 
-def extract_path_type(sLine):
-    lWords = sLine.split()
+def extract_path_type(oLine):
+    lWords = oLine.text.split()
     if len(lWords) < 3:
         return None
     if lWords[2] == 'Max':
