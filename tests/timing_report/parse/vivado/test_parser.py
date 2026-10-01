@@ -299,7 +299,6 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.parse_timing_report(oTimingReportFile)
 
-    @unittest.skip('Waiting on ReportLine refactor.  Remove when completed.')
     def test_populate_timing_report_raises_error_if_clock_period_is_not_a_number(self):
         lFile = ['', 'Slack (MET) :   1.000ns', '  Source: a', '    (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=ns})', '  Destination: b', '    (output port clocked by dac_sclk  {rise@0.000ns fall@25.000ns period=50.000ns})', '  Path Type:  Min at Fast Process Corner', '  slack   1.000']
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)

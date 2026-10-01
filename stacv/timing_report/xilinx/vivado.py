@@ -180,7 +180,13 @@ def update_clock_period(oLine, oClock):
     for sWord in lWords:
         if sWord.startswith('period='):
             sPeriod = extract_digits(sWord)
+            validate_clock_period(sPeriod, oLine)
             oClock.period = float(sPeriod)
+
+
+def validate_clock_period(sPeriod, oLine):
+    if sPeriod == '':
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_010', oLine, 'is missing clock period information')
 
 
 def extract_digits(sWord):
