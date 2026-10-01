@@ -179,8 +179,12 @@ def update_clock_period(sLine, oClock):
     lWords = sLine.split()
     for sWord in lWords:
         if sWord.startswith('period='):
-            sPeriod = sWord[7:-4]
+            sPeriod = extract_digits(sWord)
             oClock.period = float(sPeriod)
+
+
+def extract_digits(sWord):
+    return "".join(char for char in sWord if char.isdigit() or char ==  '.')
 
 
 def extract_clock_line(oTimingReport, sKey):
