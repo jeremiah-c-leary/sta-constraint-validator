@@ -12,8 +12,6 @@ from tests import utils
 
 
 sTestDir = os.path.dirname(__file__)
-lSetupFile = utils.read_file(os.path.join(sTestDir, 'dac_spi.setup.rpt'))
-lHoldFile = utils.read_file(os.path.join(sTestDir, 'dac_spi.hold.rpt'))
 lTimingReportFile = utils.read_file(os.path.join(sTestDir, 'O_DAC_DATA_timing.rpt'))
 oTimingReportFile = timing_report_file.TimingReportFile('O_DAC_DATA_timing.rpt', lTimingReportFile)
 
