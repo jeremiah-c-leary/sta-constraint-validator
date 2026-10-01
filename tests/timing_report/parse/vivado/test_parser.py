@@ -308,6 +308,14 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.parse_timing_report(oTimingReportFile)
 
+    def test_validate_timing_report_file_raises_error_if_file_is_empty(self):
+
+        oTimingReportFile = timing_report_file.TimingReportFile('test', [])
+
+        sError = r'ERROR: \[vivado_tr_parse_001\] test:1 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.validate_timing_report_file(oTimingReportFile)
+
 
 def build_output_setup_data_structure():
 

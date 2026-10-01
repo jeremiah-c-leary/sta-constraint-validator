@@ -45,6 +45,9 @@ def check_timing_reports_exist(oTimingReportFile):
             bStart = True
             break
 
+    if len(oTimingReportFile.lines) == 0:
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_001', timing_report_file.ReportLine(oTimingReportFile.filename, '', 1), 'No timing reports detected')
+
     if not bStart:
         raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_001', oTimingReportFile.lines[0], 'No timing reports detected')
 
@@ -61,18 +64,16 @@ def check_ending_of_timing_report_without_beginning(oTimingReportFile):
 
 
 def check_beginning_of_timing_report_without_ending(oTimingReportFile):
-    bStart = False
-    iStartLineNumber = 0
-    for iLine, oLine in enumerate(oTimingReportFile.lines):
+    oStartLine = None
+    for oLine in oTimingReportFile.lines:
         if is_end_of_timing_report(oLine):
-            bStart = False
+            oStartLine = None
         if is_start_of_timing_report(oLine):
-            if bStart:
-                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oTimingReportFile.lines[iStartLineNumber], 'Beginning of timing report detected without an ending detected')
-            bStart = True
-            iStartLineNumber = iLine
-    if bStart:
-        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oTimingReportFile.lines[iStartLineNumber], 'Beginning of timing report detected without an ending detected')
+            if oStartLine is not None:
+                raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oStartLine, 'Beginning of timing report detected without an ending detected')
+            oStartLine = oLine
+    if oStartLine is not None:
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_003', oStartLine, 'Beginning of timing report detected without an ending detected')
 
 
 def is_start_of_timing_report(oLine):
@@ -124,10 +125,11 @@ def update_destination(oTimingReport):
 
 
 def extract_field(oTimingReport, sKey, sErrorId):
-    for oLine in oTimingReport.get_lines():
+    lLines = oTimingReport.get_lines()
+    for oLine in lLines:
         if is_key_line(oLine, sKey):
             return extract_key_value(oLine, sKey, sErrorId)
-    raise timing_report_parse_error.TimingReportParseError(sErrorId, oTimingReport.text.lines[0], f'{sKey} was not found in timing report')
+    raise timing_report_parse_error.TimingReportParseError(sErrorId, lLines[0], f'{sKey} was not found in timing report')
 
 
 def is_key_line(oLine, sKey):
