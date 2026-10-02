@@ -128,6 +128,7 @@ def populate_timing_report(oTimingReport):
     update_clock_pessimism(oTimingReport)
     update_output_delay(oTimingReport)
     update_clock_uncertainty(oTimingReport)
+    update_slack(oTimingReport)
 
 
 def update_source(oTimingReport):
@@ -403,6 +404,20 @@ def update_clock_uncertainty(oTimingReport):
     if not has_key_line(oTimingReport, sKey):
         return
     oTimingReport.clock_uncertainty = extract_time_field_value_as_float(oTimingReport, sKey, sErrorId)
+
+
+def update_clock_uncertainty(oTimingReport):
+    sKey = 'Clock Uncertainty:'
+    sErrorId = 'vivado_tr_parse_014'
+    if not has_key_line(oTimingReport, sKey):
+        return
+    oTimingReport.clock_uncertainty = extract_time_field_value_as_float(oTimingReport, sKey, sErrorId)
+
+
+def update_slack(oTimingReport):
+    oLine = oTimingReport.get_lines()[0]
+    lWords = oLine.text.strip().split()
+    oTimingReport.slack = float(remove_ns(oLine, lWords[3]))
 
 
 def extract_time_field_value_as_float(oTimingReport, sKey, sErrorId):

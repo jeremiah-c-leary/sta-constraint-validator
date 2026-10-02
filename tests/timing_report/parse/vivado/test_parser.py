@@ -536,6 +536,20 @@ class Test(unittest.TestCase):
 
         self.assertIsNone(oTimingReports.reports[0].clock_uncertainty)
 
+    def test_populate_timing_report_reports_slack(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual(0.272, oTimingReports.reports[0].slack)
+        self.assertEqual(7.192, oTimingReports.reports[1].slack)
+
+    def test_update_slack_reads_violated_slack(self):
+        oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (VIOLATED) :        -0.123ns  (required time - arrival time)', '  slack   -0.123'])
+        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
+        oTimingReport = timing_report.SetupTimingReport(oTimingReportText)
+
+        vivado.update_slack(oTimingReport)
+
+        self.assertEqual(-0.123, oTimingReport.slack)
 
 def populate_timing_report_from_lines(lFile):
     oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
