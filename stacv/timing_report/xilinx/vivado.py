@@ -149,10 +149,10 @@ def is_key_line(oLine, sKey):
 
 
 def extract_key_value(oLine, sKey, sErrorId):
-    lWords = oLine.text.split()
-    if len(lWords) < 2:
+    lWords = oLine.text.replace(sKey, '').split()
+    if len(lWords) < 1:
         raise timing_report_parse_error.TimingReportParseError(sErrorId, oLine, f'{sKey} has no value')
-    return lWords[1]
+    return lWords[0]
 
 
 def update_process_corner(oTimingReport):
@@ -369,15 +369,8 @@ def update_capture_edge(oTimingReport):
 
 
 def update_clock_pessimism(oTimingReport):
-    oLine = extract_clock_pessimism_line(oTimingReport)
-    lWords = oLine.text.strip().split()
-    oTimingReport.clock_pessimism = float(lWords[-1][:-2])
-
-
-def extract_clock_pessimism_line(oTimingReport):
-    for oLine in oTimingReport.get_lines():
-        if oLine.text.strip().startswith('Clock Pessimism Removal'):
-            return oLine
+    sValue = extract_field(oTimingReport, 'Clock Pessimism Removal (CPR):', 'vivado_tr_parse_012')
+    oTimingReport.clock_pessimism = float(remove_time_units(sValue))
 
 
 def extract_clock_edge(oLine):
@@ -389,6 +382,10 @@ def has_type(oLine):
     if 'Path Type:' in oLine.text:
         return True
     return False
+
+
+def remove_time_units(sValue):
+    return sValue[:-2] 
 
 
 def extract_path_type(oLine):

@@ -511,6 +511,15 @@ class Test(unittest.TestCase):
         self.assertEqual(0.245, oTimingReports.reports[0].clock_pessimism)
         self.assertEqual(0.245, oTimingReports.reports[1].clock_pessimism)
 
+    def test_update_clock_pessimism_raises_error_if_line_is_missing(self):
+        oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  Path Type:  Max at Slow Process Corner', '  slack   1.000'])
+        oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
+        oTimingReport = timing_report.SetupTimingReport(oTimingReportText)
+
+        sError = r'ERROR: \[vivado_tr_parse_012\] test:1 .*'
+        with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
+            vivado.update_clock_pessimism(oTimingReport)
+
 
 def populate_timing_report_from_lines(lFile):
     oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
