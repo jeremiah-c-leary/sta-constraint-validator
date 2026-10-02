@@ -31,7 +31,7 @@ Slack (MET) :             0.272ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
                          (clock clk_100mhz rise edge)     0.000     0.000 r  
     K18                                               0.000     0.000 r  I_CLK (IN)
-                         net (fo=0)                   0.000     0.000    I_CLK_failing
+                         net (fo=0)                   0.000     0.000    I_CLK
     K18                  IBUF (Prop_ibuf_I_O)         0.160     0.160 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.631     0.791    I_CLK_IBUF
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.026     0.817 r  I_CLK_IBUF_BUFG_inst/O
@@ -46,12 +46,12 @@ Slack (MET) :             0.272ns  (arrival time - required time)
   -------------------------------------------------------------------    -------------------
 
                          (clock dac_sclk rise edge)     0.000     0.000 r  
-    K18                                               0.000     0.000 r  I_CLK (IN)
-                         net (fo=0)                   0.000     0.000    I_CLK
-    K18                  IBUF (Prop_ibuf_I_O)         0.348     0.348 r  I_CLK_IBUF_inst/O
-                         net (fo=1, routed)           0.685     1.033    I_CLK_IBUF
-    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.029     1.062 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=13, routed)          0.862     1.924    I_CLK_IBUF_BUFG
+    K18                                               0.000     0.000 r  I_CLK2 (IN)
+                         net (fo=0)                   0.000     0.000    I_CLK2
+    K18                  IBUF (Prop_ibuf_I_O)         0.348     0.348 r  I_CLK2_IBUF_inst/O
+                         net (fo=1, routed)           0.685     1.033    I_CLK2_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.029     1.062 r  I_CLK2_IBUF_BUFG_inst/O
+                         net (fo=13, routed)          0.862     1.924    I_CLK2_IBUF_BUFG
     SLICE_X0Y5           FDCE (Prop_fdce_C_Q)         0.175     2.099 r  q_spi_output_clock_reg/Q
                          net (fo=1, routed)           0.572     2.671    O_DAC_SCLK_OBUF
     U15                  OBUF (Prop_obuf_I_O)         1.288     3.959 r  O_DAC_SCLK_OBUF_inst/O

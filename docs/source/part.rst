@@ -56,7 +56,8 @@ It is typically provided by a vendor.
 +------------------+----------+------------------------------------------------------------------------------+
 | input_pin_name   | string   | Each input pin will have an entry.                                           |
 +------------------+----------+------------------------------------------------------------------------------+
-| clock_edge       | string   | The edge the setup, hold or clock to out applies to:  "rising_edge" or "falling_edge"  |
+| clock_edge       | string   | The edge the setup, hold or clock to out applies to:                         |
+|                  |          | "rising_edge" or "falling_edge"                                              |
 +------------------+----------+------------------------------------------------------------------------------+
 | timing_id        | float    | The name of the timing parameter from the part datasheet.                    |
 +------------------+----------+------------------------------------------------------------------------------+
