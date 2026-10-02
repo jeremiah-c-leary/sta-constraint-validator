@@ -328,47 +328,6 @@ def is_net_delay(oLine):
     return 'net (fo=' in oLine.text
 
 
-def is_this_the_start_of_the_timing_paths(line, found_paths):
-    if 'Location' in line and 'Delay type' in line:
-        return True
-    return found_paths
-
-
-def create_data_struct():
-    data_struct = {}
-    data_struct['data_path'] = []
-    data_struct['required_path'] = []
-    return data_struct
-
-
-def is_end_of_report(line):
-    if ' slack ' in line:
-        return True
-    return False
-
-
-def ignore_line(line):
-    if line == '':
-        return True
-    if line.startswith('  ---'):
-        return True
-    if line.endswith(')'):
-        return True
-    if 'clock pessimism' in line:
-        return True
-    if 'clock uncertainty' in line:
-        return True
-    if 'output delay' in line:
-        return True
-    if 'required time' in line:
-        return True
-    if 'arrival time' in line:
-        return True
-    if '(' not in line:
-        return True
-    return False
-
-
 def has_type(oLine):
     if 'Path Type:' in oLine.text:
         return True
