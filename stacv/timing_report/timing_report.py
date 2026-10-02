@@ -51,9 +51,13 @@ class TimingReport():
         self.process_corner = None
         self.capture_clock = None
         self.launch_clock = None
+        self.launch_clock_path = None
+        self.capture_clock_path = None
+        self.launch_edge = None
+        self.capture_edge = None
+        self.clock_pessimism = None
         self.data_path = None
         self.required_path = None
-        self.crpr = None
 
     def get_lines(self):
         return self.text.lines

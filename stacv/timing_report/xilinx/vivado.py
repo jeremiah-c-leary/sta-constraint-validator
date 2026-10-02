@@ -137,10 +137,15 @@ def update_destination(oTimingReport):
 
 
 def extract_field(oTimingReport, sKey, sErrorId):
+    oLine = extract_key_line(oTimingReport, sKey, sErrorId)
+    return extract_key_value(oLine, sKey, sErrorId)
+
+
+def extract_key_line(oTimingReport, sKey, sErrorId):
     lLines = oTimingReport.get_lines()
     for oLine in lLines:
         if is_key_line(oLine, sKey):
-            return extract_key_value(oLine, sKey, sErrorId)
+            return oLine
     raise timing_report_parse_error.TimingReportParseError(sErrorId, lLines[0], f'{sKey} was not found in timing report')
 
 
@@ -221,7 +226,7 @@ def remove_period_equals(sWord):
 
 def remove_ns(oLine, sWord):
     if not sWord.endswith('ns'):
-        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_010', oLine, 'incorrect clock period units.  Should be ns.')
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_010', oLine, 'incorrect time units.  Should be ns.')
     return sWord[:-2]
 
 
@@ -369,8 +374,11 @@ def update_capture_edge(oTimingReport):
 
 
 def update_clock_pessimism(oTimingReport):
-    sValue = extract_field(oTimingReport, 'Clock Pessimism Removal (CPR):', 'vivado_tr_parse_012')
-    oTimingReport.clock_pessimism = float(remove_time_units(sValue))
+    sKey = 'Clock Pessimism Removal (CPR):'
+    sErrorId = 'vivado_tr_parse_012'
+    oLine = extract_key_line(oTimingReport, sKey, sErrorId)
+    sValue = extract_key_value(oLine, sKey, sErrorId)
+    oTimingReport.clock_pessimism = float(remove_ns(oLine, sValue))
 
 
 def extract_clock_edge(oLine):
@@ -382,10 +390,6 @@ def has_type(oLine):
     if 'Path Type:' in oLine.text:
         return True
     return False
-
-
-def remove_time_units(sValue):
-    return sValue[:-2] 
 
 
 def extract_path_type(oLine):
