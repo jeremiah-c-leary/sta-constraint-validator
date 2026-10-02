@@ -291,9 +291,9 @@ def check_number_of_separators(oTimingReportText):
 
 
 def create_delay(oLine):
-    if ' net ' in oLine.text:
+    if is_net_delay(oLine):
         return create_net_delay(oLine)
-    else:
+    if is_cell_delay(oLine):
         return create_cell_delay(oLine)
 
 
@@ -314,34 +314,18 @@ def create_net_delay(oLine):
     oDelay.delay = float(lWords[2])
     oDelay.resource = lWords[-1]
     return oDelay
-    
 
-#    for line in report:
-#        found_paths = is_this_the_start_of_the_timing_paths(line, found_paths)
-#        if not found_paths:
-#            if add_type(line, data_struct):
-#                continue
-#            if add_output_delay(line, data_struct):
-#                continue
-#            continue
-#        if is_end_of_report(line):
-#            reports.append(data_struct)
-#            data_struct = create_data_struct()
-#            found_paths = False
-#            found_launch_edge = False
-#            continue
-#        if add_launch_edge(line, data_struct, found_launch_edge):
-#            found_launch_edge = True
-#            continue
-#        if add_capture_edge(line, data_struct, found_launch_edge):
-#            found_launch_edge = False
-#            continue
-#        if add_net_delay(line, data_struct, found_launch_edge):
-#            continue
-#        if ignore_line(line):
-#            continue
-#        add_cell_delay(line, data_struct, found_launch_edge)
-#    return oTimingReports
+
+def is_delay_row(oLine):
+    return is_cell_delay(oLine) or is_net_delay(oLine)
+
+
+def is_cell_delay(oLine):
+    return '(Prop_' in oLine.text
+
+
+def is_net_delay(oLine):
+    return 'net (fo=' in oLine.text
 
 
 def is_this_the_start_of_the_timing_paths(line, found_paths):
@@ -456,24 +440,6 @@ def extract_clock_edge(line):
     temp_list = line.split(')')
     temp_list = temp_list[1].split()
     return float(temp_list[0])
-
-
-def add_net_delay(line, data_struct, found_launch_edge):
-    if not is_net_delay(line):
-        return False
-
-    delay = build_net_delay_struct(line, data_struct)
-    if found_launch_edge:
-        data_struct['data_path'].append(delay)
-    else:
-        data_struct['required_path'].append(delay)
-    return True
-
-
-def is_net_delay(line):
-    if 'net (fo=' in line:
-        return True
-    return False
 
 
 def build_net_delay_struct(line, data_struct):

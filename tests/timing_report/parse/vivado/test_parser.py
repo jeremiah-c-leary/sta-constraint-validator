@@ -418,6 +418,84 @@ class Test(unittest.TestCase):
         self.assertEqual(0.591, oDelay.delay)
         self.assertEqual('I_CLK_IBUF_BUFG', oDelay.resource)
 
+    def test_is_delay_row_returns_true_for_cell_row(self):
+        oLine = timing_report_file.ReportLine('test', '    K18                  IBUF (Prop_ibuf_I_O)         0.160     0.160 r  I_CLK_IBUF_inst/O', 36)
+
+        self.assertTrue(vivado.is_delay_row(oLine))
+
+    def test_is_delay_row_returns_true_for_net_row(self):
+        oLine = timing_report_file.ReportLine('test', '                         net (fo=13, routed)          0.591     1.408    I_CLK_IBUF_BUFG', 40)
+
+        self.assertTrue(vivado.is_delay_row(oLine))
+
+    def test_is_delay_row_returns_false_for_clock_edge_row(self):
+        oLine = timing_report_file.ReportLine('test', '                         (clock clk_100mhz rise edge)     0.000     0.000 r  ', 32)
+
+        self.assertFalse(vivado.is_delay_row(oLine))
+
+    def test_is_delay_row_returns_false_for_port_row(self):
+        oLine = timing_report_file.ReportLine('test', '    K18                                               0.000     0.000 r  I_CLK (IN)', 33)
+
+        self.assertFalse(vivado.is_delay_row(oLine))
+
+    def test_is_delay_row_returns_false_for_pin_row(self):
+        oLine = timing_report_file.ReportLine('test', '    K18                                                               r  I_CLK_IBUF_inst/I', 35)
+
+        self.assertFalse(vivado.is_delay_row(oLine))
+
+    def test_is_delay_row_returns_false_for_clock_pessimism_row(self):
+        oLine = timing_report_file.ReportLine('test', '                         clock pessimism             -0.245     3.714    ', 67)
+
+        self.assertFalse(vivado.is_delay_row(oLine))
+
+    def test_is_delay_row_returns_false_for_clock_uncertainty_row(self):
+        oLine = timing_report_file.ReportLine('test', '                         clock un 53.176    ', 134)
+
+        self.assertFalse(vivado.is_delay_row(oLine))
+
+    def test_is_delay_row_returns_false_for_output_delay_row(self):
+        oLine = timing_report_file.ReportLine('test', '                         output delay                -1.000     2.714    ', 68)
+
+        self.assertFalse(vivado.is_delay_row(oLine))
+
+    def test_is_delay_row_returns_true_for_unrouted_net_row(self):
+        oLine = timing_report_file.ReportLine('test', '                         net (fo=0)                   0.000     0.000    I_CLK', 37)
+
+        self.assertTrue(vivado.is_delay_row(oLine))
+
+    @unittest.skip('Temporary')
+    def test_create_delay_path_keeps_only_delay_rows(self):
+        oTimingReportText = vivado.extract_timing_report_texts(oTimingReportFile)[0]
+        lLines = vivado.extract_launch_clock_path_lines(oTimingReportText)
+
+        oDelayPath = vivado.create_delay_path(lLines)
+
+        self.assertTrue(isinstance(oDelayPath, delay_path.DelayPath))
+        self.assertEqual(5, len(oDelayPath.delays))
+        self.assertEqual('I_CLK', oDelayPath.delays[0].resource)
+        self.assertEqual('I_CLK_IBUF_BUFG', oDelayPath.delays[-1].resource)
+
+    @unittest.skip('Temporary')
+    def test_populate_timing_report_reports_launch_clock_path(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual(1.408, oTimingReports.reports[0].launch_clock_path.total_delay())
+        self.assertEqual(1.924, oTimingReports.reports[1].launch_clock_path.total_delay())
+
+    @unittest.skip('Temporary')
+    def test_populate_timing_report_reports_data_path(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual(1.578, oTimingReports.reports[0].data_path.total_delay())
+        self.assertEqual(2.060, oTimingReports.reports[1].data_path.total_delay())
+
+    @unittest.skip('Temporary')
+    def test_populate_timing_report_reports_capture_clock_path(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual(3.959, oTimingReports.reports[0].capture_clock_path.total_delay())
+        self.assertEqual(2.966, oTimingReports.reports[1].capture_clock_path.total_delay())
+
 
 def populate_timing_report_from_lines(lFile):
     oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
