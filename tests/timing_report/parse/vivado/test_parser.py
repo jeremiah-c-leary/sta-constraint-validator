@@ -450,7 +450,7 @@ class Test(unittest.TestCase):
         self.assertFalse(vivado.is_delay_row(oLine))
 
     def test_is_delay_row_returns_false_for_clock_uncertainty_row(self):
-        oLine = timing_report_file.ReportLine('test', '                         clock un 53.176    ', 134)
+        oLine = timing_report_file.ReportLine('test', '                         clock uncertainty 53.176    ', 134)
 
         self.assertFalse(vivado.is_delay_row(oLine))
 

@@ -297,7 +297,7 @@ def check_number_of_separators(oTimingReportText):
 def create_delay(oLine):
     if is_net_delay(oLine):
         return create_net_delay(oLine)
-    if is_cell_delay(oLine):
+    else:
         return create_cell_delay(oLine)
 
 
@@ -343,17 +343,17 @@ def create_delay_path(lLines):
 def update_launch_clock_path(oTimingReport):
     lLines = extract_launch_clock_path_lines(oTimingReport.text)
     oTimingReport.launch_clock_path = create_delay_path(lLines)
-    
+
 
 def update_data_path(oTimingReport):
     lLines = extract_data_path_lines(oTimingReport.text)
     oTimingReport.data_path = create_delay_path(lLines)
-    
+
 
 def update_capture_clock_path(oTimingReport):
     lLines = extract_capture_clock_path_lines(oTimingReport.text)
     oTimingReport.capture_clock_path = create_delay_path(lLines)
-    
+
 
 def has_type(oLine):
     if 'Path Type:' in oLine.text:
