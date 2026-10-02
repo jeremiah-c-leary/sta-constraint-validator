@@ -52,11 +52,13 @@ class TimingReport():
         self.capture_clock = None
         self.launch_clock = None
         self.launch_clock_path = None
+        self.data_path = None
         self.capture_clock_path = None
         self.launch_edge = None
         self.capture_edge = None
         self.clock_pessimism = None
-        self.data_path = None
+        self.output_delay = None
+        self.clock_uncertainty = None
         self.required_path = None
 
     def get_lines(self):

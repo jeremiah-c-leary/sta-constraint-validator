@@ -520,6 +520,22 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.update_clock_pessimism(oTimingReport)
 
+    def test_populate_timing_report_reports_output_delay(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual(1.000, oTimingReports.reports[0].output_delay)
+        self.assertEqual(2.000, oTimingReports.reports[1].output_delay)
+
+    def test_populate_timing_report_reports_clock_uncertainty(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual(0.035, oTimingReports.reports[1].clock_uncertainty)
+
+    def test_populate_timing_report_leaves_clock_uncertainty_empty_when_not_reported(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertIsNone(oTimingReports.reports[0].clock_uncertainty)
+
 
 def populate_timing_report_from_lines(lFile):
     oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)

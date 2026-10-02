@@ -126,6 +126,8 @@ def populate_timing_report(oTimingReport):
     update_launch_edge(oTimingReport)
     update_capture_edge(oTimingReport)
     update_clock_pessimism(oTimingReport)
+    update_output_delay(oTimingReport)
+    update_clock_uncertainty(oTimingReport)
 
 
 def update_source(oTimingReport):
@@ -142,15 +144,25 @@ def extract_field(oTimingReport, sKey, sErrorId):
 
 
 def extract_key_line(oTimingReport, sKey, sErrorId):
-    lLines = oTimingReport.get_lines()
-    for oLine in lLines:
+    oLine = find_key_line(oTimingReport, sKey)
+    if oLine is None:
+        raise timing_report_parse_error.TimingReportParseError(sErrorId, oTimingReport.get_lines()[0], f'{sKey} was not found in timing report')
+    return oLine
+
+
+def find_key_line(oTimingReport, sKey):
+    for oLine in oTimingReport.get_lines():
         if is_key_line(oLine, sKey):
             return oLine
-    raise timing_report_parse_error.TimingReportParseError(sErrorId, lLines[0], f'{sKey} was not found in timing report')
+    return None
 
 
 def is_key_line(oLine, sKey):
     return oLine.text.strip().startswith(sKey)
+
+
+def has_key_line(oTimingReport, sKey):
+    return find_key_line(oTimingReport, sKey) is not None
 
 
 def extract_key_value(oLine, sKey, sErrorId):
@@ -376,9 +388,27 @@ def update_capture_edge(oTimingReport):
 def update_clock_pessimism(oTimingReport):
     sKey = 'Clock Pessimism Removal (CPR):'
     sErrorId = 'vivado_tr_parse_012'
+    oTimingReport.clock_pessimism = extract_time_field_value_as_float(oTimingReport, sKey, sErrorId)
+
+
+def update_output_delay(oTimingReport):
+    sKey = 'Output Delay:'
+    sErrorId = 'vivado_tr_parse_013'
+    oTimingReport.output_delay = extract_time_field_value_as_float(oTimingReport, sKey, sErrorId)
+
+
+def update_clock_uncertainty(oTimingReport):
+    sKey = 'Clock Uncertainty:'
+    sErrorId = 'vivado_tr_parse_014'
+    if not has_key_line(oTimingReport, sKey):
+        return
+    oTimingReport.clock_uncertainty = extract_time_field_value_as_float(oTimingReport, sKey, sErrorId)
+
+
+def extract_time_field_value_as_float(oTimingReport, sKey, sErrorId):
     oLine = extract_key_line(oTimingReport, sKey, sErrorId)
     sValue = extract_key_value(oLine, sKey, sErrorId)
-    oTimingReport.clock_pessimism = float(remove_ns(oLine, sValue))
+    return float(remove_ns(oLine, sValue))
 
 
 def extract_clock_edge(oLine):
