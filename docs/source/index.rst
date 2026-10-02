@@ -15,6 +15,7 @@ Welcome to sta-constraint-validator's documentation!
    device
    part
    checks
+   trc
    
 
 Indices and tables
