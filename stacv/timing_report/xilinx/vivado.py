@@ -125,6 +125,7 @@ def populate_timing_report(oTimingReport):
     update_capture_clock_path(oTimingReport)
     update_launch_edge(oTimingReport)
     update_capture_edge(oTimingReport)
+    update_clock_pessimism(oTimingReport)
 
 
 def update_source(oTimingReport):
@@ -365,6 +366,18 @@ def update_launch_edge(oTimingReport):
 def update_capture_edge(oTimingReport):
     lLines = extract_capture_clock_path_lines(oTimingReport.text)
     oTimingReport.capture_edge = extract_clock_edge(lLines[0])
+
+
+def update_clock_pessimism(oTimingReport):
+    oLine = extract_clock_pessimism_line(oTimingReport)
+    lWords = oLine.text.strip().split()
+    oTimingReport.clock_pessimism = float(lWords[-1][:-2])
+
+
+def extract_clock_pessimism_line(oTimingReport):
+    for oLine in oTimingReport.get_lines():
+        if oLine.text.strip().startswith('Clock Pessimism Removal'):
+            return oLine
 
 
 def extract_clock_edge(oLine):
