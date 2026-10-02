@@ -8,6 +8,7 @@ from stacv.timing_report import timing_report
 from stacv.timing_report import timing_report_file
 from stacv.timing_report import timing_report_parse_error
 from stacv.timing_report import delay_element
+from stacv.timing_report import delay_path
 
 from tests import utils
 
@@ -463,7 +464,6 @@ class Test(unittest.TestCase):
 
         self.assertTrue(vivado.is_delay_row(oLine))
 
-    @unittest.skip('Temporary')
     def test_create_delay_path_keeps_only_delay_rows(self):
         oTimingReportText = vivado.extract_timing_report_texts(oTimingReportFile)[0]
         lLines = vivado.extract_launch_clock_path_lines(oTimingReportText)

@@ -4,6 +4,7 @@ from stacv.timing_report import timing_report_file
 from stacv.timing_report import timing_report_list
 from stacv.timing_report import timing_report_parse_error
 from stacv.timing_report import delay_element
+from stacv.timing_report import delay_path
 
 
 TOTAL_NUMBER_OF_SEPARATORS = 5
@@ -326,6 +327,14 @@ def is_cell_delay(oLine):
 
 def is_net_delay(oLine):
     return 'net (fo=' in oLine.text
+
+
+def create_delay_path(lLines):
+    oDelayPath = delay_path.DelayPath()
+    for oLine in lLines:
+        if is_delay_row(oLine):
+            oDelayPath.add_delay(create_delay(oLine))
+    return oDelayPath
 
 
 def has_type(oLine):
