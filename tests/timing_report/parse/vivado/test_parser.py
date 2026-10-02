@@ -475,21 +475,18 @@ class Test(unittest.TestCase):
         self.assertEqual('I_CLK', oDelayPath.delays[0].resource)
         self.assertEqual('I_CLK_IBUF_BUFG', oDelayPath.delays[-1].resource)
 
-    @unittest.skip('Temporary')
     def test_populate_timing_report_reports_launch_clock_path(self):
         oTimingReports = vivado.parse_timing_report(oTimingReportFile)
 
         self.assertEqual(1.408, oTimingReports.reports[0].launch_clock_path.total_delay())
         self.assertEqual(1.924, oTimingReports.reports[1].launch_clock_path.total_delay())
 
-    @unittest.skip('Temporary')
     def test_populate_timing_report_reports_data_path(self):
         oTimingReports = vivado.parse_timing_report(oTimingReportFile)
 
         self.assertEqual(1.578, oTimingReports.reports[0].data_path.total_delay())
         self.assertEqual(2.060, oTimingReports.reports[1].data_path.total_delay())
 
-    @unittest.skip('Temporary')
     def test_populate_timing_report_reports_capture_clock_path(self):
         oTimingReports = vivado.parse_timing_report(oTimingReportFile)
 

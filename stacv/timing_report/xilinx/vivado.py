@@ -120,6 +120,9 @@ def populate_timing_report(oTimingReport):
     update_process_corner(oTimingReport)
     update_launch_clock(oTimingReport)
     update_capture_clock(oTimingReport)
+    update_launch_clock_path(oTimingReport)
+    update_data_path(oTimingReport)
+    update_capture_clock_path(oTimingReport)
 
 
 def update_source(oTimingReport):
@@ -336,6 +339,21 @@ def create_delay_path(lLines):
             oDelayPath.add_delay(create_delay(oLine))
     return oDelayPath
 
+
+def update_launch_clock_path(oTimingReport):
+    lLines = extract_launch_clock_path_lines(oTimingReport.text)
+    oTimingReport.launch_clock_path = create_delay_path(lLines)
+    
+
+def update_data_path(oTimingReport):
+    lLines = extract_data_path_lines(oTimingReport.text)
+    oTimingReport.data_path = create_delay_path(lLines)
+    
+
+def update_capture_clock_path(oTimingReport):
+    lLines = extract_capture_clock_path_lines(oTimingReport.text)
+    oTimingReport.capture_clock_path = create_delay_path(lLines)
+    
 
 def has_type(oLine):
     if 'Path Type:' in oLine.text:
