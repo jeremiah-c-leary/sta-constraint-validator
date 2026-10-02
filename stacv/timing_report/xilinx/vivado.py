@@ -123,6 +123,7 @@ def populate_timing_report(oTimingReport):
     update_launch_clock_path(oTimingReport)
     update_data_path(oTimingReport)
     update_capture_clock_path(oTimingReport)
+    update_launch_edge(oTimingReport)
 
 
 def update_source(oTimingReport):
@@ -355,6 +356,16 @@ def update_capture_clock_path(oTimingReport):
     oTimingReport.capture_clock_path = create_delay_path(lLines)
 
 
+def update_launch_edge(oTimingReport):
+    lLines = extract_launch_clock_path_lines(oTimingReport.text)
+    oTimingReport.launch_edge = extract_clock_edge(lLines[0])
+
+
+def extract_clock_edge(oLine):
+    lWords = oLine.text.strip().split()
+    return float(lWords[-3])
+
+
 def has_type(oLine):
     if 'Path Type:' in oLine.text:
         return True
@@ -388,44 +399,6 @@ def is_output_delay(line):
 def extract_output_delay(line):
     temp_list = line.split(':')
     return float(temp_list[1][:-2])
-
-
-def add_launch_edge(line, data_struct, flag):
-    if is_launch_clock_edge(line, flag):
-        data_struct['launch_edge'] = extract_clock_edge(line)
-        return True
-    return False
-
-
-def add_capture_edge(line, data_struct, flag):
-    if is_capture_clock_edge(line, flag):
-        data_struct['capture_edge'] = extract_clock_edge(line)
-        return True
-    return False
-
-
-def is_launch_clock_edge(line, flag):
-    if is_clock_edge(line) and not flag:
-        return True
-    return False
-
-
-def is_capture_clock_edge(line, flag):
-    if is_clock_edge(line) and flag:
-        return True
-    return False
-
-
-def is_clock_edge(line):
-    if '(clock ' in line and ' edge)' in line:
-        return True
-    return False
-
-
-def extract_clock_edge(line):
-    temp_list = line.split(')')
-    temp_list = temp_list[1].split()
-    return float(temp_list[0])
 
 
 def build_net_delay_struct(line, data_struct):

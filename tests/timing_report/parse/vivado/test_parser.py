@@ -450,7 +450,7 @@ class Test(unittest.TestCase):
         self.assertFalse(vivado.is_delay_row(oLine))
 
     def test_is_delay_row_returns_false_for_clock_uncertainty_row(self):
-        oLine = timing_report_file.ReportLine('test', '                         clock uncertainty 53.176    ', 134)
+        oLine = timing_report_file.ReportLine('test', '                         clock uncertainty   -0.035 53.176    ', 134)
 
         self.assertFalse(vivado.is_delay_row(oLine))
 
@@ -493,6 +493,11 @@ class Test(unittest.TestCase):
         self.assertEqual(3.959, oTimingReports.reports[0].capture_clock_path.total_delay())
         self.assertEqual(2.966, oTimingReports.reports[1].capture_clock_path.total_delay())
 
+    def test_populate_timing_report_reports_launch_edge(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual(0.000, oTimingReports.reports[0].launch_edge)
+        self.assertEqual(40.000, oTimingReports.reports[1].launch_edge)
 
 def populate_timing_report_from_lines(lFile):
     oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
