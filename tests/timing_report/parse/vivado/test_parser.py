@@ -7,6 +7,7 @@ from stacv.timing_report.xilinx import vivado
 from stacv.timing_report import timing_report
 from stacv.timing_report import timing_report_file
 from stacv.timing_report import timing_report_parse_error
+from stacv.timing_report import delay_element
 
 from tests import utils
 
@@ -364,6 +365,58 @@ class Test(unittest.TestCase):
         sError = r'ERROR: \[vivado_tr_parse_011\] test:1 expected 5 separator lines but found 6'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.check_number_of_separators(oTimingReportText)
+
+    def test_create_delay_returns_cell_delay_for_cell_row(self):
+        oLine = timing_report_file.ReportLine('test', '    K18                  IBUF (Prop_ibuf_I_O)         0.160     0.160 r  I_CLK_IBUF_inst/O', 36)
+
+        oDelay = vivado.create_delay(oLine)
+
+        self.assertTrue(isinstance(oDelay, delay_element.CellDelay))
+        self.assertEqual('K18', oDelay.location)
+        self.assertEqual('IBUF', oDelay.delay_type)
+        self.assertEqual(0.160, oDelay.delay)
+        self.assertEqual('I_CLK_IBUF_inst/O', oDelay.resource)
+
+    def test_create_delay_returns_cell_delay_for_flip_flop_clock_to_out_row(self):
+        oLine = timing_report_file.ReportLine('test', '    SLICE_X0Y3           FDCE (Prop_fdce_C_Q)         0.141     1.549 r  q_spi_output_data_reg/Q', 43)
+
+        oDelay = vivado.create_delay(oLine)
+
+        self.assertTrue(isinstance(oDelay, delay_element.CellDelay))
+        self.assertEqual('SLICE_X0Y3', oDelay.location)
+        self.assertEqual('FDCE', oDelay.delay_type)
+        self.assertEqual(0.141, oDelay.delay)
+        self.assertEqual('q_spi_output_data_reg/Q', oDelay.resource)
+
+    def test_create_delay_returns_net_delay_for_routed_net_row(self):
+        oLine = timing_report_file.ReportLine('test', '                         net (fo=13, routed)          0.591     1.408    I_CLK_IBUF_BUFG', 40)
+
+        oDelay = vivado.create_delay(oLine)
+
+        self.assertTrue(isinstance(oDelay, delay_element.NetDelay))
+        self.assertEqual(13, oDelay.fan_out)
+        self.assertEqual(0.591, oDelay.delay)
+        self.assertEqual('I_CLK_IBUF_BUFG', oDelay.resource)
+
+    def test_create_delay_returns_net_delay_for_unrouted_net_row(self):
+        oLine = timing_report_file.ReportLine('test', '                         net (fo=0)                   0.000     0.000    I_CLK', 34)
+
+        oDelay = vivado.create_delay(oLine)
+
+        self.assertTrue(isinstance(oDelay, delay_element.NetDelay))
+        self.assertEqual(0, oDelay.fan_out)
+        self.assertEqual(0.000, oDelay.delay)
+        self.assertEqual('I_CLK', oDelay.resource)
+
+    def test_create_delay_reads_row_from_report_file(self):
+        oLine = oTimingReportFile.lines[39]
+
+        oDelay = vivado.create_delay(oLine)
+
+        self.assertTrue(isinstance(oDelay, delay_element.NetDelay))
+        self.assertEqual(13, oDelay.fan_out)
+        self.assertEqual(0.591, oDelay.delay)
+        self.assertEqual('I_CLK_IBUF_BUFG', oDelay.resource)
 
 
 def populate_timing_report_from_lines(lFile):

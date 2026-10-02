@@ -3,6 +3,7 @@ from stacv.timing_report import timing_report
 from stacv.timing_report import timing_report_file
 from stacv.timing_report import timing_report_list
 from stacv.timing_report import timing_report_parse_error
+from stacv.timing_report import delay_element
 
 
 TOTAL_NUMBER_OF_SEPARATORS = 5
@@ -288,6 +289,32 @@ def check_number_of_separators(oTimingReportText):
     if iSeparatorCount != TOTAL_NUMBER_OF_SEPARATORS:
         raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_011', oTimingReportText.lines[0], f'expected {TOTAL_NUMBER_OF_SEPARATORS} separator lines but found {iSeparatorCount}')
 
+
+def create_delay(oLine):
+    if ' net ' in oLine.text:
+        return create_net_delay(oLine)
+    else:
+        return create_cell_delay(oLine)
+
+
+def create_cell_delay(oLine):
+    lWords = oLine.text.strip().split()
+    oDelay = delay_element.CellDelay()
+    oDelay.location = lWords[0]
+    oDelay.delay_type = lWords[1]
+    oDelay.delay = float(lWords[3])
+    oDelay.resource = lWords[-1]
+    return oDelay
+
+
+def create_net_delay(oLine):
+    lWords = oLine.text.strip().replace(', routed', '').split()
+    oDelay = delay_element.NetDelay()
+    oDelay.fan_out = int(lWords[1].split('=')[1].replace(')', ''))
+    oDelay.delay = float(lWords[2])
+    oDelay.resource = lWords[-1]
+    return oDelay
+    
 
 #    for line in report:
 #        found_paths = is_this_the_start_of_the_timing_paths(line, found_paths)
