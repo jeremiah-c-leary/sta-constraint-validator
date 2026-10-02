@@ -499,6 +499,13 @@ class Test(unittest.TestCase):
         self.assertEqual(0.000, oTimingReports.reports[0].launch_edge)
         self.assertEqual(40.000, oTimingReports.reports[1].launch_edge)
 
+    def test_populate_timing_report_reports_capture_edge(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual(0.000, oTimingReports.reports[0].capture_edge)
+        self.assertEqual(50.000, oTimingReports.reports[1].capture_edge)
+
+
 def populate_timing_report_from_lines(lFile):
     oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
     oTimingReportText = vivado.extract_timing_report_texts(oTimingReportFile)[0]

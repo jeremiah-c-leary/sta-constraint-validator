@@ -124,6 +124,7 @@ def populate_timing_report(oTimingReport):
     update_data_path(oTimingReport)
     update_capture_clock_path(oTimingReport)
     update_launch_edge(oTimingReport)
+    update_capture_edge(oTimingReport)
 
 
 def update_source(oTimingReport):
@@ -359,6 +360,11 @@ def update_capture_clock_path(oTimingReport):
 def update_launch_edge(oTimingReport):
     lLines = extract_launch_clock_path_lines(oTimingReport.text)
     oTimingReport.launch_edge = extract_clock_edge(lLines[0])
+
+
+def update_capture_edge(oTimingReport):
+    lLines = extract_capture_clock_path_lines(oTimingReport.text)
+    oTimingReport.capture_edge = extract_clock_edge(lLines[0])
 
 
 def extract_clock_edge(oLine):
