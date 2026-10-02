@@ -406,14 +406,6 @@ def update_clock_uncertainty(oTimingReport):
     oTimingReport.clock_uncertainty = extract_time_field_value_as_float(oTimingReport, sKey, sErrorId)
 
 
-def update_clock_uncertainty(oTimingReport):
-    sKey = 'Clock Uncertainty:'
-    sErrorId = 'vivado_tr_parse_014'
-    if not has_key_line(oTimingReport, sKey):
-        return
-    oTimingReport.clock_uncertainty = extract_time_field_value_as_float(oTimingReport, sKey, sErrorId)
-
-
 def update_slack(oTimingReport):
     oLine = oTimingReport.get_lines()[0]
     lWords = oLine.text.strip().split()
@@ -446,82 +438,3 @@ def extract_path_type(oLine):
     if lWords[2] == 'Min':
         return 'hold'
     return None
-
-
-def add_output_delay(line, data_struct):
-    if is_output_delay(line):
-        data_struct['output_delay'] = extract_output_delay(line)
-        return True
-    return False
-
-
-def is_output_delay(line):
-    if 'Output Delay:' in line:
-        return True
-    return False
-
-
-def extract_output_delay(line):
-    temp_list = line.split(':')
-    return float(temp_list[1][:-2])
-
-
-def build_net_delay_struct(line, data_struct):
-    delay = {}
-    delay['type'] = 'net'
-    delay['delay'] = extract_net_delay(line)
-    delay['resource'] = extract_resource(line)
-    delay['fan_out'] = extract_fanout(line)
-    return delay
-
-
-def extract_net_delay(line):
-    temp_list = line.split(')')
-    delay_list = temp_list[1].split()
-    return float(delay_list[0])
-
-
-def extract_resource(line):
-    temp_list = line.split()
-    return temp_list[-1]
-
-
-def extract_fanout(line):
-    temp_list = line.split(')')
-    fanout_list = temp_list[0].split('(')
-    fanout_list = fanout_list[1].split(',')
-    fanout_list = fanout_list[0].split('=')
-    return int(fanout_list[1])
-
-
-def add_cell_delay(line, data_struct, found_launch_edge):
-    delay = build_cell_delay_struct(line, data_struct)
-    if found_launch_edge:
-        data_struct['data_path'].append(delay)
-    else:
-        data_struct['required_path'].append(delay)
-
-
-def build_cell_delay_struct(line, data_struct):
-    delay = {}
-    delay['type'] = 'cell'
-    delay['location'] = extract_location(line)
-    delay['delay_type'] = extract_delay_type(line)
-    delay['delay'] = extract_cell_delay(line)
-    delay['resource'] = extract_resource(line)
-    return delay
-
-
-def extract_location(line):
-    temp_list = line.split()
-    return temp_list[0]
-
-
-def extract_delay_type(line):
-    temp_list = line.split()
-    return temp_list[1]
-
-
-def extract_cell_delay(line):
-    temp_list = line.split()
-    return float(temp_list[3])

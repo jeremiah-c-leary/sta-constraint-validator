@@ -1,9 +1,4 @@
 
-def new():
-
-    return DelayPath()
-
-
 class DelayPath():
     def __init__(self):
         self.delays = []

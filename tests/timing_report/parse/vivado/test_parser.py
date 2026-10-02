@@ -551,6 +551,7 @@ class Test(unittest.TestCase):
 
         self.assertEqual(-0.123, oTimingReport.slack)
 
+
 def populate_timing_report_from_lines(lFile):
     oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
     oTimingReportText = vivado.extract_timing_report_texts(oTimingReportFile)[0]
