@@ -1,5 +1,6 @@
 '''
-:Compares: within one timing report
+:Stage: 1 - within one timing report
+:Applies to: all
 :Reads: ``launch_clock_path`` first delay, ``capture_clock_path`` first delay
 :Depends on: none
 
