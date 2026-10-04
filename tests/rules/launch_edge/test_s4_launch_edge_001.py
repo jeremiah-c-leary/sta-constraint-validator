@@ -11,13 +11,13 @@ from stacv.timing_report import timing_report as tr
 
 from stacv.timing_report.xilinx import vivado
 
-from stacv.rules.clock import clock_002
+from stacv.rules.launch_edge import s4_launch_edge_001 as Rule
 
 from tests import utils
 
 sTestDir = os.path.dirname(__file__)
 
-lFile = utils.read_file(os.path.join(sTestDir, 'clock_002.rpt'))
+lFile = utils.read_file(os.path.join(sTestDir, 's4_launch_edge_001.rpt'))
 
 
 class Test(unittest.TestCase):
@@ -35,12 +35,12 @@ class Test(unittest.TestCase):
     @unittest.skip('rewriting parser to return objects.  Remove when completed.')
     def test_failing_edges(self):
 
-        self.assertFalse(clock_002.check(self.oTr, self.oTM))
+        self.assertFalse(Rule.check(self.oTr, self.oTM))
 
     @unittest.skip('rewriting parser to return objects.  Remove when completed.')
     def test_passing_edges(self):
 
         self.oTr.launch_edge = 25
 
-        self.assertTrue(clock_002.check(self.oTr, self.oTM))
+        self.assertTrue(Rule.check(self.oTr, self.oTM))
 

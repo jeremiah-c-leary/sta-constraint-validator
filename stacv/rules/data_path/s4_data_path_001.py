@@ -1,6 +1,6 @@
 '''
-:Stage: 1 - within one timing report
-:Applies to: output interface
+:Stage: 4 - within one timing report
+:Applies to: SDR-SS-O
 :Reads: ``destination_is_output_port``
 :Depends on: none
 
