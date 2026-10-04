@@ -173,6 +173,10 @@ The comparison allows for the rounding of the delays in the timing report.
 s3_input_delay_001: Input delays match the calculated input delays
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The input delays in every timing report must match the input delays calculated from the part and the board data.
+The max input delay is compared in setup timing reports and the min input delay in hold timing reports.
+The comparison allows for the rounding of the delays in the timing report.
+
 Stage 4: Intent
 ---------------
 
@@ -197,17 +201,27 @@ It usually means a data port is missing from the methodology, or the wrong timin
 s4_data_path_001: Data path ends at an output port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The data path in the timing report must end at an output port.
+
 s4_data_path_002: Data path includes clock output pin and data input pin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The data path must include the clock output port and a data input port.
 
 s4_data_path_003: Data path starts at an input port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The data path in the timing report must start at an input port.
+
 s4_clock_path_001: Clock path ends at an output port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The capture clock path in the timing report must end at a port.
+
 s4_clock_path_002: Capture clock path starts at the interface clock input port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The capture clock path in the timing report must start at a port.
 
 s4_launch_clock_001: Launch clock name intent matches timing reports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -234,8 +248,12 @@ The comparison allows for the rounding of the period in the timing report.
 s4_launch_edge_001: Launching clock edge intent matches timing reports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The rising or falling edge of the launch clock matches between intent and timing reports.
+
 s4_capture_edge_001: Capture clock edge intent matches timing reports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The rising or falling edge of the capture clock matches between intent and timing reports.
 
 Stage 5: Slack
 --------------
