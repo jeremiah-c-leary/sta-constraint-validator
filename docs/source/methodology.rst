@@ -6,17 +6,26 @@ These methodologies are defined relative to the device being timed.
 
 The following represent a subset of named methodologies:
 
-* Single Data Rate (SDR) Source Synchronous (SS) Output (SDR-SS-O)
-* SDR SS Round Trip (SDR-SS-RT)
-* SDR SS Input (SDR-SS-I)
-* Double Data Rate (DDR) SS Output (DDR-SS-O)
-* DDR SS Input (DDR-SS-I)
+=========== ==================================================================
+Identifier  Name
+=========== ==================================================================
+SDR-SS-O    Single Data Rate (SDR) Source Synchronous (SS) Output (SDR-SS-O)
+SDR-SS-RT   SDR SS Round Trip (SDR-SS-RT)
+SDR-SS-I    SDR SS Input (SDR-SS-I)
+DDR-SS-O    Double Data Rate (DDR) SS Output (DDR-SS-O)
+DDR-SS-I    DDR SS Input (DDR-SS-I)
+=========== ==================================================================
 
 An interface, such as SPI, could use more than one methodology.
 For example, an SPI interface to a DAC could use:
 
-* SDR-SS-O for MOSI and CS_F
-* SDR-SS-RT for MISO
+========= ==============
+Pin       Methodology
+========= ==============
+MOSI      SDR-SS-O
+CS_F      SDR-SS-O
+MISO      SDR-SS-RT
+========= ==============
 
 An interface is considered fully timed when the methodology of each pin is validated.
 
