@@ -276,18 +276,6 @@ These are earlier rule ideas kept as a guide for additional rules.
 Their names and numbers are not final.
 Each one gets a full entry above, with a unique number, before it is coded.
 
-clock_002
-^^^^^^^^^
-
-This rule checks the launch edge is correct for each timing report.
-
-
-clock_003
-^^^^^^^^^
-
-This rule checks the capture edge is correct for each timing report.
-
-
 Multiple Reports
 
 clock_004
