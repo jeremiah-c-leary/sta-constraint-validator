@@ -8,6 +8,8 @@ The device is the FPGA or ASIC which contains your design.
     device:
         vendor:  <vendor_name>
         name:  <part_name>
+        process_corners:
+            - <process_corner_name>
         interface:
             - <interface_name>:
                 clock: 
@@ -49,6 +51,8 @@ The device is the FPGA or ASIC which contains your design.
 +----------------------+----------+------------------------------------------------------------------------------+
 | part_name            | string   | The name of the part.                                                        |
 +----------------------+----------+------------------------------------------------------------------------------+
+| process_corner_name  | string   | A process corner the timing reports must cover, named as in the reports.     |
++----------------------+----------+------------------------------------------------------------------------------+
 | interface_name       | string   | Devices can have multiple interfaces.  Each must be uniquely identified.     |
 +----------------------+----------+------------------------------------------------------------------------------+
 | internal_clock_name  | string   | The internal clock name being used to launch or capture data.                |
@@ -76,8 +80,11 @@ The following example assumes using the serial interface of the DAC81404 part.
 .. code-block:: yaml
 
     part:
-        vendor:  Intel
-        name:  S10
+        vendor:  AMD
+        name:  ZU19EG
+        process_corners:
+            - Slow
+            - Fast
         interface:
             - DAC_DATA_INTF:
                 clock:

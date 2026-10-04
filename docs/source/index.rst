@@ -11,6 +11,7 @@ Welcome to sta-constraint-validator's documentation!
    :caption: Contents:
 
    process
+   methodology
    board_data
    device
    part

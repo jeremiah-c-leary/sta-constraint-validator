@@ -21,6 +21,8 @@ It has the following basic structure:
 | trace_name  | string   | The name of the trace on the board.                                 |
 +-------------+----------+---------------------------------------------------------------------+
 | pin_name    | string   | Name of the pin on the device or part the trace connects to.        |
+|             |          | The `device_pin` is the port name in the timing reports.            |
+|             |          | The `part_pin` is the name in the part YAML definition.             |
 +-------------+----------+---------------------------------------------------------------------+
 | max_delay   | float    | The maximum delay of the trace.                                     |
 +-------------+----------+---------------------------------------------------------------------+
