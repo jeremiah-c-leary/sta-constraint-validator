@@ -118,14 +118,12 @@ s2_clock_001: Launch clock paths pass through the same elements in every timing 
 s2_clock_002: Capture clock paths pass through the same elements in every timing report
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The cells, nets and ports must be the same and in the same order.
-Their delays are expected to differ between process corners and between setup and hold.
+.. automodule:: stacv.rules.clock.s2_clock_002
 
 s2_data_path_001: Data paths pass through the same elements in every timing report
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The cells, nets and ports must be the same and in the same order.
-Their delays are expected to differ between process corners and between setup and hold.
+.. automodule:: stacv.rules.data_path.s2_data_path_001
 
 s2_output_delay_001: Output delays match across timing reports of the same type
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

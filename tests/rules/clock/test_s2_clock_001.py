@@ -1,8 +1,8 @@
-
 import os
 import unittest
 
 from stacv.timing_report import timing_report_file
+from stacv.timing_report import timing_report_list
 
 from stacv.timing_report.xilinx import vivado
 
@@ -35,3 +35,8 @@ class Test(unittest.TestCase):
         oTimingReports = parse_test_report('s2_clock_001.failing_length.rpt')
 
         self.assertFalse(s2_clock_001.check(oTimingReports))
+
+    def test_empty_timing_report_list_passes(self):
+        oTimingReports = timing_report_list.TimingReportList()
+
+        self.assertTrue(s2_clock_001.check(oTimingReports))

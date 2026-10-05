@@ -39,31 +39,11 @@ The setup timing report clocks the source register through a global buffer, and 
 Refer to the vendor's timing report documentation.
 '''
 
+from stacv.rules import path_comparisons
+
 
 def check(oTimingReportList):
     '''
     Purpose:  Launch clock paths pass through the same elements in every timing report.
     '''
-    lUniqueLaunchClockPaths = extract_unique_launch_clock_paths(oTimingReportList)
-    return has_at_most_one_path(lUniqueLaunchClockPaths)
-
-
-def extract_unique_launch_clock_paths(oTimingReportList):
-    lUniqueLaunchClockPaths = []
-    for oTimingReport in oTimingReportList.reports:
-        lResources = extract_path_resources(oTimingReport)
-        if is_a_unique_path(lResources, lUniqueLaunchClockPaths):
-            lUniqueLaunchClockPaths.append(lResources)
-    return lUniqueLaunchClockPaths
-
-
-def has_at_most_one_path(lUniqueLaunchClockPaths):
-    return len(lUniqueLaunchClockPaths) <= 1
-
-
-def extract_path_resources(oTimingReport):
-    return oTimingReport.launch_clock_path.get_resources()
-
-
-def is_a_unique_path(lResources, lUniqueLaunchClockPaths):
-    return lResources not in lUniqueLaunchClockPaths
+    return path_comparisons.at_most_one_unique_delay_path_exists(oTimingReportList, 'launch_clock_path')
