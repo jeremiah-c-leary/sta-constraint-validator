@@ -247,7 +247,8 @@ Stage    Rule                   Checks
 2        s2_clock_001           Launch clock paths match across timing reports.
 2        s2_clock_002           Capture clock paths match across timing reports.
 2        s2_data_path_001       Data paths match across timing reports.
-2        s2_output_delay_001    Output delays match across timing reports of the same type.
+2        s2_output_delay_001    Output delays match in every setup timing report.
+2        s2_output_delay_002    Output delays match in every hold timing report.
 3        s3_trace_001           Every pin of the part interface has a trace in the board data.
 3        s3_part_001            Every part data pin is referenced to a clock pin of its interface.
 3        s3_part_002            Edges at the part clock are the edge type the part requires.

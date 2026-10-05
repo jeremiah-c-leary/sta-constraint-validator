@@ -125,11 +125,15 @@ s2_data_path_001: Data paths pass through the same elements in every timing repo
 
 .. automodule:: stacv.rules.data_path.s2_data_path_001
 
-s2_output_delay_001: Output delays match across timing reports of the same type
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+s2_output_delay_001: Output delays match in every setup timing report
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Every max (setup) timing report must use the same output delay, and every min (hold) timing report must use the same output delay.
-The max and min values are expected to differ.
+.. automodule:: stacv.rules.output_delay.s2_output_delay_001
+
+s2_output_delay_002: Output delays match in every hold timing report
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.output_delay.s2_output_delay_002
 
 s2_input_delay_001: Input delays match across timing reports of the same type
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
