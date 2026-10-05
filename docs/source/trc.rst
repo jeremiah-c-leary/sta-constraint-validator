@@ -104,7 +104,7 @@ Stage 1: Intra-Timing Report
 s1_clock_001: Launch and capture clock paths start at the same point
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The start point for launch and capture clocks must be the same in order for timing to be valid.
+.. automodule:: stacv.rules.clock.s1_clock_001
 
 
 Stage 2: Inter-Timing Report
@@ -113,8 +113,7 @@ Stage 2: Inter-Timing Report
 s2_clock_001: Launch clock paths pass through the same elements in every timing report
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The cells, nets and ports must be the same and in the same order.
-Their delays are expected to differ between process corners and between setup and hold.
+.. automodule:: stacv.rules.clock.s2_clock_001
 
 s2_clock_002: Capture clock paths pass through the same elements in every timing report
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

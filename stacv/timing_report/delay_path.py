@@ -12,3 +12,9 @@ class DelayPath():
             my_total += my_delay.delay
             my_total = round(my_total, 3)
         return my_total
+
+    def get_resources(self):
+        lResources = []
+        for oDelay in self.delays:
+            lResources.append(oDelay.resource)
+        return lResources
