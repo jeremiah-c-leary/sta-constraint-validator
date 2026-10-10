@@ -52,36 +52,14 @@ def check(oTimingReportList):
 
 
 def extract_output_delay_error_detail(lHoldReports):
-    lDetail = get_output_delay_detail(lHoldReports)
-    return format_detail(lDetail)
-
-
-def format_detail(lDetail):
-    lFormattedDetail= []
-    for oDetail in lDetail:
-        lFormattedDetail.append(f'{oDetail.filename}:{oDetail.line_number}  {oDetail.delay:.3f}ns')
-    return lFormattedDetail
-
-
-def get_output_delay_detail(lHoldReports):
-    lDetail = []
+    lDetails = []
     for oHoldReport in lHoldReports:
-        lDetail.append(create_detail_information(oHoldReport))
-    return lDetail
+        lDetail = create_detail_information(oHoldReport)
+        lDetails.append(lDetail)
+    return lDetails
 
 
 def create_detail_information(oHoldReport):
-    oDetail = DetailInformation()
     oOutputDelayLine = oHoldReport.get_output_delay_line()
-    oDetail.filename = oOutputDelayLine.filename
-    oDetail.line_number = oOutputDelayLine.line_number
-    oDetail.delay = oHoldReport.get_output_delay()
-    return oDetail
-
-
-class DetailInformation():
-
-   def __init__(self, sFilename='', iLineNumber=0, iDelay=0):
-       self.filename = sFilename
-       self.line_number = iLineNumber
-       self.delay = iDelay
+    iDelay = oHoldReport.get_output_delay()
+    return f'{oOutputDelayLine.filename}:{oOutputDelayLine.line_number}  {iDelay:.3f}ns'
