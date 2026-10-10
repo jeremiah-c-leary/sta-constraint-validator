@@ -14,6 +14,7 @@ class TimingReport():
         self.capture_edge = None
         self.clock_pessimism = None
         self.output_delay = None
+        self.output_delay_line = None
         self.clock_uncertainty = None
         self.slack = None
 
@@ -22,6 +23,12 @@ class TimingReport():
 
     def get_filename(self):
         return self.text.get_filename()
+
+    def get_output_delay_line(self):
+        return self.output_delay_line
+
+    def get_output_delay(self):
+        return self.output_delay
 
 
 class HoldTimingReport(TimingReport):

@@ -396,6 +396,7 @@ def update_output_delay(oTimingReport):
     sKey = 'Output Delay:'
     sErrorId = 'vivado_tr_parse_013'
     oTimingReport.output_delay = extract_time_field_value_as_float(oTimingReport, sKey, sErrorId)
+    oTimingReport.output_delay_line = extract_key_line(oTimingReport, sKey, sErrorId)
 
 
 def update_clock_uncertainty(oTimingReport):
