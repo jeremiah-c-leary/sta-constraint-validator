@@ -1,12 +1,15 @@
 '''
-This module includes functions to perform output delay comparisons.
+This module includes functions to assist in output delay comparisons.
+
+It includes functions the perform:
+   * Comparisons of output delays across timing reports
+   * Formatting of error reporting if output delays are not equal
 '''
 
 from stacv.rules import rule_result
 
 
 def output_delays_are_identical(lReports):
-
     lUniqueOutputDelays = collect_unique_output_delays(lReports)
     return has_at_most_one_value(lUniqueOutputDelays)
 
@@ -23,13 +26,12 @@ def has_at_most_one_value(lUniqueOutputDelays):
     return len(lUniqueOutputDelays) <= 1
 
 
-def check_output_delays_are_equal(lReports, sRuleId):
-
+def check_output_delays_match(lReports, sRuleId):
     if output_delays_are_identical(lReports):
         oRuleResult = rule_result.RuleResult(sRuleId, True, [])
     else:
-        lDetail = create_output_delay_error_detail(lReports)
-        oRuleResult = rule_result.RuleResult(sRuleId, False, lDetail)
+        lDetails = create_output_delay_error_detail(lReports)
+        oRuleResult = rule_result.RuleResult(sRuleId, False, lDetails)
     return oRuleResult
 
 

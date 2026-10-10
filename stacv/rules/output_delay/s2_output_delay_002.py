@@ -42,5 +42,6 @@ def check(oTimingReportList):
     '''
     Purpose:  Output delays match in every hold timing report.
     '''
-
-    return output_delay_comparisons.check_output_delays_are_equal(oTimingReportList.get_hold_reports(), RULE_ID)
+    
+    lHoldReports = oTimingReportList.get_hold_reports()
+    return output_delay_comparisons.check_output_delays_match(lHoldReports, RULE_ID)

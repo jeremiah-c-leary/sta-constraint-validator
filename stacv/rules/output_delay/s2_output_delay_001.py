@@ -43,4 +43,5 @@ def check(oTimingReportList):
     Purpose:  Output delays match in every setup timing report.
     '''
 
-    return output_delay_comparisons.check_output_delays_are_equal(oTimingReportList.get_setup_reports(), RULE_ID)
+    lSetupReports = oTimingReportList.get_setup_reports()
+    return output_delay_comparisons.check_output_delays_match(lSetupReports, RULE_ID)
