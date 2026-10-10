@@ -35,6 +35,8 @@ Refer to the vendor's timing constraints documentation for output delays.
 from stacv.rules import output_delay_comparisons
 from stacv.rules import rule_result
 
+RULE_ID = 's2_output_delay_002'
+
 
 def check(oTimingReportList):
     '''
@@ -42,24 +44,24 @@ def check(oTimingReportList):
     '''
 
     lHoldReports = oTimingReportList.get_hold_reports()
-    
+
     if output_delay_comparisons.output_delays_are_identical(lHoldReports):
-        oRuleResult = rule_result.RuleResult('s2_output_delay_002', True, [])
+        oRuleResult = rule_result.RuleResult(RULE_ID, True, [])
     else:
-        lDetail = extract_output_delay_error_detail(lHoldReports)
-        oRuleResult = rule_result.RuleResult('s2_output_delay_002', False, lDetail)
+        lDetail = create_output_delay_error_detail(lHoldReports)
+        oRuleResult = rule_result.RuleResult(RULE_ID, False, lDetail)
     return oRuleResult
 
 
-def extract_output_delay_error_detail(lHoldReports):
+def create_output_delay_error_detail(lHoldReports):
     lDetails = []
     for oHoldReport in lHoldReports:
-        lDetail = create_detail_information(oHoldReport)
-        lDetails.append(lDetail)
+        sDetail = format_detail_information(oHoldReport)
+        lDetails.append(sDetail)
     return lDetails
 
 
-def create_detail_information(oHoldReport):
-    oOutputDelayLine = oHoldReport.get_output_delay_line()
-    iDelay = oHoldReport.get_output_delay()
-    return f'{oOutputDelayLine.filename}:{oOutputDelayLine.line_number}  {iDelay:.3f}ns'
+def format_detail_information(oHoldReport):
+    oOutputDelayLine = oHoldReport.output_delay_line
+    fDelay = oHoldReport.output_delay
+    return f'{oOutputDelayLine.filename}:{oOutputDelayLine.line_number}  {fDelay:.3f}ns'

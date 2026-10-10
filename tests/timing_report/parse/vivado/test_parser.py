@@ -551,6 +551,14 @@ class Test(unittest.TestCase):
 
         self.assertEqual(-0.123, oTimingReport.slack)
 
+    def test_populate_timing_report_reports_output_delay_line(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        oOutputDelayLine = oTimingReports.reports[1].output_delay_line
+
+        self.assertEqual('O_DAC_DATA_timing.rpt', oOutputDelayLine.filename)
+        self.assertEqual(85, oOutputDelayLine.line_number)
+
 
 def populate_timing_report_from_lines(lFile):
     oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)

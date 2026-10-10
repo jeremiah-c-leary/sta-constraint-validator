@@ -1,4 +1,3 @@
-
 import unittest
 
 from stacv.rules import rule_result

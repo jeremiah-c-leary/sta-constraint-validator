@@ -25,15 +25,3 @@ class TimingReportList():
             if isinstance(oReport, timing_report.HoldTimingReport):
                 lReports.append(oReport)
         return lReports
-
-    def get_output_delay_lines(self):
-        lOutputDelayLines = []
-        for oReport in self.reports:
-            lOutputDelayLines.append(oReport.get_output_delay_line())
-        return lOutputDelayLines
-
-    def get_output_delays(self):
-        lOutputDelayLines = []
-        for oReport in self.reports:
-            lOutputDelayLines.append(oReport.get_output_delay())
-        return lOutputDelayLines

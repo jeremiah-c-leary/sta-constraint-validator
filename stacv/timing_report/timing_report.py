@@ -24,12 +24,6 @@ class TimingReport():
     def get_filename(self):
         return self.text.get_filename()
 
-    def get_output_delay_line(self):
-        return self.output_delay_line
-
-    def get_output_delay(self):
-        return self.output_delay
-
 
 class HoldTimingReport(TimingReport):
     def __init__(self, oTimingReportText):
