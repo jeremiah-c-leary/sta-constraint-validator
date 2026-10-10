@@ -24,19 +24,57 @@ class Test(unittest.TestCase):
     def test_launch_clock_paths_match(self):
         oTimingReports = parse_test_report('s2_clock_001.passing.rpt')
 
-        self.assertTrue(s2_clock_001.check(oTimingReports))
+        oRuleResult = s2_clock_001.check(oTimingReports)
+
+        self.assertEqual('s2_clock_001', oRuleResult.rule_id)
+        self.assertTrue(oRuleResult.passed)
+        self.assertEqual([], oRuleResult.details)
 
     def test_launch_clock_path_has_different_element(self):
         oTimingReports = parse_test_report('s2_clock_001.failing_element.rpt')
 
-        self.assertFalse(s2_clock_001.check(oTimingReports))
+        oRuleResult = s2_clock_001.check(oTimingReports)
+
+        self.assertEqual('s2_clock_001', oRuleResult.rule_id)
+        self.assertFalse(oRuleResult.passed)
+
+    def test_launch_clock_path_has_different_element_lists_every_timing_report(self):
+        oTimingReports = parse_test_report('s2_clock_001.failing_element.rpt')
+
+        oRuleResult = s2_clock_001.check(oTimingReports)
+
+        lExpected = []
+        lExpected.append('s2_clock_001.failing_element.rpt:32  path 1')
+        lExpected.append('s2_clock_001.failing_element.rpt:98  path 1')
+        lExpected.append('s2_clock_001.failing_element.rpt:176  path 2')
+        lExpected.append('s2_clock_001.failing_element.rpt:242  path 1')
+
+        self.assertEqual(lExpected, oRuleResult.details)
 
     def test_launch_clock_path_has_different_length(self):
         oTimingReports = parse_test_report('s2_clock_001.failing_length.rpt')
 
-        self.assertFalse(s2_clock_001.check(oTimingReports))
+        oRuleResult = s2_clock_001.check(oTimingReports)
+
+        self.assertFalse(oRuleResult.passed)
+
+    def test_launch_clock_path_has_different_length_lists_every_timing_report(self):
+        oTimingReports = parse_test_report('s2_clock_001.failing_length.rpt')
+
+        oRuleResult = s2_clock_001.check(oTimingReports)
+
+        lExpected = []
+        lExpected.append('s2_clock_001.failing_length.rpt:32  path 1')
+        lExpected.append('s2_clock_001.failing_length.rpt:98  path 1')
+        lExpected.append('s2_clock_001.failing_length.rpt:176  path 2')
+        lExpected.append('s2_clock_001.failing_length.rpt:239  path 1')
+
+        self.assertEqual(lExpected, oRuleResult.details)
 
     def test_empty_timing_report_list_passes(self):
         oTimingReports = timing_report_list.TimingReportList()
 
-        self.assertTrue(s2_clock_001.check(oTimingReports))
+        oRuleResult = s2_clock_001.check(oTimingReports)
+
+        self.assertTrue(oRuleResult.passed)
+        self.assertEqual([], oRuleResult.details)

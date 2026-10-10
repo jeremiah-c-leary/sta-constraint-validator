@@ -30,6 +30,19 @@ The setup timing report clocks the source register through a global buffer, and 
                                                          -1.201    -0.630 r  clk_wiz_inst/CLKOUT0
      ---------------------------------------------------------------------------------------------
 
+**Result**
+
+When the rule fails, it lists every timing report with the file and line where its launch clock path starts.
+Timing reports with the same launch clock path share a label.
+The labels are numbered in the order the paths first appear, so ``path 1`` is the path of the first timing report, not necessarily the correct one:
+
+.. code-block:: text
+
+     O_DAC_DATA_timing.rpt:32  path 1
+     O_DAC_DATA_timing.rpt:98  path 1
+     O_DAC_DATA_timing.rpt:176  path 2
+     O_DAC_DATA_timing.rpt:242  path 1
+
 **Likely causes**
 
 * The timing reports were generated from different implementation runs or design checkpoints.
@@ -41,9 +54,11 @@ Refer to the vendor's timing report documentation.
 
 from stacv.rules import path_comparisons
 
+RULE_ID = 's2_clock_001'
+
 
 def check(oTimingReportList):
     '''
     Purpose:  Launch clock paths pass through the same elements in every timing report.
     '''
-    return path_comparisons.at_most_one_unique_delay_path_exists(oTimingReportList, 'launch_clock_path')
+    return path_comparisons.at_most_one_unique_delay_path_exists(oTimingReportList, 'launch_clock_path', RULE_ID)

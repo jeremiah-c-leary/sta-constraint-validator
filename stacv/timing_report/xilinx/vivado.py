@@ -354,7 +354,7 @@ def is_net_delay(oLine):
 
 
 def create_delay_path(lLines):
-    oDelayPath = delay_path.DelayPath()
+    oDelayPath = delay_path.DelayPath(lLines[0])
     for oLine in lLines:
         if is_delay_row(oLine):
             oDelayPath.add_delay(create_delay(oLine))

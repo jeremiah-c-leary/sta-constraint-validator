@@ -1,6 +1,7 @@
 
 class DelayPath():
-    def __init__(self):
+    def __init__(self, oLine):
+        self.first_line = oLine
         self.delays = []
 
     def add_delay(self, delay):

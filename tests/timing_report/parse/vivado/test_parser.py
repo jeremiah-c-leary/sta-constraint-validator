@@ -475,6 +475,15 @@ class Test(unittest.TestCase):
         self.assertEqual('I_CLK', oDelayPath.delays[0].resource)
         self.assertEqual('I_CLK_IBUF_BUFG', oDelayPath.delays[-1].resource)
 
+    def test_create_delay_path_keeps_first_line_of_path(self):
+        oTimingReportText = vivado.extract_timing_report_texts(oTimingReportFile)[0]
+        lLines = vivado.extract_launch_clock_path_lines(oTimingReportText)
+
+        oDelayPath = vivado.create_delay_path(lLines)
+
+        self.assertEqual('O_DAC_DATA_timing.rpt', oDelayPath.first_line.filename)
+        self.assertEqual(32, oDelayPath.first_line.line_number)
+
     def test_populate_timing_report_reports_launch_clock_path(self):
         oTimingReports = vivado.parse_timing_report(oTimingReportFile)
 

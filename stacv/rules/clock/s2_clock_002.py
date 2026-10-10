@@ -41,9 +41,11 @@ Refer to the vendor's timing report documentation.
 
 from stacv.rules import path_comparisons
 
+RULE_ID = 's2_clock_002'
+
 
 def check(oTimingReportList):
     '''
     Purpose:  Capture clock paths pass through the same elements in every timing report.
     '''
-    return path_comparisons.at_most_one_unique_delay_path_exists(oTimingReportList, 'capture_clock_path')
+    return path_comparisons.at_most_one_unique_delay_path_exists(oTimingReportList, 'capture_clock_path', RULE_ID)

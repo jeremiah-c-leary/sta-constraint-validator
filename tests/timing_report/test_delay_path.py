@@ -13,12 +13,12 @@ def create_net_delay(sResource):
 class Test(unittest.TestCase):
 
     def test_get_resources_of_empty_path(self):
-        oDelayPath = delay_path.DelayPath()
+        oDelayPath = delay_path.DelayPath('unknown')
 
         self.assertEqual([], oDelayPath.get_resources())
 
     def test_get_resources_in_path_order(self):
-        oDelayPath = delay_path.DelayPath()
+        oDelayPath = delay_path.DelayPath('unknown')
         oDelayPath.add_delay(create_net_delay('I_CLK'))
         oDelayPath.add_delay(create_net_delay('I_CLK_IBUF'))
 

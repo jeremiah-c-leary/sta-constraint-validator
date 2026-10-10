@@ -39,10 +39,12 @@ Refer to the vendor's timing report documentation.
 
 from stacv.rules import path_comparisons
 
+RULE_ID = 's2_data_path_001'
+
 
 def check(oTimingReportList):
     '''
     Purpose:  Data paths pass through the same elements in every timing report.
     '''
 
-    return path_comparisons.at_most_one_unique_delay_path_exists(oTimingReportList, 'data_path')
+    return path_comparisons.at_most_one_unique_delay_path_exists(oTimingReportList, 'data_path', RULE_ID)
