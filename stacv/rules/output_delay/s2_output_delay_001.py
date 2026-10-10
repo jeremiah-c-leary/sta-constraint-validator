@@ -35,10 +35,12 @@ Refer to the vendor's timing constraints documentation for output delays.
 from stacv.rules import output_delay_comparisons
 
 
+RULE_ID = 's2_output_delay_001'
+
+
 def check(oTimingReportList):
     '''
     Purpose:  Output delays match in every setup timing report.
     '''
 
-    lSetupReports = oTimingReportList.get_setup_reports()
-    return output_delay_comparisons.output_delays_are_identical(lSetupReports)
+    return output_delay_comparisons.check_output_delays_are_equal(oTimingReportList.get_setup_reports(), RULE_ID)

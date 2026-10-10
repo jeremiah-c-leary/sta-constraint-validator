@@ -33,7 +33,7 @@ Refer to the vendor's timing constraints documentation for output delays.
 '''
 
 from stacv.rules import output_delay_comparisons
-from stacv.rules import rule_result
+
 
 RULE_ID = 's2_output_delay_002'
 
@@ -43,25 +43,4 @@ def check(oTimingReportList):
     Purpose:  Output delays match in every hold timing report.
     '''
 
-    lHoldReports = oTimingReportList.get_hold_reports()
-
-    if output_delay_comparisons.output_delays_are_identical(lHoldReports):
-        oRuleResult = rule_result.RuleResult(RULE_ID, True, [])
-    else:
-        lDetail = create_output_delay_error_detail(lHoldReports)
-        oRuleResult = rule_result.RuleResult(RULE_ID, False, lDetail)
-    return oRuleResult
-
-
-def create_output_delay_error_detail(lHoldReports):
-    lDetails = []
-    for oHoldReport in lHoldReports:
-        sDetail = format_detail_information(oHoldReport)
-        lDetails.append(sDetail)
-    return lDetails
-
-
-def format_detail_information(oHoldReport):
-    oOutputDelayLine = oHoldReport.output_delay_line
-    fDelay = oHoldReport.output_delay
-    return f'{oOutputDelayLine.filename}:{oOutputDelayLine.line_number}  {fDelay:.3f}ns'
+    return output_delay_comparisons.check_output_delays_are_equal(oTimingReportList.get_hold_reports(), RULE_ID)
