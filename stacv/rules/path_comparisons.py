@@ -6,38 +6,30 @@ from stacv.rules import rule_result
 
 
 def at_most_one_unique_delay_path_exists(oTimingReportList, sPathType, sRuleId):
-    lDelayPaths = group_unique_delay_paths(oTimingReportList, sPathType)
+    lDelayPaths = identify_unique_paths(oTimingReportList, sPathType)
     return has_at_most_one_unique_path(lDelayPaths, sRuleId)
 
 
-def group_unique_delay_paths(oTimingReportList, sPathType):
-    lUniquePaths = []
+def identify_unique_paths(oTimingReportList, sPathType):
+    lPaths = []
     for oTimingReport in oTimingReportList.reports:
         oPath = get_path(oTimingReport, sPathType)
-        group_paths(lUniquePaths, oPath)
-    return lUniquePaths
+        group_paths(lPaths, oPath)
+    return lPaths
 
 
-def group_paths(lUniquePaths, oPath):
-
+def group_paths(lPaths, oPath):
     iMaxIndex = 0
-    if len(lUniquePaths) == 0:
-        lUniquePaths.append([oPath, 1])
-        return
-    for lPath in lUniquePaths:
+    for lPath in lPaths:
         iMaxIndex = max([iMaxIndex, lPath[1]])
-        if lPath[0].get_resources() == oPath.get_resources():
-            lUniquePaths.append([oPath , lPath[1]])
+        if path_resources_match(lPath[0], oPath):
+            lPaths.append([oPath , lPath[1]])
             return
-    lUniquePaths.append([oPath, iMaxIndex + 1])
+    lPaths.append([oPath, iMaxIndex + 1])
 
 
-def get_all_delay_paths(oTimingReportList, sPathType):
-    lAllPaths = []
-    for oTimingReport in oTimingReportList.reports:
-        lResources = get_path_resources(oTimingReport, sPathType)
-        lAllPaths.append(lResources)
-    return lAllPaths
+def path_resources_match(oPath1, oPath2):
+    return oPath1.get_resources() == oPath2.get_resources()
 
 
 def has_at_most_one_unique_path(lUniquePaths, sRuleId):
@@ -68,7 +60,3 @@ def create_failing_rule_result(lUniquePaths, sRuleId):
 
 def get_path(oTimingReport, sPathType):
     return getattr(oTimingReport, sPathType)
-
-
-def is_new_path(lResources, lUniquePaths):
-    return lResources not in lUniquePaths
