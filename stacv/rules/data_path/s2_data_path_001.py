@@ -29,6 +29,19 @@ The setup timing report starts at the output data register, and the hold timing 
        SLICE_X0Y3           LUT3 (Prop_lut3_I1_O)        0.045     1.804 r  O_DAC_DATA_OBUF_inst_i_1/O
      ---------------------------------------------------------------------------------------------
 
+**Result**
+
+When the rule fails, it lists every timing report with the file and line where its data path starts.
+Timing reports with the same data path share a label.
+The labels are numbered in the order the paths first appear, so ``path 1`` is the path of the first timing report, not necessarily the correct one:
+
+.. code-block:: text
+
+     O_DAC_DATA_timing.rpt:43  path 1
+     O_DAC_DATA_timing.rpt:109  path 1
+     O_DAC_DATA_timing.rpt:187  path 2
+     O_DAC_DATA_timing.rpt:253  path 1
+
 **Likely causes**
 
 * More than one register drives the output port through logic, and the worst path at each process corner starts at a different register.
