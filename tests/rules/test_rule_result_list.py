@@ -10,6 +10,7 @@ class Test(unittest.TestCase):
         self.oFirstPassingResult = rule_result.RuleResult('s1_clock_001', True, [])
         self.oSecondPassingResult = rule_result.RuleResult('s2_clock_001', True, [])
         self.oFailingResult = rule_result.RuleResult('s2_clock_002', False, ['first.rpt:51  path 1', 'first.rpt:117  path 2'])
+        self.oSecondFailingResult = rule_result.RuleResult('s2_data_path_001', False, ['first.rpt:203  path 3'])
 
     def test_new_rule_result_list_is_empty(self):
         oRuleResults = rule_result_list.RuleResultList()
@@ -45,3 +46,30 @@ class Test(unittest.TestCase):
         oRuleResults = rule_result_list.RuleResultList()
 
         self.assertTrue(oRuleResults.all_passed())
+
+    def test_get_failing_results_returns_only_failing_results_in_order(self):
+        oRuleResults = rule_result_list.RuleResultList()
+        oRuleResults.add(self.oFirstPassingResult)
+        oRuleResults.add(self.oFailingResult)
+        oRuleResults.add(self.oSecondPassingResult)
+        oRuleResults.add(self.oSecondFailingResult)
+
+        lExpected = [self.oFailingResult, self.oSecondFailingResult]
+        self.assertEqual(lExpected, oRuleResults.get_failing_results())
+
+    def test_get_failing_results_is_empty_when_every_result_passed(self):
+        oRuleResults = rule_result_list.RuleResultList()
+        oRuleResults.add(self.oFirstPassingResult)
+        oRuleResults.add(self.oSecondPassingResult)
+
+        self.assertEqual([], oRuleResults.get_failing_results())
+
+    def test_get_failing_results_does_not_change_results(self):
+        oRuleResults = rule_result_list.RuleResultList()
+        oRuleResults.add(self.oFirstPassingResult)
+        oRuleResults.add(self.oFailingResult)
+
+        oRuleResults.get_failing_results()
+
+        lExpected = [self.oFirstPassingResult, self.oFailingResult]
+        self.assertEqual(lExpected, oRuleResults.results)
