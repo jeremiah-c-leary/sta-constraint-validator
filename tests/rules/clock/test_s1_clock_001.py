@@ -6,7 +6,7 @@ from stacv.timing_report import timing_report_file
 
 from stacv.timing_report.xilinx import vivado
 
-from stacv.rules.clock import s1_clock_001 as Rule
+from stacv.rules.clock import s1_clock_001
 
 from tests import utils
 
@@ -18,12 +18,30 @@ oFailingFile = timing_report_file.TimingReportFile('s1_clock_001.failing.rpt', u
 
 class Test(unittest.TestCase):
 
-    def test_failing_timing_report(self):
-        oTimingReports = vivado.parse_timing_report(oFailingFile)
-
-        self.assertFalse(Rule.check(oTimingReports.reports[0]))
-
     def test_passing_timing_report(self):
         oTimingReports = vivado.parse_timing_report(oPassingFile)
 
-        self.assertTrue(Rule.check(oTimingReports.reports[0]))
+        oRuleResult = s1_clock_001.check(oTimingReports.reports[0])
+
+        self.assertEqual('s1_clock_001', oRuleResult.rule_id)
+        self.assertTrue(oRuleResult.passed)
+        self.assertEqual([], oRuleResult.details)
+
+    def test_failing_timing_report(self):
+        oTimingReports = vivado.parse_timing_report(oFailingFile)
+
+        oRuleResult = s1_clock_001.check(oTimingReports.reports[0])
+
+        self.assertEqual('s1_clock_001', oRuleResult.rule_id)
+        self.assertFalse(oRuleResult.passed)
+
+    def test_failing_timing_report_lists_both_start_points(self):
+        oTimingReports = vivado.parse_timing_report(oFailingFile)
+
+        oRuleResult = s1_clock_001.check(oTimingReports.reports[0])
+
+        lExpected = []
+        lExpected.append('s1_clock_001.failing.rpt:32  launch clock path starts at I_CLK')
+        lExpected.append('s1_clock_001.failing.rpt:48  capture clock path starts at I_CLK2')
+
+        self.assertEqual(lExpected, oRuleResult.details)

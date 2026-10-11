@@ -28,6 +28,16 @@ The launch clock path starts at ``I_CLK`` and the capture clock path starts at `
                             net (fo=0)                   0.000     0.000    I_CLK2
        L17                  IBUF (Prop_ibuf_I_O)         0.348     0.348 r  I_CLK2_IBUF_inst/O
 
+**Result**
+
+The rule checks each timing report on its own and gives one result per timing report.
+When it fails, it lists the file and line where each clock path starts, with the point it starts at:
+
+.. code-block:: text
+
+     O_DAC_DATA_timing.rpt:32  launch clock path starts at I_CLK
+     O_DAC_DATA_timing.rpt:51  capture clock path starts at I_CLK2
+
 **Likely causes**
 
 * The generated capture clock was created from the wrong master clock.
@@ -37,6 +47,10 @@ The launch clock path starts at ``I_CLK`` and the capture clock path starts at `
 
 Refer to the vendor's timing constraints documentation for generated clocks and clock muxes.
 '''
+
+RULE_ID = 's1_clock_001'
+
+from stacv.rules import rule_result
 
 
 def check(oTimingReport):
@@ -48,5 +62,31 @@ def check(oTimingReport):
     sCaptureClockStartPoint = oTimingReport.capture_clock_path.delays[0].resource
 
     if sLaunchClockStartPoint != sCaptureClockStartPoint:
-        return False
-    return True
+        lDetails = create_details(oTimingReport)
+        return rule_result.RuleResult(RULE_ID, False, lDetails)
+    return rule_result.RuleResult(RULE_ID, True, [])
+
+
+def create_details(oTimingReport):
+    lDetails = []
+    lDetails.append(create_launch_clock_detail(oTimingReport))
+    lDetails.append(create_capture_clock_detail(oTimingReport))
+    return lDetails
+
+
+def create_launch_clock_detail(oTimingReport):
+    sDetail = ''
+    sFilename = oTimingReport.text.timing_report_file.filename
+    iLineNumber = oTimingReport.launch_clock_path.first_line.line_number
+    sLabel = oTimingReport.launch_clock_path.delays[0].resource
+    sDetail = f'{sFilename}:{iLineNumber}  launch clock path starts at {sLabel}'
+    return sDetail
+
+
+def create_capture_clock_detail(oTimingReport):
+    sDetail = ''
+    sFilename = oTimingReport.text.timing_report_file.filename
+    iLineNumber = oTimingReport.capture_clock_path.first_line.line_number
+    sLabel = oTimingReport.capture_clock_path.delays[0].resource
+    sDetail = f'{sFilename}:{iLineNumber}  capture clock path starts at {sLabel}'
+    return sDetail
