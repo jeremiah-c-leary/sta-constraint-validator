@@ -7,10 +7,10 @@ class RuleResultList():
     def __init__(self):
         self.results = []
 
-    def add(self, oResult):
+    def add_result(self, oResult):
         self.results.append(oResult)
 
-    def add_results(self, lResults):
+    def add_result_list(self, lResults):
         self.results.extend(lResults.results)
 
     def has_failures(self):
