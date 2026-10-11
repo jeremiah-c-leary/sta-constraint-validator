@@ -24,6 +24,9 @@ class TimingReport():
     def get_filename(self):
         return self.text.get_filename()
 
+    def get_line_number(self):
+        return self.text.lines[0].line_number
+
 
 class HoldTimingReport(TimingReport):
     def __init__(self, oTimingReportText):
