@@ -48,4 +48,4 @@ def check(oTimingReportList):
     '''
     Purpose:  Capture clock paths pass through the same elements in every timing report.
     '''
-    return path_comparisons.at_most_one_unique_delay_path_exists(oTimingReportList, 'capture_clock_path', RULE_ID)
+    return path_comparisons.check_paths_match(oTimingReportList.reports, 'capture_clock_path', RULE_ID)

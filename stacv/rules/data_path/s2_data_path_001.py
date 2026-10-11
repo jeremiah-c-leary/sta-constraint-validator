@@ -47,4 +47,4 @@ def check(oTimingReportList):
     Purpose:  Data paths pass through the same elements in every timing report.
     '''
 
-    return path_comparisons.at_most_one_unique_delay_path_exists(oTimingReportList, 'data_path', RULE_ID)
+    return path_comparisons.check_paths_match(oTimingReportList.reports, 'data_path', RULE_ID)
