@@ -12,22 +12,18 @@ def at_most_one_unique_delay_path_exists(oTimingReportList, sPathType, sRuleId):
 
 
 def identify_unique_paths(oTimingReportList, sPathType):
-    lPaths = []
+    lUniquePaths = []
     for oTimingReport in oTimingReportList.reports:
-        oPath = get_path(oTimingReport, sPathType)
-        group_paths(lPaths, oPath)
-    return lPaths
+        lPathResources = get_path_resources(oTimingReport, sPathType)
+        uniquify_paths(lUniquePaths, lPathResources)
+    return lUniquePaths
 
 
-def group_paths(lPaths, oPath):
+def uniquify_paths(lPaths, lResources):
     for lPath in lPaths:
-        if path_resources_match(lPath, oPath.get_resources()):
+        if lPath == lResources:
             return
-    lPaths.append(oPath.get_resources())
-
-
-def path_resources_match(lPath1, lPath2):
-    return lPath1 == lPath2
+    lPaths.append(lResources)
 
 
 def has_at_most_one_unique_path(lAllReports, lUniquePaths, sPathType, sRuleId):
@@ -54,3 +50,7 @@ def create_failing_rule_result(lAllReports, lUniquePaths, sPathType, sRuleId):
 
 def get_path(oTimingReport, sPathType):
     return getattr(oTimingReport, sPathType)
+
+
+def get_path_resources(oTimingReport, sPathType):
+    return get_path(oTimingReport, sPathType).get_resources()
