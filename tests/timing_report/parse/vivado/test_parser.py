@@ -65,16 +65,16 @@ class Test(unittest.TestCase):
         oTimingReportList = vivado.parse_timing_report(oTimingReportFile)
 
         self.assertEqual(60, len(oTimingReportList.reports[0].get_lines()))
-        self.assertEqual(14, oTimingReportList.reports[0].text.first_line_number)
+        self.assertEqual(14, oTimingReportList.reports[0].get_first_line_number())
 
         self.assertEqual(66, len(oTimingReportList.reports[1].get_lines()))
-        self.assertEqual(75, oTimingReportList.reports[1].text.first_line_number)
+        self.assertEqual(75, oTimingReportList.reports[1].get_first_line_number())
 
         self.assertEqual(60, len(oTimingReportList.reports[2].get_lines()))
-        self.assertEqual(158, oTimingReportList.reports[2].text.first_line_number)
+        self.assertEqual(158, oTimingReportList.reports[2].get_first_line_number())
 
         self.assertEqual(66, len(oTimingReportList.reports[3].get_lines()))
-        self.assertEqual(219, oTimingReportList.reports[3].text.first_line_number)
+        self.assertEqual(219, oTimingReportList.reports[3].get_first_line_number())
 
     def test_create_timing_report_raises_an_error_for_unknown_path_type(self):
         oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  Path Type:  Unexpected', '  slack   1.000'])

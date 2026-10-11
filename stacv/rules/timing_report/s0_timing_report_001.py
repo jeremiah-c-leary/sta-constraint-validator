@@ -43,7 +43,7 @@ RULE_ID = 's0_timing_report_001'
 
 def check(oTimingReportList):
     '''
-    Purpose:  Checks there are at least two setup timing reports at different timing corners.
+    Purpose:  Checks there are at least two setup timing reports at different process corners.
     '''
 
     lSetupTimingReports = oTimingReportList.get_setup_reports()
@@ -51,25 +51,27 @@ def check(oTimingReportList):
     if at_least_two_corners_exist(lCorners):
         return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [])
     lDetails = create_rule_result_detail(lSetupTimingReports)
-    return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails) 
+    return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails)
 
 
 def get_unique_timing_corners_from_reports(lTimingReports):
     lCorners = []
     for oTimingReport in lTimingReports:
-        lCorners.append(oTimingReport.process_corner)
-    return set(lCorners)
+        sProcessCorner = oTimingReport.process_corner
+        if sProcessCorner not in lCorners:
+            lCorners.append(oTimingReport.process_corner)
+    return lCorners
 
 
 def at_least_two_corners_exist(lCorners):
-    return len(lCorners) > 1
+    return len(lCorners) >= 2
 
 
 def create_rule_result_detail(lTimingReports):
     lDetails = []
     for oTimingReport in lTimingReports:
         sFilename = oTimingReport.get_filename()
-        iLineNumber = oTimingReport.get_line_number()
+        iLineNumber = oTimingReport.get_first_line_number()
         sProcessCorner = oTimingReport.process_corner
         lDetails.append(f'{sFilename}:{iLineNumber}  setup timing report, {sProcessCorner} process corner')
     return lDetails
