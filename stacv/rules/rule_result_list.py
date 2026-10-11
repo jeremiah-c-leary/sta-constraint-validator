@@ -10,15 +10,15 @@ class RuleResultList():
     def add(self, oResult):
         self.results.append(oResult)
 
-    def all_passed(self):
+    def has_failures(self):
         for oResult in self.results:
-            if not oResult.is_passed():
-                return False
-        return True
+            if oResult.is_failed():
+                return True
+        return False
 
     def get_failing_results(self):
         lFailingTests = []
         for oResult in self.results:
-            if not oResult.is_passed():
+            if oResult.is_failed():
                 lFailingTests.append(oResult)
         return lFailingTests

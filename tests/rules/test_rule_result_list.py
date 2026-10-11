@@ -11,6 +11,7 @@ class Test(unittest.TestCase):
         self.oSecondPassingResult = rule_result.RuleResult('s2_clock_001', rule_result.PASSED, [])
         self.oFailingResult = rule_result.RuleResult('s2_clock_002', rule_result.FAILED, ['first.rpt:51  path 1', 'first.rpt:117  path 2'])
         self.oSecondFailingResult = rule_result.RuleResult('s2_data_path_001', rule_result.FAILED, ['first.rpt:203  path 3'])
+        self.oSkippedResult = rule_result.RuleResult('s2_output_delay_002', rule_result.SKIPPED, ['no hold timing reports found'])
 
     def test_new_rule_result_list_is_empty(self):
         oRuleResults = rule_result_list.RuleResultList()
@@ -27,25 +28,32 @@ class Test(unittest.TestCase):
         lExpected = [self.oFirstPassingResult, self.oFailingResult, self.oSecondPassingResult]
         self.assertEqual(lExpected, oRuleResults.results)
 
-    def test_all_passed_when_every_result_passed(self):
+    def test_has_no_failures_when_every_result_passed(self):
         oRuleResults = rule_result_list.RuleResultList()
         oRuleResults.add(self.oFirstPassingResult)
         oRuleResults.add(self.oSecondPassingResult)
 
-        self.assertTrue(oRuleResults.all_passed())
+        self.assertFalse(oRuleResults.has_failures())
 
-    def test_not_all_passed_when_one_result_failed(self):
+    def test_has_failures_when_one_result_failed(self):
         oRuleResults = rule_result_list.RuleResultList()
         oRuleResults.add(self.oFirstPassingResult)
         oRuleResults.add(self.oFailingResult)
         oRuleResults.add(self.oSecondPassingResult)
 
-        self.assertFalse(oRuleResults.all_passed())
+        self.assertTrue(oRuleResults.has_failures())
 
-    def test_empty_rule_result_list_has_all_passed(self):
+    def test_empty_rule_result_list_has_no_failures(self):
         oRuleResults = rule_result_list.RuleResultList()
 
-        self.assertTrue(oRuleResults.all_passed())
+        self.assertFalse(oRuleResults.has_failures())
+
+    def test_skipped_result_is_not_a_failure(self):
+        oRuleResults = rule_result_list.RuleResultList()
+        oRuleResults.add(self.oFirstPassingResult)
+        oRuleResults.add(self.oSkippedResult)
+
+        self.assertFalse(oRuleResults.has_failures())
 
     def test_get_failing_results_returns_only_failing_results_in_order(self):
         oRuleResults = rule_result_list.RuleResultList()
@@ -73,3 +81,12 @@ class Test(unittest.TestCase):
 
         lExpected = [self.oFirstPassingResult, self.oFailingResult]
         self.assertEqual(lExpected, oRuleResults.results)
+
+    def test_get_failing_results_does_not_return_skipped_results(self):
+        oRuleResults = rule_result_list.RuleResultList()
+        oRuleResults.add(self.oFirstPassingResult)
+        oRuleResults.add(self.oSkippedResult)
+        oRuleResults.add(self.oFailingResult)
+
+        lExpected = [self.oFailingResult]
+        self.assertEqual(lExpected, oRuleResults.get_failing_results())
