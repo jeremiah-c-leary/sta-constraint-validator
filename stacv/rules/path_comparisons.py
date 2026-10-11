@@ -8,10 +8,10 @@ from stacv.rules import rule_result
 def check_paths_match(lReports, sPathType, sRuleId):
     lUniquePaths = identify_unique_paths(lReports, sPathType)
     if less_than_two_unique_paths(lUniquePaths):
-        return rule_result.RuleResult(sRuleId, True, [])
+        return rule_result.RuleResult(sRuleId, rule_result.PASSED, [])
     else:
         lDetails = create_path_details(lReports, lUniquePaths, sPathType)
-        return rule_result.RuleResult(sRuleId, False, lDetails)
+        return rule_result.RuleResult(sRuleId, rule_result.FAILED, lDetails)
 
 
 def identify_unique_paths(lReports, sPathType):

@@ -63,8 +63,8 @@ def check(oTimingReport):
 
     if sLaunchClockStartPoint != sCaptureClockStartPoint:
         lDetails = create_details(oTimingReport)
-        return rule_result.RuleResult(RULE_ID, False, lDetails)
-    return rule_result.RuleResult(RULE_ID, True, [])
+        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails)
+    return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [])
 
 
 def create_details(oTimingReport):

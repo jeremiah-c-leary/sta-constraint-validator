@@ -24,7 +24,7 @@ class Test(unittest.TestCase):
         oRuleResult = s1_clock_001.check(oTimingReports.reports[0])
 
         self.assertEqual('s1_clock_001', oRuleResult.rule_id)
-        self.assertTrue(oRuleResult.passed)
+        self.assertTrue(oRuleResult.is_passed())
         self.assertEqual([], oRuleResult.details)
 
     def test_failing_timing_report(self):
@@ -33,7 +33,7 @@ class Test(unittest.TestCase):
         oRuleResult = s1_clock_001.check(oTimingReports.reports[0])
 
         self.assertEqual('s1_clock_001', oRuleResult.rule_id)
-        self.assertFalse(oRuleResult.passed)
+        self.assertFalse(oRuleResult.is_passed())
 
     def test_failing_timing_report_lists_both_start_points(self):
         oTimingReports = vivado.parse_timing_report(oFailingFile)

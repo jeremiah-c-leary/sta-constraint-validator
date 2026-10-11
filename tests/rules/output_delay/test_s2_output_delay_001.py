@@ -27,7 +27,7 @@ class Test(unittest.TestCase):
         oRuleResult = s2_output_delay_001.check(oTimingReports)
 
         self.assertEqual('s2_output_delay_001', oRuleResult.rule_id)
-        self.assertTrue(oRuleResult.passed)
+        self.assertTrue(oRuleResult.is_passed())
         self.assertEqual([], oRuleResult.details)
 
     def test_setup_output_delay_differs(self):
@@ -36,7 +36,7 @@ class Test(unittest.TestCase):
         oRuleResult = s2_output_delay_001.check(oTimingReports)
 
         self.assertEqual('s2_output_delay_001', oRuleResult.rule_id)
-        self.assertFalse(oRuleResult.passed)
+        self.assertFalse(oRuleResult.is_passed())
 
     def test_setup_output_delay_differs_lists_every_setup_timing_report(self):
         oTimingReports = parse_test_report('s2_output_delay_001.failing.rpt')
@@ -54,7 +54,7 @@ class Test(unittest.TestCase):
 
         oRuleResult = s2_output_delay_001.check(oTimingReports)
 
-        self.assertTrue(oRuleResult.passed)
+        self.assertTrue(oRuleResult.is_passed())
         self.assertEqual([], oRuleResult.details)
 
     def test_empty_timing_report_list_passes(self):
@@ -62,5 +62,5 @@ class Test(unittest.TestCase):
 
         oRuleResult = s2_output_delay_001.check(oTimingReports)
 
-        self.assertTrue(oRuleResult.passed)
+        self.assertTrue(oRuleResult.is_passed())
         self.assertEqual([], oRuleResult.details)

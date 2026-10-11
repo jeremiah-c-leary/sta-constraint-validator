@@ -7,10 +7,10 @@ from stacv.rules import rule_result_list
 class Test(unittest.TestCase):
 
     def setUp(self):
-        self.oFirstPassingResult = rule_result.RuleResult('s1_clock_001', True, [])
-        self.oSecondPassingResult = rule_result.RuleResult('s2_clock_001', True, [])
-        self.oFailingResult = rule_result.RuleResult('s2_clock_002', False, ['first.rpt:51  path 1', 'first.rpt:117  path 2'])
-        self.oSecondFailingResult = rule_result.RuleResult('s2_data_path_001', False, ['first.rpt:203  path 3'])
+        self.oFirstPassingResult = rule_result.RuleResult('s1_clock_001', rule_result.PASSED, [])
+        self.oSecondPassingResult = rule_result.RuleResult('s2_clock_001', rule_result.PASSED, [])
+        self.oFailingResult = rule_result.RuleResult('s2_clock_002', rule_result.FAILED, ['first.rpt:51  path 1', 'first.rpt:117  path 2'])
+        self.oSecondFailingResult = rule_result.RuleResult('s2_data_path_001', rule_result.FAILED, ['first.rpt:203  path 3'])
 
     def test_new_rule_result_list_is_empty(self):
         oRuleResults = rule_result_list.RuleResultList()

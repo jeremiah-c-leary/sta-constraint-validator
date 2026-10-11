@@ -27,7 +27,7 @@ class Test(unittest.TestCase):
         oRuleResult = s2_data_path_001.check(oTimingReports)
 
         self.assertEqual('s2_data_path_001', oRuleResult.rule_id)
-        self.assertTrue(oRuleResult.passed)
+        self.assertTrue(oRuleResult.is_passed())
         self.assertEqual([], oRuleResult.details)
 
     def test_data_path_has_different_element(self):
@@ -36,7 +36,7 @@ class Test(unittest.TestCase):
         oRuleResult = s2_data_path_001.check(oTimingReports)
 
         self.assertEqual('s2_data_path_001', oRuleResult.rule_id)
-        self.assertFalse(oRuleResult.passed)
+        self.assertFalse(oRuleResult.is_passed())
 
     def test_data_path_has_different_element_lists_every_timing_report(self):
         oTimingReports = parse_test_report('s2_data_path_001.failing_element.rpt')
@@ -56,7 +56,7 @@ class Test(unittest.TestCase):
 
         oRuleResult = s2_data_path_001.check(oTimingReports)
 
-        self.assertFalse(oRuleResult.passed)
+        self.assertFalse(oRuleResult.is_passed())
 
     def test_data_path_has_different_length_lists_every_timing_report(self):
         oTimingReports = parse_test_report('s2_data_path_001.failing_length.rpt')
@@ -76,5 +76,5 @@ class Test(unittest.TestCase):
 
         oRuleResult = s2_data_path_001.check(oTimingReports)
 
-        self.assertTrue(oRuleResult.passed)
+        self.assertTrue(oRuleResult.is_passed())
         self.assertEqual([], oRuleResult.details)

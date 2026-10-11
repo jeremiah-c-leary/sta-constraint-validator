@@ -12,13 +12,13 @@ class RuleResultList():
 
     def all_passed(self):
         for oResult in self.results:
-            if not oResult.passed:
+            if not oResult.is_passed():
                 return False
         return True
 
     def get_failing_results(self):
         lFailingTests = []
         for oResult in self.results:
-            if not oResult.passed:
+            if not oResult.is_passed():
                 lFailingTests.append(oResult)
         return lFailingTests
