@@ -48,9 +48,9 @@ When it fails, it lists the file and line where each clock path starts, with the
 Refer to the vendor's timing constraints documentation for generated clocks and clock muxes.
 '''
 
-RULE_ID = 's1_clock_001'
-
 from stacv.rules import rule_result
+
+RULE_ID = 's1_clock_001'
 
 
 def check(oTimingReport):
