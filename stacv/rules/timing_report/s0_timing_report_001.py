@@ -36,7 +36,7 @@ When it fails, it lists the file and line of each setup timing report it found, 
 Refer to the vendor's timing analysis documentation for reporting timing at multiple process corners.
 '''
 
-from stacv.rules import rule_result
+from stacv.rules import process_corner_coverage
 
 RULE_ID = 's0_timing_report_001'
 
@@ -47,31 +47,4 @@ def check(oTimingReportList):
     '''
 
     lSetupTimingReports = oTimingReportList.get_setup_reports()
-    lCorners = get_unique_timing_corners_from_reports(lSetupTimingReports)
-    if at_least_two_corners_exist(lCorners):
-        return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [])
-    lDetails = create_rule_result_detail(lSetupTimingReports)
-    return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails)
-
-
-def get_unique_timing_corners_from_reports(lTimingReports):
-    lCorners = []
-    for oTimingReport in lTimingReports:
-        sProcessCorner = oTimingReport.process_corner
-        if sProcessCorner not in lCorners:
-            lCorners.append(oTimingReport.process_corner)
-    return lCorners
-
-
-def at_least_two_corners_exist(lCorners):
-    return len(lCorners) >= 2
-
-
-def create_rule_result_detail(lTimingReports):
-    lDetails = []
-    for oTimingReport in lTimingReports:
-        sFilename = oTimingReport.get_filename()
-        iLineNumber = oTimingReport.get_first_line_number()
-        sProcessCorner = oTimingReport.process_corner
-        lDetails.append(f'{sFilename}:{iLineNumber}  setup timing report, {sProcessCorner} process corner')
-    return lDetails
+    return process_corner_coverage.check_at_least_two_process_corners_exist(RULE_ID, lSetupTimingReports, 'setup')
