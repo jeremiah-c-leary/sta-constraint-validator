@@ -58,8 +58,8 @@ def check(oTimingReport):
     Purpose:  Launch and capture clock paths start at the same point.
     '''
 
-    sLaunchClockStartPoint = oTimingReport.launch_clock_path.delays[0].resource
-    sCaptureClockStartPoint = oTimingReport.capture_clock_path.delays[0].resource
+    sLaunchClockStartPoint = get_start_point(oTimingReport.launch_clock_path)
+    sCaptureClockStartPoint = get_start_point(oTimingReport.capture_clock_path)
 
     if sLaunchClockStartPoint != sCaptureClockStartPoint:
         lDetails = create_details(oTimingReport)
@@ -78,8 +78,8 @@ def create_start_point_detail(oPath, sPathName):
     oLine = oPath.first_line
     sFilename = oLine.filename
     iLineNumber = oLine.line_number
-    sLabel = get_start_point(oPath)
-    sDetail = f'{sFilename}:{iLineNumber}  {sPathName} starts at {sLabel}'
+    sStartPoint = get_start_point(oPath)
+    sDetail = f'{sFilename}:{iLineNumber}  {sPathName} starts at {sStartPoint}'
     return sDetail
 
 
