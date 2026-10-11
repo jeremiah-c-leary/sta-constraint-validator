@@ -11,14 +11,14 @@ SKIPPED = 'skipped'
 class RuleResult():
     def __init__(self, sRuleId, sResult, lDetails):
         self.rule_id = sRuleId
-        self.result = sResult
+        self.status = sResult
         self.details = lDetails
 
     def is_passed(self):
-        return self.result == PASSED
+        return self.status == PASSED
 
     def is_failed(self):
-        return self.result == FAILED
+        return self.status == FAILED
 
     def is_skipped(self):
-        return self.result == SKIPPED
+        return self.status == SKIPPED
