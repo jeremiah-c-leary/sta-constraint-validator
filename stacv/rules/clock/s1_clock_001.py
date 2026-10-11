@@ -69,24 +69,19 @@ def check(oTimingReport):
 
 def create_details(oTimingReport):
     lDetails = []
-    lDetails.append(create_launch_clock_detail(oTimingReport))
-    lDetails.append(create_capture_clock_detail(oTimingReport))
+    lDetails.append(create_start_point_detail(oTimingReport.launch_clock_path, 'launch clock path'))
+    lDetails.append(create_start_point_detail(oTimingReport.capture_clock_path, 'capture clock path'))
     return lDetails
 
 
-def create_launch_clock_detail(oTimingReport):
-    sDetail = ''
-    sFilename = oTimingReport.text.timing_report_file.filename
-    iLineNumber = oTimingReport.launch_clock_path.first_line.line_number
-    sLabel = oTimingReport.launch_clock_path.delays[0].resource
-    sDetail = f'{sFilename}:{iLineNumber}  launch clock path starts at {sLabel}'
+def create_start_point_detail(oPath, sPathName):
+    oLine = oPath.first_line
+    sFilename = oLine.filename
+    iLineNumber = oLine.line_number
+    sLabel = get_start_point(oPath)
+    sDetail = f'{sFilename}:{iLineNumber}  {sPathName} starts at {sLabel}'
     return sDetail
 
 
-def create_capture_clock_detail(oTimingReport):
-    sDetail = ''
-    sFilename = oTimingReport.text.timing_report_file.filename
-    iLineNumber = oTimingReport.capture_clock_path.first_line.line_number
-    sLabel = oTimingReport.capture_clock_path.delays[0].resource
-    sDetail = f'{sFilename}:{iLineNumber}  capture clock path starts at {sLabel}'
-    return sDetail
+def get_start_point(oPath):
+    return oPath.delays[0].resource
