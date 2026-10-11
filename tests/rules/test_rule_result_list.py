@@ -90,3 +90,26 @@ class Test(unittest.TestCase):
 
         lExpected = [self.oFailingResult]
         self.assertEqual(lExpected, oRuleResults.get_failing_results())
+
+    def test_add_results_appends_other_results_after_existing_results_in_order(self):
+        oStageZeroResults = rule_result_list.RuleResultList()
+        oStageZeroResults.add(self.oFirstPassingResult)
+        oStageOneResults = rule_result_list.RuleResultList()
+        oStageOneResults.add(self.oFailingResult)
+        oStageOneResults.add(self.oSecondPassingResult)
+
+        oStageZeroResults.add_results(oStageOneResults)
+
+        lExpected = [self.oFirstPassingResult, self.oFailingResult, self.oSecondPassingResult]
+        self.assertEqual(lExpected, oStageZeroResults.results)
+
+    def test_add_results_does_not_change_other_results(self):
+        oStageZeroResults = rule_result_list.RuleResultList()
+        oStageZeroResults.add(self.oFirstPassingResult)
+        oStageOneResults = rule_result_list.RuleResultList()
+        oStageOneResults.add(self.oFailingResult)
+
+        oStageZeroResults.add_results(oStageOneResults)
+
+        lExpected = [self.oFailingResult]
+        self.assertEqual(lExpected, oStageOneResults.results)

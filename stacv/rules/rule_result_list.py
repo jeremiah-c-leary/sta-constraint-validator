@@ -10,6 +10,9 @@ class RuleResultList():
     def add(self, oResult):
         self.results.append(oResult)
 
+    def add_results(self, lResults):
+        self.results.extend(lResults.results)
+
     def has_failures(self):
         for oResult in self.results:
             if oResult.is_failed():
