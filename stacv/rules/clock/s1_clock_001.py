@@ -53,18 +53,27 @@ from stacv.rules import rule_result
 RULE_ID = 's1_clock_001'
 
 
-def check(oTimingReport):
+def check(oTimingReportList):
     '''
     Purpose:  Launch and capture clock paths start at the same point.
     '''
 
-    sLaunchClockStartPoint = get_start_point(oTimingReport.launch_clock_path)
-    sCaptureClockStartPoint = get_start_point(oTimingReport.capture_clock_path)
+    lDetails = []
+    for oTimingReport in oTimingReportList.reports:
 
-    if sLaunchClockStartPoint != sCaptureClockStartPoint:
-        lDetails = create_details(oTimingReport)
-        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails)
-    return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [])
+        sLaunchClockStartPoint = get_start_point(oTimingReport.launch_clock_path)
+        sCaptureClockStartPoint = get_start_point(oTimingReport.capture_clock_path)
+    
+        if sLaunchClockStartPoint != sCaptureClockStartPoint:
+            lDetails.extend(create_details(oTimingReport))
+
+    if all_start_and_end_points_match(lDetails):
+        return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [])
+    return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails)
+
+
+def all_start_and_end_points_match(lDetails):
+    return len(lDetails) == 0
 
 
 def create_details(oTimingReport):
