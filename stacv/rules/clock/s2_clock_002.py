@@ -30,6 +30,19 @@ The setup timing report forwards the clock through a register, and the hold timi
        OLOGIC_X0Y12         ODDR (Prop_oddr_C_Q)         0.177     1.585 r  clk_forward_oddr/Q
      ---------------------------------------------------------------------------------------------
 
+**Result**
+
+When the rule fails, it lists every timing report with the file and line where its capture clock path starts.
+Timing reports with the same capture clock path share a label.
+The labels are numbered in the order the paths first appear, so ``path 1`` is the path of the first timing report, not necessarily the correct one:
+
+.. code-block:: text
+
+     O_DAC_DATA_timing.rpt:51  path 1
+     O_DAC_DATA_timing.rpt:117  path 1
+     O_DAC_DATA_timing.rpt:195  path 2
+     O_DAC_DATA_timing.rpt:261  path 1
+
 **Likely causes**
 
 * The timing reports were generated from different implementation runs or design checkpoints.
