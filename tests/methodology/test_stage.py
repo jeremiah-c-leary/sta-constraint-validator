@@ -48,3 +48,35 @@ class Test(unittest.TestCase):
         oRuleResults = oStage.check(self.oTimingReports)
 
         self.assertEqual([], oRuleResults.results)
+
+    def test_skip_returns_one_skipped_result_per_rule_in_rule_order(self):
+        oStage = stage.Stage('stage 2', [passing_rule, failing_rule, second_passing_rule])
+
+        oRuleResults = oStage.skip('stage 1 failed')
+
+        lRuleIds = []
+        for oResult in oRuleResults.results:
+            lRuleIds.append(oResult.rule_id)
+            self.assertTrue(oResult.is_skipped())
+        self.assertEqual(['fake_passing_rule', 'fake_failing_rule', 'fake_second_passing_rule'], lRuleIds)
+
+    def test_skip_gives_the_reason_as_details(self):
+        oStage = stage.Stage('stage 2', [passing_rule])
+
+        oRuleResults = oStage.skip('stage 1 failed')
+
+        self.assertEqual(['stage 1 failed'], oRuleResults.results[0].details)
+
+    def test_skip_does_not_run_rules(self):
+        oStage = stage.Stage('stage 2', [failing_rule])
+
+        oRuleResults = oStage.skip('stage 1 failed')
+
+        self.assertFalse(oRuleResults.has_failures())
+
+    def test_skip_with_no_rules_returns_no_results(self):
+        oStage = stage.Stage('stage 3', [])
+
+        oRuleResults = oStage.skip('stage 1 failed')
+
+        self.assertEqual([], oRuleResults.results)
