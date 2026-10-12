@@ -10,10 +10,15 @@ class Methodology():
         oRuleResults = rule_result_list.RuleResultList()
         sSkipStageReason = None
         for oStage in self.stages:
-            if sSkipStageReason is not None:
+            if prior_stage_has_failed(sSkipStageReason):
                 oRuleResults.add_result_list(oStage.skip(sSkipStageReason))
-            if sSkipStageReason is None:
-                oRuleResults.add_result_list(oStage.check(oTimingReportList))
-                if oRuleResults.has_failures():
+            else:
+                oStageResults = oStage.check(oTimingReportList)
+                oRuleResults.add_result_list(oStageResults)
+                if oStageResults.has_failures():
                     sSkipStageReason = f'{oStage.name} failed'
         return oRuleResults
+
+
+def prior_stage_has_failed(sReason):
+    return sReason is not None
