@@ -1,0 +1,21 @@
+# stacv configuration for the DAC81404 example.
+#
+# Paths may use environment variables, e.g. $PROJ_DIR, so each user
+# controls where their files live.
+
+description = "DAC81404 serial interface, write path only"
+
+# Shared by every interface on this device (stage 3)
+# device = "$PROJ_DIR/example/xilinx/ultrascale_plus.toml"
+
+[[interface]]
+name = "DAC_SPI_1"
+# part = "$PROJ_DIR/example/texas_instruments/DAC81404/part.toml"     # stage 3
+# traces = "$PROJ_DIR/example/texas_instruments/DAC81404/traces.toml" # stage 3
+
+[[interface.port]]
+name = "O_DAC_DATA"
+methodology = "SDR-SS-O"  # moves to the part file once it exists
+timing_reports = [
+    "$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt",
+]
