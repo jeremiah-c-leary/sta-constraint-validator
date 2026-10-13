@@ -1,5 +1,5 @@
 
-class Config():
+class InterfaceConfig():
     def __init__(self):
         self.description = None
         self.interfaces = []
