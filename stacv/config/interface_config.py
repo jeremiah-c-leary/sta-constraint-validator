@@ -32,9 +32,9 @@ def create_interface_config(dConfig, sConfigFile):
 
 def create_interfaces(dConfig, sConfigFile):
     lInterfaces = []
-    for dInterface in get_required_key_value(dConfig, 'interface', sConfigFile):
+    for iInterface, dInterface in enumerate(get_required_key_value(dConfig, 'interface', sConfigFile), start=1):
         oInterface = config.Interface()
-        oInterface.name = dInterface['name']
+        oInterface.name = get_required_key_value(dInterface, 'name', sConfigFile, None, iInterface)
         oInterface.ports = create_ports(dInterface, sConfigFile, oInterface.name)
         lInterfaces.append(oInterface)
     return lInterfaces
@@ -42,10 +42,10 @@ def create_interfaces(dConfig, sConfigFile):
 
 def create_ports(dInterface, sConfigFile, sInterface):
     lPorts = []
-    for dPort in dInterface['port']:
+    for iPort, dPort in enumerate(dInterface['port'], start=1):
         oPort = config.Port()
-        oPort.name = dPort['name']
-        oPort.methodology = get_required_key_value(dPort, 'methodology', sConfigFile, sInterface, oPort.name) 
+        oPort.name = get_required_key_value(dPort, 'name', sConfigFile, sInterface, None, None, iPort)
+        oPort.methodology = get_required_key_value(dPort, 'methodology', sConfigFile, sInterface, None, oPort.name) 
         oPort.timing_reports = format_timing_report_names(dPort)
         lPorts.append(oPort)
     return lPorts
@@ -58,25 +58,29 @@ def format_timing_report_names(dPort):
     return lTimingReports
 
 
-def get_required_key_value(dDict, sKey, sConfigFile, sInterface=None, sPort=None):
+def get_required_key_value(dDict, sKey, sConfigFile, sInterface=None, iInterfaceNumber=None, sPort=None, iPortNumber=None):
     if sKey not in dDict:
-        sLocation = create_location_string(sInterface, sPort)
+        sLocation = create_location_string(sInterface, iInterfaceNumber, sPort, iPortNumber)
         raise interface_config_error.InterfaceConfigError('interface_config_002', sConfigFile, f'missing required key "{sKey}"{sLocation}')
     return dDict[sKey]
+    
+
+def create_location_string(sInterface, iInterfaceNumber, sPort, iPortNumber):
+    sLocation = add_interface(sInterface, iInterfaceNumber)
+    return add_port(sLocation, sPort, iPortNumber)
 
 
-def create_location_string(sInterface, sPort):
-    sLocation = add_interface(sInterface)
-    return add_port(sLocation, sPort)
-
-
-def add_interface(sInterface):
+def add_interface(sInterface, iInterfaceNumber):
     if sInterface is None:
-        return ''
+        if iInterfaceNumber is None:
+            return ''
+        return f' in interface number {iInterfaceNumber}'
     return f' in interface {sInterface}' 
 
 
-def add_port(sLocation, sPort):
+def add_port(sLocation, sPort, iPortNumber):
     if sPort is None:
-        return sLocation
+        if iPortNumber is None:
+            return sLocation
+        return sLocation + f' port number {iPortNumber}'
     return sLocation + f' port {sPort}'

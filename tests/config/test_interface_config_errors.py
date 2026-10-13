@@ -63,3 +63,32 @@ class Test(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_002', 'missing required key "methodology" in interface DAC_SPI_1 port O_DAC_CSF')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_position_if_interface_name_is_missing(self):
+        lText = []
+        lText.append('description = "Second interface without name"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface]]')
+        lText.append(sValidPort)
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_002', 'missing required key "name" in interface number 2$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_and_port_position_if_port_name_is_missing(self):
+        lText = []
+        lText.append('description = "Second port without name"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface.port]]')
+        lText.append('methodology = "SDR-SS-O"')
+        lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_002', 'missing required key "name" in interface DAC_SPI_1 port number 2$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
