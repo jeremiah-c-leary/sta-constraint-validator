@@ -10,7 +10,7 @@ from stacv.config import config
 
 def read_interface_config(sConfigFile):
     dConfig = read_toml_file(sConfigFile)
-    return create_config_object(dConfig)
+    return create_interface_config(dConfig)
 
 
 def read_toml_file(sConfigFile):
@@ -19,7 +19,7 @@ def read_toml_file(sConfigFile):
     return dConfig
 
 
-def create_config_object(dConfig):
+def create_interface_config(dConfig):
     oConfig = config.InterfaceConfig()
     oConfig.description = dConfig['description']
     oConfig.interfaces = create_interfaces(dConfig)
@@ -42,12 +42,12 @@ def create_ports(dInterface):
         oPort = config.Port()
         oPort.name = dPort['name']
         oPort.methodology = dPort['methodology']
-        oPort.timing_reports = create_timing_reports(dPort)
+        oPort.timing_reports = format_timing_report_names(dPort)
         lPorts.append(oPort)
     return lPorts
 
 
-def create_timing_reports(dPort):
+def format_timing_report_names(dPort):
     lTimingReports = []
     for sTimingReportFilename in dPort['timing_reports']:
         lTimingReports.append(os.path.expandvars(sTimingReportFilename))
