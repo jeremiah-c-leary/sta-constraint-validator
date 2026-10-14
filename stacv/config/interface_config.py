@@ -3,8 +3,8 @@ Provides functions to read configuration files.
 '''
 
 import os
+import re
 import tomllib
-
 from stacv.config import config
 from stacv.config import interface_config_error
 from stacv.config import value_type
@@ -60,6 +60,7 @@ def create_ports(dInterface, oLocation):
 def format_timing_report_names(dPort, oLocation):
     lTimingReports = []
     for sTimingReportFilename in get_required_list_of_strings(dPort, 'timing_reports', oLocation):
+        check_for_unexpanded_environment_variables(sTimingReportFilename, 'timing_reports', oLocation)
         lTimingReports.append(os.path.expandvars(sTimingReportFilename))
     return lTimingReports
 
@@ -91,3 +92,12 @@ def get_required_array_of_tables(dDict, sKey, oLocation):
 def check_schema(oExpectedType, value, sKey, oLocation):
     if not oExpectedType.is_valid(value):
         raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be {oExpectedType.description}')
+
+
+def check_for_unexpanded_environment_variables(sString, sKey, oLocation):
+    sUnexpandedVars = ''
+    for sVar in re.findall(r'\${?(\w+)}?', sString):
+        if sVar not in os.environ:
+            sUnexpandedVars += f' {sVar},'
+    if len(sUnexpandedVars) > 0:
+        raise interface_config_error.InterfaceConfigError('interface_config_004', oLocation.filename, f'key "{sKey}"{oLocation.location} uses environment variables that are not set:{sUnexpandedVars[:-1]}')
