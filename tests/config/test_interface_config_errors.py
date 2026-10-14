@@ -320,3 +320,21 @@ class Test(unittest.TestCase):
             os.environ.pop('STACV_UNSET_B', None)
             with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
                 interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_variable_if_braced_environment_variable_is_not_set(self):
+        lText = []
+        lText.append('description = "Second port uses an unset braced environment variable"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface.port]]')
+        lText.append('name = "O_DAC_CSF"')
+        lText.append('methodology = "SDR-SS-O"')
+        lText.append('timing_reports = ["${STACV_UNSET_TEST_VARIABLE}/O_DAC_CSF_timing.rpt"]')
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_004', 'key "timing_reports" in interface DAC_SPI_1 port O_DAC_CSF uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
+        with mock.patch.dict(os.environ):
+            os.environ.pop('STACV_UNSET_TEST_VARIABLE', None)
+            with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+                interface_config.read_interface_config(self.sConfigFile)
