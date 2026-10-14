@@ -168,3 +168,42 @@ class Test(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_003', 'key "name" in interface number 2 must be a string$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_if_description_is_a_number(self):
+        self.write_config_file('description = 5\n[[interface]]\nname = "DAC_SPI_1"\n' + sValidPort)
+
+        sError = self.build_error_pattern('interface_config_003', 'key "description" must be a string$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_and_port_position_if_port_name_is_a_number(self):
+        lText = []
+        lText.append('description = "Second port with a number as name"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface.port]]')
+        lText.append('name = 7')
+        lText.append('methodology = "SDR-SS-O"')
+        lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_003', 'key "name" in interface DAC_SPI_1 port number 2 must be a string$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_and_port_if_methodology_is_a_number(self):
+        lText = []
+        lText.append('description = "Second port with a number as methodology"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface.port]]')
+        lText.append('name = "O_DAC_CSF"')
+        lText.append('methodology = 3')
+        lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_003', 'key "methodology" in interface DAC_SPI_1 port O_DAC_CSF must be a string$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)

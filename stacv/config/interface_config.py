@@ -27,7 +27,7 @@ def read_toml_file(sConfigFile):
 def create_interface_config(dConfig, sConfigFile):
     oConfig = config.InterfaceConfig()
     oLocation = config.ConfigLocation(sConfigFile)
-    oConfig.description = get_required_key_value(dConfig, 'description', oLocation)
+    oConfig.description = get_required_string(dConfig, 'description', oLocation)
     oConfig.interfaces = create_interfaces(dConfig, oLocation)
     return oConfig
 
@@ -49,9 +49,9 @@ def create_ports(dInterface, oLocation):
     for iPort, dPort in enumerate(get_required_key_value(dInterface, 'port', oLocation), start=1):
         oPort = config.Port()
         oLocation.set_port_number(iPort)
-        oPort.name = get_required_key_value(dPort, 'name', oLocation)
+        oPort.name = get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
-        oPort.methodology = get_required_key_value(dPort, 'methodology', oLocation) 
+        oPort.methodology = get_required_string(dPort, 'methodology', oLocation) 
         oPort.timing_reports = format_timing_report_names(dPort, oLocation)
         lPorts.append(oPort)
     return lPorts
@@ -72,16 +72,16 @@ def get_required_key_value(dDict, sKey, oLocation):
 
 def get_required_list_of_strings(dDict, sKey, oLocation):
     value = get_required_key_value(dDict, sKey, oLocation)
-    schema_check(value_type.LIST_OF_STRINGS, value, sKey, oLocation)
+    check_schema(value_type.LIST_OF_STRINGS, value, sKey, oLocation)
     return value
 
 
 def get_required_string(dDict, sKey, oLocation):
     value = get_required_key_value(dDict, sKey, oLocation)
-    schema_check(value_type.STRING, value, sKey, oLocation)
+    check_schema(value_type.STRING, value, sKey, oLocation)
     return value
 
 
-def schema_check(oExpectedType, value, sKey, oLocation):
+def check_schema(oExpectedType, value, sKey, oLocation):
     if not oExpectedType.is_valid(value):
         raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be {oExpectedType.description}')
