@@ -36,7 +36,7 @@ def create_interfaces(dConfig, oLocation):
     for iInterface, dInterface in enumerate(get_required_key_value(dConfig, 'interface', oLocation), start=1):
         oInterface = config.Interface()
         oLocation.set_interface_number(iInterface)
-        oInterface.name = get_required_key_value(dInterface, 'name', oLocation)
+        oInterface.name = get_required_string(dInterface, 'name', oLocation)
         oLocation.set_interface_name(oInterface.name)
         oInterface.ports = create_ports(dInterface, oLocation)
         lInterfaces.append(oInterface)
@@ -83,3 +83,10 @@ def is_list_of_strings(lList):
         if not isinstance(item, str):
             return False
     return True
+
+
+def get_required_string(dDict, sKey, oLocation):
+    sValue = get_required_key_value(dDict, sKey, oLocation)
+    if not isinstance(sValue, str):
+        raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be a string')
+    return sValue

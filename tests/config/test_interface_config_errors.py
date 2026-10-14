@@ -153,3 +153,18 @@ class Test(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_003', 'key "timing_reports" in interface DAC_SPI_1 port O_DAC_CSF must be a list of strings$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_position_if_interface_name_is_a_number(self):
+        lText = []
+        lText.append('description = "Second interface with a number as name"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface]]')
+        lText.append('name = 7')
+        lText.append(sValidPort)
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_003', 'key "name" in interface number 2 must be a string$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
