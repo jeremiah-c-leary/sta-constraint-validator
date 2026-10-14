@@ -6,6 +6,8 @@ import os
 import re
 import tomllib
 
+from pathlib import Path
+
 from stacv.config import config
 from stacv.config import interface_config_error
 from stacv.config import value_type
@@ -62,7 +64,9 @@ def format_timing_report_names(dPort, oLocation):
     lTimingReports = []
     for sTimingReportFilename in get_required_list_of_strings(dPort, 'timing_reports', oLocation):
         check_for_unset_environment_variables(sTimingReportFilename, 'timing_reports', oLocation)
-        lTimingReports.append(os.path.expandvars(sTimingReportFilename))
+        sTimingReport = os.path.expandvars(sTimingReportFilename)
+        check_if_timing_report_exists(sTimingReport, 'timing_reports', oLocation)
+        lTimingReports.append(sTimingReport)
     return lTimingReports
 
 
@@ -111,3 +115,8 @@ def extract_unset_environment_variables(sString):
 
 def unset_variables_exist(lList):
     return len(lList) > 0
+
+
+def check_if_timing_report_exists(sTimingReport, sKey, oLocation):
+    if not Path(sTimingReport).is_file():
+        raise interface_config_error.InterfaceConfigError('interface_config_005', oLocation.filename, f'key "{sKey}"{oLocation.location} lists a file that does not exist: {sTimingReport}')
