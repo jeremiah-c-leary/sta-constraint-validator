@@ -58,7 +58,7 @@ def create_ports(dInterface, oLocation):
 
 def format_timing_report_names(dPort, oLocation):
     lTimingReports = []
-    for sTimingReportFilename in get_required_key_value(dPort, 'timing_reports', oLocation):
+    for sTimingReportFilename in get_required_list_of_strings(dPort, 'timing_reports', oLocation):
         lTimingReports.append(os.path.expandvars(sTimingReportFilename))
     return lTimingReports
 
@@ -67,3 +67,19 @@ def get_required_key_value(dDict, sKey, oLocation):
     if sKey not in dDict:
         raise interface_config_error.InterfaceConfigError('interface_config_002', oLocation.filename, f'missing required key "{sKey}"{oLocation.location}')
     return dDict[sKey]
+
+
+def get_required_list_of_strings(dDict, sKey, oLocation):
+    lValue = get_required_key_value(dDict, sKey, oLocation)
+    if not is_list_of_strings(lValue):
+        raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be a list of strings')
+    return lValue
+
+
+def is_list_of_strings(lList):
+    if not isinstance(lList, list):
+        return False
+    for item in lList:
+        if not isinstance(item, str):
+            return False
+    return True
