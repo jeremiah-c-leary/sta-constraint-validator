@@ -134,7 +134,7 @@ class Test(unittest.TestCase):
         lText.append('timing_reports = "O_DAC_CSF_timing.rpt"')
         self.write_config_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_003', 'key "timing_reports" in interface DAC_SPI_1 port O_DAC_CSF must be a list of strings$')
+        sError = self.build_error_pattern('interface_config_003', 'key "timing_reports" in interface DAC_SPI_1 port O_DAC_CSF must be a list of one or more strings$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
 
@@ -150,7 +150,7 @@ class Test(unittest.TestCase):
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt", 5]')
         self.write_config_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_003', 'key "timing_reports" in interface DAC_SPI_1 port O_DAC_CSF must be a list of strings$')
+        sError = self.build_error_pattern('interface_config_003', 'key "timing_reports" in interface DAC_SPI_1 port O_DAC_CSF must be a list of one or more strings$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
 
@@ -165,14 +165,14 @@ class Test(unittest.TestCase):
         lText.append(sValidPort)
         self.write_config_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_003', 'key "name" in interface number 2 must be a string$')
+        sError = self.build_error_pattern('interface_config_003', 'key "name" in interface number 2 must be a non-empty string$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
 
     def test_read_interface_config_raises_error_if_description_is_a_number(self):
         self.write_config_file('description = 5\n[[interface]]\nname = "DAC_SPI_1"\n' + sValidPort)
 
-        sError = self.build_error_pattern('interface_config_003', 'key "description" must be a string$')
+        sError = self.build_error_pattern('interface_config_003', 'key "description" must be a non-empty string$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
 
@@ -188,7 +188,7 @@ class Test(unittest.TestCase):
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
         self.write_config_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_003', 'key "name" in interface DAC_SPI_1 port number 2 must be a string$')
+        sError = self.build_error_pattern('interface_config_003', 'key "name" in interface DAC_SPI_1 port number 2 must be a non-empty string$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
 
@@ -204,14 +204,14 @@ class Test(unittest.TestCase):
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
         self.write_config_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_003', 'key "methodology" in interface DAC_SPI_1 port O_DAC_CSF must be a string$')
+        sError = self.build_error_pattern('interface_config_003', 'key "methodology" in interface DAC_SPI_1 port O_DAC_CSF must be a non-empty string$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
 
     def test_read_interface_config_raises_error_if_interface_is_a_string(self):
         self.write_config_file('description = "Interface as a string"\ninterface = "DAC_SPI_1"\n')
 
-        sError = self.build_error_pattern('interface_config_003', 'key "interface" must be an array of tables$')
+        sError = self.build_error_pattern('interface_config_003', 'key "interface" must be an array of one or more tables$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
 
@@ -226,6 +226,59 @@ class Test(unittest.TestCase):
         lText.append('port = 5')
         self.write_config_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_003', 'key "port" in interface DAC_SPI_2 must be an array of tables$')
+        sError = self.build_error_pattern('interface_config_003', 'key "port" in interface DAC_SPI_2 must be an array of one or more tables$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_if_interface_is_an_empty_list(self):
+        self.write_config_file('description = "No interfaces in list"\ninterface = []\n')
+
+        sError = self.build_error_pattern('interface_config_003', 'key "interface" must be an array of one or more tables$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_if_port_is_an_empty_list(self):
+        lText = []
+        lText.append('description = "Second interface with no ports in list"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_2"')
+        lText.append('port = []')
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_003', 'key "port" in interface DAC_SPI_2 must be an array of one or more tables$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_and_port_if_timing_reports_is_an_empty_list(self):
+        lText = []
+        lText.append('description = "Second port with no timing reports in list"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface.port]]')
+        lText.append('name = "O_DAC_CSF"')
+        lText.append('methodology = "SDR-SS-O"')
+        lText.append('timing_reports = []')
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_003', 'key "timing_reports" in interface DAC_SPI_1 port O_DAC_CSF must be a list of one or more strings$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_position_if_interface_name_is_empty(self):
+        lText = []
+        lText.append('description = "Second interface with an empty name"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface]]')
+        lText.append('name = ""')
+        lText.append(sValidPort)
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_003', 'key "name" in interface number 2 must be a non-empty string$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)

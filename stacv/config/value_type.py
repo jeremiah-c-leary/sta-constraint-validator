@@ -3,11 +3,14 @@ Classes that check the schema of values passed to them.
 '''
 
 class ArrayOfTablesType():
+
     def __init__(self):
-        self.description = 'an array of tables'
+        self.description = 'an array of one or more tables'
 
     def is_valid(self, value):
         if not isinstance(value, list):
+            return False
+        if len(value) == 0:
             return False
         for item in value:
             if not isinstance(item, dict):
@@ -18,10 +21,12 @@ class ArrayOfTablesType():
 class ListOfStringsType():
 
     def __init__(self):
-        self.description = 'a list of strings'
+        self.description = 'a list of one or more strings'
 
     def is_valid(self, value):
         if not isinstance(value, list):
+            return False
+        if len(value) == 0:
             return False
         for item in value:
             if not isinstance(item, str):
@@ -32,10 +37,14 @@ class ListOfStringsType():
 class StringType():
 
     def __init__(self):
-        self.description = 'a string'
+        self.description = 'a non-empty string'
 
     def is_valid(self, value):
-        return isinstance(value, str)
+        if not isinstance(value, str):
+            return False
+        if len(value) == 0:
+            return False
+        return True
 
 
 ARRAY_OF_TABLES = ArrayOfTablesType()
