@@ -106,3 +106,18 @@ class Test(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_002', 'missing required key "port" in interface DAC_SPI_2$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_and_port_if_timing_reports_is_missing(self):
+        lText = []
+        lText.append('description = "Second port without timing reports"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface.port]]')
+        lText.append('name = "O_DAC_CSF"')
+        lText.append('methodology = "SDR-SS-O"')
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_002', 'missing required key "timing_reports" in interface DAC_SPI_1 port O_DAC_CSF$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)

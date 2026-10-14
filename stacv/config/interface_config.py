@@ -51,14 +51,14 @@ def create_ports(dInterface, oLocation):
         oPort.name = get_required_key_value(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
         oPort.methodology = get_required_key_value(dPort, 'methodology', oLocation) 
-        oPort.timing_reports = format_timing_report_names(dPort)
+        oPort.timing_reports = format_timing_report_names(dPort, oLocation)
         lPorts.append(oPort)
     return lPorts
 
 
-def format_timing_report_names(dPort):
+def format_timing_report_names(dPort, oLocation):
     lTimingReports = []
-    for sTimingReportFilename in dPort['timing_reports']:
+    for sTimingReportFilename in get_required_key_value(dPort, 'timing_reports', oLocation):
         lTimingReports.append(os.path.expandvars(sTimingReportFilename))
     return lTimingReports
 
