@@ -7,6 +7,7 @@ import tomllib
 
 from stacv.config import config
 from stacv.config import interface_config_error
+from stacv.config import value_type
 
 
 def read_interface_config(sConfigFile):
@@ -70,23 +71,17 @@ def get_required_key_value(dDict, sKey, oLocation):
 
 
 def get_required_list_of_strings(dDict, sKey, oLocation):
-    lValue = get_required_key_value(dDict, sKey, oLocation)
-    if not is_list_of_strings(lValue):
-        raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be a list of strings')
-    return lValue
-
-
-def is_list_of_strings(lList):
-    if not isinstance(lList, list):
-        return False
-    for item in lList:
-        if not isinstance(item, str):
-            return False
-    return True
+    value = get_required_key_value(dDict, sKey, oLocation)
+    schema_check(value_type.LIST_OF_STRINGS, value, sKey, oLocation)
+    return value
 
 
 def get_required_string(dDict, sKey, oLocation):
-    sValue = get_required_key_value(dDict, sKey, oLocation)
-    if not isinstance(sValue, str):
-        raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be a string')
-    return sValue
+    value = get_required_key_value(dDict, sKey, oLocation)
+    schema_check(value_type.STRING, value, sKey, oLocation)
+    return value
+
+
+def schema_check(oExpectedType, value, sKey, oLocation):
+    if not oExpectedType.is_valid(value):
+        raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be {oExpectedType.description}')
