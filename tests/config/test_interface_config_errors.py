@@ -207,3 +207,25 @@ class Test(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_003', 'key "methodology" in interface DAC_SPI_1 port O_DAC_CSF must be a string$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_if_interface_is_a_string(self):
+        self.write_config_file('description = "Interface as a string"\ninterface = "DAC_SPI_1"\n')
+
+        sError = self.build_error_pattern('interface_config_003', 'key "interface" must be an array of tables$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_if_port_is_a_number(self):
+        lText = []
+        lText.append('description = "Second interface with a number as port"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_2"')
+        lText.append('port = 5')
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_003', 'key "port" in interface DAC_SPI_2 must be an array of tables$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)

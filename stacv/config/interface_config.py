@@ -34,7 +34,7 @@ def create_interface_config(dConfig, sConfigFile):
 
 def create_interfaces(dConfig, oLocation):
     lInterfaces = []
-    for iInterface, dInterface in enumerate(get_required_key_value(dConfig, 'interface', oLocation), start=1):
+    for iInterface, dInterface in enumerate(get_required_array_of_tables(dConfig, 'interface', oLocation), start=1):
         oInterface = config.Interface()
         oLocation.set_interface_number(iInterface)
         oInterface.name = get_required_string(dInterface, 'name', oLocation)
@@ -46,7 +46,7 @@ def create_interfaces(dConfig, oLocation):
 
 def create_ports(dInterface, oLocation):
     lPorts = []
-    for iPort, dPort in enumerate(get_required_key_value(dInterface, 'port', oLocation), start=1):
+    for iPort, dPort in enumerate(get_required_array_of_tables(dInterface, 'port', oLocation), start=1):
         oPort = config.Port()
         oLocation.set_port_number(iPort)
         oPort.name = get_required_string(dPort, 'name', oLocation)
@@ -79,6 +79,12 @@ def get_required_list_of_strings(dDict, sKey, oLocation):
 def get_required_string(dDict, sKey, oLocation):
     value = get_required_key_value(dDict, sKey, oLocation)
     check_schema(value_type.STRING, value, sKey, oLocation)
+    return value
+
+
+def get_required_array_of_tables(dDict, sKey, oLocation):
+    value = get_required_key_value(dDict, sKey, oLocation)
+    check_schema(value_type.ARRAY_OF_TABLES, value, sKey, oLocation)
     return value
 
 
