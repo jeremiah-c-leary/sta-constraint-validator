@@ -5,6 +5,7 @@ Provides functions to read configuration files.
 import os
 import re
 import tomllib
+
 from stacv.config import config
 from stacv.config import interface_config_error
 from stacv.config import value_type
@@ -60,7 +61,7 @@ def create_ports(dInterface, oLocation):
 def format_timing_report_names(dPort, oLocation):
     lTimingReports = []
     for sTimingReportFilename in get_required_list_of_strings(dPort, 'timing_reports', oLocation):
-        check_for_unexpanded_environment_variables(sTimingReportFilename, 'timing_reports', oLocation)
+        check_for_unset_environment_variables(sTimingReportFilename, 'timing_reports', oLocation)
         lTimingReports.append(os.path.expandvars(sTimingReportFilename))
     return lTimingReports
 
@@ -94,19 +95,19 @@ def check_schema(oExpectedType, value, sKey, oLocation):
         raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be {oExpectedType.description}')
 
 
-def check_for_unexpanded_environment_variables(sString, sKey, oLocation):
-    sUnexpandedVars = extract_undefined_environment_variables(sString)
-    if unexpanded_variables_exist(sUnexpandedVars):
-        raise interface_config_error.InterfaceConfigError('interface_config_004', oLocation.filename, f'key "{sKey}"{oLocation.location} uses environment variables that are not set:{sUnexpandedVars[:-1]}')
+def check_for_unset_environment_variables(sString, sKey, oLocation):
+    lUnsetVars = extract_unset_environment_variables(sString)
+    if unset_variables_exist(lUnsetVars):
+        raise interface_config_error.InterfaceConfigError('interface_config_004', oLocation.filename, f'key "{sKey}"{oLocation.location} uses environment variables that are not set: {", ".join(lUnsetVars)}')
 
 
-def extract_undefined_environment_variables(sString):
-    sUnexpandedVars = ''
+def extract_unset_environment_variables(sString):
+    lUnsetVars = []
     for sVar in re.findall(r'\${?(\w+)}?', sString):
         if sVar not in os.environ:
-            sUnexpandedVars += f' {sVar},'
-    return sUnexpandedVars
+            lUnsetVars.append(sVar)
+    return lUnsetVars
 
 
-def unexpanded_variables_exist(sString):
-    return len(sString) > 0
+def unset_variables_exist(lList):
+    return len(lList) > 0
