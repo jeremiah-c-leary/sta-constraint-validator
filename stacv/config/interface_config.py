@@ -95,9 +95,18 @@ def check_schema(oExpectedType, value, sKey, oLocation):
 
 
 def check_for_unexpanded_environment_variables(sString, sKey, oLocation):
+    sUnexpandedVars = extract_undefined_environment_variables(sString)
+    if unexpanded_variables_exist(sUnexpandedVars):
+        raise interface_config_error.InterfaceConfigError('interface_config_004', oLocation.filename, f'key "{sKey}"{oLocation.location} uses environment variables that are not set:{sUnexpandedVars[:-1]}')
+
+
+def extract_undefined_environment_variables(sString):
     sUnexpandedVars = ''
     for sVar in re.findall(r'\${?(\w+)}?', sString):
         if sVar not in os.environ:
             sUnexpandedVars += f' {sVar},'
-    if len(sUnexpandedVars) > 0:
-        raise interface_config_error.InterfaceConfigError('interface_config_004', oLocation.filename, f'key "{sKey}"{oLocation.location} uses environment variables that are not set:{sUnexpandedVars[:-1]}')
+    return sUnexpandedVars
+
+
+def unexpanded_variables_exist(sString):
+    return len(sString) > 0
