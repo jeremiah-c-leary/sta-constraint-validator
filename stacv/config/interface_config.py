@@ -51,7 +51,7 @@ def create_ports(dInterface, oLocation):
         oLocation.set_port_number(iPort)
         oPort.name = get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
-        oPort.methodology = get_required_string(dPort, 'methodology', oLocation) 
+        oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
         oPort.timing_reports = format_timing_report_names(dPort, oLocation)
         lPorts.append(oPort)
     return lPorts

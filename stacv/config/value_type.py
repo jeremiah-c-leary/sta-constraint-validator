@@ -1,3 +1,6 @@
+'''
+Classes that check the schema of values passed to them.
+'''
 
 class StringType():
 
