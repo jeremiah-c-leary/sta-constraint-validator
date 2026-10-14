@@ -25,27 +25,32 @@ def read_toml_file(sConfigFile):
 
 def create_interface_config(dConfig, sConfigFile):
     oConfig = config.InterfaceConfig()
-    oConfig.description = get_required_key_value(dConfig, 'description', sConfigFile)
-    oConfig.interfaces = create_interfaces(dConfig, sConfigFile)
+    oLocation = config.ConfigLocation(sConfigFile)
+    oConfig.description = get_required_key_value(dConfig, 'description', oLocation)
+    oConfig.interfaces = create_interfaces(dConfig, oLocation)
     return oConfig
 
 
-def create_interfaces(dConfig, sConfigFile):
+def create_interfaces(dConfig, oLocation):
     lInterfaces = []
-    for iInterface, dInterface in enumerate(get_required_key_value(dConfig, 'interface', sConfigFile), start=1):
+    for iInterface, dInterface in enumerate(get_required_key_value(dConfig, 'interface', oLocation), start=1):
         oInterface = config.Interface()
-        oInterface.name = get_required_key_value(dInterface, 'name', sConfigFile, None, iInterface)
-        oInterface.ports = create_ports(dInterface, sConfigFile, oInterface.name)
+        oLocation.set_interface_number(iInterface)
+        oInterface.name = get_required_key_value(dInterface, 'name', oLocation)
+        oLocation.set_interface_name(oInterface.name)
+        oInterface.ports = create_ports(dInterface, oLocation)
         lInterfaces.append(oInterface)
     return lInterfaces
 
 
-def create_ports(dInterface, sConfigFile, sInterface):
+def create_ports(dInterface, oLocation):
     lPorts = []
-    for iPort, dPort in enumerate(dInterface['port'], start=1):
+    for iPort, dPort in enumerate(get_required_key_value(dInterface, 'port', oLocation), start=1):
         oPort = config.Port()
-        oPort.name = get_required_key_value(dPort, 'name', sConfigFile, sInterface, None, None, iPort)
-        oPort.methodology = get_required_key_value(dPort, 'methodology', sConfigFile, sInterface, None, oPort.name) 
+        oLocation.set_port_number(iPort)
+        oPort.name = get_required_key_value(dPort, 'name', oLocation)
+        oLocation.set_port_name(oPort.name)
+        oPort.methodology = get_required_key_value(dPort, 'methodology', oLocation) 
         oPort.timing_reports = format_timing_report_names(dPort)
         lPorts.append(oPort)
     return lPorts
@@ -58,29 +63,7 @@ def format_timing_report_names(dPort):
     return lTimingReports
 
 
-def get_required_key_value(dDict, sKey, sConfigFile, sInterface=None, iInterfaceNumber=None, sPort=None, iPortNumber=None):
+def get_required_key_value(dDict, sKey, oLocation):
     if sKey not in dDict:
-        sLocation = create_location_string(sInterface, iInterfaceNumber, sPort, iPortNumber)
-        raise interface_config_error.InterfaceConfigError('interface_config_002', sConfigFile, f'missing required key "{sKey}"{sLocation}')
+        raise interface_config_error.InterfaceConfigError('interface_config_002', oLocation.filename, f'missing required key "{sKey}"{oLocation.location}')
     return dDict[sKey]
-    
-
-def create_location_string(sInterface, iInterfaceNumber, sPort, iPortNumber):
-    sLocation = add_interface(sInterface, iInterfaceNumber)
-    return add_port(sLocation, sPort, iPortNumber)
-
-
-def add_interface(sInterface, iInterfaceNumber):
-    if sInterface is None:
-        if iInterfaceNumber is None:
-            return ''
-        return f' in interface number {iInterfaceNumber}'
-    return f' in interface {sInterface}' 
-
-
-def add_port(sLocation, sPort, iPortNumber):
-    if sPort is None:
-        if iPortNumber is None:
-            return sLocation
-        return sLocation + f' port number {iPortNumber}'
-    return sLocation + f' port {sPort}'

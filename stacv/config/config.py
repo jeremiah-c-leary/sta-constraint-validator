@@ -16,3 +16,25 @@ class Port():
         self.name = None
         self.methodology = None
         self.timing_reports = []
+
+
+class ConfigLocation():
+
+    def __init__(self, sFilename):
+        self.filename = sFilename
+        self.interface_location = ''
+        self.location = self.interface_location
+
+    def set_interface_number(self, iNumber):
+        self.interface_location = f' in interface number {iNumber}'
+        self.location = self.interface_location
+
+    def set_interface_name(self, sName):
+        self.interface_location = f' in interface {sName}'
+        self.location = self.interface_location
+
+    def set_port_number(self, iNumber):
+        self.location = self.interface_location + f' port number {iNumber}'  
+
+    def set_port_name(self, sName):
+        self.location = self.interface_location + f' port {sName}'  
