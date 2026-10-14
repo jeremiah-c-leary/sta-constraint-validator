@@ -92,3 +92,17 @@ class Test(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_002', 'missing required key "name" in interface DAC_SPI_1 port number 2$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_if_port_is_missing(self):
+        lText = []
+        lText.append('description = "Second interface without port"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(sValidPort)
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_2"')
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_002', 'missing required key "port" in interface DAC_SPI_2$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
