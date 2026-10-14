@@ -55,12 +55,12 @@ def create_ports(dInterface, oLocation):
         oPort.name = get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
         oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
-        oPort.timing_reports = format_timing_report_names(dPort, oLocation)
+        oPort.timing_reports = get_timing_reports(dPort, oLocation)
         lPorts.append(oPort)
     return lPorts
 
 
-def format_timing_report_names(dPort, oLocation):
+def get_timing_reports(dPort, oLocation):
     lTimingReports = []
     for sTimingReportFilename in get_required_list_of_strings(dPort, 'timing_reports', oLocation):
         check_for_unset_environment_variables(sTimingReportFilename, 'timing_reports', oLocation)
