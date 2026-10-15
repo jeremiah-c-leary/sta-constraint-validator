@@ -378,3 +378,19 @@ class Test(unittest.TestCase):
         with mock.patch.dict(os.environ, {'STACV_TEST_REPORT_DIRECTORY': self.sDirectory}):
             with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
                 interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_resolves_relative_timing_report_against_config_file_directory(self):
+        lText = []
+        lText.append('description = "Timing report given relative to the config file"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append('[[interface.port]]')
+        lText.append('name = "O_DAC_DATA"')
+        lText.append('methodology = "SDR-SS-O"')
+        lText.append('timing_reports = ["O_DAC_DATA_timing.rpt"]')
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        oConfig = interface_config.read_interface_config(self.sConfigFile)
+
+        sExpectedFile = os.path.join(self.sDirectory, 'O_DAC_DATA_timing.rpt')
+        self.assertEqual([sExpectedFile], oConfig.interfaces[0].ports[0].timing_reports)

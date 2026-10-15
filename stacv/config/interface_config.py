@@ -3,10 +3,9 @@ Provides functions to read configuration files.
 '''
 
 import os
+import pathlib
 import re
 import tomllib
-
-from pathlib import Path
 
 from stacv.config import config
 from stacv.config import interface_config_error
@@ -55,25 +54,32 @@ def create_ports(dInterface, oLocation):
         oPort.name = get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
         oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
-        oPort.timing_reports = get_timing_reports(dPort, oLocation)
+        oPort.timing_reports = get_required_list_of_files(dPort, oLocation)
         lPorts.append(oPort)
     return lPorts
 
 
-def get_timing_reports(dPort, oLocation):
-    lTimingReports = []
-    for sTimingReportFilename in get_required_list_of_strings(dPort, 'timing_reports', oLocation):
-        check_for_unset_environment_variables(sTimingReportFilename, 'timing_reports', oLocation)
-        sTimingReport = os.path.expandvars(sTimingReportFilename)
-        check_if_timing_report_exists(sTimingReport, 'timing_reports', oLocation)
-        lTimingReports.append(sTimingReport)
-    return lTimingReports
+def get_required_array_of_tables(dDict, sKey, oLocation):
+    value = get_required_key_value(dDict, sKey, oLocation)
+    check_schema(value_type.ARRAY_OF_TABLES, value, sKey, oLocation)
+    return value
 
 
 def get_required_key_value(dDict, sKey, oLocation):
     if sKey not in dDict:
         raise interface_config_error.InterfaceConfigError('interface_config_002', oLocation.filename, f'missing required key "{sKey}"{oLocation.location}')
     return dDict[sKey]
+
+
+def get_required_list_of_files(dPort, oLocation):
+    lTimingReports = []
+    for sTimingReportFilename in get_required_list_of_strings(dPort, 'timing_reports', oLocation):
+        check_for_unset_environment_variables(sTimingReportFilename, 'timing_reports', oLocation)
+        sTimingReport = os.path.expandvars(sTimingReportFilename)
+        sTimingReport = expand_relative_path(sTimingReport, oLocation)
+        check_if_timing_report_exists(sTimingReport, 'timing_reports', oLocation)
+        lTimingReports.append(sTimingReport)
+    return lTimingReports
 
 
 def get_required_list_of_strings(dDict, sKey, oLocation):
@@ -88,12 +94,6 @@ def get_required_string(dDict, sKey, oLocation):
     return value
 
 
-def get_required_array_of_tables(dDict, sKey, oLocation):
-    value = get_required_key_value(dDict, sKey, oLocation)
-    check_schema(value_type.ARRAY_OF_TABLES, value, sKey, oLocation)
-    return value
-
-
 def check_schema(oExpectedType, value, sKey, oLocation):
     if not oExpectedType.is_valid(value):
         raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be {oExpectedType.description}')
@@ -103,6 +103,14 @@ def check_for_unset_environment_variables(sString, sKey, oLocation):
     lUnsetVars = extract_unset_environment_variables(sString)
     if unset_variables_exist(lUnsetVars):
         raise interface_config_error.InterfaceConfigError('interface_config_004', oLocation.filename, f'key "{sKey}"{oLocation.location} uses environment variables that are not set: {", ".join(lUnsetVars)}')
+
+
+def expand_relative_path(sTimingReport, oLocation):
+    sExpandedPath = sTimingReport
+    if not pathlib.PurePath.is_absolute(pathlib.Path(sExpandedPath)):
+        sParentPath = pathlib.Path(oLocation.filename).parent
+        sExpandedPath = os.path.join(sParentPath, sTimingReport)
+    return sExpandedPath
 
 
 def extract_unset_environment_variables(sString):
@@ -118,5 +126,5 @@ def unset_variables_exist(lList):
 
 
 def check_if_timing_report_exists(sTimingReport, sKey, oLocation):
-    if not Path(sTimingReport).is_file():
+    if not pathlib.Path(sTimingReport).is_file():
         raise interface_config_error.InterfaceConfigError('interface_config_005', oLocation.filename, f'key "{sKey}"{oLocation.location} lists a file that does not exist: {sTimingReport}')
