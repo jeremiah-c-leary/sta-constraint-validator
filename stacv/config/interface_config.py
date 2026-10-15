@@ -46,6 +46,8 @@ def create_interfaces(dConfig, oLocation):
         oInterface = config.Interface()
         oLocation.set_interface_number(iInterface)
         oInterface.name = get_required_string(dInterface, 'name', oLocation)
+        if oInterface.name in oLocation.interface_names:
+            raise interface_config_error.InterfaceConfigError('interface_config_007', oLocation.filename, f'duplicate interface name "{oInterface.name}"{oLocation.interface_location}, first used in interface number {oLocation.get_number_of_interface_named(oInterface.name)}')
         oLocation.set_interface_name(oInterface.name)
         oInterface.ports = create_ports(dInterface, oLocation)
         lInterfaces.append(oInterface)
