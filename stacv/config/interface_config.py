@@ -54,7 +54,7 @@ def create_ports(dInterface, oLocation):
         oPort.name = get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
         oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
-        oPort.timing_reports = get_required_list_of_files(dPort, oLocation)
+        oPort.timing_reports = get_required_list_of_files(dPort, 'timing_reports', oLocation)
         lPorts.append(oPort)
     return lPorts
 
@@ -71,15 +71,15 @@ def get_required_key_value(dDict, sKey, oLocation):
     return dDict[sKey]
 
 
-def get_required_list_of_files(dPort, oLocation):
-    lTimingReports = []
-    for sTimingReportFilename in get_required_list_of_strings(dPort, 'timing_reports', oLocation):
-        check_for_unset_environment_variables(sTimingReportFilename, 'timing_reports', oLocation)
-        sTimingReport = os.path.expandvars(sTimingReportFilename)
-        sTimingReport = expand_relative_path(sTimingReport, oLocation)
-        check_if_timing_report_exists(sTimingReport, 'timing_reports', oLocation)
-        lTimingReports.append(sTimingReport)
-    return lTimingReports
+def get_required_list_of_files(dDict, sKey, oLocation):
+    lFiles = []
+    for sFilename in get_required_list_of_strings(dDict, sKey, oLocation):
+        check_for_unset_environment_variables(sFilename, sKey, oLocation)
+        sFile = os.path.expandvars(sFilename)
+        sFile = resolve_relative_path(sFile, oLocation)
+        check_if_file_exists(sFile, sKey, oLocation)
+        lFiles.append(sFile)
+    return lFiles
 
 
 def get_required_list_of_strings(dDict, sKey, oLocation):
@@ -105,11 +105,11 @@ def check_for_unset_environment_variables(sString, sKey, oLocation):
         raise interface_config_error.InterfaceConfigError('interface_config_004', oLocation.filename, f'key "{sKey}"{oLocation.location} uses environment variables that are not set: {", ".join(lUnsetVars)}')
 
 
-def expand_relative_path(sTimingReport, oLocation):
+def resolve_relative_path(sTimingReport, oLocation):
     sExpandedPath = sTimingReport
-    if not pathlib.PurePath.is_absolute(pathlib.Path(sExpandedPath)):
-        sParentPath = pathlib.Path(oLocation.filename).parent
-        sExpandedPath = os.path.join(sParentPath, sTimingReport)
+    if not pathlib.Path(sExpandedPath).is_absolute():
+        oParentPath = os.path.dirname(oLocation.filename)
+        sExpandedPath = os.path.join(oParentPath, sTimingReport)
     return sExpandedPath
 
 
@@ -125,6 +125,6 @@ def unset_variables_exist(lList):
     return len(lList) > 0
 
 
-def check_if_timing_report_exists(sTimingReport, sKey, oLocation):
-    if not pathlib.Path(sTimingReport).is_file():
-        raise interface_config_error.InterfaceConfigError('interface_config_005', oLocation.filename, f'key "{sKey}"{oLocation.location} lists a file that does not exist: {sTimingReport}')
+def check_if_file_exists(sFilename, sKey, oLocation):
+    if not pathlib.Path(sFilename).is_file():
+        raise interface_config_error.InterfaceConfigError('interface_config_005', oLocation.filename, f'key "{sKey}"{oLocation.location} lists a file that does not exist: {sFilename}')
