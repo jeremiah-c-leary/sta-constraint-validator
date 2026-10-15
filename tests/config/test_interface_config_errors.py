@@ -28,6 +28,15 @@ class Test(unittest.TestCase):
         lText.append(f'timing_reports = ["{sTimingReportFile}"]')
         return '\n' + '\n'.join(lText) + '\n'
 
+    def build_port(self, sName, sMethodology):
+        sTimingReportFile = os.path.join(self.sDirectory, 'O_DAC_DATA_timing.rpt')
+        lText = []
+        lText.append('[[interface.port]]')
+        lText.append(f'name = "{sName}"')
+        lText.append(f'methodology = "{sMethodology}"')
+        lText.append(f'timing_reports = ["{sTimingReportFile}"]')
+        return '\n' + '\n'.join(lText) + '\n'
+
     def write_config_file(self, sText):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(sText)
@@ -394,3 +403,56 @@ class Test(unittest.TestCase):
 
         sExpectedFile = os.path.join(self.sDirectory, 'O_DAC_DATA_timing.rpt')
         self.assertEqual([sExpectedFile], oConfig.interfaces[0].ports[0].timing_reports)
+
+    def test_read_interface_config_raises_error_if_config_file_does_not_exist(self):
+        sError = self.build_error_pattern('interface_config_006', 'does not exist$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_both_positions_if_interface_name_is_duplicated(self):
+        lText = []
+        lText.append('description = "First and third interface share a name"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(self.sValidPort)
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_2"')
+        lText.append(self.sValidPort)
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(self.sValidPort)
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_007', 'duplicate interface name "DAC_SPI_1" in interface number 3, first used in interface number 1$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_interface_and_both_positions_if_port_and_methodology_are_duplicated(self):
+        lText = []
+        lText.append('description = "First and third port share name and methodology"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(self.sValidPort)
+        lText.append(self.build_port('O_DAC_CSF', 'SDR-SS-O'))
+        lText.append(self.build_port('O_DAC_DATA', 'SDR-SS-O'))
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        sError = self.build_error_pattern('interface_config_008', 'duplicate port "O_DAC_DATA" with methodology "SDR-SS-O" in interface DAC_SPI_1 port number 3, first used in port number 1$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_accepts_same_port_with_different_methodologies(self):
+        lText = []
+        lText.append('description = "Bidirectional port timed with two methodologies"')
+        lText.append('[[interface]]')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append(self.build_port('IO_DAC_SDIO', 'SDR-SS-O'))
+        lText.append(self.build_port('IO_DAC_SDIO', 'SDR-SS-RT'))
+        self.write_config_file('\n'.join(lText) + '\n')
+
+        oConfig = interface_config.read_interface_config(self.sConfigFile)
+
+        lMethodologies = []
+        for oPort in oConfig.interfaces[0].ports:
+            lMethodologies.append(oPort.methodology)
+        self.assertEqual(['SDR-SS-O', 'SDR-SS-RT'], lMethodologies)

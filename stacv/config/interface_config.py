@@ -13,17 +13,23 @@ from stacv.config import value_type
 
 
 def read_interface_config(sConfigFile):
-    dConfig = read_toml_file(sConfigFile)
+    dConfig = read_file(sConfigFile)
     return create_interface_config(dConfig, sConfigFile)
+
+
+def read_file(sConfigFile):
+    try:
+        return read_toml_file(sConfigFile)
+    except FileNotFoundError:
+        raise interface_config_error.InterfaceConfigError('interface_config_006', sConfigFile, f'does not exist')
 
 
 def read_toml_file(sConfigFile):
     with open(sConfigFile, 'rb') as oFile:
         try:
-            dConfig = tomllib.load(oFile)
+            return tomllib.load(oFile)
         except tomllib.TOMLDecodeError as oError:
             raise interface_config_error.InterfaceConfigError('interface_config_001', sConfigFile, f'is not valid TOML: {oError}') from oError
-    return dConfig
 
 
 def create_interface_config(dConfig, sConfigFile):
