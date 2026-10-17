@@ -6,48 +6,50 @@ from stacv.timing_report import timing_report_list
 from stacv.timing_report.xilinx import vivado
 
 
-def check_interfaces(oConfig):
-    for oInterface in oConfig.interfaces:
-        if check_ports(oInterface):
-            return 1
+def execute(oCmdLine):
+    oConfig = interface_config.read_interface_config(oCmdLine.config_file)
+    if interfaces_fail_checks(oConfig):
+       return 1
     return 0
+
+
+def interfaces_fail_checks(oConfig):
+    for oInterface in oConfig.interfaces:
+        if port_fails_checks(oInterface):
+            return True
+    return False
 
 
 def create_methodology(oPort):
     return methodology_factory.create_methodology(oPort.methodology)
 
 
-def check_ports(oInterface):
+def port_fails_checks(oInterface):
     for oPort in oInterface.ports:
-        if check_timing_reports(oPort):
-            return 1
-    return 0
+        if timing_report_fail_checks(oPort):
+            return True
+    return False
 
 
-def check_timing_reports(oPort):
+def timing_report_fail_checks(oPort):
     oMethodology = create_methodology(oPort)
     oTimingReportList = create_timing_reports(oPort.timing_reports)
     oRuleResults = oMethodology.check(oTimingReportList)
     return oRuleResults.has_failures()
 
 
-def create_timing_report(sTimingReport):
-    lTimingReportFile = read_text_file(sTimingReport)
-    return timing_report_file.TimingReportFile(sTimingReport, lTimingReportFile)
+def create_timing_reportFile(sTimingReport):
+    lLines = read_text_file(sTimingReport)
+    return timing_report_file.TimingReportFile(sTimingReport, lLines)
 
 
-def create_timing_reports(lTimingReports):
+def create_timing_reports(lFilenames):
     oTimingReportList = timing_report_list.TimingReportList()
-    for sTimingReport in lTimingReports:
-        oTimingReport = create_timing_report(sTimingReport)
-        oParsedTimingReportList = parse_timing_report(oTimingReport)
+    for sTimingReport in lFilenames:
+        oTimingReportFile = create_timing_reportFile(sTimingReport)
+        oParsedTimingReportList = parse_timing_report(oTimingReportFile)
         merge_timing_reports(oTimingReportList, oParsedTimingReportList)
     return oTimingReportList
-
-
-def execute(oCmdLine):
-    oConfig = interface_config.read_interface_config(oCmdLine.config_file)
-    return check_interfaces(oConfig)
 
 
 def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
