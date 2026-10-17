@@ -9,6 +9,9 @@ class TimingReportList():
     def add(self, oTimingReport):
         self.reports.append(oTimingReport)
 
+    def extend(self, oTimingReportList):
+        self.reports.extend(oTimingReportList.reports)
+
     def number_of_timing_reports(self):
         return len(self.reports)
 
