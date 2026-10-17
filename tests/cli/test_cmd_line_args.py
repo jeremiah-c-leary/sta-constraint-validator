@@ -27,3 +27,9 @@ class TestCheckSubparser(unittest.TestCase):
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
                 parse_arguments(['check'])
+
+    def test_no_arguments_exits_with_two(self):
+        with contextlib.redirect_stdout(io.StringIO()):
+            with self.assertRaises(SystemExit) as oContext:
+                parse_arguments([])
+        self.assertEqual(2, oContext.exception.code)
