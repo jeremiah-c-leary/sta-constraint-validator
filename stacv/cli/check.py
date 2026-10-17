@@ -22,12 +22,12 @@ def interfaces_have_failures(oConfig):
 
 def ports_have_failures(oInterface):
     for oPort in oInterface.ports:
-        if timing_report_have_failures(oPort):
+        if timing_reports_have_failures(oPort):
             return True
     return False
 
 
-def timing_report_have_failures(oPort):
+def timing_reports_have_failures(oPort):
     oMethodology = create_methodology(oPort)
     oTimingReportList = create_timing_reports(oPort.timing_reports)
     oRuleResults = oMethodology.check(oTimingReportList)
@@ -38,26 +38,26 @@ def create_methodology(oPort):
     return methodology_factory.create_methodology(oPort.methodology)
 
 
-def create_timing_reportFile(sTimingReport):
-    lLines = read_text_file(sTimingReport)
-    return timing_report_file.TimingReportFile(sTimingReport, lLines)
-
-
 def create_timing_reports(lFilenames):
     oTimingReportList = timing_report_list.TimingReportList()
     for sFilename in lFilenames:
-        oTimingReportFile = create_timing_reportFile(sFilename)
+        oTimingReportFile = create_timing_report_file(sFilename)
         oParsedTimingReportList = parse_timing_report(oTimingReportFile)
         merge_timing_reports(oTimingReportList, oParsedTimingReportList)
     return oTimingReportList
 
 
-def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
-    oTimingReportList.extend(oParsedTimingReportList)
+def create_timing_report_file(sTimingReport):
+    lLines = read_text_file(sTimingReport)
+    return timing_report_file.TimingReportFile(sTimingReport, lLines)
 
 
 def parse_timing_report(oTimingReportFile):
     return vivado.parse_timing_report(oTimingReportFile)
+
+
+def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
+    oTimingReportList.extend(oParsedTimingReportList)
 
 
 def read_text_file(sFilename):
