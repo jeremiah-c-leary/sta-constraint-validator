@@ -32,11 +32,17 @@ def timing_reports_have_failures(oPort):
     oMethodology = create_methodology(oPort)
     oTimingReportList = create_timing_reports(oPort.timing_reports)
     oRuleResults = oMethodology.check(oTimingReportList)
+    print_failing_rules(oRuleResults)
     return oRuleResults.has_failures()
 
 
 def create_methodology(oPort):
     return methodology_factory.create_methodology(oPort.methodology)
+
+
+def print_failing_rules(oRuleResults):
+    for oRuleResult in oRuleResults.get_failing_results():
+        print(f'FAILED: rule {oRuleResult.rule_id}')
 
 
 def create_timing_reports(lFilenames):
