@@ -106,7 +106,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sFailingReport}\n')
-        lExpected.append('FAILED: rule s0_timing_report_002\n')
+        lExpected.append('FAILED: [s0_timing_report_002]\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_failing_port_stops_before_later_ports(self):
@@ -114,16 +114,16 @@ class TestMainConsoleOutput(unittest.TestCase):
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sFailingReport}\n')
-        lExpected.append('FAILED: rule s0_timing_report_002\n')
+        lExpected.append('FAILED: [s0_timing_report_002]\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
-    def test_failing_later_port_is_named(self):
+    def test_failing_later_port_reports_a_failure(self):
         self.run_main_with_reports([sPassingReport, sFailingReport])
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sPassingReport}\n')
         lExpected.append(f'Reading timing report file {sFailingReport}\n')
-        lExpected.append('FAILED: rule s0_timing_report_002\n')
+        lExpected.append('FAILED: [s0_timing_report_002]\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_failing_run_writes_nothing_to_stderr(self):

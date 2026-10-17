@@ -42,7 +42,7 @@ def create_methodology(oPort):
 
 def print_failing_rules(oRuleResults):
     for oRuleResult in oRuleResults.get_failing_results():
-        print(f'FAILED: rule {oRuleResult.rule_id}')
+        print(f'FAILED: [{oRuleResult.rule_id}]')
 
 
 def create_timing_reports(lFilenames):
