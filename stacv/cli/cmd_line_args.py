@@ -2,7 +2,7 @@
 import argparse
 import sys
 
-program = 'stacv'
+PROGRAM = 'stacv'
 
 
 def parse_command_line_arguments():
@@ -22,7 +22,7 @@ def parse_command_line_arguments():
 
 def create_top_parser():
     top_parser = argparse.ArgumentParser(
-        prog=program,
+        prog=PROGRAM,
         description='''Validates timing constraints.'''
         )
     return top_parser
