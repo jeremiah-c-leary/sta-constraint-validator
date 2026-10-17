@@ -54,14 +54,14 @@ def create_timing_report_file(sTimingReport):
     return timing_report_file.TimingReportFile(sTimingReport, lLines)
 
 
+def read_text_file(sFilename):
+    with open(sFilename, 'r') as oFile:
+        return oFile.readlines()
+
+
 def parse_timing_report(oTimingReportFile):
     return vivado.parse_timing_report(oTimingReportFile)
 
 
 def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
     oTimingReportList.extend(oParsedTimingReportList)
-
-
-def read_text_file(sFilename):
-    with open(sFilename, 'r') as oFile:
-        return oFile.readlines()
