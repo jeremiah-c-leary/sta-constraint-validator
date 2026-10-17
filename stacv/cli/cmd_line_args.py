@@ -45,9 +45,5 @@ def print_help_if_no_command_line_options_given(parser):
 
 def build_check_subparser(subparser):
     parser = subparser.add_parser('check', help='Perform Timing Rule Checks on timing reports.')
-    add_file_arguments_to_parser(parser)
-    parser.set_defaults(which='check')
-
-
-def add_file_arguments_to_parser(parser):
     parser.add_argument('config_file', help='Configuration files.')
+    parser.set_defaults(which='check')
