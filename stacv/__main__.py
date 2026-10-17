@@ -3,6 +3,7 @@ import sys
 from stacv.cli import cmd_line_args
 from stacv.cli import debug
 from stacv.cli import report
+from stacv.cli import check
 
 
 def main():
@@ -11,13 +12,16 @@ def main():
     '''
 
     command_line_arguments = cmd_line_args.parse_command_line_arguments()
+    iExitCode = 0
 
     if command_line_arguments.which == 'debug':
         debug.execute(command_line_arguments)
     elif command_line_arguments.which == 'report':
         sys.exit(report.execute(command_line_arguments))
-    elif command_line_arguments.which == 'checks':
-        list_checks(command_line_arguments)
+    elif command_line_arguments.which == 'check':
+        iExitCode = check.execute(command_line_arguments)
+
+    sys.exit(iExitCode)
 
 
 def list_checks(args):
