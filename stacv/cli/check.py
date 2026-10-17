@@ -7,6 +7,7 @@ from stacv.timing_report.xilinx import vivado
 
 
 def execute(oCmdLine):
+    print(f'Reading configuration file {oCmdLine.config_file}')
     oConfig = interface_config.read_interface_config(oCmdLine.config_file)
     if interfaces_have_failures(oConfig):
         return 1
@@ -48,6 +49,7 @@ def create_timing_reports(lFilenames):
 
 
 def create_timing_report_file(sTimingReport):
+    print(f'Reading timing report file {sTimingReport}')
     lLines = read_text_file(sTimingReport)
     return timing_report_file.TimingReportFile(sTimingReport, lLines)
 

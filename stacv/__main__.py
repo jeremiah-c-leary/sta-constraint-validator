@@ -18,9 +18,9 @@ def main():
             iExitCode = check.execute(command_line_arguments)
         except interface_config_error.InterfaceConfigError as oError:
             iExitCode = 2
-            str(oError)
+            print(str(oError), file=sys.stderr)
         except timing_report_parse_error.TimingReportParseError as oError:
             iExitCode = 2
-            str(oError)
-
+            print(str(oError), file=sys.stderr)
+        
         sys.exit(iExitCode)
