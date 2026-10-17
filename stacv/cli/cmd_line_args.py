@@ -11,12 +11,7 @@ def parse_command_line_arguments():
     '''
     top_parser = create_top_parser()
 
-    subparsers = top_parser.add_subparsers()
-
-    build_report_subparser(subparsers)
-    build_debug_subparser(subparsers)
-    build_checks_subparser(subparsers)
-    build_version_parser(subparsers)
+    add_subparsers(top_parser)
 
     args = top_parser.parse_args()
 
@@ -25,40 +20,20 @@ def parse_command_line_arguments():
     return args
 
 
+def add_subparsers(top_parser):
+    subparsers = top_parser.add_subparsers()
+
+    build_check_subparser(subparsers)
+
+
 def add_file_arguments_to_parser(parser):
     parser.add_argument('config_file', help='Configuration files.')
 
 
-def build_report_subparser(subparser):
-    parser = subparser.add_parser('report', help='Validate timing reports against the intent.')
-    parser.add_argument('config_file', help='Configuration file describing the intended interface timing.')
-    parser.add_argument('reports', nargs='+', help='Vivado timing reports (setup and hold).')
-    parser.add_argument('--junit', default=None, help='Write a JUnit XML file for CI/CD pipelines.')
-    parser.add_argument('--corners', nargs='+', default=['Slow', 'Fast'],
-                        help='Process corners that must be reported (default: Slow Fast).')
-
-    parser.set_defaults(which='report')
-
-
-def build_debug_subparser(subparser):
-    parser = subparser.add_parser('debug', help='Alpha debug reporting.')
+def build_check_subparser(subparser):
+    parser = subparser.add_parser('check', help='Perform Timing Rule Checks on timing reports.')
     add_file_arguments_to_parser(parser)
-    parser.add_argument('output', default=None, action='store', choices=['text_block_diagram', 'text_clock_diagram'], help='Output text version of the block diagram')
-
-    parser.set_defaults(which='debug')
-
-
-def build_checks_subparser(subparser):
-    parser = subparser.add_parser('checks', help='List every check with its ID and description.')
-    parser.add_argument('--rst', default=None, help='Write the list as a reStructuredText documentation page.')
-
-    parser.set_defaults(which='checks')
-
-
-def build_version_parser(subparser):
-    parser = subparser.add_parser('version', help=f'Displays {program.upper()} version information')
-
-    parser.set_defaults(which='version')
+    parser.set_defaults(which='check')
 
 
 def create_top_parser():
