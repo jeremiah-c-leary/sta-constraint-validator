@@ -34,6 +34,12 @@ def add_subparsers(top_parser):
     build_check_subparser(subparsers)
 
 
+def build_check_subparser(subparser):
+    parser = subparser.add_parser('check', help='Perform Timing Rule Checks on timing reports.')
+    parser.add_argument('config_file', help='Configuration files.')
+    parser.set_defaults(which='check')
+
+
 def print_help_if_no_command_line_options_given(parser):
     '''
     Will print the help output if no command line arguments were given.
@@ -41,9 +47,3 @@ def print_help_if_no_command_line_options_given(parser):
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
-
-
-def build_check_subparser(subparser):
-    parser = subparser.add_parser('check', help='Perform Timing Rule Checks on timing reports.')
-    parser.add_argument('config_file', help='Configuration files.')
-    parser.set_defaults(which='check')
