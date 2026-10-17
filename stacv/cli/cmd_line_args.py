@@ -46,4 +46,4 @@ def print_help_if_no_command_line_options_given(parser):
     '''
     if len(sys.argv) == 1:
         parser.print_help()
-        sys.exit(1)
+        sys.exit(2)
