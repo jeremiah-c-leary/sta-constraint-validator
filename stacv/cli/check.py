@@ -8,34 +8,34 @@ from stacv.timing_report.xilinx import vivado
 
 def execute(oCmdLine):
     oConfig = interface_config.read_interface_config(oCmdLine.config_file)
-    if interfaces_fail_checks(oConfig):
-       return 1
+    if interfaces_have_failures(oConfig):
+        return 1
     return 0
 
 
-def interfaces_fail_checks(oConfig):
+def interfaces_have_failures(oConfig):
     for oInterface in oConfig.interfaces:
-        if port_fails_checks(oInterface):
+        if ports_have_failures(oInterface):
             return True
     return False
 
 
-def create_methodology(oPort):
-    return methodology_factory.create_methodology(oPort.methodology)
-
-
-def port_fails_checks(oInterface):
+def ports_have_failures(oInterface):
     for oPort in oInterface.ports:
-        if timing_report_fail_checks(oPort):
+        if timing_report_have_failures(oPort):
             return True
     return False
 
 
-def timing_report_fail_checks(oPort):
+def timing_report_have_failures(oPort):
     oMethodology = create_methodology(oPort)
     oTimingReportList = create_timing_reports(oPort.timing_reports)
     oRuleResults = oMethodology.check(oTimingReportList)
     return oRuleResults.has_failures()
+
+
+def create_methodology(oPort):
+    return methodology_factory.create_methodology(oPort.methodology)
 
 
 def create_timing_reportFile(sTimingReport):
@@ -45,8 +45,8 @@ def create_timing_reportFile(sTimingReport):
 
 def create_timing_reports(lFilenames):
     oTimingReportList = timing_report_list.TimingReportList()
-    for sTimingReport in lFilenames:
-        oTimingReportFile = create_timing_reportFile(sTimingReport)
+    for sFilename in lFilenames:
+        oTimingReportFile = create_timing_reportFile(sFilename)
         oParsedTimingReportList = parse_timing_report(oTimingReportFile)
         merge_timing_reports(oTimingReportList, oParsedTimingReportList)
     return oTimingReportList
