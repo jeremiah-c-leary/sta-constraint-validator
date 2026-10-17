@@ -35,3 +35,40 @@ class TestMainCheckDispatch(unittest.TestCase):
 
     def test_check_exits_with_one_when_any_rule_fails(self):
         self.assertEqual(1, self.run_main_with_reports([sFailingReport]))
+
+
+class TestMainToolErrors(unittest.TestCase):
+
+    def setUp(self):
+        self.oTempDir = tempfile.TemporaryDirectory()
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+
+    def tearDown(self):
+        self.oTempDir.cleanup()
+
+    def run_main_with_reports(self, lTimingReports):
+        with open(self.sConfigFile, 'w') as oFile:
+            oFile.write(build_config_text(lTimingReports))
+        lArgv = ['stacv', 'check', self.sConfigFile]
+        with mock.patch('sys.argv', lArgv):
+            with contextlib.redirect_stdout(io.StringIO()):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit) as oContext:
+                        __main__.main()
+        return oContext.exception.code
+
+    def create_empty_timing_report(self):
+        sTimingReport = os.path.join(self.oTempDir.name, 'empty.rpt')
+        with open(sTimingReport, 'w'):
+            pass
+        return sTimingReport
+
+    def test_config_error_exits_with_two(self):
+        with mock.patch.dict(os.environ):
+            os.environ.pop('STACV_UNSET_VARIABLE', None)
+            iExitCode = self.run_main_with_reports(['$STACV_UNSET_VARIABLE/report.rpt'])
+        self.assertEqual(2, iExitCode)
+
+    def test_timing_report_parse_error_exits_with_two(self):
+        iExitCode = self.run_main_with_reports([self.create_empty_timing_report()])
+        self.assertEqual(2, iExitCode)
