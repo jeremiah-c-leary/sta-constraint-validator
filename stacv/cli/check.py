@@ -23,12 +23,9 @@ def execute(oCmdLine, oDateTime, lArgv):
 
 
 def get_interface_results(oInterface):
-    bFailures = False
     oPortListResults = port_result_list.PortResultList()
     for oPort in oInterface.ports:
         oPortResult = get_port_results(oPort)
-        if oPortResult.has_failures():
-            bFailures = True
         oPortListResults.add_result(oPortResult)
     return oPortListResults
 
