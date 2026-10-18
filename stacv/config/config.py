@@ -20,7 +20,7 @@ class ConfigLocation():
         self.location = ''
 
     def set_port_number(self, iNumber):
-        self.location = f' in port number {iNumber}'  
+        self.location = f' in port number {iNumber}'
 
     def set_port_name(self, sName):
-        self.location = f' in port {sName}'  
+        self.location = f' in port {sName}'
