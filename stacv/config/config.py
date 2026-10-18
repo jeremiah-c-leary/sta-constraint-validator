@@ -41,7 +41,7 @@ class ConfigLocation():
         self.interface_names[sName] = self.interface_number
 
     def set_port_number(self, iNumber):
-        self.location = self.interface_location + f' port number {iNumber}'  
+        self.location = self.interface_location + f' in port number {iNumber}'  
 
     def set_port_name(self, sName):
-        self.location = self.interface_location + f' port {sName}'  
+        self.location = self.interface_location + f' in port {sName}'  
