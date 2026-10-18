@@ -67,9 +67,12 @@ class Test(unittest.TestCase):
     def test_check_passes_every_rule_on_dac_timing_reports(self):
         oTimingReports = vivado.parse_timing_report(oPassingFile)
 
-        oRuleResults = self.oMethodology.check(oTimingReports)
+        oMethodologyResult = self.oMethodology.check(oTimingReports)
 
-        self.assertFalse(oRuleResults.has_failures())
-        self.assertEqual(8, len(oRuleResults.results))
-        for oResult in oRuleResults.results:
+        self.assertFalse(oMethodologyResult.has_failures())
+        lResults = []
+        for oStageResult in oMethodologyResult.stage_results:
+            lResults.extend(oStageResult.rule_results.results)
+        self.assertEqual(8, len(lResults))
+        for oResult in lResults:
             self.assertTrue(oResult.is_passed())
