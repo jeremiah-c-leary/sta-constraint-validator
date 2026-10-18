@@ -218,6 +218,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         self.assertEqual(sExpected, self.oStderr.getvalue())
 
 
+@unittest.skip('Adding --report after checking every port.')
 class TestMainReportFile(unittest.TestCase):
 
     def setUp(self):

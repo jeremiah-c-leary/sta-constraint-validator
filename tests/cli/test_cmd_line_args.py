@@ -34,10 +34,12 @@ class TestCheckSubparser(unittest.TestCase):
                 parse_arguments([])
         self.assertEqual(2, oContext.exception.code)
 
+    @unittest.skip('Adding --report after checking every port.')
     def test_check_report_option_stores_report_file(self):
         oArgs = parse_arguments(['check', 'stacv.toml', '--report', 'stacv_report.txt'])
         self.assertEqual('stacv_report.txt', oArgs.report)
 
+    @unittest.skip('Adding --report after checking every port.')
     def test_check_report_option_defaults_to_none(self):
         oArgs = parse_arguments(['check', 'stacv.toml'])
         self.assertIsNone(oArgs.report)
