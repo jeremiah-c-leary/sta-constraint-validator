@@ -1,6 +1,7 @@
 import contextlib
 import io
 import os
+import re
 import tempfile
 import unittest
 from unittest import mock
@@ -268,3 +269,16 @@ class TestMainReportFile(unittest.TestCase):
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         lExpected.append(f'Creating report {self.sReportFile}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
+
+    def test_report_header_shows_current_date(self):
+        self.run_main_with_report_option([sPassingReport])
+        with open(self.sReportFile, 'r') as oFile:
+            lLines = oFile.readlines()
+        self.assertRegex(lLines[3], re.compile(r'^Date:  \d{4}-\d{2}-\d{2} \d{2}:\d{2}\n$'))
+
+    def test_report_header_shows_command(self):
+        self.run_main_with_report_option([sPassingReport])
+        with open(self.sReportFile, 'r') as oFile:
+            lLines = oFile.readlines()
+        sExpected = f'Command:  stacv check {self.sConfigFile} --report {self.sReportFile}\n'
+        self.assertEqual(sExpected, lLines[4])
