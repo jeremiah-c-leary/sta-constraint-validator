@@ -9,9 +9,12 @@ from stacv.timing_report.xilinx import vivado
 def execute(oCmdLine):
     print(f'Reading configuration file {oCmdLine.config_file}')
     oConfig = interface_config.read_interface_config(oCmdLine.config_file)
+    bFailures = False
     if interfaces_have_failures(oConfig):
-        return 1
-    return 0
+        bFailures = True
+    if oCmdLine.report is not None:
+        write_check_report(oCmdLine)
+    return bFailures
 
 
 def interfaces_have_failures(oConfig):
@@ -73,3 +76,10 @@ def parse_timing_report(oTimingReportFile):
 
 def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
     oTimingReportList.extend(oParsedTimingReportList)
+
+
+def write_check_report(oCmdLine):
+    print(f'Creating report {oCmdLine.report}')
+    lLines = ['Delete this']
+    with open(oCmdLine.report, 'w') as oFile:
+        oFile.writelines(lLines)
