@@ -33,3 +33,11 @@ class TestCheckSubparser(unittest.TestCase):
             with self.assertRaises(SystemExit) as oContext:
                 parse_arguments([])
         self.assertEqual(2, oContext.exception.code)
+
+    def test_check_report_option_stores_report_file(self):
+        oArgs = parse_arguments(['check', 'stacv.toml', '--report', 'stacv_report.txt'])
+        self.assertEqual('stacv_report.txt', oArgs.report)
+
+    def test_check_report_option_defaults_to_none(self):
+        oArgs = parse_arguments(['check', 'stacv.toml'])
+        self.assertIsNone(oArgs.report)

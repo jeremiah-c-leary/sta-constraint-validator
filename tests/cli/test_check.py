@@ -40,7 +40,7 @@ class TestExecute(unittest.TestCase):
     def execute_with_reports(self, lTimingReports):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports))
-        oArgs = argparse.Namespace(config_file=self.sConfigFile)
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None)
         with contextlib.redirect_stdout(io.StringIO()):
             return check.execute(oArgs)
 
