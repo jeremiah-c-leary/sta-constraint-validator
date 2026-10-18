@@ -23,11 +23,11 @@ def execute(oCmdLine, oDateTime, lArgv):
 
 
 def get_port_results(oInterface):
-    oPortListResults = port_result_list.PortResultList()
+    oPortResults = port_result_list.PortResultList()
     for oPort in oInterface.ports:
         oPortResult = get_port_result(oPort)
-        oPortListResults.add_result(oPortResult)
-    return oPortListResults
+        oPortResults.add_result(oPortResult)
+    return oPortResults
 
 
 def get_port_result(oPort):
