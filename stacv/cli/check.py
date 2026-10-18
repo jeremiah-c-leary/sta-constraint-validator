@@ -42,8 +42,8 @@ def create_methodology(oPort):
     return methodology_factory.create_methodology(oPort.methodology)
 
 
-def print_failing_rules(oRuleResults):
-    for oRuleResult in oRuleResults.get_failing_results():
+def print_failing_rules(oMethodologyResults):
+    for oRuleResult in oMethodologyResults.get_failing_results():
         print(f'FAILED: [{oRuleResult.rule_id}]')
 
 
