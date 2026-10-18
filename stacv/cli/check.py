@@ -25,12 +25,12 @@ def interfaces_have_failures(oConfig):
 def ports_have_failures(oInterface):
     bFailures = False
     for oPort in oInterface.ports:
-        if timing_reports_have_failures(oPort):
+        if port_has_failures(oPort):
             bFailures = True
     return bFailures
 
 
-def timing_reports_have_failures(oPort):
+def port_has_failures(oPort):
     oMethodology = create_methodology(oPort)
     oTimingReportList = create_timing_reports(oPort.timing_reports)
     oRuleResults = oMethodology.check(oTimingReportList)
