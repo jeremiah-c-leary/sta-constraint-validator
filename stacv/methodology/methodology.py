@@ -1,5 +1,3 @@
-from stacv.rules import rule_result_list
-
 
 class Methodology():
 
@@ -16,7 +14,7 @@ class Methodology():
                 oStageResults = oStage.check(oTimingReportList)
                 if oStageResults.has_failures():
                     sSkipStageReason = f'{oStage.name} failed'
-            oMethodologyResults.add_stage_results(oStageResults)
+            oMethodologyResults.add_stage_result(oStageResults)
         return oMethodologyResults
 
 
@@ -29,20 +27,18 @@ class MethodologyResults():
     def __init__(self):
         self.stage_results = []
 
-    def add_stage_results(self, oStageResult):
+    def add_stage_result(self, oStageResult):
         self.stage_results.append(oStageResult)
 
-    def stage_results(self):
-        return self.stages
+    def get_failing_results(self):
+        lFailingResults = []
+        for oStageResult in self.stage_results:
+            if oStageResult.has_failures():
+                lFailingResults.extend(oStageResult.get_failing_results())
+        return lFailingResults
 
     def has_failures(self):
-        for oStage in self.stage_results:
-            if oStage.has_failures():
+        for oStageResult in self.stage_results:
+            if oStageResult.has_failures():
                 return True
         return False
-
-    def get_failing_results(self):
-        for oStage in self.stage_results:
-            if oStage.has_failures():
-                return oStage.get_failing_results()
-        return []

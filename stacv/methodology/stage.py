@@ -29,8 +29,8 @@ class StageResults():
         self.name = sName
         self.rule_results = oRuleResultsList
 
-    def has_failures(self):
-        return self.rule_results.has_failures()
-
     def get_failing_results(self):
         return self.rule_results.get_failing_results()
+
+    def has_failures(self):
+        return self.rule_results.has_failures()
