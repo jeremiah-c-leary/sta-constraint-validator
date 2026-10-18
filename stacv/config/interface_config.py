@@ -36,27 +36,14 @@ def create_interface_config(dConfig, sConfigFile):
     oConfig = config.InterfaceConfig()
     oLocation = config.ConfigLocation(sConfigFile)
     oConfig.description = get_required_string(dConfig, 'description', oLocation)
-    oConfig.interfaces = create_interfaces(dConfig, oLocation)
+    oConfig.interface_name = get_required_string(dConfig, 'interface', oLocation)
+    oConfig.ports = create_ports(dConfig, oLocation)
     return oConfig
 
 
-def create_interfaces(dConfig, oLocation):
-    lInterfaces = []
-    for iInterface, dInterface in enumerate(get_required_array_of_tables(dConfig, 'interface', oLocation), start=1):
-        oInterface = config.Interface()
-        oLocation.set_interface_number(iInterface)
-        oInterface.name = get_required_string(dInterface, 'name', oLocation)
-        if oInterface.name in oLocation.interface_names:
-            raise interface_config_error.InterfaceConfigError('interface_config_007', oLocation.filename, f'duplicate interface name "{oInterface.name}"{oLocation.interface_location}, first used in interface number {oLocation.get_number_of_interface_named(oInterface.name)}')
-        oLocation.set_interface_name(oInterface.name)
-        oInterface.ports = create_ports(dInterface, oLocation)
-        lInterfaces.append(oInterface)
-    return lInterfaces
-
-
-def create_ports(dInterface, oLocation):
+def create_ports(dConfig, oLocation):
     lPorts = []
-    for iPort, dPort in enumerate(get_required_array_of_tables(dInterface, 'port', oLocation), start=1):
+    for iPort, dPort in enumerate(get_required_array_of_tables(dConfig, 'port', oLocation), start=1):
         oPort = config.Port()
         oLocation.set_port_number(iPort)
         oPort.name = get_required_string(dPort, 'name', oLocation)
