@@ -12,24 +12,6 @@ from tests.cli.test_check import sFailingReport
 from tests.cli.test_check import sPassingReport
 
 
-def build_two_interface_config_text(sFirstTimingReport, sSecondTimingReport):
-    lText = []
-    lText.append('description = "check.py test"')
-    lText.append('[[interface]]')
-    lText.append('name = "DAC_SPI_1"')
-    lText.append('[[interface.port]]')
-    lText.append('name = "PORT_1"')
-    lText.append('methodology = "SDR-SS-O"')
-    lText.append(f'timing_reports = ["{sFirstTimingReport}"]')
-    lText.append('[[interface]]')
-    lText.append('name = "DAC_SPI_2"')
-    lText.append('[[interface.port]]')
-    lText.append('name = "PORT_1"')
-    lText.append('methodology = "SDR-SS-O"')
-    lText.append(f'timing_reports = ["{sSecondTimingReport}"]')
-    return '\n'.join(lText)
-
-
 class TestMainCheckDispatch(unittest.TestCase):
 
     def setUp(self):
@@ -117,17 +99,6 @@ class TestMainConsoleOutput(unittest.TestCase):
                     with self.assertRaises(SystemExit):
                         __main__.main()
 
-    def run_main_with_config_text(self, sConfigText):
-        with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(sConfigText)
-        lArgv = ['stacv', 'check', self.sConfigFile]
-        with mock.patch('sys.argv', lArgv):
-            with contextlib.redirect_stdout(self.oStdout):
-                with contextlib.redirect_stderr(self.oStderr):
-                    with self.assertRaises(SystemExit) as oContext:
-                        __main__.main()
-        return oContext.exception.code
-
     def create_empty_timing_report(self):
         sTimingReport = os.path.join(self.oTempDir.name, 'empty.rpt')
         with open(sTimingReport, 'w'):
@@ -161,15 +132,6 @@ class TestMainConsoleOutput(unittest.TestCase):
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
-    def test_failing_interface_does_not_stop_later_interfaces(self):
-        self.run_main_with_config_text(build_two_interface_config_text(sFailingReport, sPassingReport))
-        lExpected = []
-        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
-        lExpected.append(f'Reading timing report file {sFailingReport}\n')
-        lExpected.append('FAILED: [s0_timing_report_002]\n')
-        lExpected.append(f'Reading timing report file {sPassingReport}\n')
-        self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
-
     def test_failing_later_port_reports_a_failure(self):
         self.run_main_with_reports([sPassingReport, sFailingReport])
         lExpected = []
@@ -200,7 +162,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         lExpected = []
         lExpected.append('ERROR: [interface_config_004] ')
         lExpected.append(self.sConfigFile)
-        lExpected.append(' key "timing_reports" in interface DAC_SPI_1 port PORT_1')
+        lExpected.append(' key "timing_reports" in port PORT_1')
         lExpected.append(' uses environment variables that are not set: STACV_UNSET_VARIABLE\n')
         self.assertEqual(''.join(lExpected), self.oStderr.getvalue())
 

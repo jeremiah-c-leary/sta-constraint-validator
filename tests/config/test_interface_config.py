@@ -18,27 +18,22 @@ class Test(unittest.TestCase):
     def test_config_keeps_its_description(self):
         self.assertEqual('Two ports on one interface', self.oConfig.description)
 
-    def test_config_has_one_interface_with_its_name(self):
-        lInterfaceNames = []
-        for oInterface in self.oConfig.interfaces:
-            lInterfaceNames.append(oInterface.name)
-        self.assertEqual(['DAC_SPI_1'], lInterfaceNames)
+    def test_config_keeps_its_interface_name(self):
+        self.assertEqual('DAC_SPI_1', self.oConfig.interface_name)
 
-    def test_interface_keeps_its_ports_in_order(self):
-        oInterface = self.oConfig.interfaces[0]
-
+    def test_config_keeps_its_ports_in_order(self):
         lPortNames = []
-        for oPort in oInterface.ports:
+        for oPort in self.oConfig.ports:
             lPortNames.append(oPort.name)
         self.assertEqual(['O_DAC_DATA', 'O_DAC_CSF'], lPortNames)
 
     def test_port_keeps_its_methodology(self):
-        oPort = self.oConfig.interfaces[0].ports[0]
+        oPort = self.oConfig.ports[0]
 
         self.assertEqual('SDR-SS-O', oPort.methodology)
 
     def test_port_timing_report_paths_have_environment_variables_expanded(self):
-        oPort = self.oConfig.interfaces[0].ports[1]
+        oPort = self.oConfig.ports[1]
 
         lExpected = []
         lExpected.append(os.path.join(sProjectDir, 'tests', 'timing_report', 'parse', 'vivado', 'dac_spi.setup.rpt'))

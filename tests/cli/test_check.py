@@ -20,10 +20,9 @@ sFailingReport = os.path.abspath(os.path.join(sRuleDir, 's0_timing_report_002.fa
 def build_config_text(lTimingReports):
     lText = []
     lText.append('description = "check.py test"')
-    lText.append('[[interface]]')
-    lText.append('name = "DAC_SPI_1"')
+    lText.append('interface = "DAC_SPI_1"')
     for iPort, sTimingReport in enumerate(lTimingReports, start=1):
-        lText.append('[[interface.port]]')
+        lText.append('[[port]]')
         lText.append(f'name = "PORT_{iPort}"')
         lText.append('methodology = "SDR-SS-O"')
         lText.append(f'timing_reports = ["{sTimingReport}"]')
