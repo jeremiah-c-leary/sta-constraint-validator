@@ -36,7 +36,7 @@ def create_interface_config(dConfig, sConfigFile):
     oConfig = config.Interface()
     oLocation = config.ConfigLocation(sConfigFile)
     oConfig.description = get_required_string(dConfig, 'description', oLocation)
-    oConfig.name = get_required_string(dConfig, 'interface', oLocation)
+    oConfig.interface_name = get_required_string(dConfig, 'interface', oLocation)
     oConfig.ports = create_ports(dConfig, oLocation)
     return oConfig
 
