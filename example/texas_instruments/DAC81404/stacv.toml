@@ -5,14 +5,13 @@
 
 description = "DAC81404 serial interface, write path only"
 
-# Shared by every interface on this device (stage 3)
 # device = "$PROJ_DIR/example/xilinx/ultrascale_plus.toml"
 
-name = "DAC_SPI_1"
+interface = "DAC_SPI_1"
 # part = "$PROJ_DIR/example/texas_instruments/DAC81404/part.toml"     # stage 3
 # traces = "$PROJ_DIR/example/texas_instruments/DAC81404/traces.toml" # stage 3
 
-[Port]
+[[port]]
 name = "O_DAC_DATA"
 methodology = "SDR-SS-O"  # moves to the part file once it exists
 timing_reports = [
