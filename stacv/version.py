@@ -2,4 +2,4 @@
 This file maintains the version of the program.
 '''
 
-VERSION = 1.0
+VERSION = '1.0'
