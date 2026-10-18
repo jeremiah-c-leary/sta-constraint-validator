@@ -4,8 +4,8 @@ class PortResultList():
     def __init__(self):
         self.results = []
 
-    def add_result(self, oPort):
-        self.results.append(oPort)
+    def add_result(self, oPortResult):
+        self.results.append(oPortResult)
 
     def has_failures(self):
         for oPortResult in self.results:
