@@ -43,7 +43,7 @@ class TestExecute(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports))
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None)
-        oDateTime = datetime.datetime(2026, 10, 17, 21, 14)
+        oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile]
         with contextlib.redirect_stdout(io.StringIO()):
             return check.execute(oArgs, oDateTime, lArgv)
@@ -64,7 +64,7 @@ class TestExecuteReportHeader(unittest.TestCase):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
-        self.oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 59)
+        self.oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
 
     def tearDown(self):
         self.oTempDir.cleanup()
@@ -87,12 +87,12 @@ class TestExecuteReportHeader(unittest.TestCase):
     def test_report_starts_with_header(self):
         self.execute_with_argv(self.build_argv('stacv'))
         lExpected = []
-        lExpected.append('-' * 79 + '\n')
+        lExpected.append('-' * 80 + '\n')
         lExpected.append('STA Constraint Validator check report\n')
         lExpected.append(f'Version {version.VERSION}\n')
-        lExpected.append('Date:  2026-10-17 21:14\n')
+        lExpected.append('Date:  2026-10-17 21:14:53\n')
         lExpected.append(f'Command:  stacv check {self.sConfigFile} --report {self.sReportFile}\n')
-        lExpected.append('-' * 79 + '\n')
+        lExpected.append('-' * 80 + '\n')
         self.assertEqual(lExpected, self.read_report_header())
 
     def test_header_command_shows_program_name_without_path(self):

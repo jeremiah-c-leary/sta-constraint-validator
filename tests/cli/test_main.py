@@ -274,7 +274,7 @@ class TestMainReportFile(unittest.TestCase):
         self.run_main_with_report_option([sPassingReport])
         with open(self.sReportFile, 'r') as oFile:
             lLines = oFile.readlines()
-        self.assertRegex(lLines[3], re.compile(r'^Date:  \d{4}-\d{2}-\d{2} \d{2}:\d{2}\n$'))
+        self.assertRegex(lLines[3], re.compile(r'^Date:  \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\n$'))
 
     def test_report_header_shows_command(self):
         self.run_main_with_report_option([sPassingReport])

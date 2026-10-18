@@ -1,4 +1,7 @@
 
+import os
+
+from stacv import version
 from stacv.config import interface_config
 from stacv.methodology import methodology_factory
 from stacv.timing_report import timing_report_file
@@ -6,12 +9,12 @@ from stacv.timing_report import timing_report_list
 from stacv.timing_report.xilinx import vivado
 
 
-def execute(oCmdLine):
+def execute(oCmdLine, oDateTime, lArgv):
     print(f'Reading configuration file {oCmdLine.config_file}')
     oConfig = interface_config.read_interface_config(oCmdLine.config_file)
     bFailures = interfaces_have_failures(oConfig)
     if oCmdLine.report is not None:
-        write_check_report(oCmdLine.report)
+        write_check_report(oCmdLine.report, oDateTime, lArgv)
     if bFailures:
         return 1
     return 0
@@ -78,8 +81,36 @@ def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
     oTimingReportList.extend(oParsedTimingReportList)
 
 
-def write_check_report(sFilename):
+def write_check_report(sFilename, oDateTime, lArgv):
     print(f'Creating report {sFilename}')
-    lLines = ['Delete this']
+    lLines = []
+    lLines.extend(build_header(sFilename, oDateTime, lArgv))
+    write_file(sFilename, lLines)
+
+
+def build_header(sFilename, oDateTime, lArgv):
+    lLines = []
+    lLines.append(build_minor_divider())
+    lLines.append('STA Constraint Validator check report')
+    lLines.append(f'Version {version.VERSION}')
+    lLines.append(f'Date:  {oDateTime.replace(microsecond=0).isoformat(sep=" ")}')
+    lLines.append(build_command(lArgv))
+    lLines.append(build_minor_divider())
+    return lLines
+
+
+def build_minor_divider():
+    return '-'*80
+
+
+def build_command(lArgv):
+    sCommand = 'Command:  '
+    sCommand += os.path.basename(lArgv[0])
+    sCommand += ' '
+    sCommand += ' '.join(lArgv[1:])
+    return sCommand
+
+
+def write_file(sFilename, lLines):
     with open(sFilename, 'w') as oFile:
-        oFile.writelines(lLines)
+        oFile.write('\n'.join(lLines) + '\n')
