@@ -28,14 +28,6 @@ def interface_has_failures(oConfig):
     return bFailures
 
 
-def ports_have_failures(oInterface):
-    bFailures = False
-    for oPort in oInterface.ports:
-        if port_has_failures(oPort):
-            bFailures = True
-    return bFailures
-
-
 def port_has_failures(oPort):
     oMethodology = create_methodology(oPort)
     oTimingReportList = create_timing_reports(oPort.timing_reports)
