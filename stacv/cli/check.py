@@ -31,9 +31,9 @@ def interface_has_failures(oInterface):
 def port_has_failures(oPort):
     oMethodology = create_methodology(oPort)
     oTimingReportList = create_timing_reports(oPort.timing_reports)
-    oRuleResults = oMethodology.check(oTimingReportList)
-    print_failing_rules(oRuleResults)
-    return oRuleResults.has_failures()
+    oMethodologyResults = oMethodology.check(oTimingReportList)
+    print_failing_rules(oMethodologyResults)
+    return oMethodologyResults.has_failures()
 
 
 def create_methodology(oPort):
