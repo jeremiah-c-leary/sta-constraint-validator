@@ -1,12 +1,7 @@
 
-class InterfaceConfig():
-    def __init__(self):
-        self.description = None
-        self.interfaces = []
-
-
 class Interface():
     def __init__(self):
+        self.description = None
         self.name = None
         self.ports = []
 

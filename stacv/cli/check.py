@@ -12,7 +12,7 @@ from stacv.timing_report.xilinx import vivado
 def execute(oCmdLine, oDateTime, lArgv):
     print(f'Reading configuration file {oCmdLine.config_file}')
     oConfig = interface_config.read_interface_config(oCmdLine.config_file)
-    bFailures = interfaces_have_failures(oConfig)
+    bFailures = interface_has_failures(oConfig)
     if oCmdLine.report is not None:
         write_check_report(oCmdLine.report, oDateTime, lArgv)
     if bFailures:
@@ -20,10 +20,10 @@ def execute(oCmdLine, oDateTime, lArgv):
     return 0
 
 
-def interfaces_have_failures(oConfig):
+def interface_has_failures(oConfig):
     bFailures = False
-    for oInterface in oConfig.interfaces:
-        if ports_have_failures(oInterface):
+    for oPort in oConfig.ports:
+        if port_has_failures(oPort):
             bFailures = True
     return bFailures
 
