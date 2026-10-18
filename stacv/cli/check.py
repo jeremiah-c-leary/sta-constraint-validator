@@ -14,23 +14,23 @@ from stacv.timing_report.xilinx import vivado
 def execute(oCmdLine, oDateTime, lArgv):
     print(f'Reading configuration file {oCmdLine.config_file}')
     oInterface = interface_config.read_interface_config(oCmdLine.config_file)
-    oInterfaceResults = get_interface_results(oInterface)
+    oPortResults = get_port_results(oInterface)
     if oCmdLine.report is not None:
-        write_check_report(oCmdLine.report, oDateTime, lArgv, oInterfaceResults)
-    if oInterfaceResults.has_failures():
+        write_check_report(oCmdLine.report, oDateTime, lArgv, oInterface, oPortResults)
+    if oPortResults.has_failures():
         return 1
     return 0
 
 
-def get_interface_results(oInterface):
+def get_port_results(oInterface):
     oPortListResults = port_result_list.PortResultList()
     for oPort in oInterface.ports:
-        oPortResult = get_port_results(oPort)
+        oPortResult = get_port_result(oPort)
         oPortListResults.add_result(oPortResult)
     return oPortListResults
 
 
-def get_port_results(oPort):
+def get_port_result(oPort):
     oMethodology = create_methodology(oPort)
     oTimingReportList = create_timing_reports(oPort.timing_reports)
     oMethodologyResults = oMethodology.check(oTimingReportList)
@@ -75,7 +75,7 @@ def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
     oTimingReportList.extend(oParsedTimingReportList)
 
 
-def write_check_report(sFilename, oDateTime, lArgv, oInterfaceResults):
+def write_check_report(sFilename, oDateTime, lArgv, oInterface, oInterfaceResults):
     print(f'Creating report {sFilename}')
     lLines = []
     lLines.extend(build_header(oDateTime, lArgv))
