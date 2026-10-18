@@ -75,7 +75,7 @@ def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
     oTimingReportList.extend(oParsedTimingReportList)
 
 
-def write_check_report(sFilename, oDateTime, lArgv, oInterface, oInterfaceResults):
+def write_check_report(sFilename, oDateTime, lArgv, oInterface, oPortResults):
     print(f'Creating report {sFilename}')
     lLines = []
     lLines.extend(build_header(oDateTime, lArgv))
