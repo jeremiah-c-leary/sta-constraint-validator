@@ -4,6 +4,8 @@ import os
 from stacv import version
 from stacv.config import interface_config
 from stacv.methodology import methodology_factory
+from stacv.results import port_result
+from stacv.results import port_result_list
 from stacv.timing_report import timing_report_file
 from stacv.timing_report import timing_report_list
 from stacv.timing_report.xilinx import vivado
@@ -12,28 +14,31 @@ from stacv.timing_report.xilinx import vivado
 def execute(oCmdLine, oDateTime, lArgv):
     print(f'Reading configuration file {oCmdLine.config_file}')
     oInterface = interface_config.read_interface_config(oCmdLine.config_file)
-    bFailures = interface_has_failures(oInterface)
+    oInterfaceResults = get_interface_results(oInterface)
     if oCmdLine.report is not None:
-        write_check_report(oCmdLine.report, oDateTime, lArgv)
-    if bFailures:
+        write_check_report(oCmdLine.report, oDateTime, lArgv, oInterfaceResults)
+    if oInterfaceResults.has_failures():
         return 1
     return 0
 
 
-def interface_has_failures(oInterface):
+def get_interface_results(oInterface):
     bFailures = False
+    oPortListResults = port_result_list.PortResultList()
     for oPort in oInterface.ports:
-        if port_has_failures(oPort):
+        oPortResult = get_port_results(oPort)
+        if oPortResult.has_failures():
             bFailures = True
-    return bFailures
+        oPortListResults.add_result(oPortResult)
+    return oPortListResults
 
 
-def port_has_failures(oPort):
+def get_port_results(oPort):
     oMethodology = create_methodology(oPort)
     oTimingReportList = create_timing_reports(oPort.timing_reports)
     oMethodologyResults = oMethodology.check(oTimingReportList)
     print_failing_rules(oMethodologyResults)
-    return oMethodologyResults.has_failures()
+    return port_result.PortResult(oPort, oMethodologyResults)
 
 
 def create_methodology(oPort):
@@ -73,7 +78,7 @@ def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
     oTimingReportList.extend(oParsedTimingReportList)
 
 
-def write_check_report(sFilename, oDateTime, lArgv):
+def write_check_report(sFilename, oDateTime, lArgv, oInterfaceResults):
     print(f'Creating report {sFilename}')
     lLines = []
     lLines.extend(build_header(oDateTime, lArgv))
