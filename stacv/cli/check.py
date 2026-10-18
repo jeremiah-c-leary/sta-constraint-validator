@@ -84,16 +84,16 @@ def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
 def write_check_report(sFilename, oDateTime, lArgv):
     print(f'Creating report {sFilename}')
     lLines = []
-    lLines.extend(build_header(sFilename, oDateTime, lArgv))
+    lLines.extend(build_header(oDateTime, lArgv))
     write_file(sFilename, lLines)
 
 
-def build_header(sFilename, oDateTime, lArgv):
+def build_header(oDateTime, lArgv):
     lLines = []
     lLines.append(build_minor_divider())
     lLines.append('STA Constraint Validator check report')
     lLines.append(f'Version {version.VERSION}')
-    lLines.append(f'Date:  {oDateTime.replace(microsecond=0).isoformat(sep=" ")}')
+    lLines.append(build_date(oDateTime))
     lLines.append(build_command(lArgv))
     lLines.append(build_minor_divider())
     return lLines
@@ -101,6 +101,10 @@ def build_header(sFilename, oDateTime, lArgv):
 
 def build_minor_divider():
     return '-'*80
+
+
+def build_date(oDateTime):
+    return f'Date:  {oDateTime.strftime("%Y-%m-%d %H:%M:%S")}'
 
 
 def build_command(lArgv):
