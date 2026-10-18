@@ -1,6 +1,5 @@
+import datetime
 import sys
-
-from datetime import datetime
 
 from stacv.cli import cmd_line_args
 from stacv.cli import check
@@ -17,7 +16,7 @@ def main():
 
     if command_line_arguments.which == 'check':
         try:
-            iExitCode = check.execute(command_line_arguments, datetime.now(), sys.argv)
+            iExitCode = check.execute(command_line_arguments, datetime.datetime.now(), sys.argv)
         except interface_config_error.InterfaceConfigError as oError:
             iExitCode = 2
             print(str(oError), file=sys.stderr)
