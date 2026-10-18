@@ -15,17 +15,19 @@ def execute(oCmdLine):
 
 
 def interfaces_have_failures(oConfig):
+    bFailures = False
     for oInterface in oConfig.interfaces:
         if ports_have_failures(oInterface):
-            return True
-    return False
+            bFailures = True
+    return bFailures
 
 
 def ports_have_failures(oInterface):
+    bFailures = False
     for oPort in oInterface.ports:
         if timing_reports_have_failures(oPort):
-            return True
-    return False
+            bFailures = True
+    return bFailures
 
 
 def timing_reports_have_failures(oPort):
