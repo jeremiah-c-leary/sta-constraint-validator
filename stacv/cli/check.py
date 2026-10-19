@@ -128,14 +128,14 @@ def build_major_divider():
 
 
 def build_table(oPortResults):
-    lTable = build_initial_table(oPortResults)
+    lTable = build_condensed_table(oPortResults)
     adjust_table_column_widths(lTable)
     add_separator(lTable)
     lTable = expand_rows(lTable)
     return lTable
 
 
-def build_initial_table(oPortResults):
+def build_condensed_table(oPortResults):
     lTable = []
     lTable.append(['Port', 'Methodology', 'Report Key', 'Section', 'Result'])
     for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
