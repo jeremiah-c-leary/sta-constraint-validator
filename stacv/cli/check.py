@@ -293,7 +293,7 @@ def build_section_3(oPortResults):
     lLines.extend(build_section_3_header())
     for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
         lLines.append('')
-        lLines.extend(build_port_results_section(iPortResult, oPortResult))
+        lLines.extend(build_section_3_port(iPortResult, oPortResult))
     return lLines
 
 
@@ -305,7 +305,7 @@ def build_section_3_header():
     return lLines
 
 
-def build_port_results_section(iPortResult, oPortResult):
+def build_section_3_port(iPortResult, oPortResult):
     lLines = []
     lLines.extend(build_port_results_header(iPortResult, oPortResult))
     iRuleIdColumnWidth = get_max_rule_id_column_width(oPortResult)
