@@ -16,6 +16,7 @@ REPORT_WIDTH = 80
 MD5SUM_COLUMN_WIDTH = 32
 COLUMN_GAP = 2
 MAXIMUM_FILENAME_COLUMN_WIDTH = REPORT_WIDTH - MD5SUM_COLUMN_WIDTH - COLUMN_GAP
+RESULT_COLUMN_WIDTH = len('Skipped')
 
 
 def execute(oCmdLine, oDateTime, lArgv):
@@ -89,6 +90,8 @@ def write_check_report(sFilename, oDateTime, lArgv, oInterface, oPortResults, sC
     lLines.extend(build_section_1(oInterface, oPortResults))
     lLines.append('')
     lLines.extend(build_section_2(oPortResults, sConfigFile))
+    lLines.append('')
+    lLines.extend(build_section_3(oPortResults))
     write_file(sFilename, lLines)
 
 
@@ -147,7 +150,7 @@ def build_unformatted_table(oPortResults):
     for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
         lRow = [oPortResult.port.name]
         lRow.append(oPortResult.port.methodology)
-        lRow.append(lRow[0] + '.' + lRow[1])
+        lRow.append(build_report_key(oPortResult))
         lRow.append('3.' + str(iPortResult))
         if oPortResult.methodology_results.has_failures():
             lRow.append('Failed')
@@ -155,6 +158,10 @@ def build_unformatted_table(oPortResults):
             lRow.append('Passed')
         lTable.append(lRow)
     return lTable
+
+
+def build_report_key(oPortResult):
+    return oPortResult.port.name + '.' + oPortResult.port.methodology
 
 
 def format_table(lRows):
@@ -275,3 +282,118 @@ def build_md5sum_table_rows(lFiles):
 def generate_md5sum(sFilename):
     with open(sFilename, 'rb') as oFile:
         return hashlib.file_digest(oFile, 'md5').hexdigest()
+
+
+def build_section_3(oPortResults):
+    lLines = []
+    lLines.extend(build_section_3_header())
+    for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
+        lLines.append('')
+        lLines.extend(build_port_results_section(iPortResult, oPortResult))
+    return lLines
+
+
+def build_section_3_header():
+    lLines = []
+    lLines.append(build_major_divider())
+    lLines.append('Section 3: Port Rule Checks')
+    lLines.append(build_major_divider())
+    return lLines
+
+
+def build_port_results_section(iPortResult, oPortResult):
+    lLines = []
+    lLines.extend(build_port_results_header(iPortResult, oPortResult))
+    lColumnWidths = get_port_check_column_widths(oPortResult)
+    lLines.append(build_port_rule_check_header(lColumnWidths))
+    for oStageResult in oPortResult.methodology_results.stage_results:
+        lLines.extend(build_stage_result_rows(lColumnWidths, oStageResult))
+    lLines.append(build_minor_divider())
+    return lLines
+
+
+def build_port_results_header(iPortResult, oPortResult):
+    sRuleKey = build_report_key(oPortResult)
+    lLines = []
+    lLines.append(build_minor_divider())
+    lLines.append(f'Section 3.{iPortResult}: {sRuleKey} Rule Checks')
+    lLines.append(build_minor_divider())
+    return lLines
+
+
+def get_port_check_column_widths(oPortResult):
+    lWidths = []
+    lWidths.append(get_max_rule_id_width(oPortResult))
+    lWidths.append(COLUMN_GAP)
+    lWidths.append(RESULT_COLUMN_WIDTH)
+    lWidths.append(COLUMN_GAP)
+    return lWidths
+
+
+def get_max_rule_id_width(oPortResult):
+    iMaxWidth = 0
+    for oStageResult in oPortResult.methodology_results.stage_results:
+        for oRuleResult in oStageResult.rule_results.results:
+            iMaxWidth = max(iMaxWidth, len(oRuleResult.rule_id))
+    return iMaxWidth
+
+
+def build_port_rule_check_header(lColumnWidths):
+    sHeader = f'{"Rule":<{lColumnWidths[0]}}'
+    sHeader += ' '*lColumnWidths[1]
+    sHeader += f'{"Result":<{lColumnWidths[2]}}'
+    sHeader += ' '*lColumnWidths[3]
+    sHeader += 'Details'
+    return sHeader
+
+
+def build_stage_result_rows(lColumnWidths, oStageResult):
+    lLines = []
+    lLines.append(build_stage_separator(oStageResult))
+    lLines.extend(build_stage_rule_results(lColumnWidths, oStageResult))
+    return lLines
+
+
+def build_stage_separator(oStageResult):
+    sLine = '- ' + oStageResult.name + ' '
+    sLine = sLine + '-' * (REPORT_WIDTH - len(sLine))
+    return sLine
+
+
+def build_stage_rule_results(lColumnWidths, oStageResult):
+    lLines = []
+    for oResult in oStageResult.rule_results.results:
+        if result_has_detail(oResult):
+            lLines.extend(build_result_with_detail(lColumnWidths, oResult))
+        else:
+            lLines.append(build_result_without_detail(lColumnWidths, oResult))
+    return lLines
+
+
+def result_has_detail(oResult):
+    return len(oResult.details) > 0
+
+
+def build_result_without_detail(lColumnWidths, oResult):
+    sRuleId = oResult.rule_id
+    sResult = oResult.status.capitalize()
+    sLine = f'{sRuleId:{lColumnWidths[0]}}'
+    sLine += ' '*lColumnWidths[1]
+    sLine += f'{sResult:{lColumnWidths[2]}}'
+    return sLine.rstrip()
+
+
+def build_result_with_detail(lColumnWidths, oResult):
+    lLines = []
+    sRuleId = oResult.rule_id
+    sResult = oResult.status.capitalize()
+    for sDetail in oResult.details:
+        sLine = f'{sRuleId:{lColumnWidths[0]}}'
+        sLine += ' '*lColumnWidths[1]
+        sLine += f'{sResult:{lColumnWidths[2]}}'
+        sLine += ' '*lColumnWidths[3]
+        sLine += sDetail
+        lLines.append(sLine.rstrip())
+        sRuleId = ''
+        sResult = ''
+    return lLines

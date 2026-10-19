@@ -17,6 +17,7 @@ sRuleDir = os.path.join(sTestDir, '..', 'rules', 'timing_report')
 
 sPassingReport = os.path.abspath(os.path.join(sParseDir, 'O_DAC_DATA_timing.rpt'))
 sFailingReport = os.path.abspath(os.path.join(sRuleDir, 's0_timing_report_002.failing.rpt'))
+sOutputDelayFailingReport = os.path.abspath(os.path.join(sTestDir, '..', 'rules', 'output_delay', 's2_output_delay_001.failing.rpt'))
 
 
 def build_config_text(lTimingReports):
@@ -282,6 +283,115 @@ class TestExecuteReportInputs(unittest.TestCase):
 
         lInputs = self.read_inputs_section()
         self.assertEqual(calculate_md5(sTimingReport) + '  ' + sTimingReport, lInputs[7])
+
+
+class TestExecuteReportRuleChecks(unittest.TestCase):
+
+    def setUp(self):
+        self.oTempDir = tempfile.TemporaryDirectory()
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
+
+    def tearDown(self):
+        self.oTempDir.cleanup()
+
+    def execute_with_ports(self, lPorts):
+        with open(self.sConfigFile, 'w') as oFile:
+            oFile.write(build_named_ports_config_text('Rule checks test', lPorts))
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile)
+        oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
+        lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
+        with contextlib.redirect_stdout(io.StringIO()):
+            check.execute(oArgs, oDateTime, lArgv)
+
+    def read_rule_checks_section(self):
+        with open(self.sReportFile, 'r') as oFile:
+            lLines = oFile.read().splitlines()
+        iStart = lLines.index('Section 3: Port Rule Checks') - 1
+        return lLines[iStart:]
+
+    def read_port_rule_checks(self, sSectionTitle):
+        lLines = self.read_rule_checks_section()
+        iStart = lLines.index(sSectionTitle) - 1
+        iEnd = find_first_blank_line(lLines, iStart)
+        return lLines[iStart:iEnd]
+
+    def test_rule_checks_list_every_rule_of_a_passing_port_by_stage(self):
+        lPorts = []
+        lPorts.append(('P1', sPassingReport))
+        self.execute_with_ports(lPorts)
+
+        lExpected = []
+        lExpected.append('=' * 80)
+        lExpected.append('Section 3: Port Rule Checks')
+        lExpected.append('=' * 80)
+        lExpected.append('')
+        lExpected.append('-' * 80)
+        lExpected.append('Section 3.1: P1.SDR-SS-O Rule Checks')
+        lExpected.append('-' * 80)
+        lExpected.append('Rule                  Result   Details')
+        lExpected.append('- stage 0 ' + '-' * 70)
+        lExpected.append('s0_timing_report_001  Passed')
+        lExpected.append('s0_timing_report_002  Passed')
+        lExpected.append('- stage 1 ' + '-' * 70)
+        lExpected.append('s1_clock_001          Passed')
+        lExpected.append('- stage 2 ' + '-' * 70)
+        lExpected.append('s2_clock_001          Passed')
+        lExpected.append('s2_clock_002          Passed')
+        lExpected.append('s2_data_path_001      Passed')
+        lExpected.append('s2_output_delay_001   Passed')
+        lExpected.append('s2_output_delay_002   Passed')
+        lExpected.append('-' * 80)
+        self.assertEqual(lExpected, self.read_rule_checks_section())
+
+    def test_rule_checks_show_failure_details_and_skip_reason_for_later_stages(self):
+        lPorts = []
+        lPorts.append(('P1', sFailingReport))
+        self.execute_with_ports(lPorts)
+
+        lExpected = []
+        lExpected.append('Rule                  Result   Details')
+        lExpected.append('- stage 0 ' + '-' * 70)
+        lExpected.append('s0_timing_report_001  Passed')
+        lExpected.append('s0_timing_report_002  Failed   ' + sFailingReport + ':14  hold timing report, Fast process corner')
+        lExpected.append('- stage 1 ' + '-' * 70)
+        lExpected.append('s1_clock_001          Skipped  stage 0 failed')
+        lExpected.append('- stage 2 ' + '-' * 70)
+        lExpected.append('s2_clock_001          Skipped  stage 0 failed')
+        lExpected.append('s2_clock_002          Skipped  stage 0 failed')
+        lExpected.append('s2_data_path_001      Skipped  stage 0 failed')
+        lExpected.append('s2_output_delay_001   Skipped  stage 0 failed')
+        lExpected.append('s2_output_delay_002   Skipped  stage 0 failed')
+        lExpected.append('-' * 80)
+        self.assertEqual(lExpected, self.read_port_rule_checks('Section 3.1: P1.SDR-SS-O Rule Checks')[3:])
+
+    def test_rule_checks_align_each_detail_line_with_the_details_column(self):
+        lPorts = []
+        lPorts.append(('P1', sOutputDelayFailingReport))
+        self.execute_with_ports(lPorts)
+
+        lExpected = []
+        lExpected.append('s2_output_delay_001   Failed   ' + sOutputDelayFailingReport + ':85  2.000ns')
+        lExpected.append(' ' * 31 + sOutputDelayFailingReport + ':229  2.500ns')
+        lExpected.append('s2_output_delay_002   Passed')
+        self.assertEqual(lExpected, self.read_port_rule_checks('Section 3.1: P1.SDR-SS-O Rule Checks')[13:16])
+
+    def test_rule_checks_give_each_port_its_own_numbered_section_separated_by_a_blank_line(self):
+        lPorts = []
+        lPorts.append(('P1', sFailingReport))
+        lPorts.append(('P2', sPassingReport))
+        self.execute_with_ports(lPorts)
+
+        lLines = self.read_rule_checks_section()
+        iFirstPortEnd = lLines.index('Section 3.2: P2.SDR-SS-O Rule Checks') - 3
+        lExpected = []
+        lExpected.append('-' * 80)
+        lExpected.append('')
+        lExpected.append('-' * 80)
+        lExpected.append('Section 3.2: P2.SDR-SS-O Rule Checks')
+        lExpected.append('-' * 80)
+        self.assertEqual(lExpected, lLines[iFirstPortEnd:iFirstPortEnd + 5])
+        self.assertEqual('-' * 80, lLines[-1])
 
 
 def find_first_line_starting_with(lLines, sPrefix, iStart):
