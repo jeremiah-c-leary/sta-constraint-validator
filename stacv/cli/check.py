@@ -129,8 +129,8 @@ def build_major_divider():
 
 def build_table(oPortResults):
     lTable = build_initial_table(oPortResults)
-    lTable = adjust_table_column_widths(lTable)
-    lTable = add_separator(lTable)
+    adjust_table_column_widths(lTable)
+    add_separator(lTable)
     lTable = expand_rows(lTable)
     return lTable
 
@@ -158,16 +158,13 @@ def adjust_table_column_widths(lTable):
             iMaxLength = max(iMaxLength, len(lRow[iColumn]))
         for lRow in lTable:
             lRow[iColumn] += ' ' * (iMaxLength - len(lRow[iColumn]))
-    return lTable
 
 
 def add_separator(lTable):
-    lMyTable = lTable
     lRow = []
     for sColumn in lTable[0]:
         lRow.append('-' * len(sColumn))
-    lMyTable.insert(1, lRow)
-    return lMyTable
+    lTable.insert(1, lRow)
 
 
 def expand_rows(lTable):
