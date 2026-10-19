@@ -238,7 +238,8 @@ def get_unique_timing_report_filenames(oPortResults):
 
 def build_md5sum_table_header(lFiles):
     lLines = []
-    lLines.append('md5sum                            Filename')
+    sGap = ' '*COLUMN_GAP
+    lLines.append(f'{"md5sum":<{MD5SUM_COLUMN_WIDTH}}{sGap}Filename')
     lLines.append(build_md5sum_separator(lFiles))
     return lLines
 
