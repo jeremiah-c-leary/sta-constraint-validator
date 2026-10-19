@@ -368,9 +368,9 @@ def result_has_detail(oResult):
 def build_result_without_detail(iRuleIdColumnWidth, oResult):
     sRuleId = oResult.rule_id
     sResult = oResult.status.capitalize()
-    sLine = f'{sRuleId:{iRuleIdColumnWidth}}'
+    sLine = f'{sRuleId:<{iRuleIdColumnWidth}}'
     sLine += ' '*COLUMN_GAP
-    sLine += f'{sResult:{RESULT_COLUMN_WIDTH}}'
+    sLine += f'{sResult:<{RESULT_COLUMN_WIDTH}}'
     return sLine.rstrip()
 
 
@@ -379,9 +379,9 @@ def build_result_with_detail(iRuleIdColumnWidth, oResult):
     sRuleId = oResult.rule_id
     sResult = oResult.status.capitalize()
     for sDetail in oResult.details:
-        sLine = f'{sRuleId:{iRuleIdColumnWidth}}'
+        sLine = f'{sRuleId:<{iRuleIdColumnWidth}}'
         sLine += ' '*COLUMN_GAP
-        sLine += f'{sResult:{RESULT_COLUMN_WIDTH}}'
+        sLine += f'{sResult:<{RESULT_COLUMN_WIDTH}}'
         sLine += ' '*COLUMN_GAP
         sLine += sDetail
         lLines.append(sLine.rstrip())
