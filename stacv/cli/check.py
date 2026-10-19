@@ -272,4 +272,4 @@ def build_md5sum_table_rows(lFiles):
 
 def generate_md5sum(sFilename):
     with open(sFilename, 'rb') as oFile:
-        return hashlib.md5(oFile.read()).hexdigest()
+        return hashlib.file_digest(oFile, 'md5').hexdigest()
