@@ -239,13 +239,18 @@ def build_md5sum_table_header(lFiles):
 
 
 def build_md5sum_separator(lFiles):
+    iFileColumnWidth = calculate_maximum_column_width(lFiles)
+    sLine = '-'*32 + '  ' + '-'*iFileColumnWidth
+    return sLine
+
+
+def calculate_maximum_column_width(lFiles):
     iFileColumnWidth = len('Filename')
     for sFile in lFiles:
         iFileColumnWidth = max(iFileColumnWidth, len(sFile))
     if iFileColumnWidth > 80 - 34:
         iFileColumnWidth = 80 - 34
-    sLine = '-'*32 + '  ' + '-'*iFileColumnWidth
-    return sLine
+    return iFileColumnWidth
 
 
 def build_md5sum_table_rows(lFiles):
