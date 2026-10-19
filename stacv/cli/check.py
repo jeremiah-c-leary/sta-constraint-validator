@@ -15,6 +15,7 @@ from stacv.timing_report.xilinx import vivado
 REPORT_WIDTH = 80
 MD5SUM_COLUMN_WIDTH = 32
 COLUMN_GAP = 2
+FILENAME_COLUMN_WIDTH = REPORT_WIDTH - MD5SUM_COLUMN_WIDTH - COLUMN_GAP
 
 
 def execute(oCmdLine, oDateTime, lArgv):
@@ -255,12 +256,12 @@ def calculate_filename_column_width(lFiles):
     for sFile in lFiles:
         iFileColumnWidth = max(iFileColumnWidth, len(sFile))
     if total_width_exceeds_report_width(iFileColumnWidth):
-        iFileColumnWidth = REPORT_WIDTH - MD5SUM_COLUMN_WIDTH - COLUMN_GAP
+        iFileColumnWidth = FILENAME_COLUMN_WIDTH
     return iFileColumnWidth
 
 
 def total_width_exceeds_report_width(iFileColumnWidth):
-    return iFileColumnWidth > REPORT_WIDTH - MD5SUM_COLUMN_WIDTH - COLUMN_GAP
+    return iFileColumnWidth > FILENAME_COLUMN_WIDTH
 
 
 def build_md5sum_table_rows(lFiles):
