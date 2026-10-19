@@ -248,9 +248,13 @@ def calculate_maximum_column_width(lFiles):
     iFileColumnWidth = len('Filename')
     for sFile in lFiles:
         iFileColumnWidth = max(iFileColumnWidth, len(sFile))
-    if iFileColumnWidth > 80 - 34:
-        iFileColumnWidth = 80 - 34
+    if total_width_exceeds_80_characters(iFileColumnWidth):
+        iFileColumnWidth = 80 - 32 - 2
     return iFileColumnWidth
+
+
+def total_width_exceeds_80_characters(iFileColumnWidth):
+    return iFileColumnWidth > 80 - 34
 
 
 def build_md5sum_table_rows(lFiles):
