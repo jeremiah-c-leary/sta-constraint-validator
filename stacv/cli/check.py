@@ -309,7 +309,7 @@ def build_section_3_port(iPortResult, oPortResult):
     lLines = []
     lLines.extend(build_port_results_header(iPortResult, oPortResult))
     iRuleIdColumnWidth = get_max_rule_id_column_width(oPortResult)
-    lLines.append(build_port_rule_check_header(iRuleIdColumnWidth))
+    lLines.append(build_section_3_result_row(iRuleIdColumnWidth, 'Rule', 'Result', 'Details'))
     for oStageResult in oPortResult.methodology_results.stage_results:
         lLines.extend(build_stage_result_rows(iRuleIdColumnWidth, oStageResult))
     lLines.append(build_minor_divider())
@@ -326,20 +326,20 @@ def build_port_results_header(iPortResult, oPortResult):
 
 
 def get_max_rule_id_column_width(oPortResult):
-    iMaxWidth = 0
+    iMaxWidth = len('Rule')
     for oStageResult in oPortResult.methodology_results.stage_results:
         for oRuleResult in oStageResult.rule_results.results:
             iMaxWidth = max(iMaxWidth, len(oRuleResult.rule_id))
     return iMaxWidth
 
 
-def build_port_rule_check_header(iRuleIdColumnWidth):
-    sHeader = f'{"Rule":<{iRuleIdColumnWidth}}'
-    sHeader += ' '*COLUMN_GAP
-    sHeader += f'{"Result":<{RESULT_COLUMN_WIDTH}}'
-    sHeader += ' '*COLUMN_GAP
-    sHeader += 'Details'
-    return sHeader
+def build_section_3_result_row(iRuleIdColumnWidth, sRuleId, sResult, sDetail=''):
+    sLine = f'{sRuleId:<{iRuleIdColumnWidth}}'
+    sLine += ' '*COLUMN_GAP
+    sLine += f'{sResult:<{RESULT_COLUMN_WIDTH}}'
+    sLine += ' '*COLUMN_GAP
+    sLine += sDetail
+    return sLine.rstrip()
 
 
 def build_stage_result_rows(iRuleIdColumnWidth, oStageResult):
@@ -372,10 +372,7 @@ def result_has_detail(oResult):
 def build_result_without_detail(iRuleIdColumnWidth, oResult):
     sRuleId = oResult.rule_id
     sResult = oResult.status.capitalize()
-    sLine = f'{sRuleId:<{iRuleIdColumnWidth}}'
-    sLine += ' '*COLUMN_GAP
-    sLine += f'{sResult:<{RESULT_COLUMN_WIDTH}}'
-    return sLine.rstrip()
+    return build_section_3_result_row(iRuleIdColumnWidth, sRuleId, sResult)
 
 
 def build_result_with_detail(iRuleIdColumnWidth, oResult):
@@ -383,12 +380,8 @@ def build_result_with_detail(iRuleIdColumnWidth, oResult):
     sRuleId = oResult.rule_id
     sResult = oResult.status.capitalize()
     for sDetail in oResult.details:
-        sLine = f'{sRuleId:<{iRuleIdColumnWidth}}'
-        sLine += ' '*COLUMN_GAP
-        sLine += f'{sResult:<{RESULT_COLUMN_WIDTH}}'
-        sLine += ' '*COLUMN_GAP
-        sLine += sDetail
-        lLines.append(sLine.rstrip())
+        sLine = build_section_3_result_row(iRuleIdColumnWidth, sRuleId, sResult, sDetail)
+        lLines.append(sLine)
         sRuleId = ''
         sResult = ''
     return lLines
