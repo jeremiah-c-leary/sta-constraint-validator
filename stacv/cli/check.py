@@ -151,7 +151,7 @@ def build_unformatted_table(oPortResults):
         lRow = [oPortResult.port.name]
         lRow.append(oPortResult.port.methodology)
         lRow.append(build_report_key(oPortResult))
-        lRow.append('3.' + str(iPortResult))
+        lRow.append(build_port_section_number(iPortResult))
         if oPortResult.methodology_results.has_failures():
             lRow.append('Failed')
         else:
@@ -162,6 +162,10 @@ def build_unformatted_table(oPortResults):
 
 def build_report_key(oPortResult):
     return oPortResult.port.name + '.' + oPortResult.port.methodology
+
+
+def build_port_section_number(iNumber):
+    return f'3.{iNumber}'
 
 
 def format_table(lRows):
@@ -316,7 +320,7 @@ def build_port_results_header(iPortResult, oPortResult):
     sReportKey = build_report_key(oPortResult)
     lLines = []
     lLines.append(build_minor_divider())
-    lLines.append(f'Section 3.{iPortResult}: {sReportKey} Rule Checks')
+    lLines.append(f'Section {build_port_section_number(iPortResult)}: {sReportKey} Rule Checks')
     lLines.append(build_minor_divider())
     return lLines
 
