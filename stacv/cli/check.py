@@ -222,21 +222,6 @@ def get_input_filenames(oPortResults, sConfigFile):
     return lFiles
 
 
-def build_md5sum_table_header(lFiles):
-    lLines = []
-    lLines.append('md5sum                            Filename')
-    lLines.append(build_md5sum_separator(lFiles))
-    return lLines
-
-
-def build_md5sum_table_rows(lFiles):
-    lLines = []
-    for sFile in lFiles:
-        sMd5sum = generate_md5sum(sFile)
-        lLines.append(f'{sMd5sum}  {sFile}')
-    return lLines
-
-
 def get_unique_timing_report_filenames(oPortResults):
     lFilenames = []
     for oPortResult in oPortResults.results:
@@ -244,6 +229,13 @@ def get_unique_timing_report_filenames(oPortResults):
             if sFilename not in lFilenames:
                 lFilenames.append(sFilename)
     return lFilenames
+
+
+def build_md5sum_table_header(lFiles):
+    lLines = []
+    lLines.append('md5sum                            Filename')
+    lLines.append(build_md5sum_separator(lFiles))
+    return lLines
 
 
 def build_md5sum_separator(lFiles):
@@ -254,6 +246,14 @@ def build_md5sum_separator(lFiles):
         iFileColumnWidth = 80 - 34
     sLine = '-'*32 + '  ' + '-'*iFileColumnWidth
     return sLine
+
+
+def build_md5sum_table_rows(lFiles):
+    lLines = []
+    for sFile in lFiles:
+        sMd5sum = generate_md5sum(sFile)
+        lLines.append(f'{sMd5sum}  {sFile}')
+    return lLines
 
 
 def generate_md5sum(sFilename):
