@@ -241,6 +241,18 @@ class TestExecuteReportInputs(unittest.TestCase):
             lFilenames.append(sLine.split('  ', 1)[1])
         self.assertEqual([self.sConfigFile, sPassingReport, sFailingReport], lFilenames)
 
+    def test_inputs_list_a_timing_report_reached_by_two_spellings_of_its_path_once(self):
+        sTimingReport = self.copy_passing_report_to('timing.rpt')
+        lPorts = []
+        lPorts.append(('P1', 'timing.rpt'))
+        lPorts.append(('P2', './timing.rpt'))
+        self.execute_with_ports(lPorts)
+
+        lFilenames = []
+        for sLine in self.read_inputs_section()[6:]:
+            lFilenames.append(sLine.split('  ', 1)[1])
+        self.assertEqual([self.sConfigFile, sTimingReport], lFilenames)
+
     def test_inputs_filename_separator_stops_at_80_characters(self):
         sTimingReport = self.copy_passing_report_to('long_timing_report_name_' + 'x' * 80 + '.rpt')
         lPorts = []
