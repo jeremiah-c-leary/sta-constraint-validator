@@ -245,7 +245,7 @@ def build_md5sum_table_header(lFiles):
 
 def build_md5sum_separator(lFiles):
     iFileColumnWidth = calculate_filename_column_width(lFiles)
-    sLine = '-'*MD5SUM_COLUMN_WIDTH + '  ' + '-'*iFileColumnWidth
+    sLine = '-'*MD5SUM_COLUMN_WIDTH + ' '*COLUMN_GAP + '-'*iFileColumnWidth
     return sLine
 
 
@@ -266,7 +266,7 @@ def build_md5sum_table_rows(lFiles):
     lLines = []
     for sFile in lFiles:
         sMd5sum = generate_md5sum(sFile)
-        lLines.append(f'{sMd5sum}  {sFile}')
+        lLines.append(sMd5sum + ' '*COLUMN_GAP + sFile)
     return lLines
 
 
