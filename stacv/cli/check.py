@@ -313,10 +313,10 @@ def build_port_results_section(iPortResult, oPortResult):
 
 
 def build_port_results_header(iPortResult, oPortResult):
-    sRuleKey = build_report_key(oPortResult)
+    sReportKey = build_report_key(oPortResult)
     lLines = []
     lLines.append(build_minor_divider())
-    lLines.append(f'Section 3.{iPortResult}: {sRuleKey} Rule Checks')
+    lLines.append(f'Section 3.{iPortResult}: {sReportKey} Rule Checks')
     lLines.append(build_minor_divider())
     return lLines
 
