@@ -105,8 +105,7 @@ def resolve_relative_path(sTimingReport, oLocation):
     if not pathlib.Path(sExpandedPath).is_absolute():
         oParentPath = os.path.dirname(oLocation.filename)
         sExpandedPath = os.path.join(oParentPath, sTimingReport)
-        sExpandedPath = os.path.normpath(sExpandedPath)
-    return sExpandedPath
+    return os.path.normpath(sExpandedPath)
 
 
 def extract_unset_environment_variables(sString):
