@@ -12,9 +12,9 @@ from stacv.timing_report import timing_report_list
 from stacv.timing_report.xilinx import vivado
 
 
-MAXIMUM_COLUMN_WIDTH = 80
+REPORT_WIDTH = 80
 MD5SUM_COLUMN_WIDTH = 32
-GAP_COLUMN_WIDTH = 2
+COLUMN_GAP = 2
 
 
 def execute(oCmdLine, oDateTime, lArgv):
@@ -103,7 +103,7 @@ def build_header(oDateTime, lArgv):
 
 
 def build_minor_divider():
-    return '-'*80
+    return '-'*REPORT_WIDTH
 
 
 def build_date(oDateTime):
@@ -132,7 +132,7 @@ def build_section_1(oInterface, oPortResults):
 
 
 def build_major_divider():
-    return '='*80
+    return '='*REPORT_WIDTH
 
 
 def build_table(oPortResults):
@@ -245,7 +245,7 @@ def build_md5sum_table_header(lFiles):
 
 def build_md5sum_separator(lFiles):
     iFileColumnWidth = calculate_filename_column_width(lFiles)
-    sLine = '-'*32 + '  ' + '-'*iFileColumnWidth
+    sLine = '-'*MD5SUM_COLUMN_WIDTH + '  ' + '-'*iFileColumnWidth
     return sLine
 
 
@@ -254,12 +254,12 @@ def calculate_filename_column_width(lFiles):
     for sFile in lFiles:
         iFileColumnWidth = max(iFileColumnWidth, len(sFile))
     if total_width_exceeds_80_characters(iFileColumnWidth):
-        iFileColumnWidth = MAXIMUM_COLUMN_WIDTH - MD5SUM_COLUMN_WIDTH - GAP_COLUMN_WIDTH
+        iFileColumnWidth = REPORT_WIDTH - MD5SUM_COLUMN_WIDTH - COLUMN_GAP
     return iFileColumnWidth
 
 
 def total_width_exceeds_80_characters(iFileColumnWidth):
-    return iFileColumnWidth > MAXIMUM_COLUMN_WIDTH - MD5SUM_COLUMN_WIDTH - GAP_COLUMN_WIDTH
+    return iFileColumnWidth > REPORT_WIDTH - MD5SUM_COLUMN_WIDTH - COLUMN_GAP
 
 
 def build_md5sum_table_rows(lFiles):
