@@ -253,12 +253,12 @@ def calculate_filename_column_width(lFiles):
     iFileColumnWidth = len('Filename')
     for sFile in lFiles:
         iFileColumnWidth = max(iFileColumnWidth, len(sFile))
-    if total_width_exceeds_80_characters(iFileColumnWidth):
+    if total_width_exceeds_report_width(iFileColumnWidth):
         iFileColumnWidth = REPORT_WIDTH - MD5SUM_COLUMN_WIDTH - COLUMN_GAP
     return iFileColumnWidth
 
 
-def total_width_exceeds_80_characters(iFileColumnWidth):
+def total_width_exceeds_report_width(iFileColumnWidth):
     return iFileColumnWidth > REPORT_WIDTH - MD5SUM_COLUMN_WIDTH - COLUMN_GAP
 
 
