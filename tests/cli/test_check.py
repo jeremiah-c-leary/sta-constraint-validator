@@ -1,8 +1,10 @@
 import argparse
 import contextlib
 import datetime
+import hashlib
 import io
 import os
+import shutil
 import tempfile
 import unittest
 
@@ -173,6 +175,91 @@ class TestExecuteReportSummary(unittest.TestCase):
         self.assertEqual(lExpected, self.read_summary_section()[7:])
 
 
+
+class TestExecuteReportInputs(unittest.TestCase):
+
+    def setUp(self):
+        self.oTempDir = tempfile.TemporaryDirectory()
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
+
+    def tearDown(self):
+        self.oTempDir.cleanup()
+
+    def execute_with_ports(self, lPorts):
+        with open(self.sConfigFile, 'w') as oFile:
+            oFile.write(build_named_ports_config_text('Inputs test', lPorts))
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile)
+        oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
+        lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
+        with contextlib.redirect_stdout(io.StringIO()):
+            check.execute(oArgs, oDateTime, lArgv)
+
+    def read_inputs_section(self):
+        with open(self.sReportFile, 'r') as oFile:
+            lLines = oFile.read().splitlines()
+        iStart = lLines.index('Section 2: Inputs') - 1
+        iTableHeader = find_first_line_starting_with(lLines, 'md5sum ', iStart)
+        iEnd = find_first_blank_line(lLines, iTableHeader)
+        return lLines[iStart:iEnd]
+
+    def copy_passing_report_to(self, sBasename):
+        sTimingReport = os.path.join(self.oTempDir.name, sBasename)
+        shutil.copyfile(sPassingReport, sTimingReport)
+        return sTimingReport
+
+    def test_inputs_list_config_file_then_timing_reports_in_declaration_order(self):
+        lPorts = []
+        lPorts.append(('P1', sPassingReport))
+        lPorts.append(('P2', sFailingReport))
+        self.execute_with_ports(lPorts)
+
+        iWidth = max(len(self.sConfigFile), len(sPassingReport), len(sFailingReport))
+        if iWidth + 34 > 80:
+            iWidth = 80 - 34
+        lExpected = []
+        lExpected.append('=' * 80)
+        lExpected.append('Section 2: Inputs')
+        lExpected.append('=' * 80)
+        lExpected.append('')
+        lExpected.append('md5sum' + ' ' * 26 + '  ' + 'Filename')
+        lExpected.append('-' * 32 + '  ' + '-' * iWidth)
+        lExpected.append(calculate_md5(self.sConfigFile) + '  ' + self.sConfigFile)
+        lExpected.append(calculate_md5(sPassingReport) + '  ' + sPassingReport)
+        lExpected.append(calculate_md5(sFailingReport) + '  ' + sFailingReport)
+        self.assertEqual(lExpected, self.read_inputs_section())
+
+    def test_inputs_list_a_timing_report_used_by_two_ports_once(self):
+        lPorts = []
+        lPorts.append(('P1', sPassingReport))
+        lPorts.append(('P2', sFailingReport))
+        lPorts.append(('P3', sPassingReport))
+        self.execute_with_ports(lPorts)
+
+        lFilenames = []
+        for sLine in self.read_inputs_section()[6:]:
+            lFilenames.append(sLine.split('  ', 1)[1])
+        self.assertEqual([self.sConfigFile, sPassingReport, sFailingReport], lFilenames)
+
+    def test_inputs_filename_separator_stops_at_80_characters(self):
+        sTimingReport = self.copy_passing_report_to('long_timing_report_name_' + 'x' * 80 + '.rpt')
+        lPorts = []
+        lPorts.append(('P1', sTimingReport))
+        self.execute_with_ports(lPorts)
+
+        lInputs = self.read_inputs_section()
+        self.assertEqual('-' * 32 + '  ' + '-' * (80 - 34), lInputs[5])
+
+    def test_inputs_show_a_filename_longer_than_80_characters_in_full(self):
+        sTimingReport = self.copy_passing_report_to('long_timing_report_name_' + 'x' * 80 + '.rpt')
+        lPorts = []
+        lPorts.append(('P1', sTimingReport))
+        self.execute_with_ports(lPorts)
+
+        lInputs = self.read_inputs_section()
+        self.assertEqual(calculate_md5(sTimingReport) + '  ' + sTimingReport, lInputs[7])
+
+
 def find_first_line_starting_with(lLines, sPrefix, iStart):
     for iLine in range(iStart, len(lLines)):
         if lLines[iLine].startswith(sPrefix):
@@ -185,3 +272,8 @@ def find_first_blank_line(lLines, iStart):
         if lLines[iLine] == '':
             return iLine
     return len(lLines)
+
+
+def calculate_md5(sFilename):
+    with open(sFilename, 'rb') as oFile:
+        return hashlib.md5(oFile.read()).hexdigest()

@@ -1,4 +1,5 @@
 
+import hashlib
 import os
 
 from stacv import version
@@ -16,7 +17,7 @@ def execute(oCmdLine, oDateTime, lArgv):
     oInterface = interface_config.read_interface_config(oCmdLine.config_file)
     oPortResults = get_port_results(oInterface)
     if oCmdLine.report is not None:
-        write_check_report(oCmdLine.report, oDateTime, lArgv, oInterface, oPortResults)
+        write_check_report(oCmdLine.report, oDateTime, lArgv, oInterface, oPortResults, oCmdLine.config_file)
     if oPortResults.has_failures():
         return 1
     return 0
@@ -75,11 +76,13 @@ def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
     oTimingReportList.extend(oParsedTimingReportList)
 
 
-def write_check_report(sFilename, oDateTime, lArgv, oInterface, oPortResults):
+def write_check_report(sFilename, oDateTime, lArgv, oInterface, oPortResults, sConfigFile):
     print(f'Creating report {sFilename}')
     lLines = []
     lLines.extend(build_header(oDateTime, lArgv))
     lLines.extend(build_section_1(oInterface, oPortResults))
+    lLines.append('')
+    lLines.extend(build_section_2(oPortResults, sConfigFile))
     write_file(sFilename, lLines)
 
 
@@ -187,3 +190,44 @@ def build_separator(lWidths):
 def write_file(sFilename, lLines):
     with open(sFilename, 'w') as oFile:
         oFile.write('\n'.join(lLines) + '\n')
+
+
+def build_section_2(oPortResults, sConfigFile):
+    lLines = []
+    lLines.append(build_major_divider())
+    lLines.append('Section 2: Inputs')
+    lLines.append(build_major_divider())
+    lLines.append('')
+    lLines.append('md5sum                            Filename')
+    lFiles = []
+    lFiles.append(sConfigFile)
+    lFiles.extend(get_unique_timing_report_filenames(oPortResults))
+    lLines.append(build_md5sum_separator(lFiles))
+    for sFile in lFiles:
+        sMd5sum = generate_md5sum(sFile)
+        lLines.append(f'{sMd5sum}  {sFile}')
+    return lLines
+
+
+def get_unique_timing_report_filenames(oPortResults):
+    lFilenames = []
+    for oPortResult in oPortResults.results:
+        for sFilename in oPortResult.port.timing_reports:
+            if sFilename not in lFilenames:
+                lFilenames.append(sFilename)
+    return lFilenames
+
+
+def build_md5sum_separator(lFiles):
+    iFileColumnWidth = len('Filename')
+    for sFile in lFiles:
+        iFileColumnWidth = max(iFileColumnWidth, len(sFile))
+    if iFileColumnWidth > 80 - 34:
+        iFileColumnWidth = 80 - 34
+    sLine = '-'*32 + '  ' + '-'*iFileColumnWidth
+    return sLine 
+
+
+def generate_md5sum(sFilename):
+    with open(sFilename, 'rb') as oFile:
+        return hashlib.md5(oFile.read()).hexdigest()
