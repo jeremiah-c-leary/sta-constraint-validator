@@ -98,3 +98,90 @@ class TestExecuteReportHeader(unittest.TestCase):
         self.execute_with_argv(self.build_argv('/home/user/stacv/bin/stacv'))
         sExpected = f'Command:  stacv check {self.sConfigFile} --report {self.sReportFile}\n'
         self.assertEqual(sExpected, self.read_report_header()[4])
+
+
+def build_named_ports_config_text(sDescription, lPorts):
+    lText = []
+    lText.append(f'description = "{sDescription}"')
+    lText.append('interface = "DAC_SPI_1"')
+    for sPortName, sTimingReport in lPorts:
+        lText.append('[[port]]')
+        lText.append(f'name = "{sPortName}"')
+        lText.append('methodology = "SDR-SS-O"')
+        lText.append(f'timing_reports = ["{sTimingReport}"]')
+    return '\n'.join(lText)
+
+
+class TestExecuteReportSummary(unittest.TestCase):
+
+    def setUp(self):
+        self.oTempDir = tempfile.TemporaryDirectory()
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
+
+    def tearDown(self):
+        self.oTempDir.cleanup()
+
+    def execute_with_config_text(self, sConfigText):
+        with open(self.sConfigFile, 'w') as oFile:
+            oFile.write(sConfigText)
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile)
+        oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
+        lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
+        with contextlib.redirect_stdout(io.StringIO()):
+            check.execute(oArgs, oDateTime, lArgv)
+
+    def read_summary_section(self):
+        with open(self.sReportFile, 'r') as oFile:
+            lLines = oFile.read().splitlines()
+        iStart = lLines.index('Section 1: Summary') - 1
+        iTableHeader = find_first_line_starting_with(lLines, 'Port ', iStart)
+        iEnd = find_first_blank_line(lLines, iTableHeader)
+        return lLines[iStart:iEnd]
+
+    def test_summary_lists_interface_and_every_port(self):
+        lPorts = []
+        lPorts.append(('P1', sFailingReport))
+        lPorts.append(('P2', sPassingReport))
+        self.execute_with_config_text(build_named_ports_config_text('This interface is a summary test', lPorts))
+
+        lExpected = []
+        lExpected.append('=' * 80)
+        lExpected.append('Section 1: Summary')
+        lExpected.append('=' * 80)
+        lExpected.append('')
+        lExpected.append('Interface:    DAC_SPI_1')
+        lExpected.append('Description:  This interface is a summary test')
+        lExpected.append('')
+        lExpected.append('Port   Methodology   Report Key    Section   Result')
+        lExpected.append('----   -----------   -----------   -------   ------')
+        lExpected.append('P1     SDR-SS-O      P1.SDR-SS-O   3.1       Failed')
+        lExpected.append('P2     SDR-SS-O      P2.SDR-SS-O   3.2       Passed')
+        self.assertEqual(lExpected, self.read_summary_section())
+
+    def test_summary_columns_widen_to_the_longest_value(self):
+        lPorts = []
+        lPorts.append(('O_DAC_DATA', sFailingReport))
+        lPorts.append(('O_DAC_CSF', sPassingReport))
+        self.execute_with_config_text(build_named_ports_config_text('Long port names', lPorts))
+
+        lExpected = []
+        lExpected.append('Port         Methodology   Report Key            Section   Result')
+        lExpected.append('----------   -----------   -------------------   -------   ------')
+        lExpected.append('O_DAC_DATA   SDR-SS-O      O_DAC_DATA.SDR-SS-O   3.1       Failed')
+        lExpected.append('O_DAC_CSF    SDR-SS-O      O_DAC_CSF.SDR-SS-O    3.2       Passed')
+        self.assertEqual(lExpected, self.read_summary_section()[7:])
+
+
+def find_first_line_starting_with(lLines, sPrefix, iStart):
+    for iLine in range(iStart, len(lLines)):
+        if lLines[iLine].startswith(sPrefix):
+            return iLine
+    return len(lLines)
+
+
+def find_first_blank_line(lLines, iStart):
+    for iLine in range(iStart, len(lLines)):
+        if lLines[iLine] == '':
+            return iLine
+    return len(lLines)

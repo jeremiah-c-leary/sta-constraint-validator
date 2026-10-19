@@ -79,6 +79,7 @@ def write_check_report(sFilename, oDateTime, lArgv, oInterface, oPortResults):
     print(f'Creating report {sFilename}')
     lLines = []
     lLines.extend(build_header(oDateTime, lArgv))
+    lLines.extend(build_section_1(oInterface, oPortResults))
     write_file(sFilename, lLines)
 
 
@@ -107,6 +108,73 @@ def build_command(lArgv):
     sCommand += ' '
     sCommand += ' '.join(lArgv[1:])
     return sCommand
+
+
+def build_section_1(oInterface, oPortResults):
+    lLines = []
+    lLines.append(build_major_divider())
+    lLines.append('Section 1: Summary')
+    lLines.append(build_major_divider())
+    lLines.append('')
+    lLines.append(f'Interface:    {oInterface.interface_name}')
+    lLines.append(f'Description:  {oInterface.description}')
+    lLines.append('')
+    lLines.extend(build_table(oPortResults))
+    return lLines
+
+
+def build_major_divider():
+    return '='*80
+
+
+def build_table(oPortResults):
+    lTable = build_initial_table(oPortResults)
+    lTable = adjust_table_column_widths(lTable)
+    lTable = add_separator(lTable)
+    lTable = expand_rows(lTable)
+    return lTable
+
+
+def build_initial_table(oPortResults):
+    lTable = []
+    lTable.append(['Port', 'Methodology', 'Report Key', 'Section', 'Result'])
+    for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
+        lRow = [oPortResult.port.name]
+        lRow.append(oPortResult.port.methodology)
+        lRow.append(lRow[0] + '.' + lRow[1])
+        lRow.append('3.' + str(iPortResult))
+        if oPortResult.methodology_results.has_failures():
+            lRow.append('Failed')
+        else:
+            lRow.append('Passed')
+        lTable.append(lRow)
+    return lTable
+
+
+def adjust_table_column_widths(lTable):
+    for iColumn in range(len(lTable[0])):
+        iMaxLength = 0
+        for lRow in lTable:
+            iMaxLength = max(iMaxLength, len(lRow[iColumn]))
+        for lRow in lTable:
+            lRow[iColumn] += ' ' * (iMaxLength - len(lRow[iColumn]))
+    return lTable
+
+
+def add_separator(lTable):
+    lMyTable = lTable
+    lRow = []
+    for sColumn in lTable[0]:
+        lRow.append('-' * len(sColumn))
+    lMyTable.insert(1, lRow)
+    return lMyTable
+
+
+def expand_rows(lTable):
+    lExpandedTable = []
+    for lRow in lTable:
+        lExpandedTable.append('   '.join(lRow))
+    return lExpandedTable
 
 
 def write_file(sFilename, lLines):
