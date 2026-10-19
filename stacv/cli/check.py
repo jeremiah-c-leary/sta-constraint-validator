@@ -128,14 +128,11 @@ def build_major_divider():
 
 
 def build_table(oPortResults):
-    lTable = build_condensed_table(oPortResults)
-    adjust_table_column_widths(lTable)
-    add_separator(lTable)
-    lTable = expand_rows(lTable)
-    return lTable
+    lRows = build_unformatted_table(oPortResults)
+    return format_table(lRows)
 
 
-def build_condensed_table(oPortResults):
+def build_unformatted_table(oPortResults):
     lTable = []
     lTable.append(['Port', 'Methodology', 'Report Key', 'Section', 'Result'])
     for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
@@ -151,27 +148,40 @@ def build_condensed_table(oPortResults):
     return lTable
 
 
-def adjust_table_column_widths(lTable):
-    for iColumn in range(len(lTable[0])):
+def format_table(lRows):
+    lWidths = get_column_widths(lRows)
+    lLines = []
+    lLines.append(format_row(lRows[0], lWidths))
+    lLines.append(build_separator(lWidths))
+    for lRow in lRows[1:]:
+        lLines.append(format_row(lRow, lWidths))
+    return lLines
+
+
+def get_column_widths(lRows):
+    lWidths = []
+    for iColumn in range(len(lRows[0])):
         iMaxLength = 0
-        for lRow in lTable:
+        for lRow in lRows:
             iMaxLength = max(iMaxLength, len(lRow[iColumn]))
-        for lRow in lTable:
-            lRow[iColumn] += ' ' * (iMaxLength - len(lRow[iColumn]))
+        lWidths.append(iMaxLength)
+    return lWidths
 
 
-def add_separator(lTable):
-    lRow = []
-    for sColumn in lTable[0]:
-        lRow.append('-' * len(sColumn))
-    lTable.insert(1, lRow)
+def format_row(lRow, lWidths):
+    sRow = ''
+    for sColumn, iWidth in zip(lRow, lWidths):
+        sRow += f'{sColumn:<{iWidth}}   '
+    sRow = sRow.rstrip()
+    return sRow
 
 
-def expand_rows(lTable):
-    lExpandedTable = []
-    for lRow in lTable:
-        lExpandedTable.append('   '.join(lRow))
-    return lExpandedTable
+def build_separator(lWidths):
+    sRow = ''
+    for iWidth in lWidths:
+        sRow += '-' * iWidth + '   '
+    sRow = sRow.rstrip()
+    return sRow
 
 
 def write_file(sFilename, lLines):
