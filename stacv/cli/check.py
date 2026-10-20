@@ -311,7 +311,7 @@ def build_section_3_port(iPortResult, oPortResult):
     iRuleIdColumnWidth = get_max_rule_id_column_width(oPortResult)
     lLines.append(build_section_3_result_row(iRuleIdColumnWidth, 'Rule', 'Result', 'Details'))
     for oStageResult in oPortResult.methodology_results.stage_results:
-        lLines.extend(build_stage_result_rows(iRuleIdColumnWidth, oStageResult))
+        lLines.extend(build_stage_lines(iRuleIdColumnWidth, oStageResult))
     lLines.append(build_minor_divider())
     return lLines
 
@@ -342,10 +342,10 @@ def build_section_3_result_row(iRuleIdColumnWidth, sRuleId, sResult, sDetail='')
     return sLine.rstrip()
 
 
-def build_stage_result_rows(iRuleIdColumnWidth, oStageResult):
+def build_stage_lines(iRuleIdColumnWidth, oStageResult):
     lLines = []
     lLines.append(build_stage_separator(oStageResult))
-    lLines.extend(build_stage_rule_results(iRuleIdColumnWidth, oStageResult))
+    lLines.extend(build_rule_lines(iRuleIdColumnWidth, oStageResult))
     return lLines
 
 
@@ -355,7 +355,7 @@ def build_stage_separator(oStageResult):
     return sLine
 
 
-def build_stage_rule_results(iRuleIdColumnWidth, oStageResult):
+def build_rule_lines(iRuleIdColumnWidth, oStageResult):
     lLines = []
     for oResult in oStageResult.rule_results.results:
         if result_has_detail(oResult):
