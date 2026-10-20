@@ -80,16 +80,12 @@ def build_section_3_title():
 
 def build_section_3_port_title(iPortResult, oPortResult):
     sSectionNumber = build_port_section_number(iPortResult)
-    sReportKey = build_report_key(oPortResult)
+    sReportKey = oPortResult.get_identifier()
     return f'Section {sSectionNumber}: {sReportKey} Rule Checks'
 
 
 def build_port_section_number(iNumber):
     return f'3.{iNumber}'
-
-
-def build_report_key(oPortResult):
-    return oPortResult.port.name + '.' + oPortResult.port.methodology
 
 
 def build_section_1(oInterface, oPortResults):
@@ -120,7 +116,7 @@ def build_unformatted_table(oPortResults):
     for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
         lRow = [oPortResult.port.name]
         lRow.append(oPortResult.port.methodology)
-        lRow.append(build_report_key(oPortResult))
+        lRow.append(oPortResult.get_identifier())
         lRow.append(build_port_section_number(iPortResult))
         if oPortResult.methodology_results.has_failures():
             lRow.append('Failed')
