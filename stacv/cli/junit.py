@@ -9,9 +9,16 @@ import xml.etree.ElementTree as ET
 def generate_junit_file(sFilename, oPortResults):
     print(f'Creating JUnit file {sFilename}')
 
-    oXmlFile = ET.Element('testsuites', name='stacv', tests='24', failures='2', skipped='6')
+    oXmlFile = build_testsuites(oPortResults)
     write_file(sFilename, oXmlFile)
     return
+
+
+def build_testsuites(oPortResults):
+    iTests = str(oPortResults.get_number_of_rules())
+    iFailures = str(oPortResults.get_number_of_failures())
+    iSkipped = str(oPortResults.get_number_of_skips())
+    return ET.Element('testsuites', name='stacv', tests=iTests, failures=iFailures, skipped=iSkipped)
 
 
 def write_file(sFilename, oXml):

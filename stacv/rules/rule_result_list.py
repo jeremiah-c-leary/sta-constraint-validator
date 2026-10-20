@@ -25,3 +25,19 @@ class RuleResultList():
             if oResult.is_failed():
                 lFailingTests.append(oResult)
         return lFailingTests
+
+    def get_number_of_failures(self):
+        return len(self.get_failing_results())
+
+    def get_number_of_rules(self):
+        return len(self.results)
+
+    def get_number_of_skips(self):
+        return len(self.get_skipped_results())
+
+    def get_skipped_results(self):
+        lSkippedTests = []
+        for oResult in self.results:
+            if oResult.is_skipped():
+                lSkippedTests.append(oResult)
+        return lSkippedTests
