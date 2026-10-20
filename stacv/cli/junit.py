@@ -10,8 +10,6 @@ def generate_junit_file(sFilename, oPortResults):
     print(f'Creating JUnit file {sFilename}')
 
     oXmlFile = build_testsuites(oPortResults)
-    for oPortResult in oPortResults.results:
-        build_testsuite(oXmlFile, oPortResult)
     write_file(sFilename, oXmlFile)
     return
 
@@ -20,7 +18,10 @@ def build_testsuites(oPortResults):
     iTests = str(oPortResults.get_number_of_rules())
     iFailures = str(oPortResults.get_number_of_failures())
     iSkipped = str(oPortResults.get_number_of_skips())
-    return ET.Element('testsuites', name='stacv', tests=iTests, failures=iFailures, skipped=iSkipped)
+    oTestSuites = ET.Element('testsuites', name='stacv', tests=iTests, failures=iFailures, skipped=iSkipped)
+    for oPortResult in oPortResults.results:
+        build_testsuite(oTestSuites, oPortResult)
+    return oTestSuites
 
 
 def build_testsuite(oXmlFile, oPortResult):
