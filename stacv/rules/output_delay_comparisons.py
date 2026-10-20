@@ -28,7 +28,7 @@ def has_at_most_one_value(lUniqueOutputDelays):
 
 def check_output_delays_match(lReports, sRuleId, sFailureMessage):
     if output_delays_are_identical(lReports):
-        oRuleResult = rule_result.RuleResult(sRuleId, rule_result.PASSED, [], sFailureMessage)
+        oRuleResult = rule_result.RuleResult(sRuleId, rule_result.PASSED, [], '')
     else:
         lDetails = create_output_delay_error_detail(lReports)
         oRuleResult = rule_result.RuleResult(sRuleId, rule_result.FAILED, lDetails, sFailureMessage)
