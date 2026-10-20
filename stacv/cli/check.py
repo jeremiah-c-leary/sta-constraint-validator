@@ -87,6 +87,9 @@ def write_check_report(sFilename, oDateTime, lArgv, oInterface, oPortResults, sC
     print(f'Creating report {sFilename}')
     lLines = []
     lLines.extend(build_header(oDateTime, lArgv))
+    lLines.append('')
+    lLines.extend(build_table_of_contents(oPortResults))
+    lLines.append('')
     lLines.extend(build_section_1(oInterface, oPortResults))
     lLines.append('')
     lLines.extend(build_section_2(oPortResults, sConfigFile))
@@ -120,6 +123,20 @@ def build_command(lArgv):
     sCommand += ' '
     sCommand += ' '.join(lArgv[1:])
     return sCommand
+
+
+def build_table_of_contents(oPortResults):
+    lLines = []
+    lLines.append('Table of Contents')
+    lLines.append('')
+    lLines.append('Section 1: Summary')
+    lLines.append('Section 2: Inputs')
+    lLines.append('Section 3: Port Rule Checks')
+    for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
+        sSectionNumber = build_port_section_number(iPortResult)
+        sRuleKey = build_report_key(oPortResult)
+        lLines.append(f'Section {sSectionNumber}: {sRuleKey} Rule Checks')
+    return lLines
 
 
 def build_section_1(oInterface, oPortResults):

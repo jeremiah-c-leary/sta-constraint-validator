@@ -115,6 +115,66 @@ def build_named_ports_config_text(sDescription, lPorts):
     return '\n'.join(lText)
 
 
+class TestExecuteReportTableOfContents(unittest.TestCase):
+
+    def setUp(self):
+        self.oTempDir = tempfile.TemporaryDirectory()
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
+
+    def tearDown(self):
+        self.oTempDir.cleanup()
+
+    def execute_with_ports(self, lPorts):
+        with open(self.sConfigFile, 'w') as oFile:
+            oFile.write(build_named_ports_config_text('Table of contents test', lPorts))
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile)
+        oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
+        lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
+        with contextlib.redirect_stdout(io.StringIO()):
+            check.execute(oArgs, oDateTime, lArgv)
+
+    def read_report_lines(self):
+        with open(self.sReportFile, 'r') as oFile:
+            return oFile.read().splitlines()
+
+    def test_table_of_contents_follows_header_and_lists_every_section_and_port(self):
+        lPorts = []
+        lPorts.append(('P1', sFailingReport))
+        lPorts.append(('P2', sPassingReport))
+        self.execute_with_ports(lPorts)
+
+        lExpected = []
+        lExpected.append('-' * 80)
+        lExpected.append('')
+        lExpected.append('Table of Contents')
+        lExpected.append('')
+        lExpected.append('Section 1: Summary')
+        lExpected.append('Section 2: Inputs')
+        lExpected.append('Section 3: Port Rule Checks')
+        lExpected.append('Section 3.1: P1.SDR-SS-O Rule Checks')
+        lExpected.append('Section 3.2: P2.SDR-SS-O Rule Checks')
+        lExpected.append('')
+        lExpected.append('=' * 80)
+        lExpected.append('Section 1: Summary')
+        self.assertEqual(lExpected, self.read_report_lines()[5:17])
+
+    def test_table_of_contents_entries_each_title_a_section_later_in_the_report(self):
+        lPorts = []
+        lPorts.append(('O_DAC_DATA', sFailingReport))
+        lPorts.append(('O_DAC_CSF', sPassingReport))
+        lPorts.append(('O_DAC_CLK', sPassingReport))
+        self.execute_with_ports(lPorts)
+
+        lLines = self.read_report_lines()
+        iFirstEntry = lLines.index('Table of Contents') + 2
+        iLastEntry = find_first_blank_line(lLines, iFirstEntry)
+        lBody = lLines[iLastEntry:]
+        for sEntry in lLines[iFirstEntry:iLastEntry]:
+            iTitle = lBody.index(sEntry)
+            self.assertIn(lBody[iTitle - 1], ['=' * 80, '-' * 80])
+
+
 class TestExecuteReportSummary(unittest.TestCase):
 
     def setUp(self):
@@ -137,7 +197,7 @@ class TestExecuteReportSummary(unittest.TestCase):
     def read_summary_section(self):
         with open(self.sReportFile, 'r') as oFile:
             lLines = oFile.read().splitlines()
-        iStart = lLines.index('Section 1: Summary') - 1
+        iStart = find_section_title(lLines, 'Section 1: Summary') - 1
         iTableHeader = find_first_line_starting_with(lLines, 'Port ', iStart)
         iEnd = find_first_blank_line(lLines, iTableHeader)
         return lLines[iStart:iEnd]
@@ -199,7 +259,7 @@ class TestExecuteReportInputs(unittest.TestCase):
     def read_inputs_section(self):
         with open(self.sReportFile, 'r') as oFile:
             lLines = oFile.read().splitlines()
-        iStart = lLines.index('Section 2: Inputs') - 1
+        iStart = find_section_title(lLines, 'Section 2: Inputs') - 1
         iTableHeader = find_first_line_starting_with(lLines, 'md5sum ', iStart)
         iEnd = find_first_blank_line(lLines, iTableHeader)
         return lLines[iStart:iEnd]
@@ -307,7 +367,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
     def read_rule_checks_section(self):
         with open(self.sReportFile, 'r') as oFile:
             lLines = oFile.read().splitlines()
-        iStart = lLines.index('Section 3: Port Rule Checks') - 1
+        iStart = find_section_title(lLines, 'Section 3: Port Rule Checks') - 1
         return lLines[iStart:]
 
     def read_port_rule_checks(self, sSectionTitle):
@@ -392,6 +452,13 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lExpected.append('-' * 80)
         self.assertEqual(lExpected, lLines[iFirstPortEnd:iFirstPortEnd + 5])
         self.assertEqual('-' * 80, lLines[-1])
+
+
+def find_section_title(lLines, sTitle):
+    for iLine in range(1, len(lLines)):
+        if lLines[iLine] == sTitle and lLines[iLine - 1] == '=' * 80:
+            return iLine
+    raise ValueError(f'{sTitle} is not a section title')
 
 
 def find_first_line_starting_with(lLines, sPrefix, iStart):
