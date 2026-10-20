@@ -39,24 +39,6 @@ class MethodologyResults():
                 lFailingResults.extend(oStageResult.get_failing_results())
         return lFailingResults
 
-    def get_number_of_failures(self):
-        iRules = 0
-        for oStageResult in self.stage_results:
-            iRules += oStageResult.get_number_of_failures()
-        return iRules
-
-    def get_number_of_rules(self):
-        iRules = 0
-        for oStageResult in self.stage_results:
-            iRules += oStageResult.get_number_of_rules()
-        return iRules
-
-    def get_number_of_skips(self):
-        iRules = 0
-        for oStageResult in self.stage_results:
-            iRules += oStageResult.get_number_of_skips()
-        return iRules
-
     def get_results(self):
         oRuleResults = rule_result_list.RuleResultList()
         for oStageResult in self.stage_results:

@@ -1,3 +1,5 @@
+from stacv.rules import rule_result_list
+
 
 class PortResultList():
 
@@ -8,22 +10,19 @@ class PortResultList():
         self.results.append(oPortResult)
 
     def get_number_of_failures(self):
-        iRules = 0
-        for oResult in self.results:
-            iRules += oResult.get_number_of_failures()
-        return iRules
+        return self.get_results().get_number_of_failures()
 
     def get_number_of_rules(self):
-        iRules = 0
-        for oResult in self.results:
-            iRules += oResult.get_number_of_rules()
-        return iRules
+        return self.get_results().get_number_of_rules()
 
     def get_number_of_skips(self):
-        iRules = 0
-        for oResult in self.results:
-            iRules += oResult.get_number_of_skips()
-        return iRules
+        return self.get_results().get_number_of_skips()
+
+    def get_results(self):
+        oRuleResults = rule_result_list.RuleResultList()
+        for oPortResult in self.results:
+            oRuleResults.add_result_list(oPortResult.get_results())
+        return oRuleResults
 
     def has_failures(self):
         for oPortResult in self.results:

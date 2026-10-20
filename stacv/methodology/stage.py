@@ -32,15 +32,6 @@ class StageResults():
     def get_failing_results(self):
         return self.rule_results.get_failing_results()
 
-    def get_number_of_failures(self):
-        return self.rule_results.get_number_of_failures()
-
-    def get_number_of_rules(self):
-        return self.rule_results.get_number_of_rules()
-
-    def get_number_of_skips(self):
-        return self.rule_results.get_number_of_skips()
-
     def get_results(self):
         return self.rule_results
 

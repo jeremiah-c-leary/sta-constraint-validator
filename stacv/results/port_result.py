@@ -9,13 +9,13 @@ class PortResult():
         return self.port.name + '.' + self.port.methodology
 
     def get_number_of_failures(self):
-        return self.methodology_results.get_number_of_failures()
+        return self.get_results().get_number_of_failures()
 
     def get_number_of_rules(self):
-        return self.methodology_results.get_number_of_rules()
+        return self.get_results().get_number_of_rules()
 
     def get_number_of_skips(self):
-        return self.methodology_results.get_number_of_skips()
+        return self.get_results().get_number_of_skips()
 
     def get_results(self):
         return self.methodology_results.get_results()
