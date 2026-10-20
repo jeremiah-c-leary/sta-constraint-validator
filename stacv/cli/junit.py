@@ -47,14 +47,14 @@ def build_testsuite_name(oPortResult):
 def add_testcases_to_testsuite(oTestsuite, oPortResult):
     sName = build_testsuite_name(oPortResult)
     for oResult in oPortResult.get_results():
-        oTestcase = build_testcase(oTestsuite, sName, oResult)
+        oTestcase = build_testcase_element(oTestsuite, sName, oResult)
         if oResult.is_failed():
             add_failure_to_testcase(oTestcase, oResult)
         elif oResult.is_skipped():
             add_skipped_to_testcase(oTestcase, oResult)
 
 
-def build_testcase(oTestSuite, sClassName, oResult):
+def build_testcase_element(oTestSuite, sClassName, oResult):
     return ET.SubElement(oTestSuite, 'testcase', name=oResult.rule_id, classname=sClassName)
 
 
