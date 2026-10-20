@@ -44,13 +44,13 @@ def build_testsuite_name(oPortResult):
 
 
 def add_testcases_to_testsuite(oTestsuite, oPortResult):
-    sName = build_testsuite_name(oPortResult)
+    sClassName = build_testsuite_name(oPortResult)
     for oResult in oPortResult.get_results():
-        build_testcase(oTestsuite, sName, oResult)
+        build_testcase(oTestsuite, sClassName, oResult)
 
 
-def build_testcase(oTestsuite, sName, oResult):
-    oTestcase = build_testcase_element(oTestsuite, sName, oResult)
+def build_testcase(oTestsuite, sClassName, oResult):
+    oTestcase = build_testcase_element(oTestsuite, sClassName, oResult)
     if oResult.is_failed():
         add_failure_to_testcase(oTestcase, oResult)
     elif oResult.is_skipped():
