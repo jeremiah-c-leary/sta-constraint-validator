@@ -13,10 +13,10 @@ def generate_junit_file(sFilename, oPortResults):
 
 
 def build_testsuites(oPortResults):
-    oTestSuites = build_testsuites_element(oPortResults)
+    oTestsuites = build_testsuites_element(oPortResults)
     for oPortResult in oPortResults.results:
-        build_testsuite(oTestSuites, oPortResult)
-    return oTestSuites
+        build_testsuite(oTestsuites, oPortResult)
+    return oTestsuites
 
 
 def build_testsuites_element(oPortResults):
@@ -26,17 +26,17 @@ def build_testsuites_element(oPortResults):
     return ET.Element('testsuites', name='stacv', tests=sTests, failures=sFailures, skipped=sSkipped)
 
 
-def build_testsuite(oTestSuites, oPortResult):
-    oTestsuite = build_testsuite_element(oTestSuites, oPortResult)
+def build_testsuite(oTestsuites, oPortResult):
+    oTestsuite = build_testsuite_element(oTestsuites, oPortResult)
     add_testcases_to_testsuite(oTestsuite, oPortResult)
 
 
-def build_testsuite_element(oTestSuites, oPortResult):
+def build_testsuite_element(oTestsuites, oPortResult):
     sTests = str(oPortResult.get_number_of_rules())
     sFailures = str(oPortResult.get_number_of_failures())
     sSkipped = str(oPortResult.get_number_of_skips())
     sName = build_testsuite_name(oPortResult)
-    return ET.SubElement(oTestSuites, 'testsuite', name=sName, tests=sTests, failures=sFailures, skipped=sSkipped)
+    return ET.SubElement(oTestsuites, 'testsuite', name=sName, tests=sTests, failures=sFailures, skipped=sSkipped)
 
 
 def build_testsuite_name(oPortResult):
@@ -57,8 +57,8 @@ def build_testcase(oTestsuite, sName, oResult):
         add_skipped_to_testcase(oTestcase, oResult)
 
 
-def build_testcase_element(oTestSuite, sClassName, oResult):
-    return ET.SubElement(oTestSuite, 'testcase', name=oResult.rule_id, classname=sClassName)
+def build_testcase_element(oTestsuite, sClassName, oResult):
+    return ET.SubElement(oTestsuite, 'testcase', name=oResult.rule_id, classname=sClassName)
 
 
 def add_failure_to_testcase(oTestcase, oResult):
