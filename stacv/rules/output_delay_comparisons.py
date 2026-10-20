@@ -6,7 +6,7 @@ It includes functions the perform:
    * Formatting of error reporting if output delays are not equal
 '''
 
-from stacv.rules import rule_result
+from stacv.results import rule_result
 
 
 def output_delays_are_identical(lReports):

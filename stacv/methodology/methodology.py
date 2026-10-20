@@ -1,4 +1,4 @@
-from stacv.rules import rule_result_list
+from stacv.results import rule_result_list
 
 
 class Methodology():

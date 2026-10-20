@@ -1,6 +1,6 @@
 import unittest
 
-from stacv.rules import rule_result
+from stacv.results import rule_result
 
 
 class Test(unittest.TestCase):

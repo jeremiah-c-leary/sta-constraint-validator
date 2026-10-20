@@ -2,7 +2,7 @@
 Provides functions to check the coverage of timing reports.
 '''
 
-from stacv.rules import rule_result
+from stacv.results import rule_result
 
 
 def check_at_least_two_process_corners_exist(sRuleId, lTimingReports, sType, sFailureMessage):

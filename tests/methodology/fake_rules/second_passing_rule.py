@@ -2,7 +2,7 @@
 Stands in for a rule module in the methodology tests.  It always returns PASSED.
 '''
 
-from stacv.rules import rule_result
+from stacv.results import rule_result
 
 RULE_ID = 'fake_second_passing_rule'
 

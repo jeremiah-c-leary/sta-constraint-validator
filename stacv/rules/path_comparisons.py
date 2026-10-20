@@ -2,7 +2,7 @@
 Provides functions to compare DelayPath objects.
 '''
 
-from stacv.rules import rule_result
+from stacv.results import rule_result
 
 
 def check_paths_match(lReports, sPathType, sRuleId, sFailureMessage):

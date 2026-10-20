@@ -1,7 +1,7 @@
 import unittest
 
-from stacv.rules import rule_result
-from stacv.rules import rule_result_list
+from stacv.results import rule_result
+from stacv.results import rule_result_list
 
 
 class Test(unittest.TestCase):
