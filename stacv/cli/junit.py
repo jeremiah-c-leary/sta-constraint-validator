@@ -14,13 +14,17 @@ def generate_junit_file(sFilename, oPortResults):
 
 
 def build_testsuites(oPortResults):
-    iTests = str(oPortResults.get_number_of_rules())
-    iFailures = str(oPortResults.get_number_of_failures())
-    iSkipped = str(oPortResults.get_number_of_skips())
-    oTestSuites = ET.Element('testsuites', name='stacv', tests=iTests, failures=iFailures, skipped=iSkipped)
+    oTestSuites = build_testsuites_element(oPortResults)
     for oPortResult in oPortResults.results:
         build_testsuite(oTestSuites, oPortResult)
     return oTestSuites
+
+
+def build_testsuites_element(oPortResults):
+    iTests = str(oPortResults.get_number_of_rules())
+    iFailures = str(oPortResults.get_number_of_failures())
+    iSkipped = str(oPortResults.get_number_of_skips())
+    return ET.Element('testsuites', name='stacv', tests=iTests, failures=iFailures, skipped=iSkipped)
 
 
 def build_testsuite(oXmlFile, oPortResult):
