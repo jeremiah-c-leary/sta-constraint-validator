@@ -11,7 +11,6 @@ def generate_junit_file(sFilename, oPortResults):
 
     oXmlFile = build_testsuites(oPortResults)
     write_file(sFilename, oXmlFile)
-    return
 
 
 def build_testsuites(oPortResults):
