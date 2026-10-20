@@ -2,7 +2,6 @@
 Generates a JUnit file from the rule results.
 '''
 
-import os
 import xml.etree.ElementTree as ET
 
 
