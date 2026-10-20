@@ -118,7 +118,7 @@ def build_unformatted_table(oPortResults):
         lRow.append(oPortResult.port.methodology)
         lRow.append(oPortResult.get_identifier())
         lRow.append(build_port_section_number(iPortResult))
-        if oPortResult.methodology_results.has_failures():
+        if oPortResult.get_results().has_failures():
             lRow.append('Failed')
         else:
             lRow.append('Passed')
@@ -285,7 +285,7 @@ def build_section_3_port_header(iPortResult, oPortResult):
 def get_max_rule_id_column_width(oPortResult):
     iMaxWidth = len('Rule')
     for oStageResult in oPortResult.methodology_results.stage_results:
-        for oRuleResult in oStageResult.rule_results.results:
+        for oRuleResult in oStageResult.get_results().results:
             iMaxWidth = max(iMaxWidth, len(oRuleResult.rule_id))
     return iMaxWidth
 
@@ -314,7 +314,7 @@ def build_stage_separator(oStageResult):
 
 def build_rule_lines(iRuleIdColumnWidth, oStageResult):
     lLines = []
-    for oResult in oStageResult.rule_results.results:
+    for oResult in oStageResult.get_results().results:
         if result_has_detail(oResult):
             lLines.extend(build_result_with_detail(iRuleIdColumnWidth, oResult))
         else:
