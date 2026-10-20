@@ -3,7 +3,7 @@ import hashlib
 import os
 
 from stacv import version
-from stacv.cli import junit
+from stacv.output import junit
 from stacv.config import interface_config
 from stacv.methodology import methodology_factory
 from stacv.results import port_result
