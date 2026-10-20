@@ -3,6 +3,7 @@ import hashlib
 import os
 
 from stacv import version
+from stacv.cli import junit
 from stacv.config import interface_config
 from stacv.methodology import methodology_factory
 from stacv.results import port_result
@@ -25,6 +26,8 @@ def execute(oCmdLine, oDateTime, lArgv):
     oPortResults = get_port_results(oInterface)
     if oCmdLine.report is not None:
         write_check_report(oCmdLine.report, oDateTime, lArgv, oInterface, oPortResults, oCmdLine.config_file)
+    if oCmdLine.junit is not None:
+        junit.write_junit_file(oCmdLine.junit, oPortResults)
     if oPortResults.has_failures():
         return 1
     return 0
