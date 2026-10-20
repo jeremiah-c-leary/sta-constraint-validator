@@ -7,9 +7,12 @@ import os
 import shutil
 import tempfile
 import unittest
+import xml.etree.ElementTree
 
 from stacv import version
 from stacv.cli import check
+from stacv.rules.output_delay import s2_output_delay_001
+from stacv.rules.timing_report import s0_timing_report_002
 
 sTestDir = os.path.dirname(os.path.abspath(__file__))
 sParseDir = os.path.join(sTestDir, '..', 'timing_report', 'parse', 'vivado')
@@ -44,7 +47,7 @@ class TestExecute(unittest.TestCase):
     def execute_with_reports(self, lTimingReports):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports))
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None)
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile]
         with contextlib.redirect_stdout(io.StringIO()):
@@ -74,7 +77,7 @@ class TestExecuteReportHeader(unittest.TestCase):
     def execute_with_argv(self, lArgv):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text([sPassingReport]))
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile)
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
         with contextlib.redirect_stdout(io.StringIO()):
             check.execute(oArgs, self.oDateTime, lArgv)
 
@@ -128,7 +131,7 @@ class TestExecuteReportTableOfContents(unittest.TestCase):
     def execute_with_ports(self, lPorts):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('Table of contents test', lPorts))
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile)
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
@@ -188,7 +191,7 @@ class TestExecuteReportSummary(unittest.TestCase):
     def execute_with_config_text(self, sConfigText):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(sConfigText)
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile)
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
@@ -250,7 +253,7 @@ class TestExecuteReportInputs(unittest.TestCase):
     def execute_with_ports(self, lPorts):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('Inputs test', lPorts))
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile)
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
@@ -358,7 +361,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
     def execute_with_ports(self, lPorts):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('Rule checks test', lPorts))
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile)
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
@@ -452,6 +455,122 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lExpected.append('-' * 80)
         self.assertEqual(lExpected, lLines[iFirstPortEnd:iFirstPortEnd + 5])
         self.assertEqual('-' * 80, lLines[-1])
+
+
+class TestExecuteJunit(unittest.TestCase):
+
+    def setUp(self):
+        self.oTempDir = tempfile.TemporaryDirectory()
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')
+
+    def tearDown(self):
+        self.oTempDir.cleanup()
+
+    def execute_with_ports(self, lPorts):
+        with open(self.sConfigFile, 'w') as oFile:
+            oFile.write(build_named_ports_config_text('JUnit test', lPorts))
+        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=self.sJunitFile)
+        oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
+        lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
+        with contextlib.redirect_stdout(io.StringIO()):
+            return check.execute(oArgs, oDateTime, lArgv)
+
+    def read_junit_root(self):
+        return xml.etree.ElementTree.parse(self.sJunitFile).getroot()
+
+    def find_testcase(self, sSuiteName, sRuleId):
+        for oSuite in self.read_junit_root().findall('testsuite'):
+            if oSuite.get('name') == sSuiteName:
+                for oTestcase in oSuite.findall('testcase'):
+                    if oTestcase.get('name') == sRuleId:
+                        return oTestcase
+        raise ValueError(f'{sSuiteName} {sRuleId} is not in the JUnit file')
+
+    def test_junit_file_has_one_testsuite_per_port_named_by_report_key(self):
+        lPorts = []
+        lPorts.append(('P1', sFailingReport))
+        lPorts.append(('P2', sPassingReport))
+        self.execute_with_ports(lPorts)
+
+        oRoot = self.read_junit_root()
+        lSuiteNames = []
+        for oSuite in oRoot.findall('testsuite'):
+            lSuiteNames.append(oSuite.get('name'))
+        self.assertEqual('testsuites', oRoot.tag)
+        self.assertEqual(['P1.SDR-SS-O', 'P2.SDR-SS-O'], lSuiteNames)
+
+    def test_junit_testsuite_has_one_testcase_per_rule_named_by_rule_id(self):
+        lPorts = []
+        lPorts.append(('P1', sPassingReport))
+        self.execute_with_ports(lPorts)
+
+        oSuite = self.read_junit_root().find('testsuite')
+        lNames = []
+        lClassnames = []
+        for oTestcase in oSuite.findall('testcase'):
+            lNames.append(oTestcase.get('name'))
+            lClassnames.append(oTestcase.get('classname'))
+        lExpected = []
+        lExpected.append('s0_timing_report_001')
+        lExpected.append('s0_timing_report_002')
+        lExpected.append('s1_clock_001')
+        lExpected.append('s2_clock_001')
+        lExpected.append('s2_clock_002')
+        lExpected.append('s2_data_path_001')
+        lExpected.append('s2_output_delay_001')
+        lExpected.append('s2_output_delay_002')
+        self.assertEqual(lExpected, lNames)
+        self.assertEqual(['P1.SDR-SS-O'] * 8, lClassnames)
+
+    def test_junit_passing_testcase_is_empty(self):
+        lPorts = []
+        lPorts.append(('P1', sPassingReport))
+        self.execute_with_ports(lPorts)
+
+        oTestcase = self.find_testcase('P1.SDR-SS-O', 's0_timing_report_001')
+        self.assertEqual([], list(oTestcase))
+
+    def test_junit_failing_testcase_has_rule_violation_as_message(self):
+        lPorts = []
+        lPorts.append(('P1', sFailingReport))
+        self.execute_with_ports(lPorts)
+
+        oTestcase = self.find_testcase('P1.SDR-SS-O', 's0_timing_report_002')
+        oFailure = oTestcase.find('failure')
+        self.assertEqual(s0_timing_report_002.RULE_VIOLATION, oFailure.get('message'))
+
+    def test_junit_failing_testcase_has_one_detail_per_line_as_body(self):
+        lPorts = []
+        lPorts.append(('P1', sOutputDelayFailingReport))
+        self.execute_with_ports(lPorts)
+
+        oTestcase = self.find_testcase('P1.SDR-SS-O', 's2_output_delay_001')
+        oFailure = oTestcase.find('failure')
+        lExpected = []
+        lExpected.append(sOutputDelayFailingReport + ':85  2.000ns')
+        lExpected.append(sOutputDelayFailingReport + ':229  2.500ns')
+        self.assertEqual(s2_output_delay_001.RULE_VIOLATION, oFailure.get('message'))
+        self.assertEqual('\n'.join(lExpected), oFailure.text)
+
+    def test_junit_skipped_testcase_has_skip_reason_as_message(self):
+        lPorts = []
+        lPorts.append(('P1', sFailingReport))
+        self.execute_with_ports(lPorts)
+
+        oTestcase = self.find_testcase('P1.SDR-SS-O', 's1_clock_001')
+        oSkipped = oTestcase.find('skipped')
+        self.assertEqual('stage 0 failed', oSkipped.get('message'))
+        self.assertIsNone(oSkipped.text)
+        self.assertIsNone(oTestcase.find('failure'))
+
+    def test_junit_option_does_not_change_exit_code(self):
+        lPorts = []
+        lPorts.append(('P1', sPassingReport))
+        self.assertEqual(0, self.execute_with_ports(lPorts))
+        lPorts = []
+        lPorts.append(('P1', sFailingReport))
+        self.assertEqual(1, self.execute_with_ports(lPorts))
 
 
 def find_section_title(lLines, sTitle):

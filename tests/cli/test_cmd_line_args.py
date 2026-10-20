@@ -41,3 +41,11 @@ class TestCheckSubparser(unittest.TestCase):
     def test_check_report_option_defaults_to_none(self):
         oArgs = parse_arguments(['check', 'stacv.toml'])
         self.assertIsNone(oArgs.report)
+
+    def test_check_junit_option_stores_junit_file(self):
+        oArgs = parse_arguments(['check', 'stacv.toml', '--junit', 'stacv_junit.xml'])
+        self.assertEqual('stacv_junit.xml', oArgs.junit)
+
+    def test_check_junit_option_defaults_to_none(self):
+        oArgs = parse_arguments(['check', 'stacv.toml'])
+        self.assertIsNone(oArgs.junit)

@@ -244,3 +244,62 @@ class TestMainReportFile(unittest.TestCase):
             lLines = oFile.readlines()
         sExpected = f'Command:  stacv check {self.sConfigFile} --report {self.sReportFile}\n'
         self.assertEqual(sExpected, lLines[4])
+
+
+class TestMainJunitFile(unittest.TestCase):
+
+    def setUp(self):
+        self.oTempDir = tempfile.TemporaryDirectory()
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')
+        self.oStdout = io.StringIO()
+
+    def tearDown(self):
+        self.oTempDir.cleanup()
+
+    def run_main_with_junit_option(self, lTimingReports):
+        with open(self.sConfigFile, 'w') as oFile:
+            oFile.write(build_config_text(lTimingReports))
+        lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
+        with mock.patch('sys.argv', lArgv):
+            with contextlib.redirect_stdout(self.oStdout):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit) as oContext:
+                        __main__.main()
+        return oContext.exception.code
+
+    def create_empty_timing_report(self):
+        sTimingReport = os.path.join(self.oTempDir.name, 'empty.rpt')
+        with open(sTimingReport, 'w'):
+            pass
+        return sTimingReport
+
+    def test_junit_file_is_created_when_every_rule_passes(self):
+        self.run_main_with_junit_option([sPassingReport])
+        self.assertTrue(os.path.isfile(self.sJunitFile))
+
+    def test_junit_file_is_created_when_a_rule_fails(self):
+        self.run_main_with_junit_option([sFailingReport])
+        self.assertTrue(os.path.isfile(self.sJunitFile))
+
+    def test_junit_file_is_not_created_when_a_timing_report_cannot_be_parsed(self):
+        iExitCode = self.run_main_with_junit_option([self.create_empty_timing_report()])
+        self.assertEqual(2, iExitCode)
+        self.assertFalse(os.path.isfile(self.sJunitFile))
+
+    def test_creating_junit_file_is_written_after_reading_timing_reports(self):
+        self.run_main_with_junit_option([sPassingReport])
+        lExpected = []
+        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
+        lExpected.append(f'Reading timing report file {sPassingReport}\n')
+        lExpected.append(f'Creating JUnit file {self.sJunitFile}\n')
+        self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
+
+    def test_creating_junit_file_is_written_after_failed_rules(self):
+        self.run_main_with_junit_option([sFailingReport])
+        lExpected = []
+        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
+        lExpected.append(f'Reading timing report file {sFailingReport}\n')
+        lExpected.append('FAILED: [s0_timing_report_002]\n')
+        lExpected.append(f'Creating JUnit file {self.sJunitFile}\n')
+        self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
