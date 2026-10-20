@@ -32,9 +32,9 @@ def build_testsuite(oXmlFile, oPortResult):
     for oResult in oPortResult.get_results():
         oTestcase = build_testcase(oTestsuite, sName, oResult)
         if oResult.is_failed():
-            add_failure(oTestcase, oResult)
+            add_failure_to_testcase(oTestcase, oResult)
         elif oResult.is_skipped():
-            add_skipped(oTestcase, oResult)
+            add_skipped_to_testcase(oTestcase, oResult)
 
 
 def build_testsuite_name(oPortResult):
@@ -45,12 +45,12 @@ def build_testcase(oTestSuite, sClassName, oResult):
     return ET.SubElement(oTestSuite, 'testcase', name=oResult.rule_id, classname=sClassName)
 
 
-def add_failure(oTestcase, oResult):
+def add_failure_to_testcase(oTestcase, oResult):
     oFailure = ET.SubElement(oTestcase, 'failure', message=oResult.failure_message)
     oFailure.text = '\n'.join(oResult.details)
 
 
-def add_skipped(oTestcase, oResult):
+def add_skipped_to_testcase(oTestcase, oResult):
     sMessage = '\n'.join(oResult.details)
     ET.SubElement(oTestcase, 'skipped', message=sMessage)
 
