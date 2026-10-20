@@ -307,7 +307,7 @@ def build_section_3_header():
 
 def build_section_3_port(iPortResult, oPortResult):
     lLines = []
-    lLines.extend(build_port_results_header(iPortResult, oPortResult))
+    lLines.extend(build_section_3_port_header(iPortResult, oPortResult))
     iRuleIdColumnWidth = get_max_rule_id_column_width(oPortResult)
     lLines.append(build_section_3_result_row(iRuleIdColumnWidth, 'Rule', 'Result', 'Details'))
     for oStageResult in oPortResult.methodology_results.stage_results:
@@ -316,7 +316,7 @@ def build_section_3_port(iPortResult, oPortResult):
     return lLines
 
 
-def build_port_results_header(iPortResult, oPortResult):
+def build_section_3_port_header(iPortResult, oPortResult):
     sReportKey = build_report_key(oPortResult)
     lLines = []
     lLines.append(build_minor_divider())
