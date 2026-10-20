@@ -13,12 +13,6 @@ class RuleResultList():
     def add_result_list(self, lResults):
         self.results.extend(lResults.results)
 
-    def has_failures(self):
-        for oResult in self.results:
-            if oResult.is_failed():
-                return True
-        return False
-
     def get_failing_results(self):
         lFailingTests = []
         for oResult in self.results:
@@ -47,3 +41,9 @@ class RuleResultList():
             if oResult.is_skipped():
                 lSkippedTests.append(oResult)
         return lSkippedTests
+
+    def has_failures(self):
+        for oResult in self.results:
+            if oResult.is_failed():
+                return True
+        return False
