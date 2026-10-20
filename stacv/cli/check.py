@@ -134,8 +134,8 @@ def build_table_of_contents(oPortResults):
     lLines.append('Section 3: Port Rule Checks')
     for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
         sSectionNumber = build_port_section_number(iPortResult)
-        sRuleKey = build_report_key(oPortResult)
-        lLines.append(f'Section {sSectionNumber}: {sRuleKey} Rule Checks')
+        sReportKey = build_report_key(oPortResult)
+        lLines.append(f'Section {sSectionNumber}: {sReportKey} Rule Checks')
     return lLines
 
 
