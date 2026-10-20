@@ -538,7 +538,7 @@ class TestExecuteJunit(unittest.TestCase):
 
         oTestcase = self.find_testcase('P1.SDR-SS-O', 's0_timing_report_002')
         oFailure = oTestcase.find('failure')
-        self.assertEqual(s0_timing_report_002.RULE_VIOLATION, oFailure.get('message'))
+        self.assertEqual(s0_timing_report_002.FAILURE_MESSAGE, oFailure.get('message'))
 
     def test_junit_failing_testcase_has_one_detail_per_line_as_body(self):
         lPorts = []
@@ -550,7 +550,7 @@ class TestExecuteJunit(unittest.TestCase):
         lExpected = []
         lExpected.append(sOutputDelayFailingReport + ':85  2.000ns')
         lExpected.append(sOutputDelayFailingReport + ':229  2.500ns')
-        self.assertEqual(s2_output_delay_001.RULE_VIOLATION, oFailure.get('message'))
+        self.assertEqual(s2_output_delay_001.FAILURE_MESSAGE, oFailure.get('message'))
         self.assertEqual('\n'.join(lExpected), oFailure.text)
 
     def test_junit_skipped_testcase_has_skip_reason_as_message(self):

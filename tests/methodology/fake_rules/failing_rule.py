@@ -8,4 +8,4 @@ RULE_ID = 'fake_failing_rule'
 
 
 def check(oTimingReportList):
-    return rule_result.RuleResult(RULE_ID, rule_result.FAILED, [])
+    return rule_result.RuleResult(RULE_ID, rule_result.FAILED, [], 'FAILED')

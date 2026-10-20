@@ -55,10 +55,11 @@ Refer to the vendor's timing report documentation.
 from stacv.rules import path_comparisons
 
 RULE_ID = 's2_clock_002'
+FAILURE_MESSAGE = 'Capture clock path is not the same over all timing reports.'
 
 
 def check(oTimingReportList):
     '''
     Purpose:  Capture clock paths pass through the same elements in every timing report.
     '''
-    return path_comparisons.check_paths_match(oTimingReportList.reports, 'capture_clock_path', RULE_ID)
+    return path_comparisons.check_paths_match(oTimingReportList.reports, 'capture_clock_path', RULE_ID, FAILURE_MESSAGE)

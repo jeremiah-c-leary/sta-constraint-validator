@@ -35,6 +35,12 @@ class RuleResultList():
     def get_number_of_skips(self):
         return len(self.get_skipped_results())
 
+    def get_results(self):
+        lResults = []
+        for oResult in self.results:
+            lResults.append(oResult)
+        return lResults
+
     def get_skipped_results(self):
         lSkippedTests = []
         for oResult in self.results:

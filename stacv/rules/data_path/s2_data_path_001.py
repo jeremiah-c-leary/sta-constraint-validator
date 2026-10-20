@@ -53,6 +53,7 @@ Refer to the vendor's timing report documentation.
 from stacv.rules import path_comparisons
 
 RULE_ID = 's2_data_path_001'
+FAILURE_MESSAGE = 'Data path is not the same over all timing reports'
 
 
 def check(oTimingReportList):
@@ -60,4 +61,4 @@ def check(oTimingReportList):
     Purpose:  Data paths pass through the same elements in every timing report.
     '''
 
-    return path_comparisons.check_paths_match(oTimingReportList.reports, 'data_path', RULE_ID)
+    return path_comparisons.check_paths_match(oTimingReportList.reports, 'data_path', RULE_ID, FAILURE_MESSAGE)

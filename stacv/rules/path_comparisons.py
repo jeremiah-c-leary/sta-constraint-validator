@@ -5,13 +5,13 @@ Provides functions to compare DelayPath objects.
 from stacv.rules import rule_result
 
 
-def check_paths_match(lReports, sPathType, sRuleId):
+def check_paths_match(lReports, sPathType, sRuleId, sFailureMessage):
     lUniquePaths = identify_unique_paths(lReports, sPathType)
     if less_than_two_unique_paths(lUniquePaths):
-        return rule_result.RuleResult(sRuleId, rule_result.PASSED, [])
+        return rule_result.RuleResult(sRuleId, rule_result.PASSED, [], '')
     else:
         lDetails = create_path_details(lReports, lUniquePaths, sPathType)
-        return rule_result.RuleResult(sRuleId, rule_result.FAILED, lDetails)
+        return rule_result.RuleResult(sRuleId, rule_result.FAILED, lDetails, sFailureMessage)
 
 
 def identify_unique_paths(lReports, sPathType):

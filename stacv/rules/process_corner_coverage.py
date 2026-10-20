@@ -5,12 +5,12 @@ Provides functions to check the coverage of timing reports.
 from stacv.rules import rule_result
 
 
-def check_at_least_two_process_corners_exist(sRuleId, lTimingReports, sType):
+def check_at_least_two_process_corners_exist(sRuleId, lTimingReports, sType, sFailureMessage):
     lCorners = get_unique_timing_corners_from_reports(lTimingReports)
     if at_least_two_corners_exist(lCorners):
-        return rule_result.RuleResult(sRuleId, rule_result.PASSED, [])
+        return rule_result.RuleResult(sRuleId, rule_result.PASSED, [], '')
     lDetails = create_rule_result_detail(lTimingReports, sType)
-    return rule_result.RuleResult(sRuleId, rule_result.FAILED, lDetails)
+    return rule_result.RuleResult(sRuleId, rule_result.FAILED, lDetails, sFailureMessage)
 
 
 def get_unique_timing_corners_from_reports(lTimingReports):

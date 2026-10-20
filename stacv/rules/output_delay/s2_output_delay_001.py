@@ -36,6 +36,7 @@ from stacv.rules import output_delay_comparisons
 
 
 RULE_ID = 's2_output_delay_001'
+FAILURE_MESSAGE = 'Setup output delays over all setup reports are not the same value.'
 
 
 def check(oTimingReportList):
@@ -44,4 +45,4 @@ def check(oTimingReportList):
     '''
 
     lSetupReports = oTimingReportList.get_setup_reports()
-    return output_delay_comparisons.check_output_delays_match(lSetupReports, RULE_ID)
+    return output_delay_comparisons.check_output_delays_match(lSetupReports, RULE_ID, FAILURE_MESSAGE)

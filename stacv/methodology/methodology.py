@@ -55,6 +55,12 @@ class MethodologyResults():
             iRules += oStageResult.get_number_of_skips()
         return iRules
 
+    def get_results(self):
+        lResults = []
+        for oStageResult in self.stage_results:
+            lResults.extend(oStageResult.get_results())
+        return lResults
+
     def has_failures(self):
         for oStageResult in self.stage_results:
             if oStageResult.has_failures():

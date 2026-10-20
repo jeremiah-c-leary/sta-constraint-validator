@@ -51,6 +51,7 @@ Refer to the vendor's timing constraints documentation for generated clocks and 
 from stacv.rules import rule_result
 
 RULE_ID = 's1_clock_001'
+FAILURE_MESSAGE = 'Launch and capture clock do not start at the same point.'
 
 
 def check(oTimingReportList):
@@ -68,8 +69,8 @@ def check(oTimingReportList):
             lDetails.extend(create_details(oTimingReport))
 
     if all_start_and_end_points_match(lDetails):
-        return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [])
-    return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails)
+        return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
+    return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)
 
 
 def all_start_and_end_points_match(lDetails):

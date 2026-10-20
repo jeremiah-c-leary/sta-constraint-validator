@@ -9,10 +9,11 @@ SKIPPED = 'skipped'
 
 
 class RuleResult():
-    def __init__(self, sRuleId, sResult, lDetails):
+    def __init__(self, sRuleId, sResult, lDetails, sFailureMessage):
         self.rule_id = sRuleId
         self.status = sResult
         self.details = lDetails
+        self.failure_message = sFailureMessage
 
     def is_passed(self):
         return self.status == PASSED

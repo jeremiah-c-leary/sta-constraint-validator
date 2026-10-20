@@ -18,7 +18,7 @@ class Stage():
         oRuleResults = rule_result_list.RuleResultList()
         for mRule in self.rules:
             lDetail = [sReason]
-            oRuleResult = rule_result.RuleResult(mRule.RULE_ID, rule_result.SKIPPED, lDetail)
+            oRuleResult = rule_result.RuleResult(mRule.RULE_ID, rule_result.SKIPPED, lDetail, '')
             oRuleResults.add_result(oRuleResult)
         return StageResults(self.name, oRuleResults)
 
@@ -40,6 +40,9 @@ class StageResults():
 
     def get_number_of_skips(self):
         return self.rule_results.get_number_of_skips()
+
+    def get_results(self):
+        return self.rule_results.get_results()
 
     def has_failures(self):
         return self.rule_results.has_failures()

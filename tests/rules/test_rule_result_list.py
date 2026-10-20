@@ -7,11 +7,11 @@ from stacv.rules import rule_result_list
 class Test(unittest.TestCase):
 
     def setUp(self):
-        self.oFirstPassingResult = rule_result.RuleResult('s1_clock_001', rule_result.PASSED, [])
-        self.oSecondPassingResult = rule_result.RuleResult('s2_clock_001', rule_result.PASSED, [])
-        self.oFailingResult = rule_result.RuleResult('s2_clock_002', rule_result.FAILED, ['first.rpt:51  path 1', 'first.rpt:117  path 2'])
-        self.oSecondFailingResult = rule_result.RuleResult('s2_data_path_001', rule_result.FAILED, ['first.rpt:203  path 3'])
-        self.oSkippedResult = rule_result.RuleResult('s2_output_delay_002', rule_result.SKIPPED, ['no hold timing reports found'])
+        self.oFirstPassingResult = rule_result.RuleResult('s1_clock_001', rule_result.PASSED, [], '')
+        self.oSecondPassingResult = rule_result.RuleResult('s2_clock_001', rule_result.PASSED, [], '')
+        self.oFailingResult = rule_result.RuleResult('s2_clock_002', rule_result.FAILED, ['first.rpt:51  path 1', 'first.rpt:117  path 2'], '')
+        self.oSecondFailingResult = rule_result.RuleResult('s2_data_path_001', rule_result.FAILED, ['first.rpt:203  path 3'], '')
+        self.oSkippedResult = rule_result.RuleResult('s2_output_delay_002', rule_result.SKIPPED, ['no hold timing reports found'], '')
 
     def test_new_rule_result_list_is_empty(self):
         oRuleResults = rule_result_list.RuleResultList()

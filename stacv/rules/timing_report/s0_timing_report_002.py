@@ -39,6 +39,7 @@ Refer to the vendor's timing analysis documentation for reporting timing at mult
 from stacv.rules import process_corner_coverage
 
 RULE_ID = 's0_timing_report_002'
+FAILURE_MESSAGE = 'Hold timing reports missing in at least one process corner.'
 
 
 def check(oTimingReportList):
@@ -47,4 +48,4 @@ def check(oTimingReportList):
     '''
 
     lSetupTimingReports = oTimingReportList.get_hold_reports()
-    return process_corner_coverage.check_at_least_two_process_corners_exist(RULE_ID, lSetupTimingReports, 'hold')
+    return process_corner_coverage.check_at_least_two_process_corners_exist(RULE_ID, lSetupTimingReports, 'hold', FAILURE_MESSAGE)

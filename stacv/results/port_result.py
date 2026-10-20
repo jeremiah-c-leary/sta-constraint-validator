@@ -14,5 +14,8 @@ class PortResult():
     def get_number_of_skips(self):
         return self.methodology_results.get_number_of_skips()
 
+    def get_results(self):
+        return self.methodology_results.get_results()
+
     def has_failures(self):
         return self.methodology_results.has_failures()
