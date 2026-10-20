@@ -73,5 +73,6 @@ def add_skipped_to_testcase(oTestcase, oResult):
 
 def write_file(sFilename, oXml):
     oXmlTree = ET.ElementTree(oXml)
+    ET.indent(oXmlTree, space='  ', level=0)
     with open(sFilename, 'wb') as oFile:
         oXmlTree.write(oFile, encoding="utf-8", xml_declaration=True)
