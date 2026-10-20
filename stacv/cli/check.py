@@ -129,14 +129,26 @@ def build_table_of_contents(oPortResults):
     lLines = []
     lLines.append('Table of Contents')
     lLines.append('')
-    lLines.append('Section 1: Summary')
-    lLines.append('Section 2: Inputs')
-    lLines.append('Section 3: Port Rule Checks')
+    lLines.append(build_section_1_title())
+    lLines.append(build_section_2_title())
+    lLines.append(build_section_3_title())
     for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
         sSectionNumber = build_port_section_number(iPortResult)
         sReportKey = build_report_key(oPortResult)
         lLines.append(f'Section {sSectionNumber}: {sReportKey} Rule Checks')
     return lLines
+
+
+def build_section_1_title():
+    return 'Section 1: Summary'
+
+
+def build_section_2_title():
+    return 'Section 2: Inputs'
+
+
+def build_section_3_title():
+    return 'Section 3: Port Rule Checks'
 
 
 def build_port_section_number(iNumber):
@@ -150,7 +162,7 @@ def build_report_key(oPortResult):
 def build_section_1(oInterface, oPortResults):
     lLines = []
     lLines.append(build_major_divider())
-    lLines.append('Section 1: Summary')
+    lLines.append(build_section_1_title())
     lLines.append(build_major_divider())
     lLines.append('')
     lLines.append(f'Interface:    {oInterface.interface_name}')
@@ -237,7 +249,7 @@ def build_section_2(oPortResults, sConfigFile):
 def build_section_2_header():
     lLines = []
     lLines.append(build_major_divider())
-    lLines.append('Section 2: Inputs')
+    lLines.append(build_section_2_title())
     lLines.append(build_major_divider())
     return lLines
 
@@ -317,7 +329,7 @@ def build_section_3(oPortResults):
 def build_section_3_header():
     lLines = []
     lLines.append(build_major_divider())
-    lLines.append('Section 3: Port Rule Checks')
+    lLines.append(build_section_3_title())
     lLines.append(build_major_divider())
     return lLines
 
