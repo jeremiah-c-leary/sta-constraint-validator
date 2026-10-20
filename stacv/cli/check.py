@@ -27,7 +27,7 @@ def execute(oCmdLine, oDateTime, lArgv):
     if oCmdLine.report is not None:
         write_check_report(oCmdLine.report, oDateTime, lArgv, oInterface, oPortResults, oCmdLine.config_file)
     if oCmdLine.junit is not None:
-        junit.write_junit_file(oCmdLine.junit, oPortResults)
+        junit.generate_junit_file(oCmdLine.junit, oPortResults)
     if oPortResults.has_failures():
         return 1
     return 0
