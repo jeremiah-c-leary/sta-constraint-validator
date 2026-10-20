@@ -38,6 +38,7 @@ def build_check_subparser(subparser):
     parser = subparser.add_parser('check', help='Perform Timing Rule Checks on timing reports.')
     parser.add_argument('config_file', help='Configuration file.')
     parser.add_argument('--report', help='Check report file name.')
+    parser.add_argument('--junit', help='Generate a JUnit file.')
     parser.set_defaults(which='check')
 
 
