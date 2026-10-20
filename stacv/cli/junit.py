@@ -24,21 +24,30 @@ def build_testsuites(oPortResults):
 
 
 def build_testsuite(oXmlFile, oPortResult):
+    oTestsuite = build_testsuite_element(oXmlFile, oPortResult)
+    add_testcases_to_testsuite(oTestsuite, oPortResult)
+
+
+def build_testsuite_element(oXmlFile, oPortResult):
     iTests = str(oPortResult.get_number_of_rules())
     iFailures = str(oPortResult.get_number_of_failures())
     iSkipped = str(oPortResult.get_number_of_skips())
     sName = build_testsuite_name(oPortResult)
-    oTestsuite = ET.SubElement(oXmlFile, 'testsuite', name=sName, tests=iTests, failures=iFailures, skipped=iSkipped) 
+    return ET.SubElement(oXmlFile, 'testsuite', name=sName, tests=iTests, failures=iFailures, skipped=iSkipped) 
+
+
+def build_testsuite_name(oPortResult):
+    return oPortResult.port.name + '.' + oPortResult.port.methodology
+
+
+def add_testcases_to_testsuite(oTestsuite, oPortResult):
+    sName = build_testsuite_name(oPortResult)
     for oResult in oPortResult.get_results():
         oTestcase = build_testcase(oTestsuite, sName, oResult)
         if oResult.is_failed():
             add_failure_to_testcase(oTestcase, oResult)
         elif oResult.is_skipped():
             add_skipped_to_testcase(oTestcase, oResult)
-
-
-def build_testsuite_name(oPortResult):
-    return oPortResult.port.name + '.' + oPortResult.port.methodology
 
 
 def build_testcase(oTestSuite, sClassName, oResult):
