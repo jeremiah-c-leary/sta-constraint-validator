@@ -118,7 +118,7 @@ def build_unformatted_table(oPortResults):
         lRow.append(oPortResult.port.methodology)
         lRow.append(oPortResult.get_identifier())
         lRow.append(build_port_section_number(iPortResult))
-        if oPortResult.get_results().has_failures():
+        if oPortResult.has_failures():
             lRow.append('Failed')
         else:
             lRow.append('Passed')
