@@ -5,6 +5,9 @@ class PortResult():
         self.port = oPort
         self.methodology_results = oMethodologyResults
 
+    def get_identifier(self):
+        return self.port.name + '.' + self.port.methodology
+
     def get_number_of_failures(self):
         return self.methodology_results.get_number_of_failures()
 

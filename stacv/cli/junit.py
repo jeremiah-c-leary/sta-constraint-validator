@@ -35,16 +35,12 @@ def build_testsuite_element(oTestsuites, oPortResult):
     sTests = str(oPortResult.get_number_of_rules())
     sFailures = str(oPortResult.get_number_of_failures())
     sSkipped = str(oPortResult.get_number_of_skips())
-    sName = build_testsuite_name(oPortResult)
+    sName = oPortResult.get_identifier()
     return ET.SubElement(oTestsuites, 'testsuite', name=sName, tests=sTests, failures=sFailures, skipped=sSkipped)
 
 
-def build_testsuite_name(oPortResult):
-    return oPortResult.port.name + '.' + oPortResult.port.methodology
-
-
 def add_testcases_to_testsuite(oTestsuite, oPortResult):
-    sClassName = build_testsuite_name(oPortResult)
+    sClassName = oPortResult.get_identifier()
     for oResult in oPortResult.get_results():
         build_testcase(oTestsuite, sClassName, oResult)
 
