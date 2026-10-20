@@ -15,11 +15,11 @@ class RuleResult():
         self.details = lDetails
         self.failure_message = sFailureMessage
 
-    def is_passed(self):
-        return self.status == PASSED
-
     def is_failed(self):
         return self.status == FAILED
+
+    def is_passed(self):
+        return self.status == PASSED
 
     def is_skipped(self):
         return self.status == SKIPPED
