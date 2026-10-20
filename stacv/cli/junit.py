@@ -41,7 +41,7 @@ def build_testsuite_element(oTestsuites, oPortResult):
 
 def add_testcases_to_testsuite(oTestsuite, oPortResult):
     sClassName = oPortResult.get_identifier()
-    for oResult in oPortResult.get_results():
+    for oResult in oPortResult.get_results().results:
         build_testcase(oTestsuite, sClassName, oResult)
 
 

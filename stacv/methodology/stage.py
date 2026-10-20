@@ -42,7 +42,7 @@ class StageResults():
         return self.rule_results.get_number_of_skips()
 
     def get_results(self):
-        return self.rule_results.get_results()
+        return self.rule_results
 
     def has_failures(self):
         return self.rule_results.has_failures()

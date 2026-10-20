@@ -1,3 +1,5 @@
+from stacv.rules import rule_result_list
+
 
 class Methodology():
 
@@ -56,10 +58,10 @@ class MethodologyResults():
         return iRules
 
     def get_results(self):
-        lResults = []
+        oRuleResults = rule_result_list.RuleResultList()
         for oStageResult in self.stage_results:
-            lResults.extend(oStageResult.get_results())
-        return lResults
+            oRuleResults.add_result_list(oStageResult.get_results())
+        return oRuleResults
 
     def has_failures(self):
         for oStageResult in self.stage_results:
