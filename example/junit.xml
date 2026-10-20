@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <testsuites name="stacv" tests="24" failures="2" skipped="6">
   <testsuite name="P1.SDR-SS-O" tests="8" failures="1" skipped="0">
     <testcase name="s0_timing_report_001" classname="P1.SDR-SS-O" />
@@ -8,19 +8,15 @@
     <testcase name="s2_clock_002" classname="P1.SDR-SS-O" />
     <testcase name="s2_data_path_001" classname="P1.SDR-SS-O" />
     <testcase name="s2_output_delay_001" classname="P1.SDR-SS-O">
-      <failure message="Every setup timing report must use the same output delay.">
-/project_1/sta/P1_timing.rpt:85  2.000ns
-/project_1/sta/P1_timing.rpt:229  2.500ns
-      </failure>
+      <failure message="Setup output delays over all setup reports are not the same value.">tests/rules/output_delay/s2_output_delay_001.failing.rpt:85  2.000ns
+tests/rules/output_delay/s2_output_delay_001.failing.rpt:229  2.500ns</failure>
     </testcase>
     <testcase name="s2_output_delay_002" classname="P1.SDR-SS-O" />
   </testsuite>
   <testsuite name="P2.SDR-SS-O" tests="8" failures="1" skipped="6">
     <testcase name="s0_timing_report_001" classname="P2.SDR-SS-O" />
     <testcase name="s0_timing_report_002" classname="P2.SDR-SS-O">
-      <failure message="Hold timing reports must exist for at least two process corners.">
-/project_1/sta/P2_timing.rpt:14  hold timing report, Fast process corner
-      </failure>
+      <failure message="Hold timing reports missing in at least one process corner.">tests/rules/timing_report/s0_timing_report_002.failing.rpt:14  hold timing report, Fast process corner</failure>
     </testcase>
     <testcase name="s1_clock_001" classname="P2.SDR-SS-O">
       <skipped message="stage 0 failed" />
