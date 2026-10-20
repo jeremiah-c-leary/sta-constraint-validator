@@ -139,6 +139,14 @@ def build_table_of_contents(oPortResults):
     return lLines
 
 
+def build_port_section_number(iNumber):
+    return f'3.{iNumber}'
+
+
+def build_report_key(oPortResult):
+    return oPortResult.port.name + '.' + oPortResult.port.methodology
+
+
 def build_section_1(oInterface, oPortResults):
     lLines = []
     lLines.append(build_major_divider())
@@ -175,14 +183,6 @@ def build_unformatted_table(oPortResults):
             lRow.append('Passed')
         lTable.append(lRow)
     return lTable
-
-
-def build_report_key(oPortResult):
-    return oPortResult.port.name + '.' + oPortResult.port.methodology
-
-
-def build_port_section_number(iNumber):
-    return f'3.{iNumber}'
 
 
 def format_table(lRows):
