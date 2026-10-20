@@ -20,10 +20,10 @@ def build_testsuites(oPortResults):
 
 
 def build_testsuites_element(oPortResults):
-    iTests = str(oPortResults.get_number_of_rules())
-    iFailures = str(oPortResults.get_number_of_failures())
-    iSkipped = str(oPortResults.get_number_of_skips())
-    return ET.Element('testsuites', name='stacv', tests=iTests, failures=iFailures, skipped=iSkipped)
+    sTests = str(oPortResults.get_number_of_rules())
+    sFailures = str(oPortResults.get_number_of_failures())
+    sSkipped = str(oPortResults.get_number_of_skips())
+    return ET.Element('testsuites', name='stacv', tests=sTests, failures=sFailures, skipped=sSkipped)
 
 
 def build_testsuite(oXmlFile, oPortResult):
@@ -32,11 +32,11 @@ def build_testsuite(oXmlFile, oPortResult):
 
 
 def build_testsuite_element(oXmlFile, oPortResult):
-    iTests = str(oPortResult.get_number_of_rules())
-    iFailures = str(oPortResult.get_number_of_failures())
-    iSkipped = str(oPortResult.get_number_of_skips())
+    sTests = str(oPortResult.get_number_of_rules())
+    sFailures = str(oPortResult.get_number_of_failures())
+    sSkipped = str(oPortResult.get_number_of_skips())
     sName = build_testsuite_name(oPortResult)
-    return ET.SubElement(oXmlFile, 'testsuite', name=sName, tests=iTests, failures=iFailures, skipped=iSkipped)
+    return ET.SubElement(oXmlFile, 'testsuite', name=sName, tests=sTests, failures=sFailures, skipped=sSkipped)
 
 
 def build_testsuite_name(oPortResult):
