@@ -26,17 +26,17 @@ def build_testsuites_element(oPortResults):
     return ET.Element('testsuites', name='stacv', tests=sTests, failures=sFailures, skipped=sSkipped)
 
 
-def build_testsuite(oXmlFile, oPortResult):
-    oTestsuite = build_testsuite_element(oXmlFile, oPortResult)
+def build_testsuite(oTestSuites, oPortResult):
+    oTestsuite = build_testsuite_element(oTestSuites, oPortResult)
     add_testcases_to_testsuite(oTestsuite, oPortResult)
 
 
-def build_testsuite_element(oXmlFile, oPortResult):
+def build_testsuite_element(oTestSuites, oPortResult):
     sTests = str(oPortResult.get_number_of_rules())
     sFailures = str(oPortResult.get_number_of_failures())
     sSkipped = str(oPortResult.get_number_of_skips())
     sName = build_testsuite_name(oPortResult)
-    return ET.SubElement(oXmlFile, 'testsuite', name=sName, tests=sTests, failures=sFailures, skipped=sSkipped)
+    return ET.SubElement(oTestSuites, 'testsuite', name=sName, tests=sTests, failures=sFailures, skipped=sSkipped)
 
 
 def build_testsuite_name(oPortResult):
