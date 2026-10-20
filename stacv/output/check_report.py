@@ -284,9 +284,8 @@ def build_section_3_port_header(iPortResult, oPortResult):
 
 def get_max_rule_id_column_width(oPortResult):
     iMaxWidth = len('Rule')
-    for oStageResult in oPortResult.methodology_results.stage_results:
-        for oRuleResult in oStageResult.get_results().results:
-            iMaxWidth = max(iMaxWidth, len(oRuleResult.rule_id))
+    for oRuleResult in oPortResult.get_results().results:
+        iMaxWidth = max(iMaxWidth, len(oRuleResult.rule_id))
     return iMaxWidth
 
 
