@@ -162,11 +162,6 @@ def build_separator(lWidths):
     return sRow
 
 
-def write_file(sFilename, lLines):
-    with open(sFilename, 'w') as oFile:
-        oFile.write('\n'.join(lLines) + '\n')
-
-
 def build_section_2(oPortResults, sConfigFile):
     lLines = []
     lLines.extend(build_section_2_header())
@@ -341,3 +336,8 @@ def build_result_with_detail(iRuleIdColumnWidth, oResult):
         sRuleId = ''
         sResult = ''
     return lLines
+
+
+def write_file(sFilename, lLines):
+    with open(sFilename, 'w') as oFile:
+        oFile.write('\n'.join(lLines) + '\n')
