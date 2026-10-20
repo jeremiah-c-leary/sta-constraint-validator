@@ -133,9 +133,7 @@ def build_table_of_contents(oPortResults):
     lLines.append(build_section_2_title())
     lLines.append(build_section_3_title())
     for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
-        sSectionNumber = build_port_section_number(iPortResult)
-        sReportKey = build_report_key(oPortResult)
-        lLines.append(f'Section {sSectionNumber}: {sReportKey} Rule Checks')
+        lLines.append(build_section_3_port_title(iPortResult, oPortResult))
     return lLines
 
 
@@ -149,6 +147,12 @@ def build_section_2_title():
 
 def build_section_3_title():
     return 'Section 3: Port Rule Checks'
+
+
+def build_section_3_port_title(iPortResult, oPortResult):
+    sSectionNumber = build_port_section_number(iPortResult)
+    sReportKey = build_report_key(oPortResult)
+    return f'Section {sSectionNumber}: {sReportKey} Rule Checks'
 
 
 def build_port_section_number(iNumber):
@@ -346,10 +350,9 @@ def build_section_3_port(iPortResult, oPortResult):
 
 
 def build_section_3_port_header(iPortResult, oPortResult):
-    sReportKey = build_report_key(oPortResult)
     lLines = []
     lLines.append(build_minor_divider())
-    lLines.append(f'Section {build_port_section_number(iPortResult)}: {sReportKey} Rule Checks')
+    lLines.append(build_section_3_port_title(iPortResult, oPortResult))
     lLines.append(build_minor_divider())
     return lLines
 
