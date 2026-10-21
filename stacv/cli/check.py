@@ -1,8 +1,8 @@
 
-from stacv.output import check_report
-from stacv.output import junit
 from stacv.config import interface_config
 from stacv.methodology import methodology_factory
+from stacv.output import check_report
+from stacv.output import junit
 from stacv.results import port_result
 from stacv.results import port_result_list
 from stacv.timing_report import timing_report_file
