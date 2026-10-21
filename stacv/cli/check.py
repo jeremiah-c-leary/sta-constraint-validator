@@ -34,11 +34,11 @@ def get_port_results(oInterface):
 
 def get_port_result(oPort):
     oPortProfile = port_profile.PortProfile(oPort)
-    oMethodology = create_methodology(oPortProfile.port)
+    oMethodology = create_methodology(oPort)
     oPortProfile.timing_reports = create_timing_reports(oPortProfile.port.timing_reports)
     oMethodologyResults = oMethodology.check(oPortProfile)
     print_failing_rules(oMethodologyResults)
-    return port_result.PortResult(oPortProfile.port, oMethodologyResults)
+    return port_result.PortResult(oPort, oMethodologyResults)
 
 
 def create_methodology(oPort):

@@ -9,6 +9,8 @@ from tests.methodology.fake_rules import passing_rule
 from tests.methodology.fake_rules import second_passing_rule
 from tests.methodology.fake_rules import failing_rule
 
+from tests import utils
+
 
 def get_stage_names(oMethodologyResult):
     lStageNames = []
@@ -32,12 +34,12 @@ def get_first_result_of_stage(oMethodologyResult, iStage):
 class Test(unittest.TestCase):
 
     def setUp(self):
-        self.oTimingReports = timing_report_list.TimingReportList()
+        self.oPortProfile = utils.create_port_profile(timing_report_list.TimingReportList())
 
     def check_stages(self, lStages):
         oMethodology = methodology.Methodology()
         oMethodology.stages = lStages
-        return oMethodology.check(self.oTimingReports)
+        return oMethodology.check(self.oPortProfile)
 
     def test_check_returns_one_stage_result_per_stage_in_order(self):
         lStages = []

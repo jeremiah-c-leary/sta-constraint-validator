@@ -7,5 +7,5 @@ from stacv.results import rule_result
 RULE_ID = 'fake_failing_rule'
 
 
-def check(oTimingReportList):
+def check(oPortProfile):
     return rule_result.RuleResult(RULE_ID, rule_result.FAILED, [], 'FAILED')
