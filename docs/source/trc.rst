@@ -22,8 +22,9 @@ Each rule lists these fields:
 Stages
 ------
 
-The Timing Rule Checks are run in five stages:
+The Timing Rule Checks are run in six stages:
 
+#. Stage 0: Input Checks
 #. Stage 1: Intra-Timing Report
 #. Stage 2: Inter-Timing Report
 #. Stage 3: Board and Part
@@ -32,6 +33,11 @@ The Timing Rule Checks are run in five stages:
 
 Each stage depends on the checks in the stages before it.
 If an issue is found during a stage, then future stages will not be executed.
+
+Input Checks
+^^^^^^^^^^^^
+
+This stage checks input files for issues.
 
 Intra-Timing Report
 ^^^^^^^^^^^^^^^^^^^
@@ -66,9 +72,6 @@ It runs last, so the slack is known to come from the intended timing.
 Methodology coverage
 ^^^^^^^^^^^^^^^^^^^^
 
-Stages 1 and 2 apply to every methodology.
-Some rules in stages 3, 4 and 5 apply to all methodologies, while others only apply to one.
-
 =======================  ========  =========  ========
 Rule                     SDR-SS-O  SDR-SS-RT  SDR-SS-I
 =======================  ========  =========  ========
@@ -98,6 +101,39 @@ s5_slack_002             X         X          X
 The columns are the methodologies described in :doc:`methodology`.
 The DDR methodologies are added once their rules are defined.
 
+Stage 0: Input Checks
+---------------------
+
+s0_timing_report_001: Setup timing reports must exist for at least two process corners
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.timing_report.s0_timing_report_001
+
+s0_timing_report_002: Hold timing reports must exist for at least two process corners
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.timing_report.s0_timing_report_002
+
+s0_trace_001: Every pin of the part interface has a trace in the board data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The traces connect the part pins to the device ports.
+A pin without a trace has no part port, so it cannot be timed and its output or input delay cannot be calculated.
+The part pin of the trace must be the port name as it appears in the timing reports.
+
+s0_trace_002: Every pin of the device interface has a trace in the board data
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The traces connect the part pins to the device ports.
+A pin without a trace has no device port, so it cannot be timed and its output or input delay cannot be calculated.
+The device pin of the trace must be the port name as it appears in the timing reports.
+
+s0_part_001: Every part data pin is referenced to a clock pin of its interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The setup and hold, or clock to out, of a part data pin are given relative to one part clock pin.
+That clock pin must belong to the same interface, so its trace gives the clock port.
+
 Stage 1: Intra-Timing Report
 ----------------------------
 
@@ -105,7 +141,6 @@ s1_clock_001: Launch and capture clock paths start at the same point
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: stacv.rules.clock.s1_clock_001
-
 
 Stage 2: Inter-Timing Report
 ----------------------------
@@ -135,47 +170,19 @@ s2_output_delay_002: Output delays match in every hold timing report
 
 .. automodule:: stacv.rules.output_delay.s2_output_delay_002
 
-s2_input_delay_001: Input delays match across timing reports of the same type
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Every max (setup) timing report must use the same input delay, and every min (hold) timing report must use the same input delay.
-The max and min values are expected to differ.
-
 Stage 3: Board and Part
 -----------------------
 
-s3_trace_001: Every pin of the part interface has a trace in the board data
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+s3_output_delay_001: Maximum output delays match the calculated output delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The traces connect the part pins to the device ports.
-A pin without a trace has no device port, so it cannot be timed and its output or input delay cannot be calculated.
-The device pin of the trace must be the port name as it appears in the timing reports.
-
-s3_part_001: Every part data pin is referenced to a clock pin of its interface
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The setup and hold, or clock to out, of a part data pin are given relative to one part clock pin.
-That clock pin must belong to the same interface, so its trace gives the clock port.
-
-s3_part_002: Edges at the part clock are the edge type the part requires
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The part states whether each data pin is timed on the rising or falling edge of its clock pin.
-The edges given in the device for the clock at the part must be of that type.
-For SDR-SS-O, these are the capture edges: a part that captures on the falling edge needs B, D, F, ...
-
-s3_output_delay_001: Output delays match the calculated output delays
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The output delays in every timing report must match the output delays calculated from the part and the board data.
-The max output delay is compared in setup timing reports and the min output delay in hold timing reports.
+The output delays in every setup timing report must match the output delays calculated from the part and the board data.
 The comparison allows for the rounding of the delays in the timing report.
 
-s3_input_delay_001: Input delays match the calculated input delays
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+s3_output_delay_002: Minimum output delays match the calculated output delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The input delays in every timing report must match the input delays calculated from the part and the board data.
-The max input delay is compared in setup timing reports and the min input delay in hold timing reports.
+The output delays in every hold timing report must match the output delays calculated from the part and the board data.
 The comparison allows for the rounding of the delays in the timing report.
 
 Stage 4: Intent
@@ -255,6 +262,13 @@ s4_capture_edge_001: Capture clock edge intent matches timing reports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The rising or falling edge of the capture clock matches between intent and timing reports.
+
+s4_part_001: Edges at the part clock are the edge type the part requires
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The part states whether each data pin is timed on the rising or falling edge of its clock pin.
+The edges given in the device for the clock at the part must be of that type.
+For SDR-SS-O, these are the capture edges: a part that captures on the falling edge needs B, D, F, ...
 
 Stage 5: Slack
 --------------
