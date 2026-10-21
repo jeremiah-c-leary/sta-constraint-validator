@@ -47,5 +47,5 @@ def check(oPortProfile):
     Purpose:  Checks there are at least two hold timing reports at different process corners.
     '''
 
-    lSetupTimingReports = oPortProfile.timing_reports.get_hold_reports()
-    return process_corner_coverage.check_at_least_two_process_corners_exist(RULE_ID, lSetupTimingReports, 'hold', FAILURE_MESSAGE)
+    lHoldTimingReports = oPortProfile.timing_reports.get_hold_reports()
+    return process_corner_coverage.check_at_least_two_process_corners_exist(RULE_ID, lHoldTimingReports, 'hold', FAILURE_MESSAGE)
