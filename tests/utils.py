@@ -1,3 +1,4 @@
+from stacv.inputs import port_profile
 
 
 def create_part_dict():
@@ -173,3 +174,9 @@ def read_file(sFilename):
         for sLine in oFile:
             lLines.append(sLine.strip('\n'))
     return lLines
+
+
+def create_port_profile(oTimingReportList):
+    oPortProfile = port_profile.PortProfile(None)
+    oPortProfile.timing_reports = oTimingReportList
+    return oPortProfile

@@ -56,9 +56,9 @@ RULE_ID = 's2_data_path_001'
 FAILURE_MESSAGE = 'Data path is not the same over all timing reports'
 
 
-def check(oTimingReportList):
+def check(oPortProfile):
     '''
     Purpose:  Data paths pass through the same elements in every timing report.
     '''
 
-    return path_comparisons.check_paths_match(oTimingReportList.reports, 'data_path', RULE_ID, FAILURE_MESSAGE)
+    return path_comparisons.check_paths_match(oPortProfile.timing_reports.reports, 'data_path', RULE_ID, FAILURE_MESSAGE)

@@ -1,5 +1,6 @@
 
 from stacv.config import interface_config
+from stacv.inputs import port_profile
 from stacv.methodology import methodology_factory
 from stacv.output import check_report
 from stacv.output import junit
@@ -26,17 +27,18 @@ def execute(oCmdLine, oDateTime, lArgv):
 def get_port_results(oInterface):
     oPortResults = port_result_list.PortResultList()
     for oPort in oInterface.ports:
-        oPortResult = get_port_result(oPort)
+        oPortProfile = port_profile.PortProfile(oPort)
+        oPortResult = get_port_result(oPortProfile)
         oPortResults.add_result(oPortResult)
     return oPortResults
 
 
-def get_port_result(oPort):
-    oMethodology = create_methodology(oPort)
-    oTimingReportList = create_timing_reports(oPort.timing_reports)
-    oMethodologyResults = oMethodology.check(oTimingReportList)
+def get_port_result(oPortProfile):
+    oMethodology = create_methodology(oPortProfile.port)
+    oPortProfile.timing_reports = create_timing_reports(oPortProfile.port.timing_reports)
+    oMethodologyResults = oMethodology.check(oPortProfile)
     print_failing_rules(oMethodologyResults)
-    return port_result.PortResult(oPort, oMethodologyResults)
+    return port_result.PortResult(oPortProfile.port, oMethodologyResults)
 
 
 def create_methodology(oPort):

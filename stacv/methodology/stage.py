@@ -9,10 +9,10 @@ class Stage():
         self.name = sName
         self.rules = lRules
 
-    def check(self, oTimingReportList):
+    def check(self, oPortProfile):
         oRuleResults = rule_result_list.RuleResultList()
         for mRule in self.rules:
-            oRuleResults.add_result(mRule.check(oTimingReportList))
+            oRuleResults.add_result(mRule.check(oPortProfile))
         return stage_results.StageResults(self.name, oRuleResults)
 
     def skip(self, sReason):

@@ -54,13 +54,13 @@ RULE_ID = 's1_clock_001'
 FAILURE_MESSAGE = 'Launch and capture clock do not start at the same point.'
 
 
-def check(oTimingReportList):
+def check(oPortProfile):
     '''
     Purpose:  Launch and capture clock paths start at the same point.
     '''
 
     lDetails = []
-    for oTimingReport in oTimingReportList.reports:
+    for oTimingReport in oPortProfile.timing_reports.reports:
 
         sLaunchClockStartPoint = get_start_point(oTimingReport.launch_clock_path)
         sCaptureClockStartPoint = get_start_point(oTimingReport.capture_clock_path)

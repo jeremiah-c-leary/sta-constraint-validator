@@ -42,10 +42,10 @@ RULE_ID = 's0_timing_report_002'
 FAILURE_MESSAGE = 'Hold timing reports missing in at least one process corner.'
 
 
-def check(oTimingReportList):
+def check(oPortProfile):
     '''
     Purpose:  Checks there are at least two hold timing reports at different process corners.
     '''
 
-    lSetupTimingReports = oTimingReportList.get_hold_reports()
+    lSetupTimingReports = oPortProfile.timing_reports.get_hold_reports()
     return process_corner_coverage.check_at_least_two_process_corners_exist(RULE_ID, lSetupTimingReports, 'hold', FAILURE_MESSAGE)

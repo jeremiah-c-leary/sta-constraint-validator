@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
     def test_passing_timing_report(self):
         oTimingReports = vivado.parse_timing_report(oPassingFile)
 
-        oRuleResult = s1_clock_001.check(oTimingReports)
+        oRuleResult = s1_clock_001.check(utils.create_port_profile(oTimingReports))
 
         self.assertEqual('s1_clock_001', oRuleResult.rule_id)
         self.assertTrue(oRuleResult.is_passed())
@@ -31,7 +31,7 @@ class Test(unittest.TestCase):
     def test_failing_timing_report(self):
         oTimingReports = vivado.parse_timing_report(oFailingFile)
 
-        oRuleResult = s1_clock_001.check(oTimingReports)
+        oRuleResult = s1_clock_001.check(utils.create_port_profile(oTimingReports))
 
         self.assertEqual('s1_clock_001', oRuleResult.rule_id)
         self.assertFalse(oRuleResult.is_passed())
@@ -39,7 +39,7 @@ class Test(unittest.TestCase):
     def test_failing_timing_report_lists_both_start_points(self):
         oTimingReports = vivado.parse_timing_report(oFailingFile)
 
-        oRuleResult = s1_clock_001.check(oTimingReports)
+        oRuleResult = s1_clock_001.check(utils.create_port_profile(oTimingReports))
 
         lExpected = []
         lExpected.append('s1_clock_001.failing.rpt:32  launch clock path starts at I_CLK')
@@ -50,7 +50,7 @@ class Test(unittest.TestCase):
     def test_one_failing_timing_report_out_of_two_fails(self):
         oTimingReports = vivado.parse_timing_report(oFailingOneOfTwoFile)
 
-        oRuleResult = s1_clock_001.check(oTimingReports)
+        oRuleResult = s1_clock_001.check(utils.create_port_profile(oTimingReports))
 
         self.assertEqual('s1_clock_001', oRuleResult.rule_id)
         self.assertTrue(oRuleResult.is_failed())
@@ -58,7 +58,7 @@ class Test(unittest.TestCase):
     def test_one_failing_timing_report_out_of_two_lists_only_failing_start_points(self):
         oTimingReports = vivado.parse_timing_report(oFailingOneOfTwoFile)
 
-        oRuleResult = s1_clock_001.check(oTimingReports)
+        oRuleResult = s1_clock_001.check(utils.create_port_profile(oTimingReports))
 
         lExpected = []
         lExpected.append('s1_clock_001.failing_one_of_two.rpt:102  launch clock path starts at I_CLK')

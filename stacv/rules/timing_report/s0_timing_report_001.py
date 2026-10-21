@@ -42,10 +42,10 @@ RULE_ID = 's0_timing_report_001'
 FAILURE_MESSAGE = 'Setup timing reports missing in at least one process corner.'
 
 
-def check(oTimingReportList):
+def check(oPortProfile):
     '''
     Purpose:  Checks there are at least two setup timing reports at different process corners.
     '''
 
-    lSetupTimingReports = oTimingReportList.get_setup_reports()
+    lSetupTimingReports = oPortProfile.timing_reports.get_setup_reports()
     return process_corner_coverage.check_at_least_two_process_corners_exist(RULE_ID, lSetupTimingReports, 'setup', FAILURE_MESSAGE)

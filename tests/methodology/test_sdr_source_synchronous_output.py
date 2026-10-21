@@ -67,7 +67,7 @@ class Test(unittest.TestCase):
     def test_check_passes_every_rule_on_dac_timing_reports(self):
         oTimingReports = vivado.parse_timing_report(oPassingFile)
 
-        oMethodologyResult = self.oMethodology.check(oTimingReports)
+        oMethodologyResult = self.oMethodology.check(utils.create_port_profile(oTimingReports))
 
         self.assertFalse(oMethodologyResult.has_failures())
         lResults = []

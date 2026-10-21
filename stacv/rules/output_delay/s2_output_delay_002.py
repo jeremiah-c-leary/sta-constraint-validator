@@ -39,10 +39,10 @@ RULE_ID = 's2_output_delay_002'
 FAILURE_MESSAGE = 'Hold output delays over all setup reports are not the same value.'
 
 
-def check(oTimingReportList):
+def check(oPortProfile):
     '''
     Purpose:  Output delays match in every hold timing report.
     '''
     
-    lHoldReports = oTimingReportList.get_hold_reports()
+    lHoldReports = oPortProfile.timing_reports.get_hold_reports()
     return output_delay_comparisons.check_output_delays_match(lHoldReports, RULE_ID, FAILURE_MESSAGE)

@@ -20,7 +20,7 @@ class Test(unittest.TestCase):
     def test_passing_timing_reports(self):
         oTimingReports = vivado.parse_timing_report(oPassingFile)
 
-        oRuleResult = s0_timing_report_001.check(oTimingReports)
+        oRuleResult = s0_timing_report_001.check(utils.create_port_profile(oTimingReports))
 
         self.assertEqual('s0_timing_report_001', oRuleResult.rule_id)
         self.assertTrue(oRuleResult.is_passed())
@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
     def test_failing_timing_reports(self):
         oTimingReports = vivado.parse_timing_report(oFailingFile)
 
-        oRuleResult = s0_timing_report_001.check(oTimingReports)
+        oRuleResult = s0_timing_report_001.check(utils.create_port_profile(oTimingReports))
 
         self.assertEqual('s0_timing_report_001', oRuleResult.rule_id)
         self.assertTrue(oRuleResult.is_failed())
@@ -37,7 +37,7 @@ class Test(unittest.TestCase):
     def test_failing_timing_reports_lists_setup_timing_reports_found(self):
         oTimingReports = vivado.parse_timing_report(oFailingFile)
 
-        oRuleResult = s0_timing_report_001.check(oTimingReports)
+        oRuleResult = s0_timing_report_001.check(utils.create_port_profile(oTimingReports))
 
         lExpected = []
         lExpected.append('s0_timing_report_001.failing.rpt:75  setup timing report, Fast process corner')

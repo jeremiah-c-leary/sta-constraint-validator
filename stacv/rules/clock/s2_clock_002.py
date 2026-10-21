@@ -58,8 +58,8 @@ RULE_ID = 's2_clock_002'
 FAILURE_MESSAGE = 'Capture clock path is not the same over all timing reports.'
 
 
-def check(oTimingReportList):
+def check(oPortProfile):
     '''
     Purpose:  Capture clock paths pass through the same elements in every timing report.
     '''
-    return path_comparisons.check_paths_match(oTimingReportList.reports, 'capture_clock_path', RULE_ID, FAILURE_MESSAGE)
+    return path_comparisons.check_paths_match(oPortProfile.timing_reports.reports, 'capture_clock_path', RULE_ID, FAILURE_MESSAGE)
