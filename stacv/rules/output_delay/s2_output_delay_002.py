@@ -36,7 +36,7 @@ from stacv.rules import output_delay_comparisons
 
 
 RULE_ID = 's2_output_delay_002'
-FAILURE_MESSAGE = 'Hold output delays over all setup reports are not the same value.'
+FAILURE_MESSAGE = 'Hold output delays over all hold reports are not the same value.'
 
 
 def check(oPortProfile):
