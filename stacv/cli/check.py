@@ -43,11 +43,6 @@ def create_methodology(oPort):
     return methodology_factory.create_methodology(oPort.methodology)
 
 
-def print_failing_rules(oMethodologyResults):
-    for oRuleResult in oMethodologyResults.get_failing_results():
-        print(f'FAILED: [{oRuleResult.rule_id}]')
-
-
 def create_timing_reports(lFilenames):
     oTimingReportList = timing_report_list.TimingReportList()
     for sFilename in lFilenames:
@@ -74,3 +69,8 @@ def parse_timing_report(oTimingReportFile):
 
 def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
     oTimingReportList.extend(oParsedTimingReportList)
+
+
+def print_failing_rules(oMethodologyResults):
+    for oRuleResult in oMethodologyResults.get_failing_results():
+        print(f'FAILED: [{oRuleResult.rule_id}]')
