@@ -2,15 +2,16 @@
 
 [[trace]]
 name = "data_output"
-device_pin = "O_DATA"
+device_pin = "O_DAC_DATA"
 part_pin = "SDIN"
 device_to_part = {max_delay = 3.00, min_delay = 1.00}
 
-[[trace]]
-name = "data_input"
-device_pin = "I_DATA"
-part_pin = "SDO"
-part_to_device = {max_delay = 3.00, min_delay = 1.00}
+# Commented out until SDR-SS-I is implemented
+#[[trace]]
+#name = "data_input"
+#device_pin = "I_DATA"
+#part_pin = "SDO"
+#part_to_device = {max_delay = 3.00, min_delay = 1.00}
 
 # Leaving out for now
 #[[trace]]
@@ -21,7 +22,7 @@ part_to_device = {max_delay = 3.00, min_delay = 1.00}
 
 [[trace]]
 name = "clock"
-device_pin = "O_SCK"
+device_pin = "O_DAC_SCK"
 part_pin = "SCLK"
 device_to_part = {max_delay = 3.00, min_delay = 1.00}
 
