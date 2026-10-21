@@ -6,7 +6,7 @@ device_pin = "O_DAC_DATA"
 part_pin = "SDIN"
 device_to_part = {max_delay = 3.00, min_delay = 1.00}
 
-# Commented out until SDR-SS-I is implemented
+# Commented out until round trip analysis is completed
 #[[trace]]
 #name = "data_input"
 #device_pin = "I_DATA"
@@ -22,7 +22,7 @@ device_to_part = {max_delay = 3.00, min_delay = 1.00}
 
 [[trace]]
 name = "clock"
-device_pin = "O_DAC_SCK"
+device_pin = "O_DAC_SCLK"
 part_pin = "SCLK"
 device_to_part = {max_delay = 3.00, min_delay = 1.00}
 
