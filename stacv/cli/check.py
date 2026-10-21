@@ -27,13 +27,13 @@ def execute(oCmdLine, oDateTime, lArgv):
 def get_port_results(oInterface):
     oPortResults = port_result_list.PortResultList()
     for oPort in oInterface.ports:
-        oPortProfile = port_profile.PortProfile(oPort)
-        oPortResult = get_port_result(oPortProfile)
+        oPortResult = get_port_result(oPort)
         oPortResults.add_result(oPortResult)
     return oPortResults
 
 
-def get_port_result(oPortProfile):
+def get_port_result(oPort):
+    oPortProfile = port_profile.PortProfile(oPort)
     oMethodology = create_methodology(oPortProfile.port)
     oPortProfile.timing_reports = create_timing_reports(oPortProfile.port.timing_reports)
     oMethodologyResults = oMethodology.check(oPortProfile)
