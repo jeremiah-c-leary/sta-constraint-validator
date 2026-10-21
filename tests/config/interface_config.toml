@@ -2,6 +2,8 @@
 
 description = "Two ports on one interface"
 interface = "DAC_SPI_1"
+part = "unknown"
+traces = "unknown"
 
 [[port]]
 name = "O_DAC_DATA"

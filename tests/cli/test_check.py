@@ -23,10 +23,12 @@ sFailingReport = os.path.abspath(os.path.join(sRuleDir, 's0_timing_report_002.fa
 sOutputDelayFailingReport = os.path.abspath(os.path.join(sTestDir, '..', 'rules', 'output_delay', 's2_output_delay_001.failing.rpt'))
 
 
-def build_config_text(lTimingReports):
+def build_config_text(lTimingReports, sTracesFile, sPartFile):
     lText = []
     lText.append('description = "check.py test"')
     lText.append('interface = "DAC_SPI_1"')
+    lText.append(f'part = "{sPartFile}"')
+    lText.append(f'traces = "{sTracesFile}"')
     for iPort, sTimingReport in enumerate(lTimingReports, start=1):
         lText.append('[[port]]')
         lText.append(f'name = "PORT_{iPort}"')
@@ -35,18 +37,68 @@ def build_config_text(lTimingReports):
     return '\n'.join(lText)
 
 
+def build_traces_text():
+    lText = []
+    lText.append('[[trace]]')
+    lText.append('name = "data_output"')
+    lText.append('device_pin = "O_DAC_DATA"')
+    lText.append('part_pin = "SDIN"')
+    lText.append('device_to_part = {max_delay = 3.00, min_delay = 1.00}')
+    return '\n'.join(lText)
+
+
+def build_part_text():
+    lText = []
+    lText.append('[properties]')
+    lText.append('manufacturer = "Texas Instruments"')
+    lText.append('part_number = "DAC81404"')
+    lText.append('')
+    lText.append('[datasheet]')
+    lText.append('name = "DACx1401 Quad, 16-Bit and 12-Bit, High-Voltage-Output DACs With Internal Reference"')
+    lText.append('url = "https://www.ti.com/lit/ds/symlink/dac81404.pdf"')
+    lText.append('version = "SLASEH2A -- November 2020 -- REVISED MAY 2021"')
+    lText.append('')
+    lText.append('[[interface]]')
+    lText.append('name = "Serial Interface"')
+    lText.append('')
+    lText.append('[[interface.pin]]')
+    lText.append('name = "SDIN"')
+    lText.append('methodology = "SDR-SS-I"')
+    lText.append('clock = {pin = "SCLK", max_frequency = 25}')
+    lText.append('capture_edge = "Falling"')
+    lText.append('setup = {value = 10, symbol = "tSDIS", source = "Table 7.6"}')
+    lText.append('hold = {value = 10, symbol = "tSDIH", source = "Table 7.6"}')
+    lText.append('')
+    lText.append('[[interface.pin]]')
+    lText.append('name = "SDO"')
+    lText.append('methodology = "SDR-SS-O"')
+    lText.append('clock = {pin = "SCLK", max_frequency = 12.5}')
+    lText.append('cko_max = {value = 30, symbol = "tSDODLY", source = "Table 7.8"}')
+    lText.append('cko_min = {value = 0, symbol = "tSDODLY", source = "Table 7.8"}')
+    lText.append('launch_edge = "Rising"')
+    return '\n'.join(lText)
+
+
 class TestExecute(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
 
     def tearDown(self):
         self.oTempDir.cleanup()
 
     def execute_with_reports(self, lTimingReports):
         with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(build_config_text(lTimingReports))
+            oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
+            
+            
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile]
@@ -68,6 +120,8 @@ class TestExecuteReportHeader(unittest.TestCase):
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
         self.oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
 
@@ -76,7 +130,11 @@ class TestExecuteReportHeader(unittest.TestCase):
 
     def execute_with_argv(self, lArgv):
         with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(build_config_text([sPassingReport]))
+            oFile.write(build_config_text([sPassingReport], self.sTracesFile, self.sPartFile))
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
         with contextlib.redirect_stdout(io.StringIO()):
             check.execute(oArgs, self.oDateTime, lArgv)
@@ -106,10 +164,12 @@ class TestExecuteReportHeader(unittest.TestCase):
         self.assertEqual(sExpected, self.read_report_header()[4])
 
 
-def build_named_ports_config_text(sDescription, lPorts):
+def build_named_ports_config_text(sDescription, lPorts, sTracesFile, sPartFile):
     lText = []
     lText.append(f'description = "{sDescription}"')
     lText.append('interface = "DAC_SPI_1"')
+    lText.append(f'part = "{sPartFile}"')
+    lText.append(f'traces = "{sTracesFile}"')
     for sPortName, sTimingReport in lPorts:
         lText.append('[[port]]')
         lText.append(f'name = "{sPortName}"')
@@ -123,6 +183,8 @@ class TestExecuteReportTableOfContents(unittest.TestCase):
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
 
     def tearDown(self):
@@ -130,7 +192,11 @@ class TestExecuteReportTableOfContents(unittest.TestCase):
 
     def execute_with_ports(self, lPorts):
         with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(build_named_ports_config_text('Table of contents test', lPorts))
+            oFile.write(build_named_ports_config_text('Table of contents test', lPorts, self.sTracesFile, self.sPartFile))
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
@@ -183,6 +249,8 @@ class TestExecuteReportSummary(unittest.TestCase):
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
 
     def tearDown(self):
@@ -191,6 +259,10 @@ class TestExecuteReportSummary(unittest.TestCase):
     def execute_with_config_text(self, sConfigText):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(sConfigText)
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
@@ -209,7 +281,7 @@ class TestExecuteReportSummary(unittest.TestCase):
         lPorts = []
         lPorts.append(('P1', sFailingReport))
         lPorts.append(('P2', sPassingReport))
-        self.execute_with_config_text(build_named_ports_config_text('This interface is a summary test', lPorts))
+        self.execute_with_config_text(build_named_ports_config_text('This interface is a summary test', lPorts, self.sTracesFile, self.sPartFile))
 
         lExpected = []
         lExpected.append('=' * 80)
@@ -229,7 +301,7 @@ class TestExecuteReportSummary(unittest.TestCase):
         lPorts = []
         lPorts.append(('O_DAC_DATA', sFailingReport))
         lPorts.append(('O_DAC_CSF', sPassingReport))
-        self.execute_with_config_text(build_named_ports_config_text('Long port names', lPorts))
+        self.execute_with_config_text(build_named_ports_config_text('Long port names', lPorts, self.sTracesFile, self.sPartFile))
 
         lExpected = []
         lExpected.append('Port         Methodology   Report Key            Section   Result')
@@ -245,6 +317,8 @@ class TestExecuteReportInputs(unittest.TestCase):
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
 
     def tearDown(self):
@@ -252,7 +326,11 @@ class TestExecuteReportInputs(unittest.TestCase):
 
     def execute_with_ports(self, lPorts):
         with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(build_named_ports_config_text('Inputs test', lPorts))
+            oFile.write(build_named_ports_config_text('Inputs test', lPorts, self.sTracesFile, self.sPartFile))
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
@@ -353,6 +431,8 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
 
     def tearDown(self):
@@ -360,7 +440,11 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
 
     def execute_with_ports(self, lPorts):
         with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(build_named_ports_config_text('Rule checks test', lPorts))
+            oFile.write(build_named_ports_config_text('Rule checks test', lPorts, self.sTracesFile, self.sPartFile))
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
@@ -462,6 +546,8 @@ class TestExecuteJunit(unittest.TestCase):
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')
 
     def tearDown(self):
@@ -469,7 +555,11 @@ class TestExecuteJunit(unittest.TestCase):
 
     def execute_with_ports(self, lPorts):
         with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(build_named_ports_config_text('JUnit test', lPorts))
+            oFile.write(build_named_ports_config_text('JUnit test', lPorts, self.sTracesFile, self.sPartFile))
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=self.sJunitFile)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]

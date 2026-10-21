@@ -177,6 +177,6 @@ def read_file(sFilename):
 
 
 def create_port_profile(oTimingReportList):
-    oPortProfile = port_profile.PortProfile(None)
+    oPortProfile = port_profile.PortProfile(None, None, None, None)
     oPortProfile.timing_reports = oTimingReportList
     return oPortProfile

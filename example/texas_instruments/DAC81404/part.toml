@@ -10,10 +10,10 @@ name = "DACx1401 Quad, 16-Bit and 12-Bit, High-Voltage-Output DACs With Internal
 url = "https://www.ti.com/lit/ds/symlink/dac81404.pdf"
 version = "SLASEH2A -- November 2020 -- REVISED MAY 2021"
 
-[interface]
+[[interface]]
 name = "Serial Interface"
 
-[[pin]]
+[[interface.pin]]
 name = "SDIN"
 methodology = "SDR-SS-I"
 clock = {pin = "SCLK", max_frequency = 25}
@@ -21,7 +21,7 @@ capture_edge = "Falling"
 setup = {value = 10, symbol = "tSDIS", source = "Table 7.6"}
 hold = {value = 10, symbol = "tSDIH", source = "Table 7.6"}
 
-[[pin]]
+[[interface.pin]]
 name = "SDO"
 methodology = "SDR-SS-O"
 clock = {pin = "SCLK", max_frequency = 12.5}

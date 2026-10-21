@@ -33,10 +33,13 @@ def read_toml_file(sConfigFile):
 
 
 def create_interface_config(dConfig, sConfigFile):
+    # TODO:  Rename oConfig as oInterface
     oConfig = config.Interface()
     oLocation = config.ConfigLocation(sConfigFile)
     oConfig.description = get_required_string(dConfig, 'description', oLocation)
     oConfig.interface_name = get_required_string(dConfig, 'interface', oLocation)
+    oConfig.part = get_required_string(dConfig, 'part', oLocation)
+    oConfig.traces = get_required_string(dConfig, 'traces', oLocation)
     oConfig.ports = create_ports(dConfig, oLocation)
     return oConfig
 

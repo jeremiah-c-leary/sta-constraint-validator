@@ -8,6 +8,8 @@ from unittest import mock
 
 from stacv import __main__
 from tests.cli.test_check import build_config_text
+from tests.cli.test_check import build_traces_text
+from tests.cli.test_check import build_part_text
 from tests.cli.test_check import sFailingReport
 from tests.cli.test_check import sPassingReport
 
@@ -17,13 +19,19 @@ class TestMainCheckDispatch(unittest.TestCase):
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
 
     def tearDown(self):
         self.oTempDir.cleanup()
 
     def run_main_with_reports(self, lTimingReports):
         with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(build_config_text(lTimingReports))
+            oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
         lArgv = ['stacv', 'check', self.sConfigFile]
         with mock.patch('sys.argv', lArgv):
             with contextlib.redirect_stdout(io.StringIO()):
@@ -46,13 +54,19 @@ class TestMainToolErrors(unittest.TestCase):
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
 
     def tearDown(self):
         self.oTempDir.cleanup()
 
     def run_main_with_reports(self, lTimingReports):
         with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(build_config_text(lTimingReports))
+            oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
         lArgv = ['stacv', 'check', self.sConfigFile]
         with mock.patch('sys.argv', lArgv):
             with contextlib.redirect_stdout(io.StringIO()):
@@ -83,6 +97,8 @@ class TestMainConsoleOutput(unittest.TestCase):
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.oStdout = io.StringIO()
         self.oStderr = io.StringIO()
 
@@ -91,7 +107,11 @@ class TestMainConsoleOutput(unittest.TestCase):
 
     def run_main_with_reports(self, lTimingReports):
         with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(build_config_text(lTimingReports))
+            oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
         lArgv = ['stacv', 'check', self.sConfigFile]
         with mock.patch('sys.argv', lArgv):
             with contextlib.redirect_stdout(self.oStdout):
@@ -186,6 +206,8 @@ class TestMainReportFile(unittest.TestCase):
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
         self.oStdout = io.StringIO()
 
@@ -194,7 +216,11 @@ class TestMainReportFile(unittest.TestCase):
 
     def run_main_with_report_option(self, lTimingReports):
         with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(build_config_text(lTimingReports))
+            oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
         with mock.patch('sys.argv', lArgv):
             with contextlib.redirect_stdout(self.oStdout):
@@ -216,6 +242,7 @@ class TestMainReportFile(unittest.TestCase):
         self.assertEqual(1, self.run_main_with_report_option([sFailingReport]))
 
     def test_creating_report_is_written_after_reading_timing_reports(self):
+        self.maxDiff = None
         self.run_main_with_report_option([sPassingReport])
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
@@ -251,6 +278,8 @@ class TestMainJunitFile(unittest.TestCase):
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
         self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
+        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')
         self.oStdout = io.StringIO()
 
@@ -259,7 +288,11 @@ class TestMainJunitFile(unittest.TestCase):
 
     def run_main_with_junit_option(self, lTimingReports):
         with open(self.sConfigFile, 'w') as oFile:
-            oFile.write(build_config_text(lTimingReports))
+            oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
+        with open(self.sTracesFile, 'w') as oFile:
+            oFile.write(build_traces_text())
+        with open(self.sPartFile, 'w') as oFile:
+            oFile.write(build_part_text())
         lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
         with mock.patch('sys.argv', lArgv):
             with contextlib.redirect_stdout(self.oStdout):
