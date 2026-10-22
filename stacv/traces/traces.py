@@ -22,14 +22,16 @@ def read_toml_file(sFilename):
 
 def build_trace_list(dTraces):
     oTraceList = trace_list.TraceList()
-    build_traces(dTraces, oTraceList)
+    oTraceList.traces = build_traces(dTraces)
     return oTraceList
 
 
-def build_traces(dTraces, oTraceList):
+def build_traces(dTraces):
+    lTraces = []
     for dTrace in dTraces['trace']:
         oTrace = build_trace(dTrace)
-        oTraceList.add_trace(oTrace)
+        lTraces.append(oTrace)
+    return lTraces
 
 
 def build_trace(dTrace):
