@@ -25,6 +25,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_DATA"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append(f'timing_reports = ["{sTimingReportFile}"]')
         return '\n' + '\n'.join(lText) + '\n'
 
@@ -34,6 +35,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append(f'name = "{sName}"')
         lText.append(f'methodology = "{sMethodology}"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append(f'timing_reports = ["{sTimingReportFile}"]')
         return '\n' + '\n'.join(lText) + '\n'
 
@@ -96,6 +98,7 @@ class Test(unittest.TestCase):
         lText.append(self.sValidPort)
         lText.append('[[port]]')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
         self.write_config_file('\n'.join(lText) + '\n')
 
@@ -113,6 +116,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_CSF"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         self.write_config_file('\n'.join(lText) + '\n')
 
         sError = self.build_error_pattern('interface_config_002', 'missing required key "timing_reports" in port O_DAC_CSF$')
@@ -129,6 +133,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_CSF"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append('timing_reports = "O_DAC_CSF_timing.rpt"')
         self.write_config_file('\n'.join(lText) + '\n')
 
@@ -146,6 +151,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_CSF"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt", 5]')
         self.write_config_file('\n'.join(lText) + '\n')
 
@@ -196,6 +202,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = 7')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
         self.write_config_file('\n'.join(lText) + '\n')
 
@@ -213,6 +220,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_CSF"')
         lText.append('methodology = 3')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
         self.write_config_file('\n'.join(lText) + '\n')
 
@@ -244,6 +252,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_CSF"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append('timing_reports = []')
         self.write_config_file('\n'.join(lText) + '\n')
 
@@ -261,6 +270,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_CSF"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append('timing_reports = ["$STACV_UNSET_TEST_VARIABLE/O_DAC_CSF_timing.rpt"]')
         self.write_config_file('\n'.join(lText) + '\n')
 
@@ -280,6 +290,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_CSF"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append('timing_reports = ["$STACV_UNSET_A/$STACV_UNSET_B/O_DAC_CSF_timing.rpt"]')
         self.write_config_file('\n'.join(lText) + '\n')
 
@@ -300,6 +311,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_CSF"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append('timing_reports = ["${STACV_UNSET_TEST_VARIABLE}/O_DAC_CSF_timing.rpt"]')
         self.write_config_file('\n'.join(lText) + '\n')
 
@@ -320,6 +332,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_CSF"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append(f'timing_reports = ["{sMissingFile}"]')
         self.write_config_file('\n'.join(lText) + '\n')
 
@@ -337,6 +350,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_CSF"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append('timing_reports = ["$STACV_TEST_REPORT_DIRECTORY/O_DAC_CSF_timing.rpt"]')
         self.write_config_file('\n'.join(lText) + '\n')
 
@@ -355,6 +369,7 @@ class Test(unittest.TestCase):
         lText.append('[[port]]')
         lText.append('name = "O_DAC_DATA"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append('timing_reports = ["O_DAC_DATA_timing.rpt"]')
         self.write_config_file('\n'.join(lText) + '\n')
 

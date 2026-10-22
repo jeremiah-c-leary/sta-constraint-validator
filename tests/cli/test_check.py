@@ -33,6 +33,7 @@ def build_config_text(lTimingReports, sTracesFile, sPartFile):
         lText.append('[[port]]')
         lText.append(f'name = "PORT_{iPort}"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
 
@@ -200,6 +201,7 @@ def build_named_ports_config_text(sDescription, lPorts, sTracesFile, sPartFile):
         lText.append('[[port]]')
         lText.append(f'name = "{sPortName}"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}')
         lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
 
