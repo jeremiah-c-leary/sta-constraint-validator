@@ -39,7 +39,7 @@ class Test(unittest.TestCase):
         self.assertIsInstance(self.oMethodology, methodology.Methodology)
 
     def test_stages_are_in_order(self):
-        self.assertEqual(['stage 0', 'stage 1', 'stage 2'], get_stage_names(self.oMethodology))
+        self.assertEqual(['stage 0', 'stage 1', 'stage 2', 'stage 3'], get_stage_names(self.oMethodology))
 
     def test_stage_0_rules(self):
         lExpected = []

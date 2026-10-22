@@ -16,7 +16,10 @@ class Part():
         self.manufacturer = None
         self.part_number = None
         self.datasheet = None
-        self.interface = None
+        self.interfaces = None
+
+    def get_pin_named(self, sPinName):
+        return self.interfaces.get_pin_named(sPinName)
 
 
 def create_part(oInterface):
@@ -57,7 +60,7 @@ def build_pin_list(dPins):
 
 
 def create_pin(dPin):
-    dPinMap[dPin['methodology']](dPin)
+    return dPinMap[dPin['methodology']](dPin)
 
 
 def build_datasheet(dDatasheet):
@@ -73,6 +76,7 @@ def build_sdr_ss_i_pin(dPin):
     oPin.capture_edge =  dPin['capture_edge']
     oPin.setup = build_constraint(dPin['setup'])
     oPin.hold = build_constraint(dPin['hold'])
+    return oPin
 
 
 def build_base_pin(dPin):
@@ -95,6 +99,7 @@ def build_constraint(dConstraint):
     oConstraint.value = dConstraint['value']
     oConstraint.symbol = dConstraint['symbol']
     oConstraint.source = dConstraint['source']
+    return oConstraint
 
 
 def build_sdr_ss_o_pin(dPin):

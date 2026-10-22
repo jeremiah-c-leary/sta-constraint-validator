@@ -121,8 +121,8 @@ class Test(unittest.TestCase):
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=self.sJunitFile)
         oDateTime = datetime.datetime(2026, 10, 21, 20, 0, 0)
         lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
-#        with contextlib.redirect_stdout(io.StringIO()):
-        return check.execute(oArgs, oDateTime, lArgv)
+        with contextlib.redirect_stdout(io.StringIO()):
+            return check.execute(oArgs, oDateTime, lArgv)
 
     def find_rule_testcase(self):
         oRoot = xml.etree.ElementTree.parse(self.sJunitFile).getroot()

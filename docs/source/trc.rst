@@ -176,16 +176,7 @@ Stage 3: Board and Part
 s3_output_delay_001: Maximum output delays match the calculated output delays
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The output delays in every setup timing report must match the output delays calculated from the part and the board data.
-The comparison allows for the rounding of the delays in the timing report.
-
-The data trace is the trace whose device pin is the port.
-Its part pin gives the setup time and the clock pin of the part.
-The clock trace is the trace whose part pin is that clock pin.
-
-   maximum output delay = part setup + data trace maximum delay - clock trace minimum delay
-
-The output delay matches when it is within 0.0005 ns of the calculated output delay, half of the last digit printed in the timing report.
+.. automodule:: stacv.rules.output_delay.s3_output_delay_001
 
 s3_output_delay_002: Minimum output delays match the calculated output delays
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
