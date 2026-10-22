@@ -40,7 +40,7 @@ def check(oPortProfile):
     fExpectedOutputDelay = calculate_expected_max_output_delay(oPortProfile)
     if output_delay_in_range(fActualOutputDelay, fExpectedOutputDelay):
         return rule_result.RuleResult(RULE_ID, rule_result.PASSED)
-    return generate_error_result(fExpectedOutputDelay, fActualOutputDelay)
+    return generate_error_result(fActualOutputDelay, fExpectedOutputDelay)
 
 
 def get_output_delay_from_setup_reports(oPortProfile):
@@ -85,7 +85,7 @@ def output_delay_in_range(fActualOutputDelay, fExpectedOutputDelay):
     return fActualOutputDelay - TOLERANCE < fExpectedOutputDelay < fActualOutputDelay + TOLERANCE
 
 
-def generate_error_result(fExpectedOutputDelay, fActualOutputDelay):
+def generate_error_result(fActualOutputDelay, fExpectedOutputDelay):
     lDetails = []
     lDetails.append(f'Calculated maximum output delay is {fExpectedOutputDelay} while actual output delay is {fActualOutputDelay}')
     return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)
