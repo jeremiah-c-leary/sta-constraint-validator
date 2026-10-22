@@ -25,18 +25,6 @@ class TraceList():
                 lTraces.append(oTrace)
         return lTraces
 
-    def get_trace_with_device_pin(self, sPinName):
-        for oTrace in self.traces:
-            if oTrace.device_pin == sPinName:
-                return oTrace
-        return None
-
-    def get_trace_with_part_pin(self, sPinName):
-        for oTrace in self.traces:
-            if oTrace.part_pin == sPinName:
-                return oTrace
-        return None
-
     def trace_starts_with_device_pin_named(self, sPinName):
         for oTrace in self.get_device_to_part_traces():
             if oTrace.device_pin == sPinName:
