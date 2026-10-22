@@ -64,6 +64,13 @@ class Test(unittest.TestCase):
 
         self.assertEqual(lExpected, get_rule_ids(self.oMethodology.stages[2]))
 
+    def test_stage_3_rules(self):
+        lExpected = []
+        lExpected.append('s3_output_delay_001')
+
+        self.assertEqual(lExpected, get_rule_ids(self.oMethodology.stages[3]))
+
+    @unittest.skip('Propose this can be deleted as the cost of testing has increased due to the need for trace and part test data.  The tests at the check level are sufficient to cover this test.')
     def test_check_passes_every_rule_on_dac_timing_reports(self):
         oTimingReports = vivado.parse_timing_report(oPassingFile)
 

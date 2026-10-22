@@ -37,14 +37,40 @@ def build_config_text(lTimingReports, sTracesFile, sPartFile):
     return '\n'.join(lText)
 
 
-def build_traces_text():
+def build_numbered_port_names(lTimingReports):
+    lPortNames = []
+    for iPort in range(1, len(lTimingReports) + 1):
+        lPortNames.append(f'PORT_{iPort}')
+    return lPortNames
+
+
+def get_port_names(lPorts):
+    lPortNames = []
+    for sPortName, sTimingReport in lPorts:
+        lPortNames.append(sPortName)
+    return lPortNames
+
+
+def build_traces_text(lPortNames):
+    # Every port connects to part pin SDIN.  With the part setup and hold of 0.5,
+    # the calculated output delays match the output delays in sPassingReport:
+    #    maximum:   0.5 + 2.0 - 0.5 = 2.000
+    #    minimum:  -0.5 + 2.0 - 0.5 = 1.000
+    lText = []
+    for sPortName in lPortNames:
+        lText.extend(build_trace_text(sPortName, 'SDIN', 2.0, 2.0))
+    lText.extend(build_trace_text('O_DAC_SCLK', 'SCLK', 0.5, 0.5))
+    return '\n'.join(lText)
+
+
+def build_trace_text(sDevicePin, sPartPin, fMaxDelay, fMinDelay):
     lText = []
     lText.append('[[trace]]')
-    lText.append('name = "data_output"')
-    lText.append('device_pin = "O_DAC_DATA"')
-    lText.append('part_pin = "SDIN"')
-    lText.append('device_to_part = {max_delay = 3.00, min_delay = 1.00}')
-    return '\n'.join(lText)
+    lText.append(f'name = "{sDevicePin}"')
+    lText.append(f'device_pin = "{sDevicePin}"')
+    lText.append(f'part_pin = "{sPartPin}"')
+    lText.append(f'device_to_part = {{max_delay = {fMaxDelay}, min_delay = {fMinDelay}}}')
+    return lText
 
 
 def build_part_text():
@@ -66,8 +92,8 @@ def build_part_text():
     lText.append('methodology = "SDR-SS-I"')
     lText.append('clock = {pin = "SCLK", max_frequency = 25}')
     lText.append('capture_edge = "Falling"')
-    lText.append('setup = {value = 10, symbol = "tSDIS", source = "Table 7.6"}')
-    lText.append('hold = {value = 10, symbol = "tSDIH", source = "Table 7.6"}')
+    lText.append('setup = {value = 0.5, symbol = "tSDIS", source = "Table 7.6"}')
+    lText.append('hold = {value = 0.5, symbol = "tSDIH", source = "Table 7.6"}')
     lText.append('')
     lText.append('[[interface.pin]]')
     lText.append('name = "SDO"')
@@ -94,7 +120,7 @@ class TestExecute(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(build_numbered_port_names(lTimingReports)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
             
@@ -132,7 +158,7 @@ class TestExecuteReportHeader(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text([sPassingReport], self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(build_numbered_port_names([sPassingReport])))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
@@ -194,7 +220,7 @@ class TestExecuteReportTableOfContents(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('Table of contents test', lPorts, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
@@ -256,11 +282,11 @@ class TestExecuteReportSummary(unittest.TestCase):
     def tearDown(self):
         self.oTempDir.cleanup()
 
-    def execute_with_config_text(self, sConfigText):
+    def execute_with_config_text(self, sConfigText, lPortNames):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(sConfigText)
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(lPortNames))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
@@ -281,7 +307,7 @@ class TestExecuteReportSummary(unittest.TestCase):
         lPorts = []
         lPorts.append(('P1', sFailingReport))
         lPorts.append(('P2', sPassingReport))
-        self.execute_with_config_text(build_named_ports_config_text('This interface is a summary test', lPorts, self.sTracesFile, self.sPartFile))
+        self.execute_with_config_text(build_named_ports_config_text('This interface is a summary test', lPorts, self.sTracesFile, self.sPartFile), get_port_names(lPorts))
 
         lExpected = []
         lExpected.append('=' * 80)
@@ -301,7 +327,7 @@ class TestExecuteReportSummary(unittest.TestCase):
         lPorts = []
         lPorts.append(('O_DAC_DATA', sFailingReport))
         lPorts.append(('O_DAC_CSF', sPassingReport))
-        self.execute_with_config_text(build_named_ports_config_text('Long port names', lPorts, self.sTracesFile, self.sPartFile))
+        self.execute_with_config_text(build_named_ports_config_text('Long port names', lPorts, self.sTracesFile, self.sPartFile), get_port_names(lPorts))
 
         lExpected = []
         lExpected.append('Port         Methodology   Report Key            Section   Result')
@@ -328,7 +354,7 @@ class TestExecuteReportInputs(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('Inputs test', lPorts, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
@@ -442,7 +468,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('Rule checks test', lPorts, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
@@ -561,7 +587,7 @@ class TestExecuteJunit(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('JUnit test', lPorts, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=self.sJunitFile)
@@ -616,7 +642,7 @@ class TestExecuteJunit(unittest.TestCase):
         lExpected.append('s2_output_delay_002')
         lExpected.append('s3_output_delay_001')
         self.assertEqual(lExpected, lNames)
-        self.assertEqual(['P1.SDR-SS-O'] * 8, lClassnames)
+        self.assertEqual(['P1.SDR-SS-O'] * 9, lClassnames)
 
     def test_junit_passing_testcase_is_empty(self):
         lPorts = []

@@ -8,6 +8,7 @@ from unittest import mock
 
 from stacv import __main__
 from tests.cli.test_check import build_config_text
+from tests.cli.test_check import build_numbered_port_names
 from tests.cli.test_check import build_traces_text
 from tests.cli.test_check import build_part_text
 from tests.cli.test_check import sFailingReport
@@ -29,7 +30,7 @@ class TestMainCheckDispatch(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(build_numbered_port_names(lTimingReports)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
         lArgv = ['stacv', 'check', self.sConfigFile]
@@ -64,7 +65,7 @@ class TestMainToolErrors(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(build_numbered_port_names(lTimingReports)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
         lArgv = ['stacv', 'check', self.sConfigFile]
@@ -109,7 +110,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(build_numbered_port_names(lTimingReports)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
         lArgv = ['stacv', 'check', self.sConfigFile]
@@ -218,7 +219,7 @@ class TestMainReportFile(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(build_numbered_port_names(lTimingReports)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
@@ -290,7 +291,7 @@ class TestMainJunitFile(unittest.TestCase):
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
-            oFile.write(build_traces_text())
+            oFile.write(build_traces_text(build_numbered_port_names(lTimingReports)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
         lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
