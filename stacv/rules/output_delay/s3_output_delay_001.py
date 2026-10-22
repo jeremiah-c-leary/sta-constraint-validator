@@ -22,7 +22,6 @@ The output delay matches when it is within 0.0005 ns of the calculated output de
 Refer to the vendor's timing constraints documentation for output delays.
 '''
 
-from stacv.rules import output_delay_comparisons
 from stacv.results import rule_result
 
 

@@ -73,7 +73,7 @@ def build_datasheet(dDatasheet):
 
 def build_sdr_ss_i_pin(dPin):
     oPin = build_base_pin(dPin)
-    oPin.capture_edge =  dPin['capture_edge']
+    oPin.capture_edge = dPin['capture_edge']
     oPin.setup = build_constraint(dPin['setup'])
     oPin.hold = build_constraint(dPin['hold'])
     return oPin
@@ -104,7 +104,7 @@ def build_constraint(dConstraint):
 
 def build_sdr_ss_o_pin(dPin):
     oPin = build_base_pin(dPin)
-    oPin.launch_edge =  dPin['launch_edge']
+    oPin.launch_edge = dPin['launch_edge']
     oPin.cko_max = build_constraint(dPin['cko_max'])
     oPin.cko_min = build_constraint(dPin['cko_min'])
 
