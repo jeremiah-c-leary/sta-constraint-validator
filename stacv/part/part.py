@@ -53,10 +53,16 @@ def build_interface_list(dInterfaces):
 
 def build_pin_list(dPins):
     oPinList = pin_list.PinList()
+    oPinList.pins = build_pins(dPins)
+    return oPinList
+
+
+def build_pins(dPins):
+    lPins = []
     for dPin in dPins:
         oPin = create_pin(dPin)
-        oPinList.add_pin(oPin)
-    return oPinList
+        lPins.append(oPin)
+    return lPins
 
 
 def create_pin(dPin):
