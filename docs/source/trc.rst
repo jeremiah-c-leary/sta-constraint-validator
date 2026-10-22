@@ -114,12 +114,13 @@ s0_timing_report_002: Hold timing reports must exist for at least two process co
 
 .. automodule:: stacv.rules.timing_report.s0_timing_report_002
 
-s0_trace_001: Every pin of the part interface has a trace in the board data
+s0_trace_001: A data trace and its clock trace connect the port to the part
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The traces connect the part pins to the device ports.
-A pin without a trace has no part port, so it cannot be timed and its output or input delay cannot be calculated.
-The part pin of the trace must be the port name as it appears in the timing reports.
+The data trace is the trace whose device pin is the port name and whose part pin is a pin of the part.
+The clock trace is the trace whose device pin is the port's capture clock port and whose part pin is the clock pin of that part pin.
+Both traces must give device to part delays.
+Without both traces, the output delays cannot be calculated.
 
 s0_trace_002: Every pin of the device interface has a trace in the board data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

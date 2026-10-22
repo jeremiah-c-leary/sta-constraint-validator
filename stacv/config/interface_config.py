@@ -10,6 +10,7 @@ import tomllib
 from stacv.config import config
 from stacv.config import interface_config_error
 from stacv.config import value_type
+from stacv.config import clock_pin
 
 
 def read_interface_config(sConfigFile):
@@ -51,6 +52,7 @@ def create_ports(dConfig, oLocation):
         oPort.name = get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
         oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
+        oPort.capture_clock = build_capture_clock(dPort['capture_clock'])
         oPort.timing_reports = get_required_list_of_files(dPort, 'timing_reports', oLocation)
         lPorts.append(oPort)
     return lPorts
@@ -94,6 +96,14 @@ def get_required_string(dDict, sKey, oLocation):
 def check_schema(oExpectedType, value, sKey, oLocation):
     if not oExpectedType.is_valid(value):
         raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be {oExpectedType.description}')
+
+
+def build_capture_clock(dClock):
+    oClockPin = clock_pin.ClockPin()
+    oClockPin.port = dClock['port']
+    oClockPin.name = dClock['name']
+    oClockPin.frequency = dClock['frequency']
+    return oClockPin
 
 
 def check_for_unset_environment_variables(sString, sKey, oLocation):

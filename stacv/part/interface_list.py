@@ -9,3 +9,9 @@ class InterfaceList():
             if oInterface.has_pin_named(sPinName):
                 return oInterface.get_pin_named(sPinName)
         return None
+
+    def has_pin_named(self, sPinName):
+        for oInterface in self.interfaces:
+            if oInterface.has_pin_named(sPinName):
+                return True
+        return False

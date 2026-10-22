@@ -21,6 +21,9 @@ class Part():
     def get_pin_named(self, sPinName):
         return self.interfaces.get_pin_named(sPinName)
 
+    def has_pin_named(self, sPinName):
+        return self.interfaces.has_pin_named(sPinName)
+
 
 def create_part(oInterface):
     dPart = read_toml_file(oInterface.part)
