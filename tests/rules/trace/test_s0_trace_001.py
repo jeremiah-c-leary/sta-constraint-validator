@@ -212,7 +212,6 @@ class Test(unittest.TestCase):
 
         self.assert_rule_failed()
 
-    @unittest.skip('Other traces are allowed to exist')
     def test_passes_when_unrelated_traces_exist(self):
         lTraces = []
         lTraces.append(create_data_trace('O_OTHER_DATA', 'SDO'))
