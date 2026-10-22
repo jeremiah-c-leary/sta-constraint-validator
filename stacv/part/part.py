@@ -43,12 +43,23 @@ def build_part(dPart):
 
 def build_interface_list(dInterfaces):
     oInterfaceList = interface_list.InterfaceList()
-    for dInterface in dInterfaces:
-        oInterface = interface.Interface()
-        oInterface.name = dInterface['name']
-        oInterface.pins = build_pin_list(dInterface['pin'])
-        oInterfaceList.add_interface(oInterface)
+    oInterfaceList.interfaces = build_interfaces(dInterfaces)
     return oInterfaceList
+
+
+def build_interfaces(dInterfaces):
+    lInterfaces = []
+    for dInterface in dInterfaces:
+        oInterface = build_interface(dInterface)
+        lInterfaces.append(oInterface)
+    return lInterfaces
+
+
+def build_interface(dInterface):
+    oInterface = interface.Interface()
+    oInterface.name = dInterface['name']
+    oInterface.pins = build_pin_list(dInterface['pin'])
+    return oInterface
 
 
 def build_pin_list(dPins):
