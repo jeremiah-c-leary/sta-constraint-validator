@@ -124,6 +124,7 @@ def build_sdr_ss_o_pin(dPin):
     oPin.launch_edge = dPin['launch_edge']
     oPin.cko_max = build_constraint(dPin['cko_max'])
     oPin.cko_min = build_constraint(dPin['cko_min'])
+    return oPin
 
 
 dPinMap = {}
