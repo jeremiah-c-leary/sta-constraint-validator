@@ -28,6 +28,7 @@ from stacv.results import rule_result
 
 RULE_ID = 's3_output_delay_001'
 FAILURE_MESSAGE = 'Maximum output delay value in timing reports do not match delays in traces and part definitions.'
+TOLERANCE = 0.0005
 
 
 def check(oPortProfile):
@@ -75,5 +76,4 @@ def calculate_max_output_delay(oDataTrace, oPartPin, oClockTrace):
 
 
 def output_delay_in_range(fActualOutputDelay, fExpectedOutputDelay):
-    return fActualOutputDelay - 0.0005 < fExpectedOutputDelay < fActualOutputDelay + 0.0005
-
+    return fActualOutputDelay - TOLERANCE < fExpectedOutputDelay < fActualOutputDelay + TOLERANCE
