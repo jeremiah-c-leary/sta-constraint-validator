@@ -36,14 +36,22 @@ def check(oPortProfile):
     Purpose:  Check output delay values match between configuration and timing reports.
     '''
 
-    lSetupReports = oPortProfile.timing_reports.get_setup_reports()
-    fActualOutputDelay = lSetupReports[0].output_delay
+    fActualOutputDelay = get_output_delay_from_setup_reports(oPortProfile)
     fExpectedOutputDelay = calculate_expected_max_output_delay(oPortProfile)
     if output_delay_in_range(fActualOutputDelay, fExpectedOutputDelay):
-        return rule_result.RuleResult(RULE_ID, rule_result.PASSED, '', '')
+        return rule_result.RuleResult(RULE_ID, rule_result.PASSED)
     lDetails = []
     lDetails.append(f'Calculated maximum output delay is {fExpectedOutputDelay} while actual output delay is {fActualOutputDelay}')
     return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)
+
+
+def get_output_delay_from_setup_reports(oPortProfile):
+    '''
+    A previous rule ensures all output delays are identical.
+    Therefore, any output delay can be returned.
+    '''
+    lSetupReports = oPortProfile.timing_reports.get_setup_reports()
+    return lSetupReports[0].output_delay
 
 
 def calculate_expected_max_output_delay(oPortProfile):

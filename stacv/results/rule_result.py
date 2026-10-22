@@ -9,7 +9,7 @@ SKIPPED = 'skipped'
 
 
 class RuleResult():
-    def __init__(self, sRuleId, sResult, lDetails, sFailureMessage):
+    def __init__(self, sRuleId, sResult, lDetails=[], sFailureMessage=''):
         self.rule_id = sRuleId
         self.status = sResult
         self.details = lDetails
