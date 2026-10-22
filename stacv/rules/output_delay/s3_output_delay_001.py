@@ -38,7 +38,7 @@ def check(oPortProfile):
     lSetupReports = oPortProfile.timing_reports.get_setup_reports()
     fActualOutputDelay = lSetupReports[0].output_delay
     fExpectedOutputDelay = calculate_expected_max_output_delay(oPortProfile)
-    if fActualOutputDelay - 0.0005 < fExpectedOutputDelay < fActualOutputDelay + 0.0005:
+    if output_delay_in_range(fActualOutputDelay, fExpectedOutputDelay):
         return rule_result.RuleResult(RULE_ID, rule_result.PASSED, '', '')
     lDetails = []
     lDetails.append(f'Calculated maximum output delay is {fExpectedOutputDelay} while actual output delay is {fActualOutputDelay}')
@@ -72,3 +72,8 @@ def calculate_max_output_delay(oDataTrace, oPartPin, oClockTrace):
     fSetup = oPartPin.setup.value
     fMaxOutputDelay = fSetup + fMaxTraceDataDelay - fMinTraceClockDelay
     return fMaxOutputDelay
+
+
+def output_delay_in_range(fActualOutputDelay, fExpectedOutputDelay):
+    return fActualOutputDelay - 0.0005 < fExpectedOutputDelay < fActualOutputDelay + 0.0005
+
