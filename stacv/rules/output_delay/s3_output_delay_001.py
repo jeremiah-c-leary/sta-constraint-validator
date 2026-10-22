@@ -1,5 +1,5 @@
 '''
-:Stage: 3 - across timing reports
+:Stage: 3 - board and part
 :Applies to: SDR-SS-O, DDR-SS-O
 :Reads: ``output_delay`` of every setup timing report, trace delays, and part setup value
 :Depends on: s2_output_delay_001
