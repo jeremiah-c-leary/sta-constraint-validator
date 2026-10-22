@@ -1,7 +1,7 @@
 '''
 :Stage: 3 - across timing reports
 :Applies to: SDR-SS-O, DDR-SS-O
-:Reads: ``output_delay`` of every setup timing report
+:Reads: ``output_delay`` of every setup timing report, trace delays, and part setup value
 :Depends on: s2_output_delay_001
 
 The maximum output delay in the timing reports must match the expected output delay.
