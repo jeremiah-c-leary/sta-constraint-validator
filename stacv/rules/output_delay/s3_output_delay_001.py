@@ -39,20 +39,20 @@ def check(oPortProfile):
     fActualOutputDelay = lSetupReports[0].output_delay
     fExpectedOutputDelay = calculate_expected_max_output_delay(oPortProfile)
     if fActualOutputDelay - 0.0005 < fExpectedOutputDelay < fActualOutputDelay + 0.0005:
-        return rule_result.RuleResult(RULE_ID, rule_result.PASSED, '', FAILURE_MESSAGE)
+        return rule_result.RuleResult(RULE_ID, rule_result.PASSED, '', '')
     lDetails = []
-    lDetails.append('Calculated maximum output delay is {fExpectedOutputDelay} while actual output delay is {fActualOutputDelay}')
+    lDetails.append(f'Calculated maximum output delay is {fExpectedOutputDelay} while actual output delay is {fActualOutputDelay}')
     return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)
 
 
 def calculate_expected_max_output_delay(oPortProfile):
     sPortName = oPortProfile.port.name
     oDataTrace = oPortProfile.traces.get_trace_with_device_pin(sPortName)
-    iMaxTraceDataDelay = oDataTrace.device_to_part.max_delay
+    fMaxTraceDataDelay = oDataTrace.device_to_part.max_delay
     oPartPin = oPortProfile.part.get_pin_named(oDataTrace.part_pin)
     sPartClockName = oPartPin.clock.pin
-    iSetup = oPartPin.setup.value
+    fSetup = oPartPin.setup.value
     oClockTrace = oPortProfile.traces.get_trace_with_part_pin(sPartClockName)
-    iMinTraceClockDelay = oClockTrace.device_to_part.min_delay
-    fMaxOutputDelay = iSetup + iMaxTraceDataDelay - iMinTraceClockDelay
+    fMinTraceClockDelay = oClockTrace.device_to_part.min_delay
+    fMaxOutputDelay = fSetup + fMaxTraceDataDelay - fMinTraceClockDelay
     return fMaxOutputDelay
