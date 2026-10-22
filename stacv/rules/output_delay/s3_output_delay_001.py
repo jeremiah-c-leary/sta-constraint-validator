@@ -23,6 +23,7 @@ Refer to the vendor's timing constraints documentation for output delays.
 '''
 
 from stacv.results import rule_result
+from stacv.rules import path_lookups
 
 
 RULE_ID = 's3_output_delay_001'
@@ -52,24 +53,10 @@ def get_output_delay_from_setup_reports(oPortProfile):
 
 
 def calculate_expected_max_output_delay(oPortProfile):
-    oDataTrace = get_data_trace(oPortProfile)
-    oPartPin = get_part_data_pin(oPortProfile, oDataTrace)
-    oClockTrace = get_clock_trace(oPortProfile, oPartPin)
+    oDataTrace = path_lookups.get_data_trace(oPortProfile)
+    oPartPin = path_lookups.get_part_data_pin(oPortProfile, oDataTrace)
+    oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartPin)
     return calculate_max_output_delay(oDataTrace, oPartPin, oClockTrace)
-
-
-def get_data_trace(oPortProfile):
-    sPortName = oPortProfile.port.name
-    return oPortProfile.traces.get_trace_with_device_pin(sPortName)
-
-
-def get_part_data_pin(oPortProfile, oDataTrace):
-    return oPortProfile.part.get_pin_named(oDataTrace.part_pin)
-
-
-def get_clock_trace(oPortProfile, oPartPin):
-    sPartClockName = oPartPin.clock.pin
-    return oPortProfile.traces.get_trace_with_part_pin(sPartClockName)
 
 
 def calculate_max_output_delay(oDataTrace, oPartPin, oClockTrace):
