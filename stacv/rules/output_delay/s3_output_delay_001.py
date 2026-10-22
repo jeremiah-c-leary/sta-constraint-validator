@@ -6,8 +6,8 @@
 
 The maximum output delay in the timing reports must match the expected output delay.
 This rule uses information from the user provided traces and part TOML files to calculate the maximum output delay.
-The output delay in setup reports is then compared to the calculate value.
-If it differs, then the values in the TOML files or the applied timing contraints are incorrect.
+The output delay in setup reports is then compared to the calculated value.
+If it differs, then the values in the TOML files or the applied timing constraints are incorrect.
 
 The calculation performed is: part setup + data trace maximum delay - clock trace minimum delay.
 
