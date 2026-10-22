@@ -2,10 +2,10 @@
 :Stage: 3 - across timing reports
 :Applies to: SDR-SS-O, DDR-SS-O
 :Reads: ``output_delay`` of every setup timing report
-:Depends on: none
+:Depends on: s2_output_delay_001
 
 The maximum output delay in the timing reports must match the expected output delay.
-This rule uses information from the user provided traces and port TOML files to calculate the maximum output delay.
+This rule uses information from the user provided traces and part TOML files to calculate the maximum output delay.
 The output delay in setup reports is then compared to the calculate value.
 If it differs, then the values in the TOML files or the applied timing contraints are incorrect.
 
@@ -44,12 +44,16 @@ def check(oPortProfile):
 
 
 def get_output_delay_from_setup_reports(oPortProfile):
+    return get_first_setup_report(oPortProfile).output_delay
+
+
+def get_first_setup_report(oPortProfile):
     '''
     A previous rule ensures all output delays are identical.
     Therefore, any output delay can be returned.
     '''
     lSetupReports = oPortProfile.timing_reports.get_setup_reports()
-    return lSetupReports[0].output_delay
+    return lSetupReports[0]
 
 
 def calculate_expected_max_output_delay(oPortProfile):
@@ -73,6 +77,6 @@ def output_delay_in_range(fActualOutputDelay, fExpectedOutputDelay):
 
 def generate_error_result(fActualOutputDelay, fExpectedOutputDelay, oPortProfile):
     lDetails = []
-    oOutputDelayLine = oPortProfile.timing_reports.get_setup_reports()[0].output_delay_line
+    oOutputDelayLine = get_first_setup_report(oPortProfile).output_delay_line
     lDetails.append(f'{oOutputDelayLine.filename}:{oOutputDelayLine.line_number}  Calculated maximum output delay is {fExpectedOutputDelay:.3f}ns while actual output delay is {fActualOutputDelay:.3f}ns')
     return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)
