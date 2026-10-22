@@ -46,13 +46,29 @@ def check(oPortProfile):
 
 
 def calculate_expected_max_output_delay(oPortProfile):
+    oDataTrace = get_data_trace(oPortProfile)
+    oPartPin = get_part_data_pin(oPortProfile, oDataTrace)
+    oClockTrace = get_clock_trace(oPortProfile, oPartPin)
+    return calculate_max_output_delay(oDataTrace, oPartPin, oClockTrace)
+
+
+def get_data_trace(oPortProfile):
     sPortName = oPortProfile.port.name
-    oDataTrace = oPortProfile.traces.get_trace_with_device_pin(sPortName)
-    fMaxTraceDataDelay = oDataTrace.device_to_part.max_delay
-    oPartPin = oPortProfile.part.get_pin_named(oDataTrace.part_pin)
+    return oPortProfile.traces.get_trace_with_device_pin(sPortName)
+
+
+def get_part_data_pin(oPortProfile, oDataTrace):
+    return oPortProfile.part.get_pin_named(oDataTrace.part_pin)
+
+
+def get_clock_trace(oPortProfile, oPartPin):
     sPartClockName = oPartPin.clock.pin
-    fSetup = oPartPin.setup.value
-    oClockTrace = oPortProfile.traces.get_trace_with_part_pin(sPartClockName)
+    return oPortProfile.traces.get_trace_with_part_pin(sPartClockName)
+
+
+def calculate_max_output_delay(oDataTrace, oPartPin, oClockTrace):
+    fMaxTraceDataDelay = oDataTrace.device_to_part.max_delay
     fMinTraceClockDelay = oClockTrace.device_to_part.min_delay
+    fSetup = oPartPin.setup.value
     fMaxOutputDelay = fSetup + fMaxTraceDataDelay - fMinTraceClockDelay
     return fMaxOutputDelay
