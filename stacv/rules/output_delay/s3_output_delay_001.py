@@ -50,7 +50,7 @@ def get_output_delay_from_setup_reports(oPortProfile):
 def get_first_setup_report(oPortProfile):
     '''
     A previous rule ensures all output delays are identical.
-    Therefore, any output delay can be returned.
+    Therefore, any report can be returned.
     '''
     lSetupReports = oPortProfile.timing_reports.get_setup_reports()
     return lSetupReports[0]
