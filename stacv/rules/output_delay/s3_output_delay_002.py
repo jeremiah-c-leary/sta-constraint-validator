@@ -2,10 +2,10 @@
 :Stage: 3 - board and part
 :Applies to: SDR-SS-O, DDR-SS-O
 :Reads: ``output_delay`` of every hold timing report, trace delays, and part hold value
-:Depends on: s2_output_delay_001
+:Depends on: s2_output_delay_002
 
-The maximum output delay in the timing reports must match the expected output delay.
-This rule uses information from the user provided traces and part TOML files to calculate the maximum output delay.
+The minimum output delay in the timing reports must match the expected output delay.
+This rule uses information from the user provided traces and part TOML files to calculate the minimum output delay.
 The output delay in hold reports is then compared to the calculated value.
 If it differs, then the values in the TOML files or the applied timing constraints are incorrect.
 
@@ -27,13 +27,13 @@ from stacv.rules import path_lookups
 
 
 RULE_ID = 's3_output_delay_002'
-FAILURE_MESSAGE = 'Minimum output delay value in timing reports do not match delays in traces and part definitions.'
+FAILURE_MESSAGE = 'Minimum output delay values in timing reports do not match delays in traces and part definitions.'
 TOLERANCE = 0.0005
 
 
 def check(oPortProfile):
     '''
-    Purpose:  Check output delay values match between configuration and timing reports.
+    Purpose:  Check minimum output delay values match between configuration and timing reports.
     '''
 
     fActualOutputDelay = get_output_delay_from_hold_reports(oPortProfile)

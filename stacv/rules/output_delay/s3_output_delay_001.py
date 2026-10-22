@@ -27,13 +27,13 @@ from stacv.rules import path_lookups
 
 
 RULE_ID = 's3_output_delay_001'
-FAILURE_MESSAGE = 'Maximum output delay value in timing reports do not match delays in traces and part definitions.'
+FAILURE_MESSAGE = 'Maximum output delay values in timing reports do not match delays in traces and part definitions.'
 TOLERANCE = 0.0005
 
 
 def check(oPortProfile):
     '''
-    Purpose:  Check output delay values match between configuration and timing reports.
+    Purpose:  Check maximum output delay values match between configuration and timing reports.
     '''
 
     fActualOutputDelay = get_output_delay_from_setup_reports(oPortProfile)
