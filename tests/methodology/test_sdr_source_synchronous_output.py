@@ -67,6 +67,7 @@ class Test(unittest.TestCase):
     def test_stage_3_rules(self):
         lExpected = []
         lExpected.append('s3_output_delay_001')
+        lExpected.append('s3_output_delay_002')
 
         self.assertEqual(lExpected, get_rule_ids(self.oMethodology.stages[3]))
 

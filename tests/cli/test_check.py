@@ -516,6 +516,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lExpected.append('s2_output_delay_002   Passed')
         lExpected.append('- stage 3 ' + '-' * 70)
         lExpected.append('s3_output_delay_001   Passed')
+        lExpected.append('s3_output_delay_002   Passed')
         lExpected.append('-' * 80)
         self.assertEqual(lExpected, self.read_rule_checks_section())
 
@@ -539,6 +540,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lExpected.append('s2_output_delay_002   Skipped  stage 0 failed')
         lExpected.append('- stage 3 ' + '-' * 70)
         lExpected.append('s3_output_delay_001   Skipped  stage 0 failed')
+        lExpected.append('s3_output_delay_002   Skipped  stage 0 failed')
         lExpected.append('-' * 80)
         self.assertEqual(lExpected, self.read_port_rule_checks('Section 3.1: P1.SDR-SS-O Rule Checks')[3:])
 
@@ -641,8 +643,9 @@ class TestExecuteJunit(unittest.TestCase):
         lExpected.append('s2_output_delay_001')
         lExpected.append('s2_output_delay_002')
         lExpected.append('s3_output_delay_001')
+        lExpected.append('s3_output_delay_002')
         self.assertEqual(lExpected, lNames)
-        self.assertEqual(['P1.SDR-SS-O'] * 9, lClassnames)
+        self.assertEqual(['P1.SDR-SS-O'] * 10, lClassnames)
 
     def test_junit_passing_testcase_is_empty(self):
         lPorts = []

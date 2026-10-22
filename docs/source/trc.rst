@@ -181,14 +181,7 @@ s3_output_delay_001: Maximum output delays match the calculated output delays
 s3_output_delay_002: Minimum output delays match the calculated output delays
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The output delays in every hold timing report must match the output delays calculated from the part and the board data.
-The comparison allows for the rounding of the delays in the timing report.
-
-The data trace, part pin and clock trace are found as in s3_output_delay_001.
-
-   minimum output delay = - part hold + data trace minimum delay - clock trace maximum delay
-
-The output delay matches when it is within 0.0005 ns of the calculated output delay.
+.. automodule:: stacv.rules.output_delay.s3_output_delay_002
 
 Stage 4: Intent
 ---------------
