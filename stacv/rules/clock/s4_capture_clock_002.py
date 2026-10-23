@@ -60,14 +60,14 @@ def get_capture_clock_mismatches(oPortProfile):
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
         fTimingReportCaptureClockPeriod = oTimingReport.capture_clock.period
-        if not clock_period_is_within_tolerance(fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod):
+        if not clock_period_is_within_tolerance(fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod, TOLERANCE):
             sErrorMessage = generate_error_message(oTimingReport, fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod)
             lDetails.append(sErrorMessage)
     return lDetails
 
 
-def clock_period_is_within_tolerance(fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod):
-    return fConfigurationCaptureClockPeriod - TOLERANCE < fTimingReportCaptureClockPeriod < fConfigurationCaptureClockPeriod + TOLERANCE
+def clock_period_is_within_tolerance(fExpected, fActual, fTolerance):
+    return fExpected - fTolerance < fActual < fExpected + fTolerance
 
 
 def generate_error_message(oTimingReport, fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod):
