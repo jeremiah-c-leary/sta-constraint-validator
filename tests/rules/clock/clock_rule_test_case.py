@@ -23,9 +23,9 @@ iLastReportCaptureClockLine = 223
 sSuiteName = 'O_DAC_DATA.SDR-SS-O'
 
 sPassingLaunchName = 'clk_100mhz'
-fPassingLaunchFrequency = 100
+fPassingLaunchPeriod = 10.0
 sPassingCaptureName = 'dac_sclk'
-fPassingCaptureFrequency = 20
+fPassingCapturePeriod = 50.0
 
 
 def build_config_text(sPartFile, sTracesFile, sTimingReportFile, oClocks):
@@ -37,8 +37,8 @@ def build_config_text(sPartFile, sTracesFile, sTimingReportFile, oClocks):
     lText.append('[[port]]')
     lText.append('name = "O_DAC_DATA"')
     lText.append('methodology = "SDR-SS-O"')
-    lText.append(f'launch_clock = {{name = "{oClocks.launch_name}", period = {oClocks.launch_frequency}}}')
-    lText.append(f'capture_clock = {{port = "O_DAC_SCLK", name = "{oClocks.capture_name}", period = {oClocks.capture_frequency}}}')
+    lText.append(f'launch_clock = {{name = "{oClocks.launch_name}", period = {oClocks.launch_period}}}')
+    lText.append(f'capture_clock = {{port = "O_DAC_SCLK", name = "{oClocks.capture_name}", period = {oClocks.capture_period}}}')
     lText.append(f'timing_reports = ["{sTimingReportFile}"]')
     return '\n'.join(lText)
 
@@ -94,11 +94,11 @@ def write_file(sFilename, sText):
 
 class Clocks():
 
-    def __init__(self, sLaunchName, fLaunchFrequency, sCaptureName, fCaptureFrequency):
+    def __init__(self, sLaunchName, fLaunchPeriod, sCaptureName, fCapturePeriod):
         self.launch_name = sLaunchName
-        self.launch_frequency = fLaunchFrequency
+        self.launch_period = fLaunchPeriod
         self.capture_name = sCaptureName
-        self.capture_frequency = fCaptureFrequency
+        self.capture_period = fCapturePeriod
 
 
 class ClockRuleTestCase(unittest.TestCase):
@@ -114,12 +114,12 @@ class ClockRuleTestCase(unittest.TestCase):
     def tearDown(self):
         self.oTempDir.cleanup()
 
-    def execute_with_launch_clock(self, sName, fFrequency):
-        oClocks = Clocks(sName, fFrequency, sPassingCaptureName, fPassingCaptureFrequency)
+    def execute_with_launch_clock(self, sName, fPeriod):
+        oClocks = Clocks(sName, fPeriod, sPassingCaptureName, fPassingCapturePeriod)
         return self.execute(oClocks, sTimingReport)
 
-    def execute_with_capture_clock(self, sName, fFrequency):
-        oClocks = Clocks(sPassingLaunchName, fPassingLaunchFrequency, sName, fFrequency)
+    def execute_with_capture_clock(self, sName, fPeriod):
+        oClocks = Clocks(sPassingLaunchName, fPassingLaunchPeriod, sName, fPeriod)
         return self.execute(oClocks, sTimingReport)
 
     def execute_with_last_report_line_changed(self, iLineNumber, sOld, sNew):
@@ -127,7 +127,7 @@ class ClockRuleTestCase(unittest.TestCase):
         self.assertIn(sOld, lLines[iLineNumber - 1])
         lLines[iLineNumber - 1] = lLines[iLineNumber - 1].replace(sOld, sNew)
         write_file(self.sChangedTimingReport, '\n'.join(lLines))
-        oClocks = Clocks(sPassingLaunchName, fPassingLaunchFrequency, sPassingCaptureName, fPassingCaptureFrequency)
+        oClocks = Clocks(sPassingLaunchName, fPassingLaunchPeriod, sPassingCaptureName, fPassingCapturePeriod)
         return self.execute(oClocks, self.sChangedTimingReport)
 
     def execute(self, oClocks, sTimingReportFile):

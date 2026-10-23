@@ -2,60 +2,56 @@
 import unittest
 
 from tests.rules.clock import clock_rule_test_case
-from tests.rules.clock.clock_rule_test_case import fPassingLaunchFrequency
+from tests.rules.clock.clock_rule_test_case import fPassingLaunchPeriod
 from tests.rules.clock.clock_rule_test_case import iLastReportLaunchClockLine
 from tests.rules.clock.clock_rule_test_case import sPassingLaunchName
 
 sRuleId = 's4_launch_clock_002'
 
-# The launch clock period in every timing report is 10.000ns, which is 1000 / 100 MHz.
+# The launch clock period in every timing report is 10.000ns.
+# Periods within 0.0005ns of 10.000ns match, half of the last digit printed in the timing report.
 
 
 @unittest.skip('temp')
 class Test(clock_rule_test_case.ClockRuleTestCase):
 
-    def test_passes_when_launch_clock_period_matches_configured_frequency(self):
-        self.execute_with_launch_clock(sPassingLaunchName, fPassingLaunchFrequency)
+    def test_passes_when_launch_clock_period_matches_configured_period(self):
+        self.execute_with_launch_clock(sPassingLaunchName, fPassingLaunchPeriod)
 
         self.assert_rule_passed(sRuleId)
 
     def test_exit_code_is_zero_when_launch_clock_period_matches(self):
-        iExitCode = self.execute_with_launch_clock(sPassingLaunchName, fPassingLaunchFrequency)
+        iExitCode = self.execute_with_launch_clock(sPassingLaunchName, fPassingLaunchPeriod)
 
         self.assertEqual(0, iExitCode)
 
-    def test_fails_when_configured_launch_clock_frequency_differs(self):
-        # 1000 / 50 = 20.000ns
-        self.execute_with_launch_clock(sPassingLaunchName, 50)
+    def test_fails_when_configured_launch_clock_period_differs(self):
+        self.execute_with_launch_clock(sPassingLaunchName, 20.0)
 
         self.assert_rule_failed(sRuleId)
 
-    def test_exit_code_is_one_when_launch_clock_frequency_differs(self):
-        iExitCode = self.execute_with_launch_clock(sPassingLaunchName, 50)
+    def test_exit_code_is_one_when_launch_clock_period_differs(self):
+        iExitCode = self.execute_with_launch_clock(sPassingLaunchName, 20.0)
 
         self.assertEqual(1, iExitCode)
 
-    def test_passes_when_expected_period_is_above_by_less_than_rounding(self):
-        # 1000 / 99.996 = 10.0004ns
-        self.execute_with_launch_clock(sPassingLaunchName, 99.996)
+    def test_passes_when_configured_period_is_above_by_less_than_rounding(self):
+        self.execute_with_launch_clock(sPassingLaunchName, 10.0004)
 
         self.assert_rule_passed(sRuleId)
 
-    def test_passes_when_expected_period_is_below_by_less_than_rounding(self):
-        # 1000 / 100.004 = 9.9996ns
-        self.execute_with_launch_clock(sPassingLaunchName, 100.004)
+    def test_passes_when_configured_period_is_below_by_less_than_rounding(self):
+        self.execute_with_launch_clock(sPassingLaunchName, 9.9996)
 
         self.assert_rule_passed(sRuleId)
 
-    def test_fails_when_expected_period_is_above_by_more_than_rounding(self):
-        # 1000 / 99.994 = 10.0006ns
-        self.execute_with_launch_clock(sPassingLaunchName, 99.994)
+    def test_fails_when_configured_period_is_above_by_more_than_rounding(self):
+        self.execute_with_launch_clock(sPassingLaunchName, 10.0006)
 
         self.assert_rule_failed(sRuleId)
 
-    def test_fails_when_expected_period_is_below_by_more_than_rounding(self):
-        # 1000 / 100.006 = 9.9994ns
-        self.execute_with_launch_clock(sPassingLaunchName, 100.006)
+    def test_fails_when_configured_period_is_below_by_more_than_rounding(self):
+        self.execute_with_launch_clock(sPassingLaunchName, 9.9994)
 
         self.assert_rule_failed(sRuleId)
 
@@ -65,6 +61,6 @@ class Test(clock_rule_test_case.ClockRuleTestCase):
         self.assert_rule_failed(sRuleId)
 
     def test_ignores_launch_clock_name(self):
-        self.execute_with_launch_clock('clk_50mhz', fPassingLaunchFrequency)
+        self.execute_with_launch_clock('clk_50mhz', fPassingLaunchPeriod)
 
         self.assert_rule_passed(sRuleId)

@@ -2,60 +2,56 @@
 import unittest
 
 from tests.rules.clock import clock_rule_test_case
-from tests.rules.clock.clock_rule_test_case import fPassingCaptureFrequency
+from tests.rules.clock.clock_rule_test_case import fPassingCapturePeriod
 from tests.rules.clock.clock_rule_test_case import iLastReportCaptureClockLine
 from tests.rules.clock.clock_rule_test_case import sPassingCaptureName
 
 sRuleId = 's4_capture_clock_002'
 
-# The capture clock period in every timing report is 50.000ns, which is 1000 / 20 MHz.
+# The capture clock period in every timing report is 50.000ns.
+# Periods within 0.0005ns of 50.000ns match, half of the last digit printed in the timing report.
 
 
 @unittest.skip('temp')
 class Test(clock_rule_test_case.ClockRuleTestCase):
 
-    def test_passes_when_capture_clock_period_matches_configured_frequency(self):
-        self.execute_with_capture_clock(sPassingCaptureName, fPassingCaptureFrequency)
+    def test_passes_when_capture_clock_period_matches_configured_period(self):
+        self.execute_with_capture_clock(sPassingCaptureName, fPassingCapturePeriod)
 
         self.assert_rule_passed(sRuleId)
 
     def test_exit_code_is_zero_when_capture_clock_period_matches(self):
-        iExitCode = self.execute_with_capture_clock(sPassingCaptureName, fPassingCaptureFrequency)
+        iExitCode = self.execute_with_capture_clock(sPassingCaptureName, fPassingCapturePeriod)
 
         self.assertEqual(0, iExitCode)
 
-    def test_fails_when_configured_capture_clock_frequency_differs(self):
-        # 1000 / 25 = 40.000ns
-        self.execute_with_capture_clock(sPassingCaptureName, 25)
+    def test_fails_when_configured_capture_clock_period_differs(self):
+        self.execute_with_capture_clock(sPassingCaptureName, 40.0)
 
         self.assert_rule_failed(sRuleId)
 
-    def test_exit_code_is_one_when_capture_clock_frequency_differs(self):
-        iExitCode = self.execute_with_capture_clock(sPassingCaptureName, 25)
+    def test_exit_code_is_one_when_capture_clock_period_differs(self):
+        iExitCode = self.execute_with_capture_clock(sPassingCaptureName, 40.0)
 
         self.assertEqual(1, iExitCode)
 
-    def test_passes_when_expected_period_is_above_by_less_than_rounding(self):
-        # 1000 / 19.99984 = 50.0004ns
-        self.execute_with_capture_clock(sPassingCaptureName, 19.99984)
+    def test_passes_when_configured_period_is_above_by_less_than_rounding(self):
+        self.execute_with_capture_clock(sPassingCaptureName, 50.0004)
 
         self.assert_rule_passed(sRuleId)
 
-    def test_passes_when_expected_period_is_below_by_less_than_rounding(self):
-        # 1000 / 20.00016 = 49.9996ns
-        self.execute_with_capture_clock(sPassingCaptureName, 20.00016)
+    def test_passes_when_configured_period_is_below_by_less_than_rounding(self):
+        self.execute_with_capture_clock(sPassingCaptureName, 49.9996)
 
         self.assert_rule_passed(sRuleId)
 
-    def test_fails_when_expected_period_is_above_by_more_than_rounding(self):
-        # 1000 / 19.99976 = 50.0006ns
-        self.execute_with_capture_clock(sPassingCaptureName, 19.99976)
+    def test_fails_when_configured_period_is_above_by_more_than_rounding(self):
+        self.execute_with_capture_clock(sPassingCaptureName, 50.0006)
 
         self.assert_rule_failed(sRuleId)
 
-    def test_fails_when_expected_period_is_below_by_more_than_rounding(self):
-        # 1000 / 20.00024 = 49.9994ns
-        self.execute_with_capture_clock(sPassingCaptureName, 20.00024)
+    def test_fails_when_configured_period_is_below_by_more_than_rounding(self):
+        self.execute_with_capture_clock(sPassingCaptureName, 49.9994)
 
         self.assert_rule_failed(sRuleId)
 
@@ -65,6 +61,6 @@ class Test(clock_rule_test_case.ClockRuleTestCase):
         self.assert_rule_failed(sRuleId)
 
     def test_ignores_capture_clock_name(self):
-        self.execute_with_capture_clock('spi_sclk', fPassingCaptureFrequency)
+        self.execute_with_capture_clock('spi_sclk', fPassingCapturePeriod)
 
         self.assert_rule_passed(sRuleId)
