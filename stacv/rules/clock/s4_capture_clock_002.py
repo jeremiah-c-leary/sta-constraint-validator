@@ -51,9 +51,7 @@ def check(oPortProfile):
     '''
     lDetails = get_capture_clock_mismatches(oPortProfile)
 
-    if has_mismatches(lDetails):
-        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)
-    return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
+    return clock_comparisons.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
 def get_capture_clock_mismatches(oPortProfile):
@@ -72,7 +70,3 @@ def generate_error_message(oTimingReport, fConfigurationCaptureClockPeriod, fTim
     iLineNumber = oTimingReport.capture_clock_line.line_number
     sMessage = f'capture clock period {fTimingReportCaptureClockPeriod:.3f}ns, configured period {fConfigurationCaptureClockPeriod:.3f}ns'
     return f'{sFilename}:{iLineNumber}  {sMessage}'
-
-
-def has_mismatches(lDetails):
-    return len(lDetails) > 0
