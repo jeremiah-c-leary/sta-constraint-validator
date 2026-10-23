@@ -217,158 +217,22 @@ The capture clock path in the timing report must start at a port.
 s4_launch_clock_001: Launch clock name matches the configured launch clock
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:Stage: 4 - configuration
-:Applies to: all
-:Reads: ``launch_clock`` name of every timing report, ``launch_clock.name`` of the port in the configuration
-:Depends on: none
-
-The clock that launches the data in every timing report must be the launch clock configured for the port.
-Every timing report is checked, setup and hold, at every process corner.
-If the name differs, the timing report does not time the data from the clock the analysis is about, so its results do not apply to the interface.
-
-**Violation**
-
-The port is configured with ``launch_clock = {name = "clk_100mhz", frequency = 100}``, but the data is launched by ``clk_50mhz``:
-
-.. code-block:: text
-   :emphasize-lines: 2
-
-     Source:                 q_spi_data_reg/C
-                               (rising edge-triggered cell FDCE clocked by clk_50mhz  {rise@0.000ns fall@10.000ns period=20.000ns})
-
-**Result**
-
-When the rule fails, it lists each timing report whose launch clock differs, with the file and line of the launch clock:
-
-.. code-block:: text
-
-     O_DAC_DATA_timing.rpt:16  launch clock clk_50mhz, configured launch clock clk_100mhz
-
-**Likely causes**
-
-* The launch clock name in the configuration is wrong.
-* The register driving the port is in a different clock domain than intended.
-* The clock was renamed in the timing constraints, or the timing reports were generated from an older design.
-
-Refer to the vendor's timing constraints documentation for creating clocks.
+.. automodule:: stacv.rules.clock.s4_launch_clock_001
 
 s4_launch_clock_002: Launch clock period matches the configured launch clock frequency
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:Stage: 4 - configuration
-:Applies to: all
-:Reads: ``launch_clock`` period of every timing report, ``launch_clock.frequency`` of the port in the configuration
-:Depends on: none
-
-The period of the launch clock in every timing report must match the frequency configured for the port's launch clock.
-Every timing report is checked, setup and hold, at every process corner.
-The configured frequency is in MHz, so the expected period is 1000 / frequency ns.
-The period matches when it is within 0.0005 ns of the expected period, half of the last digit printed in the timing report.
-If the period differs, the timing constraints do not describe the clock the design runs on, and every timing result for the port is suspect.
-
-**Violation**
-
-The port is configured with ``launch_clock = {name = "clk_100mhz", frequency = 100}``, an expected period of 10.000 ns, but the timing report gives 8.000 ns:
-
-.. code-block:: text
-   :emphasize-lines: 2
-
-     Source:                 q_spi_data_reg/C
-                               (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@4.000ns period=8.000ns})
-
-**Result**
-
-When the rule fails, it lists each timing report whose launch clock period differs, with the file and line of the launch clock:
-
-.. code-block:: text
-
-     O_DAC_DATA_timing.rpt:16  launch clock period 8.000ns, configured frequency 100 MHz is 10.000ns
-
-**Likely causes**
-
-* The launch clock frequency in the configuration is wrong.
-* The period of the clock in the timing constraints is wrong.
-
-Refer to the vendor's timing constraints documentation for creating clocks.
+.. automodule:: stacv.rules.clock.s4_launch_clock_002
 
 s4_capture_clock_001: Capture clock name matches the configured capture clock
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:Stage: 4 - configuration
-:Applies to: all
-:Reads: ``capture_clock`` name of every timing report, ``capture_clock.name`` of the port in the configuration
-:Depends on: none
-
-The clock that captures the data in every timing report must be the capture clock configured for the port.
-Every timing report is checked, setup and hold, at every process corner.
-In a source synchronous output, the capture clock is the clock the output delay constraint refers to: the clock forwarded to the part.
-If the name differs, the output delay is constrained against a different clock, and the timing report does not time the data against the clock the part uses.
-
-**Violation**
-
-The port is configured with ``capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}``, but the data is captured by ``spi_sclk``:
-
-.. code-block:: text
-   :emphasize-lines: 2
-
-     Destination:            O_DAC_DATA
-                               (output port clocked by spi_sclk  {rise@0.000ns fall@25.000ns period=50.000ns})
-
-**Result**
-
-When the rule fails, it lists each timing report whose capture clock differs, with the file and line of the capture clock:
-
-.. code-block:: text
-
-     O_DAC_DATA_timing.rpt:18  capture clock spi_sclk, configured capture clock dac_sclk
-
-**Likely causes**
-
-* The capture clock name in the configuration is wrong.
-* The output delay constraint refers to the wrong clock.
-* The clock was renamed in the timing constraints, or the timing reports were generated from an older design.
-
-Refer to the vendor's timing constraints documentation for output delays and generated clocks.
+.. automodule:: stacv.rules.clock.s4_capture_clock_001
 
 s4_capture_clock_002: Capture clock period matches the configured capture clock frequency
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-:Stage: 4 - configuration
-:Applies to: all
-:Reads: ``capture_clock`` period of every timing report, ``capture_clock.frequency`` of the port in the configuration
-:Depends on: none
-
-The period of the capture clock in every timing report must match the frequency configured for the port's capture clock.
-Every timing report is checked, setup and hold, at every process corner.
-The configured frequency is in MHz, so the expected period is 1000 / frequency ns.
-The period matches when it is within 0.0005 ns of the expected period, half of the last digit printed in the timing report.
-If the period differs, the setup and hold requirements are calculated for a clock the part does not receive.
-
-**Violation**
-
-The port is configured with ``capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}``, an expected period of 50.000 ns, but the timing report gives 40.000 ns:
-
-.. code-block:: text
-   :emphasize-lines: 2
-
-     Destination:            O_DAC_DATA
-                               (output port clocked by dac_sclk  {rise@0.000ns fall@20.000ns period=40.000ns})
-
-**Result**
-
-When the rule fails, it lists each timing report whose capture clock period differs, with the file and line of the capture clock:
-
-.. code-block:: text
-
-     O_DAC_DATA_timing.rpt:18  capture clock period 40.000ns, configured frequency 20 MHz is 50.000ns
-
-**Likely causes**
-
-* The capture clock frequency in the configuration is wrong.
-* The divide or multiply factor of the generated clock in the timing constraints is wrong.
-* The period of the source clock in the timing constraints is wrong.
-
-Refer to the vendor's timing constraints documentation for generated clocks.
+.. automodule:: stacv.rules.clock.s4_capture_clock_002
 
 s4_launch_edge_001: Launching clock edge intent matches timing reports
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
