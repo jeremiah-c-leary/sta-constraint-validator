@@ -53,4 +53,4 @@ def check(oPortProfile):
 
 
 def clock_trace_does_not_exist(oClockTrace, sDeviceClockPinName):
-    return oClockTrace is None or sDeviceClockPinName != oClockTrace.device_pin
+    return oClockTrace is None
