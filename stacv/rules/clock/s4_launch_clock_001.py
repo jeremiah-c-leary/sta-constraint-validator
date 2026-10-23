@@ -35,8 +35,8 @@ When the rule fails, it lists each timing report whose launch clock differs, wit
 Refer to the vendor's timing constraints documentation for creating clocks.
 '''
 
-from stacv.results import rule_result
 from stacv.rules import clock_comparisons
+
 
 RULE_ID = 's4_launch_clock_001'
 FAILURE_MESSAGE = 'Launch clock name in configuration does not match clock name in all timing reports.'

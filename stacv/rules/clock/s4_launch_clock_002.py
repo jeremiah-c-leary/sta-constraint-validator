@@ -36,7 +36,6 @@ When the rule fails, it lists each timing report whose launch clock period diffe
 Refer to the vendor's timing constraints documentation for creating clocks.
 '''
 
-from stacv.results import rule_result
 from stacv.rules import clock_comparisons
 
 

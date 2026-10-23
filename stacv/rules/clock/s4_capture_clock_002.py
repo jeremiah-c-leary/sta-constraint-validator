@@ -37,8 +37,8 @@ When the rule fails, it lists each timing report whose capture clock period diff
 Refer to the vendor's timing constraints documentation for generated clocks.
 '''
 
-from stacv.results import rule_result
 from stacv.rules import clock_comparisons
+
 
 RULE_ID = 's4_capture_clock_002'
 FAILURE_MESSAGE = 'Capture clock period in configuration does not match clock period in all timing reports.'

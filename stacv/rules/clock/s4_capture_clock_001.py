@@ -36,7 +36,6 @@ When the rule fails, it lists each timing report whose capture clock differs, wi
 Refer to the vendor's timing constraints documentation for output delays and generated clocks.
 '''
 
-from stacv.results import rule_result
 from stacv.rules import clock_comparisons
 
 
