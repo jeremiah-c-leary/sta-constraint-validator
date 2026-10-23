@@ -7,12 +7,12 @@
 The period of the launch clock in every timing report must match the period configured for the port's launch clock.
 Every timing report is checked, setup and hold, at every process corner.
 The configured period is in nanoseconds.
-The period matches when it is within 0.0005 ns of the expected period, half of the last digit printed in the timing report.
+The period matches when it is within 0.0005 ns of the configured period, half of the last digit printed in the timing report.
 If the period differs, the timing constraints do not describe the clock the design runs on, and every timing result for the port is suspect.
 
 **Violation**
 
-The port is configured with ``launch_clock = {name = "clk_100mhz", period = 10}``, an expected period of 10.000 ns, but the timing report gives 8.000 ns:
+The port is configured with ``launch_clock = {name = "clk_100mhz", period = 10}``, but the timing report gives 8.000 ns:
 
 .. code-block:: text
    :emphasize-lines: 2
