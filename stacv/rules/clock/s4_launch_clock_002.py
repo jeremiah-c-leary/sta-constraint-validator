@@ -1,18 +1,18 @@
 '''
 :Stage: 4 - configuration
 :Applies to: all
-:Reads: ``launch_clock`` period of every timing report, ``launch_clock.frequency`` of the port in the configuration
+:Reads: ``launch_clock`` period of every timing report, ``launch_clock.period`` of the port in the configuration
 :Depends on: none
 
-The period of the launch clock in every timing report must match the frequency configured for the port's launch clock.
+The period of the launch clock in every timing report must match the period configured for the port's launch clock.
 Every timing report is checked, setup and hold, at every process corner.
-The configured frequency is in MHz, so the expected period is 1000 / frequency ns.
+The configured period is in nanoseconds.
 The period matches when it is within 0.0005 ns of the expected period, half of the last digit printed in the timing report.
 If the period differs, the timing constraints do not describe the clock the design runs on, and every timing result for the port is suspect.
 
 **Violation**
 
-The port is configured with ``launch_clock = {name = "clk_100mhz", frequency = 100}``, an expected period of 10.000 ns, but the timing report gives 8.000 ns:
+The port is configured with ``launch_clock = {name = "clk_100mhz", period = 10}``, an expected period of 10.000 ns, but the timing report gives 8.000 ns:
 
 .. code-block:: text
    :emphasize-lines: 2
@@ -26,11 +26,11 @@ When the rule fails, it lists each timing report whose launch clock period diffe
 
 .. code-block:: text
 
-     O_DAC_DATA_timing.rpt:16  launch clock period 8.000ns, configured frequency 100 MHz is 10.000ns
+     O_DAC_DATA_timing.rpt:16  launch clock period 8.000ns, configured period 10.000ns
 
 **Likely causes**
 
-* The launch clock frequency in the configuration is wrong.
+* The launch clock period in the configuration is wrong.
 * The period of the clock in the timing constraints is wrong.
 
 Refer to the vendor's timing constraints documentation for creating clocks.

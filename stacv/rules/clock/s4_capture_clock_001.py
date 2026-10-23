@@ -11,7 +11,7 @@ If the name differs, the output delay is constrained against a different clock, 
 
 **Violation**
 
-The port is configured with ``capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}``, but the data is captured by ``spi_sclk``:
+The port is configured with ``capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 20}``, but the data is captured by ``spi_sclk``:
 
 .. code-block:: text
    :emphasize-lines: 2
