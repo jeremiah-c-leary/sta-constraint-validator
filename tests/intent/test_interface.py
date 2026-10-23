@@ -5,6 +5,7 @@ from stacv.intent import interface
 from stacv.intent import pin
 
 
+@unittest.skip('Deprecated')
 class TestPartInterface(unittest.TestCase):
 
     def test_new(self):

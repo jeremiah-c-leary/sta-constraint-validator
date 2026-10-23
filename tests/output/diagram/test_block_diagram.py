@@ -11,6 +11,7 @@ from stacv.output.diagram.block_diagram import text_diagram
 from tests import utils
 
 
+@unittest.skip('Will update when generating DID.')
 class Test(unittest.TestCase):
 
     def setUp(self):

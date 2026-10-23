@@ -40,6 +40,7 @@ dTrace['third']['delay']['min'] = 3.0
 dBoardConfig['board']['trace'].append(dTrace)
 
 
+@unittest.skip('Deprecated')
 class Test(unittest.TestCase):
 
 

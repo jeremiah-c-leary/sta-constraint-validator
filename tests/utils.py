@@ -115,7 +115,7 @@ def create_device_dict():
  
     dClock = {}
     dClock['int_clock'] = {}
-    dClock['int_clock']['frequency'] = '100 MHz'
+    dClock['int_clock']['period'] = '100 MHz'
 
     dInterface['DAC_DATA']['clock']['internal'].append(dClock)
 
@@ -124,7 +124,7 @@ def create_device_dict():
  
     dClock = {}
     dClock['O_DAC_SCLK'] = {}
-    dClock['O_DAC_SCLK']['frequency'] = '20 MHz'
+    dClock['O_DAC_SCLK']['period'] = '20 MHz'
 
     dInterface['DAC_DATA']['clock']['output'].append(dClock)
     ############################################################################

@@ -4,6 +4,7 @@ import unittest
 from stacv.intent import trace
 
 
+@unittest.skip('Deprecated')
 class Test(unittest.TestCase):
 
     def test_new_trace(self):

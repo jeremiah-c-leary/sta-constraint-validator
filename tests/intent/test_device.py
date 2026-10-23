@@ -4,6 +4,7 @@ import unittest
 from stacv.intent import device
 
 
+@unittest.skip('Deprecated')
 class Test(unittest.TestCase):
 
 

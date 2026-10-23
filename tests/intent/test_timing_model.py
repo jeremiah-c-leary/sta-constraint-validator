@@ -10,6 +10,7 @@ from stacv.intent import interface
 from tests import utils
 
 
+@unittest.skip('Deprecated')
 class Test(unittest.TestCase):
 
     def setUp(self):

@@ -102,7 +102,7 @@ def build_capture_clock(dClock):
     oClockPin = clock_pin.ClockPin()
     oClockPin.port = dClock['port']
     oClockPin.name = dClock['name']
-    oClockPin.frequency = dClock['frequency']
+    oClockPin.period = dClock['period']
     return oClockPin
 
 

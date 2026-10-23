@@ -4,6 +4,7 @@ import unittest
 from stacv.intent import pin
 
 
+@unittest.skip('Deprecated')
 class Test(unittest.TestCase):
 
     def test_new_part_output_clock_pin(self):

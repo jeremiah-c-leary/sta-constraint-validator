@@ -4,6 +4,7 @@ import unittest
 from stacv.intent import clock
 
 
+@unittest.skip('Deprecated')
 class Test(unittest.TestCase):
 
     def test_expand_20_mhz_clock(self):

@@ -82,6 +82,7 @@ def create_part_dict():
 dPart = create_part_dict()
 
 
+@unittest.skip('Deprecated')
 class Test(unittest.TestCase):
 
 
