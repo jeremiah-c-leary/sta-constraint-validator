@@ -32,18 +32,18 @@ def check(oPortProfile):
         lDetail = [f'the data trace does not start with the port {oPortProfile.port.name}']
         return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
-    oDataTrace = oPortProfile.traces.get_device_to_part_trace_starting_with_name(oPortProfile.port.name)
+    oDataTrace = path_lookups.get_data_trace(oPortProfile)
     if not oPortProfile.part.has_pin_named(oDataTrace.part_pin):
         lDetail = [f'the data trace part pin does not exist on the part definition']
         return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
-    oPartDataPin = oPortProfile.part.get_pin_named(oDataTrace.part_pin)
+    oPartDataPin = path_lookups.get_part_data_pin(oPortProfile, oDataTrace)
     sPartClockPinName = oPartDataPin.clock.pin
     if not oPortProfile.traces.trace_ends_with_part_pin_named(sPartClockPinName):
         lDetail = [f'a clock trace does not exist for part pin {sPartClockPinName}']
         return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
-    oClockTrace = oPortProfile.traces.get_device_to_part_trace_ending_with_name(sPartClockPinName)
+    oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartDataPin)
     sDeviceClockPinName = oPortProfile.port.capture_clock.port
     if sDeviceClockPinName != oClockTrace.device_pin:        
         lDetail = [f'a clock trace does not exist for device pin {sDeviceClockPinName}']
