@@ -37,6 +37,8 @@ Refer to the vendor's timing constraints documentation for output delays and gen
 '''
 
 from stacv.results import rule_result
+from stacv.rules import clock_comparisons
+
 
 RULE_ID = 's4_capture_clock_001'
 FAILURE_MESSAGE = 'Capture clock name in configuration does not match clock name in all timing reports.'

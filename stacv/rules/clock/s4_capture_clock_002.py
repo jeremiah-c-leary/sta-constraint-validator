@@ -38,6 +38,7 @@ Refer to the vendor's timing constraints documentation for generated clocks.
 '''
 
 from stacv.results import rule_result
+from stacv.rules import clock_comparisons
 
 RULE_ID = 's4_capture_clock_002'
 FAILURE_MESSAGE = 'Capture clock period in configuration does not match clock period in all timing reports.'
@@ -60,14 +61,10 @@ def get_capture_clock_mismatches(oPortProfile):
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
         fTimingReportCaptureClockPeriod = oTimingReport.capture_clock.period
-        if not clock_period_is_within_tolerance(fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod, TOLERANCE):
+        if not clock_comparisons.clock_period_is_within_tolerance(fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod, TOLERANCE):
             sErrorMessage = generate_error_message(oTimingReport, fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod)
             lDetails.append(sErrorMessage)
     return lDetails
-
-
-def clock_period_is_within_tolerance(fExpected, fActual, fTolerance):
-    return fExpected - fTolerance < fActual < fExpected + fTolerance
 
 
 def generate_error_message(oTimingReport, fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod):

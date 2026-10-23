@@ -37,6 +37,8 @@ Refer to the vendor's timing constraints documentation for creating clocks.
 '''
 
 from stacv.results import rule_result
+from stacv.rules import clock_comparisons
+
 
 RULE_ID = 's4_launch_clock_002'
 FAILURE_MESSAGE = 'Launch clock period in configuration does not match clock period in all timing reports.'
@@ -59,14 +61,10 @@ def get_launch_clock_mismatches(oPortProfile):
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
         fTimingReportLaunchClockPeriod = oTimingReport.launch_clock.period
-        if not clock_period_is_within_tolerance(fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod):
+        if not clock_comparisons.clock_period_is_within_tolerance(fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod, TOLERANCE):
             sErrorMessage = generate_error_message(oTimingReport, fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod)
             lDetails.append(sErrorMessage)
     return lDetails
-
-
-def clock_period_is_within_tolerance(fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod):
-    return fConfigurationLaunchClockPeriod - TOLERANCE < fTimingReportLaunchClockPeriod < fConfigurationLaunchClockPeriod + TOLERANCE
 
 
 def generate_error_message(oTimingReport, fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod):
