@@ -26,7 +26,7 @@ When the rule fails, it lists each timing report whose capture clock period diff
 
 .. code-block:: text
 
-     O_DAC_DATA_timing.rpt:18  capture clock period 40.000ns, configured period 20.000 ns
+     O_DAC_DATA_timing.rpt:18  capture clock period 40.000ns, configured period 20.000ns
 
 **Likely causes**
 
