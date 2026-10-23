@@ -1,0 +1,80 @@
+'''
+:Stage: 4 - configuration
+:Applies to: all
+:Reads: ``launch_clock`` period of every timing report, ``launch_clock.frequency`` of the port in the configuration
+:Depends on: none
+
+The period of the launch clock in every timing report must match the frequency configured for the port's launch clock.
+Every timing report is checked, setup and hold, at every process corner.
+The configured frequency is in MHz, so the expected period is 1000 / frequency ns.
+The period matches when it is within 0.0005 ns of the expected period, half of the last digit printed in the timing report.
+If the period differs, the timing constraints do not describe the clock the design runs on, and every timing result for the port is suspect.
+
+**Violation**
+
+The port is configured with ``launch_clock = {name = "clk_100mhz", frequency = 100}``, an expected period of 10.000 ns, but the timing report gives 8.000 ns:
+
+.. code-block:: text
+   :emphasize-lines: 2
+
+     Source:                 q_spi_data_reg/C
+                               (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@4.000ns period=8.000ns})
+
+**Result**
+
+When the rule fails, it lists each timing report whose launch clock period differs, with the file and line of the launch clock:
+
+.. code-block:: text
+
+     O_DAC_DATA_timing.rpt:16  launch clock period 8.000ns, configured frequency 100 MHz is 10.000ns
+
+**Likely causes**
+
+* The launch clock frequency in the configuration is wrong.
+* The period of the clock in the timing constraints is wrong.
+
+Refer to the vendor's timing constraints documentation for creating clocks.
+'''
+
+from stacv.results import rule_result
+
+RULE_ID = 's4_launch_clock_002'
+FAILURE_MESSAGE = 'Launch clock period in configuration does not match clock period in all timing reports.'
+TOLERANCE = 0.0005
+
+
+def check(oPortProfile):
+    '''
+    Purpose:  Compares the configuration launch clock period to the launch clock period in the timing reports.
+    '''
+    lDetails = get_launch_clock_mismatches(oPortProfile)
+
+    if has_mismatches(lDetails):
+        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)
+    return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
+
+
+def get_launch_clock_mismatches(oPortProfile):
+    fConfigurationLaunchClockPeriod = oPortProfile.port.launch_clock.period
+    lDetails = []
+    for oTimingReport in oPortProfile.timing_reports.reports:
+        fTimingReportLaunchClockPeriod = oTimingReport.launch_clock.period
+        if not clock_period_is_within_tolerance(fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod):
+            sErrorMessage = generate_error_message(oTimingReport, fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod)
+            lDetails.append(sErrorMessage)
+    return lDetails
+
+
+def clock_period_is_within_tolerance(fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod):
+    return fConfigurationLaunchClockPeriod - TOLERANCE < fTimingReportLaunchClockPeriod < fConfigurationLaunchClockPeriod + TOLERANCE
+
+
+def generate_error_message(oTimingReport, fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod):
+    sFilename = oTimingReport.launch_clock_line.filename
+    iLineNumber = oTimingReport.launch_clock_line.line_number
+    sMessage = f'launch clock period {fTimingReportLaunchClockPeriod:.3f}ns, configured period {fConfigurationLaunchClockPeriod:.3f}ns'
+    return f'{sFilename}:{iLineNumber}  {sMessage}'
+
+
+def has_mismatches(lDetails):
+    return len(lDetails) > 0
