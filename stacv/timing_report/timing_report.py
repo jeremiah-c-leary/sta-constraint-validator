@@ -6,6 +6,7 @@ class TimingReport():
         self.destination = None
         self.process_corner = None
         self.capture_clock = None
+        self.capture_clock_line = None
         self.launch_clock = None
         self.launch_clock_path = None
         self.data_path = None
