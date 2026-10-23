@@ -1,7 +1,7 @@
 '''
-:Stage: 0 - Input Checks
+:Stage: 0 - input
 :Applies to: SDR-SS-O, DDR-SS-O
-:Reads: interface, trace delays, and part setup value
+:Reads: interface ports, trace delays, and part pins
 :Depends on: none
 
 The data trace and associated clock trace from the device to the part must exist.
@@ -25,16 +25,16 @@ FAILURE_MESSAGE = 'Data and/or clock trace does not exist.'
 
 def check(oPortProfile):
     '''
-    Purpose:  Checks the data and clock traces exist between the device and port.
+    Purpose:  Checks the data and clock traces exist between the device and part.
     '''
 
     if not oPortProfile.traces.trace_starts_with_device_pin_named(oPortProfile.port.name):
-        lDetail = [f'the data trace does not start with the port {oPortProfile.port.name}']
+        lDetail = [f'a trace does not start with the port {oPortProfile.port.name}']
         return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
     oDataTrace = path_lookups.get_data_trace(oPortProfile)
     if not oPortProfile.part.has_pin_named(oDataTrace.part_pin):
-        lDetail = [f'the data trace part pin does not exist on the part definition']
+        lDetail = ['a part pin does not exist the data trace part pin does not exist on the part definition']
         return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
     oPartDataPin = path_lookups.get_part_data_pin(oPortProfile, oDataTrace)
@@ -45,7 +45,7 @@ def check(oPortProfile):
 
     oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartDataPin)
     sDeviceClockPinName = oPortProfile.port.capture_clock.port
-    if sDeviceClockPinName != oClockTrace.device_pin:        
+    if sDeviceClockPinName != oClockTrace.device_pin:
         lDetail = [f'a clock trace does not exist for device pin {sDeviceClockPinName}']
         return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
