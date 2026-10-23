@@ -46,6 +46,14 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the configuration capture clock name to the capture clock name in the timing reports.
     '''
+    lDetails = check_capture_clock_names_match(oPortProfile)
+
+    if not capture_clock_names_matched(lDetails):
+        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)
+    return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
+
+
+def check_capture_clock_names_match(oPortProfile):
     sConfigurationCaptureClockName = oPortProfile.port.capture_clock.name
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
@@ -53,11 +61,7 @@ def check(oPortProfile):
         if sConfigurationCaptureClockName != sTimingReportCaptureClockName:
             sErrorMessage = generate_error_message(oTimingReport, sConfigurationCaptureClockName, sTimingReportCaptureClockName)
             lDetails.append(sErrorMessage)
-
-    if errors_found(lDetails):
-        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)
-
-    return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
+    return lDetails
 
 
 def generate_error_message(oTimingReport, sConfigurationCaptureClockName, sTimingReportCaptureClockName):
@@ -67,5 +71,5 @@ def generate_error_message(oTimingReport, sConfigurationCaptureClockName, sTimin
     return f'{sFilename}:{iLineNumber}  {sMessage}'
     
 
-def errors_found(lDetails):
-    return len(lDetails) > 0
+def capture_clock_names_matched(lDetails):
+    return len(lDetails) == 0
