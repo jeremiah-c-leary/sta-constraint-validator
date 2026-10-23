@@ -53,6 +53,7 @@ def create_ports(dConfig, oLocation):
         oLocation.set_port_name(oPort.name)
         oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
         oPort.capture_clock = build_capture_clock(dPort['capture_clock'])
+        oPort.launch_clock = build_launch_clock(dPort['launch_clock'])
         oPort.timing_reports = get_required_list_of_files(dPort, 'timing_reports', oLocation)
         lPorts.append(oPort)
     return lPorts
@@ -101,6 +102,13 @@ def check_schema(oExpectedType, value, sKey, oLocation):
 def build_capture_clock(dClock):
     oClockPin = clock_pin.ClockPin()
     oClockPin.port = dClock['port']
+    oClockPin.name = dClock['name']
+    oClockPin.period = dClock['period']
+    return oClockPin
+
+
+def build_launch_clock(dClock):
+    oClockPin = clock_pin.ClockPin()
     oClockPin.name = dClock['name']
     oClockPin.period = dClock['period']
     return oClockPin

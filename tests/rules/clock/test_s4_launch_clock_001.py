@@ -9,7 +9,6 @@ from tests.rules.clock.clock_rule_test_case import sPassingLaunchName
 sRuleId = 's4_launch_clock_001'
 
 
-@unittest.skip('temp')
 class Test(clock_rule_test_case.ClockRuleTestCase):
 
     def test_passes_when_launch_clock_name_matches_every_timing_report(self):

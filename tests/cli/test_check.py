@@ -33,6 +33,7 @@ def build_config_text(lTimingReports, sTracesFile, sPartFile):
         lText.append('[[port]]')
         lText.append(f'name = "PORT_{iPort}"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('launch_clock = {name = "clk_100mhz", period = 10.000}')
         lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50}')
         lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
@@ -201,6 +202,7 @@ def build_named_ports_config_text(sDescription, lPorts, sTracesFile, sPartFile):
         lText.append('[[port]]')
         lText.append(f'name = "{sPortName}"')
         lText.append('methodology = "SDR-SS-O"')
+        lText.append('launch_clock = {name = "clk_100mhz", period = 10.000}')
         lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50}')
         lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
@@ -523,6 +525,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lExpected.append('- stage 4 ' + '-' * 70)
         lExpected.append('s4_capture_clock_001  Passed')
         lExpected.append('s4_capture_clock_002  Passed')
+        lExpected.append('s4_launch_clock_001   Passed')
         lExpected.append('-' * 80)
         self.assertEqual(lExpected, self.read_rule_checks_section())
 
@@ -551,6 +554,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lExpected.append('- stage 4 ' + '-' * 70)
         lExpected.append('s4_capture_clock_001  Skipped  stage 0 failed')
         lExpected.append('s4_capture_clock_002  Skipped  stage 0 failed')
+        lExpected.append('s4_launch_clock_001   Skipped  stage 0 failed')
         lExpected.append('-' * 80)
         self.assertEqual(lExpected, self.read_port_rule_checks('Section 3.1: P1.SDR-SS-O Rule Checks')[3:])
 
@@ -657,8 +661,9 @@ class TestExecuteJunit(unittest.TestCase):
         lExpected.append('s3_output_delay_002')
         lExpected.append('s4_capture_clock_001')
         lExpected.append('s4_capture_clock_002')
+        lExpected.append('s4_launch_clock_001')
         self.assertEqual(lExpected, lNames)
-        self.assertEqual(['P1.SDR-SS-O'] * 13, lClassnames)
+        self.assertEqual(['P1.SDR-SS-O'] * 14, lClassnames)
 
     def test_junit_passing_testcase_is_empty(self):
         lPorts = []

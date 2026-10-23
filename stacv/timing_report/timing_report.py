@@ -8,6 +8,7 @@ class TimingReport():
         self.capture_clock = None
         self.capture_clock_line = None
         self.launch_clock = None
+        self.launch_clock_line = None
         self.launch_clock_path = None
         self.data_path = None
         self.capture_clock_path = None

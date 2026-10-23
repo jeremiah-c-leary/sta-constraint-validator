@@ -186,6 +186,7 @@ def update_process_corner(oTimingReport):
 def update_launch_clock(oTimingReport):
     oLine = extract_clock_line(oTimingReport, 'Source:')
     oTimingReport.launch_clock = create_clock(oLine)
+    oTimingReport.launch_clock_line = oLine
 
 
 def update_capture_clock(oTimingReport):

@@ -8,6 +8,7 @@ traces = "unknown"
 [[port]]
 name = "O_DAC_DATA"
 methodology = "SDR-SS-O"
+launch_clock = {name = "clk_100mhz", period = 10.000}
 capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 20}
 timing_reports = [
     "$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt",
@@ -16,6 +17,7 @@ timing_reports = [
 [[port]]
 name = "O_DAC_CSF"
 methodology = "SDR-SS-O"
+launch_clock = {name = "clk_100mhz", period = 10.000}
 capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 20}
 timing_reports = [
     "$PROJ_DIR/tests/timing_report/parse/vivado/dac_spi.setup.rpt",
