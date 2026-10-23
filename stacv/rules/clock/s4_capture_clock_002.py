@@ -1,0 +1,77 @@
+'''
+:Stage: 4 - configuration
+:Applies to: all
+:Reads: ``capture_clock`` period of every timing report, ``capture_clock.frequency`` of the port in the configuration
+:Depends on: none
+
+The period of the capture clock in every timing report must match the frequency configured for the port's capture clock.
+Every timing report is checked, setup and hold, at every process corner.
+The configured frequency is in MHz, so the expected period is 1000 / frequency ns.
+The period matches when it is within 0.0005 ns of the expected period, half of the last digit printed in the timing report.
+If the period differs, the setup and hold requirements are calculated for a clock the part does not receive.
+
+**Violation**
+
+The port is configured with ``capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}``, an expected period of 50.000 ns, but the timing report gives 40.000 ns:
+
+.. code-block:: text
+   :emphasize-lines: 2
+
+     Destination:            O_DAC_DATA
+                               (output port clocked by dac_sclk  {rise@0.000ns fall@20.000ns period=40.000ns})
+
+**Result**
+
+When the rule fails, it lists each timing report whose capture clock period differs, with the file and line of the capture clock:
+
+.. code-block:: text
+
+     O_DAC_DATA_timing.rpt:18  capture clock period 40.000ns, configured frequency 20 MHz is 50.000ns
+
+**Likely causes**
+
+* The capture clock frequency in the configuration is wrong.
+* The divide or multiply factor of the generated clock in the timing constraints is wrong.
+* The period of the source clock in the timing constraints is wrong.
+
+Refer to the vendor's timing constraints documentation for generated clocks.
+'''
+
+from stacv.results import rule_result
+
+RULE_ID = 's4_capture_clock_002'
+FAILURE_MESSAGE = 'Capture clock period in configuration does not match clock period in all timing reports.'
+TOLERANCE = 0.0005
+
+
+def check(oPortProfile):
+    '''
+    Purpose:  Compares the configuration capture clock name to the capture clock name in the timing reports.
+    '''
+    lDetails = get_capture_clock_mismatches(oPortProfile)
+
+    if has_mismatches(lDetails):
+        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)
+    return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
+
+
+def get_capture_clock_mismatches(oPortProfile):
+    sConfigurationCaptureClockPeriod = oPortProfile.port.capture_clock.period
+    lDetails = []
+    for oTimingReport in oPortProfile.timing_reports.reports:
+        sTimingReportCaptureClockPeriod = oTimingReport.capture_clock.period
+        if not sConfigurationCaptureClockPeriod - TOLERANCE < sTimingReportCaptureClockPeriod < sConfigurationCaptureClockPeriod + TOLERANCE:
+            sErrorMessage = generate_error_message(oTimingReport, sConfigurationCaptureClockPeriod, sTimingReportCaptureClockPeriod)
+            lDetails.append(sErrorMessage)
+    return lDetails
+
+
+def generate_error_message(oTimingReport, sConfigurationCaptureClockPeriod, sTimingReportCaptureClockPeriod):
+    sFilename = oTimingReport.capture_clock_line.filename
+    iLineNumber = oTimingReport.capture_clock_line.line_number
+    sMessage = f'capture clock period {sTimingReportCaptureClockPeriod}, configured capture clock period {sConfigurationCaptureClockPeriod}'
+    return f'{sFilename}:{iLineNumber}  {sMessage}'
+
+
+def has_mismatches(lDetails):
+    return len(lDetails) > 0

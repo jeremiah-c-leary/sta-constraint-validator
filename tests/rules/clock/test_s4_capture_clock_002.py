@@ -12,7 +12,6 @@ sRuleId = 's4_capture_clock_002'
 # Periods within 0.0005ns of 50.000ns match, half of the last digit printed in the timing report.
 
 
-@unittest.skip('temp')
 class Test(clock_rule_test_case.ClockRuleTestCase):
 
     def test_passes_when_capture_clock_period_matches_configured_period(self):
