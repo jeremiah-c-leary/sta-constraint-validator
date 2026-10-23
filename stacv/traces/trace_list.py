@@ -18,13 +18,6 @@ class TraceList():
                 return oTrace
         return None
 
-    def get_device_to_part_trace_ending_with_name(self, sName):
-        lTraces = self.get_device_to_part_traces()
-        for oTrace in lTraces:
-            if oTrace.part_pin == sName:
-                return oTrace
-        return None
-
     def get_device_to_part_traces(self):
         lTraces = []
         for oTrace in self.traces:
