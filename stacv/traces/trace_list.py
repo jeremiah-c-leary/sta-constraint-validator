@@ -4,6 +4,13 @@ class TraceList():
     def __init__(self):
         self.traces = []
 
+    def get_device_to_part_trace_between(self, sDevicePinName, sPartPinName):
+        lTraces = self.get_device_to_part_traces()
+        for oTrace in lTraces:
+            if oTrace.device_pin == sDevicePinName and oTrace.part_pin == sPartPinName:
+                return oTrace
+        return None
+
     def get_device_to_part_trace_starting_with_name(self, sName):
         lTraces = self.get_device_to_part_traces()
         for oTrace in lTraces:
