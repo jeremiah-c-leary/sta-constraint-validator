@@ -191,6 +191,7 @@ def update_launch_clock(oTimingReport):
 def update_capture_clock(oTimingReport):
     oLine = extract_clock_line(oTimingReport, 'Destination:')
     oTimingReport.capture_clock = create_clock(oLine)
+    oTimingReport.capture_clock_line = oLine
 
 
 def create_clock(oLine):

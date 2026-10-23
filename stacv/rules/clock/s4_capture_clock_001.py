@@ -61,7 +61,7 @@ def check(oPortProfile):
 
 
 def generate_error_message(oTimingReport, sConfigurationCaptureClockName, sTimingReportCaptureClockName):
-    sFilename = oTimingReport.capture_clock_line.sFilename
+    sFilename = oTimingReport.capture_clock_line.filename
     iLineNumber = oTimingReport.capture_clock_line.line_number
     sMessage = f'specified capture clock name "{sConfigurationCaptureClockName}" does not match timing report capture clock name "{sTimingReportCaptureClockName}"'
     return f'{sFilename}:{iLineNumber}  {sMessage}'
