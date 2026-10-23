@@ -56,20 +56,20 @@ def check(oPortProfile):
 
 
 def get_capture_clock_mismatches(oPortProfile):
-    sConfigurationCaptureClockPeriod = oPortProfile.port.capture_clock.period
+    fConfigurationCaptureClockPeriod = oPortProfile.port.capture_clock.period
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
-        sTimingReportCaptureClockPeriod = oTimingReport.capture_clock.period
-        if not sConfigurationCaptureClockPeriod - TOLERANCE < sTimingReportCaptureClockPeriod < sConfigurationCaptureClockPeriod + TOLERANCE:
-            sErrorMessage = generate_error_message(oTimingReport, sConfigurationCaptureClockPeriod, sTimingReportCaptureClockPeriod)
+        fTimingReportCaptureClockPeriod = oTimingReport.capture_clock.period
+        if not fConfigurationCaptureClockPeriod - TOLERANCE < fTimingReportCaptureClockPeriod < fConfigurationCaptureClockPeriod + TOLERANCE:
+            sErrorMessage = generate_error_message(oTimingReport, fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod)
             lDetails.append(sErrorMessage)
     return lDetails
 
 
-def generate_error_message(oTimingReport, sConfigurationCaptureClockPeriod, sTimingReportCaptureClockPeriod):
+def generate_error_message(oTimingReport, fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod):
     sFilename = oTimingReport.capture_clock_line.filename
     iLineNumber = oTimingReport.capture_clock_line.line_number
-    sMessage = f'capture clock period {sTimingReportCaptureClockPeriod.3f}ns, configured capture clock period {sConfigurationCaptureClockPeriod:.3f}ns'
+    sMessage = f'capture clock period {fTimingReportCaptureClockPeriod:.3f}ns, configured capture clock period {fConfigurationCaptureClockPeriod:.3f}ns'
     return f'{sFilename}:{iLineNumber}  {sMessage}'
 
 
