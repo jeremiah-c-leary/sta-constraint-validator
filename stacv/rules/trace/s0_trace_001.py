@@ -43,8 +43,7 @@ def check(oPortProfile):
         lDetail = [f'a clock trace does not exist for part pin {sPartClockPinName}']
         return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
-    oDeviceClockPin = oPortProfile.port.capture_clock
-    oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartDataPin, oDeviceClockPin)
+    oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartDataPin)
     sDeviceClockPinName = oPortProfile.port.capture_clock.port
     if clock_trace_does_not_exist(oClockTrace, sDeviceClockPinName):
         lDetail = [f'a clock trace does not exist for device pin {sDeviceClockPinName}']

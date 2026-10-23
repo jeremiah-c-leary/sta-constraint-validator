@@ -57,10 +57,9 @@ def get_first_hold_report(oPortProfile):
 
 
 def calculate_expected_min_output_delay(oPortProfile):
-    oDevicePin = oPortProfile.port.capture_clock
     oDataTrace = path_lookups.get_data_trace(oPortProfile)
     oPartPin = path_lookups.get_part_data_pin(oPortProfile, oDataTrace)
-    oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartPin, oDevicePin)
+    oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartPin)
     return calculate_min_output_delay(oDataTrace, oPartPin, oClockTrace)
 
 
