@@ -34,7 +34,7 @@ def check(oPortProfile):
 
     oDataTrace = path_lookups.get_data_trace(oPortProfile)
     if not oPortProfile.part.has_pin_named(oDataTrace.part_pin):
-        lDetail = ['a part pin does not exist the data trace part pin does not exist on the part definition']
+        lDetail = [f'the data trace does not connect to pin {oDataTrace.part_pin} on the part']
         return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
     oPartDataPin = path_lookups.get_part_data_pin(oPortProfile, oDataTrace)
