@@ -69,7 +69,7 @@ def get_capture_clock_mismatches(oPortProfile):
 def generate_error_message(oTimingReport, sConfigurationCaptureClockPeriod, sTimingReportCaptureClockPeriod):
     sFilename = oTimingReport.capture_clock_line.filename
     iLineNumber = oTimingReport.capture_clock_line.line_number
-    sMessage = f'capture clock period {sTimingReportCaptureClockPeriod}, configured capture clock period {sConfigurationCaptureClockPeriod}'
+    sMessage = f'capture clock period {sTimingReportCaptureClockPeriod.3f}ns, configured capture clock period {sConfigurationCaptureClockPeriod:.3f}ns'
     return f'{sFilename}:{iLineNumber}  {sMessage}'
 
 
