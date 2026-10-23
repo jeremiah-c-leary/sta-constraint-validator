@@ -10,7 +10,7 @@ If the name differs, the timing report does not time the data from the clock the
 
 **Violation**
 
-The port is configured with ``launch_clock = {name = "clk_100mhz", period = 100}``, but the data is launched by ``clk_50mhz``:
+The port is configured with ``launch_clock = {name = "clk_100mhz", period = 10}``, but the data is launched by ``clk_50mhz``:
 
 .. code-block:: text
    :emphasize-lines: 2
