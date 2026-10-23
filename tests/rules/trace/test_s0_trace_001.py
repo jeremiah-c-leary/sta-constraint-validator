@@ -196,6 +196,25 @@ class Test(unittest.TestCase):
 
         self.assert_rule_failed()
 
+    def test_passes_when_another_clock_trace_to_the_clock_pin_is_listed_first(self):
+        lTraces = []
+        lTraces.append(create_passing_data_trace())
+        lTraces.append(create_trace('other_clock', 'O_OTHER_SCLK', 'SCLK', 'device_to_part', 9.0))
+        lTraces.append(create_passing_clock_trace())
+        self.execute(lTraces)
+
+        self.assert_rule_passed()
+
+    def test_stage_3_uses_clock_trace_from_capture_clock_port_when_another_is_listed_first(self):
+        # With the 9.0 delay of O_OTHER_SCLK the maximum output delay would be 0.5 + 2.0 - 9.0 = -6.500
+        lTraces = []
+        lTraces.append(create_passing_data_trace())
+        lTraces.append(create_trace('other_clock', 'O_OTHER_SCLK', 'SCLK', 'device_to_part', 9.0))
+        lTraces.append(create_passing_clock_trace())
+        self.execute(lTraces)
+
+        self.assertEqual([], list(self.find_testcase('s3_output_delay_001')))
+
     def test_fails_when_data_trace_has_no_device_to_part_delays(self):
         lTraces = []
         lTraces.append(create_trace('data_output', 'O_DAC_DATA', 'SDIN', 'part_to_device', fDataDelay))
