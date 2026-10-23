@@ -39,7 +39,7 @@ Refer to the vendor's timing constraints documentation for output delays and gen
 from stacv.results import rule_result
 
 RULE_ID = 's4_capture_clock_001'
-FAILURE_MESSAGE = 'Capture clock name in configuratino does not match clock name over all timing reports.'
+FAILURE_MESSAGE = 'Capture clock name in configuration does not match clock name over all timing reports.'
 
 
 def check(oPortProfile):
@@ -67,7 +67,7 @@ def check_capture_clock_names_match(oPortProfile):
 def generate_error_message(oTimingReport, sConfigurationCaptureClockName, sTimingReportCaptureClockName):
     sFilename = oTimingReport.capture_clock_line.filename
     iLineNumber = oTimingReport.capture_clock_line.line_number
-    sMessage = f'specified capture clock name "{sConfigurationCaptureClockName}" does not match timing report capture clock name "{sTimingReportCaptureClockName}"'
+    sMessage = f'capture clock {sTimingReportCaptureClockName}, configured capture clock {sConfigurationCaptureClockName}"'
     return f'{sFilename}:{iLineNumber}  {sMessage}'
     
 
