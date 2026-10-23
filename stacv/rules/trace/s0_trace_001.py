@@ -1,12 +1,12 @@
 '''
-:Stage: 0 - input
+:Stage: 0 - inputs
 :Applies to: SDR-SS-O, DDR-SS-O
 :Reads: interface ports, trace delays, and part pins
 :Depends on: none
 
 The data trace and associated clock trace from the device to the part must exist.
 This rule checks the trace and part TOML files for the existence of each trace.
-If the traces do not exist then further analysis can be performed.
+If the traces do not exist then further analysis can not be performed.
 
 **Likely causes**
 
