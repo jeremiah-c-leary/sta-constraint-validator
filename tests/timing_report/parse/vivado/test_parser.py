@@ -568,6 +568,14 @@ class Test(unittest.TestCase):
         self.assertEqual('O_DAC_DATA_timing.rpt', oOutputDelayLine.filename)
         self.assertEqual(85, oOutputDelayLine.line_number)
 
+    def test_populate_timing_report_reports_capture_clock_line(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        oCaptureClockLine = oTimingReports.reports[1].capture_clock_line
+
+        self.assertEqual('O_DAC_DATA_timing.rpt', oCaptureClockLine.filename)
+        self.assertEqual(79, oCaptureClockLine.line_number)
+
 
 def populate_timing_report_from_lines(lFile):
     oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
