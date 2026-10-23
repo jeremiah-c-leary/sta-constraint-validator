@@ -1,18 +1,18 @@
 '''
 :Stage: 4 - configuration
 :Applies to: all
-:Reads: ``capture_clock`` period of every timing report, ``capture_clock.frequency`` of the port in the configuration
+:Reads: ``capture_clock`` period of every timing report, ``capture_clock.period`` of the port in the configuration
 :Depends on: none
 
-The period of the capture clock in every timing report must match the frequency configured for the port's capture clock.
+The period of the capture clock in every timing report must match the period configured for the port's capture clock.
 Every timing report is checked, setup and hold, at every process corner.
-The configured frequency is in MHz, so the expected period is 1000 / frequency ns.
+The configured period is in nanoseconds.
 The period matches when it is within 0.0005 ns of the expected period, half of the last digit printed in the timing report.
 If the period differs, the setup and hold requirements are calculated for a clock the part does not receive.
 
 **Violation**
 
-The port is configured with ``capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", frequency = 20}``, an expected period of 50.000 ns, but the timing report gives 40.000 ns:
+The port is configured with ``capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 20}``, an expected period of 50.000 ns, but the timing report gives 40.000 ns:
 
 .. code-block:: text
    :emphasize-lines: 2
@@ -26,11 +26,11 @@ When the rule fails, it lists each timing report whose capture clock period diff
 
 .. code-block:: text
 
-     O_DAC_DATA_timing.rpt:18  capture clock period 40.000ns, configured frequency 20 MHz is 50.000ns
+     O_DAC_DATA_timing.rpt:18  capture clock period 40.000ns, configured period 50.000 ns
 
 **Likely causes**
 
-* The capture clock frequency in the configuration is wrong.
+* The capture clock period in the configuration is wrong.
 * The divide or multiply factor of the generated clock in the timing constraints is wrong.
 * The period of the source clock in the timing constraints is wrong.
 
@@ -46,7 +46,7 @@ TOLERANCE = 0.0005
 
 def check(oPortProfile):
     '''
-    Purpose:  Compares the configuration capture clock name to the capture clock name in the timing reports.
+    Purpose:  Compares the configuration capture clock period to the capture clock period in the timing reports.
     '''
     lDetails = get_capture_clock_mismatches(oPortProfile)
 
