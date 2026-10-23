@@ -20,6 +20,7 @@ from stacv.rules import path_lookups
 
 
 RULE_ID = 's0_trace_001'
+FAILURE_MESSAGE = 'Data and/or clock trace does not exist.'
 
 
 def check(oPortProfile):
@@ -28,20 +29,24 @@ def check(oPortProfile):
     '''
 
     if not oPortProfile.traces.trace_starts_with_device_pin_named(oPortProfile.port.name):
-        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, [], f'the data trace does not start with the port {oPortProfile.port.name}')
+        lDetail = [f'the data trace does not start with the port {oPortProfile.port.name}']
+        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
     oDataTrace = oPortProfile.traces.get_device_to_part_trace_starting_with_name(oPortProfile.port.name)
     if not oPortProfile.part.has_pin_named(oDataTrace.part_pin):
-        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, [], f'the data trace part pin does not exist on the part definition')
+        lDetail = [f'the data trace part pin does not exist on the part definition']
+        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
     oPartDataPin = oPortProfile.part.get_pin_named(oDataTrace.part_pin)
     sPartClockPinName = oPartDataPin.clock.pin
     if not oPortProfile.traces.trace_ends_with_part_pin_named(sPartClockPinName):
-        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, [], f'a clock trace does not exist for part pin {sPartClockPinName}')
+        lDetail = [f'a clock trace does not exist for part pin {sPartClockPinName}']
+        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
     oClockTrace = oPortProfile.traces.get_device_to_part_trace_ending_with_name(sPartClockPinName)
     sDeviceClockPinName = oPortProfile.port.capture_clock.port
     if sDeviceClockPinName != oClockTrace.device_pin:        
-        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, [], f'a clock trace does not exist for device pin {sDeviceClockPinName}')
+        lDetail = [f'a clock trace does not exist for device pin {sDeviceClockPinName}']
+        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
     return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
