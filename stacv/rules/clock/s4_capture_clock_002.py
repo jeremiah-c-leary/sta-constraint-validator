@@ -12,7 +12,7 @@ If the period differs, the setup and hold requirements are calculated for a cloc
 
 **Violation**
 
-The port is configured with ``capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 20}``, an expected period of 50.000 ns, but the timing report gives 40.000 ns:
+The port is configured with ``capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 20.000}``, but the timing report gives 40.000 ns:
 
 .. code-block:: text
    :emphasize-lines: 2
