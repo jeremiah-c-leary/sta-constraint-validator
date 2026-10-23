@@ -219,8 +219,8 @@ s4_launch_clock_001: Launch clock name matches the configured launch clock
 
 .. automodule:: stacv.rules.clock.s4_launch_clock_001
 
-s4_launch_clock_002: Launch clock period matches the configured launch clock frequency
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+s4_launch_clock_002: Launch clock period matches the configured launch clock period
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: stacv.rules.clock.s4_launch_clock_002
 
@@ -229,8 +229,8 @@ s4_capture_clock_001: Capture clock name matches the configured capture clock
 
 .. automodule:: stacv.rules.clock.s4_capture_clock_001
 
-s4_capture_clock_002: Capture clock period matches the configured capture clock frequency
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+s4_capture_clock_002: Capture clock period matches the configured capture clock period
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: stacv.rules.clock.s4_capture_clock_002
 
