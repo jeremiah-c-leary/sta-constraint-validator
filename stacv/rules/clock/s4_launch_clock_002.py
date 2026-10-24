@@ -37,6 +37,7 @@ Refer to the vendor's timing constraints documentation for creating clocks.
 '''
 
 from stacv.rules import clock_comparisons
+from stacv.rules import tolerance
 
 
 RULE_ID = 's4_launch_clock_002'
@@ -58,7 +59,7 @@ def get_launch_clock_mismatches(oPortProfile):
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
         fTimingReportLaunchClockPeriod = oTimingReport.launch_clock.period
-        if not clock_comparisons.clock_period_is_within_tolerance(fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod, TOLERANCE):
+        if not tolerance.is_within_tolerance(fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod, TOLERANCE):
             sErrorMessage = generate_error_message(oTimingReport, fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod)
             lDetails.append(sErrorMessage)
     return lDetails

@@ -5,10 +5,6 @@ Contains functions to assist with clock rules.
 from stacv.results import rule_result
 
 
-def clock_period_is_within_tolerance(fExpected, fActual, fTolerance):
-    return fExpected - fTolerance < fActual < fExpected + fTolerance
-
-
 def generate_rule_result(sRuleId, lDetails, sFailureMessage):
     if has_mismatches(lDetails):
         return rule_result.RuleResult(sRuleId, rule_result.FAILED, lDetails, sFailureMessage)
