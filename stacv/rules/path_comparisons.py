@@ -3,6 +3,7 @@ Provides functions to compare DelayPath objects.
 '''
 
 from stacv.results import rule_result
+from stacv.rules import rule_details
 
 
 def check_paths_match(lReports, sPathType, sRuleId, sFailureMessage):
@@ -38,8 +39,7 @@ def create_path_details(lReports, lUniquePaths, sPathType):
     for oReport in lReports:
         oPath = get_path(oReport, sPathType)
         iLabel = lUniquePaths.index(oPath.get_resources()) + 1
-        oLine = oPath.first_line
-        sDetail = f'{oLine.filename}:{oLine.line_number}  path {iLabel}'
+        sDetail = rule_details.format_detail(oPath.first_line, f'path {iLabel}')
         lDetails.append(sDetail)
     return lDetails
 

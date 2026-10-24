@@ -24,6 +24,7 @@ Refer to the vendor's timing constraints documentation for output delays.
 
 from stacv.results import rule_result
 from stacv.rules import path_lookups
+from stacv.rules import rule_details
 from stacv.rules import tolerance
 
 
@@ -75,5 +76,6 @@ def calculate_min_output_delay(oDataTrace, oPartPin, oClockTrace):
 def generate_error_result(fActualOutputDelay, fExpectedOutputDelay, oPortProfile):
     lDetails = []
     oOutputDelayLine = get_first_hold_report(oPortProfile).output_delay_line
-    lDetails.append(f'{oOutputDelayLine.filename}:{oOutputDelayLine.line_number}  Calculated minimum output delay is {fExpectedOutputDelay:.3f}ns while actual output delay is {fActualOutputDelay:.3f}ns')
+    sMessage = f'Calculated minimum output delay is {fExpectedOutputDelay:.3f}ns while actual output delay is {fActualOutputDelay:.3f}ns'
+    lDetails.append(rule_details.format_detail(oOutputDelayLine, sMessage))
     return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)

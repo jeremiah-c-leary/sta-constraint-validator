@@ -49,6 +49,7 @@ Refer to the vendor's timing constraints documentation for generated clocks and 
 '''
 
 from stacv.results import rule_result
+from stacv.rules import rule_details
 
 RULE_ID = 's1_clock_001'
 FAILURE_MESSAGE = 'Launch and capture clock do not start at the same point.'
@@ -85,12 +86,9 @@ def create_details(oTimingReport):
 
 
 def create_start_point_detail(oPath, sPathName):
-    oLine = oPath.first_line
-    sFilename = oLine.filename
-    iLineNumber = oLine.line_number
     sStartPoint = get_start_point(oPath)
-    sDetail = f'{sFilename}:{iLineNumber}  {sPathName} starts at {sStartPoint}'
-    return sDetail
+    sMessage = f'{sPathName} starts at {sStartPoint}'
+    return rule_details.format_detail(oPath.first_line, sMessage)
 
 
 def get_start_point(oPath):

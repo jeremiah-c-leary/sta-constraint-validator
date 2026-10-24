@@ -3,6 +3,7 @@ Provides functions to check the coverage of timing reports.
 '''
 
 from stacv.results import rule_result
+from stacv.rules import rule_details
 
 
 def check_at_least_two_process_corners_exist(sRuleId, lTimingReports, sType, sFailureMessage):
@@ -29,8 +30,7 @@ def at_least_two_corners_exist(lCorners):
 def create_rule_result_detail(lTimingReports, sType):
     lDetails = []
     for oTimingReport in lTimingReports:
-        sFilename = oTimingReport.get_filename()
-        iLineNumber = oTimingReport.get_first_line_number()
-        sProcessCorner = oTimingReport.process_corner
-        lDetails.append(f'{sFilename}:{iLineNumber}  {sType} timing report, {sProcessCorner} process corner')
+        oFirstLine = oTimingReport.get_lines()[0]
+        sMessage = f'{sType} timing report, {oTimingReport.process_corner} process corner'
+        lDetails.append(rule_details.format_detail(oFirstLine, sMessage))
     return lDetails

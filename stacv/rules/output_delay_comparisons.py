@@ -7,6 +7,7 @@ It includes functions the perform:
 '''
 
 from stacv.results import rule_result
+from stacv.rules import rule_details
 
 
 def output_delays_are_identical(lReports):
@@ -46,4 +47,4 @@ def create_output_delay_error_detail(lReports):
 def format_detail_information(oReport):
     oOutputDelayLine = oReport.output_delay_line
     fDelay = oReport.output_delay
-    return f'{oOutputDelayLine.filename}:{oOutputDelayLine.line_number}  {fDelay:.3f}ns'
+    return rule_details.format_detail(oOutputDelayLine, f'{fDelay:.3f}ns')
