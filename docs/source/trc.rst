@@ -177,12 +177,14 @@ s4_process_corner_001: A setup and hold timing report exists at each process cor
 
 Each data port must have at least one setup and one hold timing report at each process corner listed in the device definition.
 A missing timing report means the data port is not timed at that corner.
+This rule waits for a second timing tool: the Vivado parser accepts only the Slow and Fast process corners, and stage 0 requires both.
 
 s4_process_corner_002: Every timing report is at a process corner listed in the device definition
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A timing report at any other process corner is a failure.
 It usually means the timing reports were generated for a different device, or with different settings than intended.
+This rule waits for a second timing tool: the Vivado parser accepts only the Slow and Fast process corners, and stage 0 requires both.
 
 s4_timing_report_001: Every timing report matches a data port of a methodology
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
