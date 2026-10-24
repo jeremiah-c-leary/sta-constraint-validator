@@ -41,7 +41,7 @@ When the rule fails, it lists each timing report whose setup requirement differs
 Refer to the vendor's timing constraints documentation for multicycle paths and output delays.
 '''
 
-from stacv.results import rule_result
+from stacv.rules import clock_comparisons
 
 
 RULE_ID = 's4_requirement_001'
@@ -53,4 +53,42 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the setup requirement in the setup timing reports to the time between the configured setup edges.
     '''
-    return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
+    lDetails = get_setup_requirement_mismatches(oPortProfile)
+
+    return clock_comparisons.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
+
+
+def get_setup_requirement_mismatches(oPortProfile):
+    fConfigurationRequirement = calculate_configuration_setup_requirement(oPortProfile.port)
+    lDetails = []
+    for oTimingReport in oPortProfile.timing_reports.get_setup_reports():
+        if not requirement_is_within_tolerance(fConfigurationRequirement, oTimingReport.requirement):
+            sErrorMessage = generate_error_message(oTimingReport, fConfigurationRequirement)
+            lDetails.append(sErrorMessage)
+    return lDetails
+
+
+def calculate_configuration_setup_requirement(oPort):
+    iCaptureEdgeNumber = convert_edge_letter_to_number(oPort.capture_clock.setup_edge)
+    fCaptureEdgeTime = calculate_edge_time(oPort.capture_clock.period, iCaptureEdgeNumber)
+    fLaunchEdgeTime = calculate_edge_time(oPort.launch_clock.period, oPort.launch_clock.setup_edge)
+    return fCaptureEdgeTime - fLaunchEdgeTime
+
+
+def convert_edge_letter_to_number(sEdgeLetter):
+    return ord(sEdgeLetter) - ord('A')
+
+
+def calculate_edge_time(fPeriod, iEdgeNumber):
+    return (fPeriod / 2) * iEdgeNumber
+
+
+def requirement_is_within_tolerance(fExpected, fActual):
+    return fExpected - TOLERANCE < fActual < fExpected + TOLERANCE
+
+
+def generate_error_message(oTimingReport, fConfigurationRequirement):
+    sFilename = oTimingReport.requirement_line.filename
+    iLineNumber = oTimingReport.requirement_line.line_number
+    sMessage = f'setup requirement {oTimingReport.requirement:.3f}ns, configured setup requirement {fConfigurationRequirement:.3f}ns'
+    return f'{sFilename}:{iLineNumber}  {sMessage}'
