@@ -125,6 +125,7 @@ def populate_timing_report(oTimingReport):
     update_capture_clock_path(oTimingReport)
     update_launch_edge(oTimingReport)
     update_capture_edge(oTimingReport)
+    update_requirement(oTimingReport)
     update_clock_pessimism(oTimingReport)
     update_output_delay(oTimingReport)
     update_clock_uncertainty(oTimingReport)
@@ -386,6 +387,18 @@ def update_launch_edge(oTimingReport):
 def update_capture_edge(oTimingReport):
     lLines = extract_capture_clock_path_lines(oTimingReport.text)
     oTimingReport.capture_edge = extract_clock_edge(lLines[0])
+
+
+def update_requirement(oTimingReport):
+    oLine = find_key_line(oTimingReport, 'Requirement:')
+    oTimingReport.requirement_line = oLine
+    oTimingReport.capture_clock_edge_type = extract_capture_clock_edge_type(oLine)
+
+
+def extract_capture_clock_edge_type(oLine):
+    lWords = oLine.text.split()
+    sCaptureClockEdge = lWords[3]
+    return sCaptureClockEdge.split('@')[0]
 
 
 def update_clock_pessimism(oTimingReport):

@@ -584,6 +584,31 @@ class Test(unittest.TestCase):
         self.assertEqual('O_DAC_DATA_timing.rpt', oLaunchClockLine.filename)
         self.assertEqual(77, oLaunchClockLine.line_number)
 
+    def test_populate_timing_report_reports_requirement_line(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        oRequirementLine = oTimingReports.reports[1].requirement_line
+
+        self.assertEqual('O_DAC_DATA_timing.rpt', oRequirementLine.filename)
+        self.assertEqual(82, oRequirementLine.line_number)
+
+    def test_populate_timing_report_reports_rising_capture_clock_edge_type(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual('rise', oTimingReports.reports[0].capture_clock_edge_type)
+        self.assertEqual('rise', oTimingReports.reports[1].capture_clock_edge_type)
+
+    def test_populate_timing_report_reports_falling_capture_clock_edge_type(self):
+        lFallingTimingReportFile = []
+        for sLine in lTimingReportFile:
+            lFallingTimingReportFile.append(sLine.replace('dac_sclk rise@', 'dac_sclk fall@'))
+        oFallingTimingReportFile = timing_report_file.TimingReportFile('O_DAC_DATA_timing.rpt', lFallingTimingReportFile)
+
+        oTimingReports = vivado.parse_timing_report(oFallingTimingReportFile)
+
+        self.assertEqual('fall', oTimingReports.reports[0].capture_clock_edge_type)
+        self.assertEqual('fall', oTimingReports.reports[1].capture_clock_edge_type)
+
 
 def populate_timing_report_from_lines(lFile):
     oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
