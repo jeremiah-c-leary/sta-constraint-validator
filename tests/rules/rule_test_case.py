@@ -43,6 +43,21 @@ def build_part_text(sCaptureEdge, fSetup, fHold):
     return '\n'.join(lText)
 
 
+def build_passing_traces_text():
+    lText = []
+    lText.append('[[trace]]')
+    lText.append('name = "data_output"')
+    lText.append('device_pin = "O_DAC_DATA"')
+    lText.append('part_pin = "SDIN"')
+    lText.append('device_to_part = {max_delay = 2.0, min_delay = 2.0}')
+    lText.append('[[trace]]')
+    lText.append('name = "clock"')
+    lText.append('device_pin = "O_DAC_SCLK"')
+    lText.append('part_pin = "SCLK"')
+    lText.append('device_to_part = {max_delay = 0.5, min_delay = 0.5}')
+    return '\n'.join(lText)
+
+
 def read_lines(sFilename):
     with open(sFilename) as oFile:
         return oFile.read().split('\n')

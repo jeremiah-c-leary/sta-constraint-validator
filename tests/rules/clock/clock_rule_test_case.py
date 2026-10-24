@@ -34,21 +34,6 @@ def build_config_text(sPartFile, sTracesFile, sTimingReportFile, oClocks):
     return '\n'.join(lText)
 
 
-def build_traces_text():
-    lText = []
-    lText.append('[[trace]]')
-    lText.append('name = "data_output"')
-    lText.append('device_pin = "O_DAC_DATA"')
-    lText.append('part_pin = "SDIN"')
-    lText.append('device_to_part = {max_delay = 2.0, min_delay = 2.0}')
-    lText.append('[[trace]]')
-    lText.append('name = "clock"')
-    lText.append('device_pin = "O_DAC_SCLK"')
-    lText.append('part_pin = "SCLK"')
-    lText.append('device_to_part = {max_delay = 0.5, min_delay = 0.5}')
-    return '\n'.join(lText)
-
-
 class Clocks():
 
     def __init__(self, sLaunchName, fLaunchPeriod, sCaptureName, fCapturePeriod):
@@ -79,5 +64,5 @@ class ClockRuleTestCase(rule_test_case.RuleTestCase):
     def execute(self, oClocks, sTimingReportFile):
         rule_test_case.write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile, oClocks))
         rule_test_case.write_file(self.sPartFile, rule_test_case.build_passing_part_text())
-        rule_test_case.write_file(self.sTracesFile, build_traces_text())
+        rule_test_case.write_file(self.sTracesFile, rule_test_case.build_passing_traces_text())
         return self.run_check()
