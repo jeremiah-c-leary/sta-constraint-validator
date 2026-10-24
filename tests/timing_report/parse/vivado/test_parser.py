@@ -502,6 +502,30 @@ class Test(unittest.TestCase):
         self.assertEqual(3.959, oTimingReports.reports[0].capture_clock_path.total_delay())
         self.assertEqual(2.966, oTimingReports.reports[1].capture_clock_path.total_delay())
 
+    def test_populate_timing_report_reports_line_of_last_data_path_delay(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        oFirstReportLine = oTimingReports.reports[0].data_path.delays[-1].line
+        oLastReportLine = oTimingReports.reports[3].data_path.delays[-1].line
+
+        self.assertEqual('O_DAC_DATA_timing.rpt', oFirstReportLine.filename)
+        self.assertEqual(47, oFirstReportLine.line_number)
+        self.assertEqual(257, oLastReportLine.line_number)
+
+    def test_populate_timing_report_reports_line_of_cell_delay(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        oLine = oTimingReports.reports[0].data_path.delays[-2].line
+
+        self.assertEqual(46, oLine.line_number)
+
+    def test_populate_timing_report_reports_line_of_last_capture_clock_path_delay(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        oLine = oTimingReports.reports[0].capture_clock_path.delays[-1].line
+
+        self.assertEqual(65, oLine.line_number)
+
     def test_populate_timing_report_reports_launch_edge(self):
         oTimingReports = vivado.parse_timing_report(oTimingReportFile)
 

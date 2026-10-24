@@ -332,6 +332,7 @@ def create_cell_delay(oLine):
     oDelay.delay_type = lWords[1]
     oDelay.delay = float(lWords[3])
     oDelay.resource = lWords[-1]
+    oDelay.line = oLine
     return oDelay
 
 
@@ -341,6 +342,7 @@ def create_net_delay(oLine):
     oDelay.fan_out = int(lWords[1].split('=')[1].replace(')', ''))
     oDelay.delay = float(lWords[2])
     oDelay.resource = lWords[-1]
+    oDelay.line = oLine
     return oDelay
 
 

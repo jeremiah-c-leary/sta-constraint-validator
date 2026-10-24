@@ -3,6 +3,7 @@ class Delay():
     def __init__(self):
         self.delay = None
         self.resource = None
+        self.line = None
 
 
 class CellDelay(Delay):
