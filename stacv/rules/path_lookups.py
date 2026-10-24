@@ -4,7 +4,7 @@ def get_data_trace(oPortProfile):
     return oPortProfile.traces.get_device_to_part_trace_starting_with_name(sPortName)
 
 
-def get_part_data_pin(oPortProfile, oDataTrace):
+def get_part_pin_at_end_of_trace(oPortProfile, oDataTrace):
     return oPortProfile.part.get_pin_named(oDataTrace.part_pin)
 
 

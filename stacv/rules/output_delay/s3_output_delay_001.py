@@ -58,7 +58,7 @@ def get_first_setup_report(oPortProfile):
 
 def calculate_expected_max_output_delay(oPortProfile):
     oDataTrace = path_lookups.get_data_trace(oPortProfile)
-    oPartPin = path_lookups.get_part_data_pin(oPortProfile, oDataTrace)
+    oPartPin = path_lookups.get_part_pin_at_end_of_trace(oPortProfile, oDataTrace)
     oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartPin)
     return calculate_max_output_delay(oDataTrace, oPartPin, oClockTrace)
 

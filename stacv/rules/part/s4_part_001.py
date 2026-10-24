@@ -67,7 +67,7 @@ def get_capture_clock_edge_type_mismatches(oPortProfile):
 
 def get_part_data_pin(oPortProfile):
     oDataTrace = path_lookups.get_data_trace(oPortProfile)
-    return path_lookups.get_part_data_pin(oPortProfile, oDataTrace)
+    return path_lookups.get_part_pin_at_end_of_trace(oPortProfile, oDataTrace)
 
 
 def generate_error_message(oTimingReport, oPartPin):

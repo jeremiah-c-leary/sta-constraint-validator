@@ -37,7 +37,7 @@ def check(oPortProfile):
         lDetail = [f'the data trace does not connect to pin {oDataTrace.part_pin} on the part']
         return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
-    oPartDataPin = path_lookups.get_part_data_pin(oPortProfile, oDataTrace)
+    oPartDataPin = path_lookups.get_part_pin_at_end_of_trace(oPortProfile, oDataTrace)
     sPartClockPinName = oPartDataPin.clock.pin
     if not oPortProfile.traces.trace_ends_with_part_pin_named(sPartClockPinName):
         lDetail = [f'a clock trace does not exist for part pin {sPartClockPinName}']
