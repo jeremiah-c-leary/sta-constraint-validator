@@ -55,7 +55,7 @@ def check(oPortProfile):
 
 
 def get_capture_clock_edge_type_mismatches(oPortProfile):
-    oPartPin = get_part_data_pin(oPortProfile)
+    oPartPin = path_lookups.get_part_data_pin(oPortProfile)
     sPartEdgeType = TIMING_REPORT_EDGE_TYPES[oPartPin.capture_edge]
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
@@ -63,11 +63,6 @@ def get_capture_clock_edge_type_mismatches(oPortProfile):
             sErrorMessage = generate_error_message(oTimingReport, oPartPin)
             lDetails.append(sErrorMessage)
     return lDetails
-
-
-def get_part_data_pin(oPortProfile):
-    oDataTrace = path_lookups.get_data_trace(oPortProfile)
-    return path_lookups.get_part_pin_at_end_of_trace(oPortProfile, oDataTrace)
 
 
 def generate_error_message(oTimingReport, oPartPin):
