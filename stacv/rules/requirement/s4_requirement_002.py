@@ -44,6 +44,8 @@ Refer to the vendor's timing constraints documentation for multicycle paths and 
 '''
 
 from stacv.rules import clock_comparisons
+from stacv.rules import edge_times
+from stacv.rules import tolerance
 
 
 RULE_ID = 's4_requirement_002'
@@ -55,6 +57,30 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the hold requirement in the hold timing reports to the time between the configured hold edges.
     '''
-    lDetails = []
+    lDetails = get_hold_requirement_mismatches(oPortProfile)
 
     return clock_comparisons.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
+
+
+def get_hold_requirement_mismatches(oPortProfile):
+    fConfigurationRequirement = calculate_configuration_hold_requirement(oPortProfile.port)
+    lDetails = []
+    for oTimingReport in oPortProfile.timing_reports.get_hold_reports():
+        if not tolerance.is_within_tolerance(fConfigurationRequirement, oTimingReport.requirement, TOLERANCE):
+            sErrorMessage = generate_error_message(oTimingReport, fConfigurationRequirement)
+            lDetails.append(sErrorMessage)
+    return lDetails
+
+
+def calculate_configuration_hold_requirement(oPort):
+    iCaptureEdgeNumber = edge_times.convert_edge_letter_to_number(oPort.capture_clock.hold_edge)
+    fCaptureEdgeTime = edge_times.calculate_edge_time(oPort.capture_clock.period, iCaptureEdgeNumber)
+    fLaunchEdgeTime = edge_times.calculate_edge_time(oPort.launch_clock.period, oPort.launch_clock.hold_edge)
+    return fCaptureEdgeTime - fLaunchEdgeTime
+
+
+def generate_error_message(oTimingReport, fConfigurationRequirement):
+    sFilename = oTimingReport.requirement_line.filename
+    iLineNumber = oTimingReport.requirement_line.line_number
+    sMessage = f'hold requirement {oTimingReport.requirement:.3f}ns, configured hold requirement {fConfigurationRequirement:.3f}ns'
+    return f'{sFilename}:{iLineNumber}  {sMessage}'
