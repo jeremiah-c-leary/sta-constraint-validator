@@ -392,7 +392,14 @@ def update_capture_edge(oTimingReport):
 def update_requirement(oTimingReport):
     oLine = find_key_line(oTimingReport, 'Requirement:')
     oTimingReport.requirement_line = oLine
+    oTimingReport.requirement = extract_requirement(oLine)
     oTimingReport.capture_clock_edge_type = extract_capture_clock_edge_type(oLine)
+
+
+def extract_requirement(oLine):
+    lWords = oLine.text.split()
+    sRequirement = lWords[1]
+    return float(remove_ns(oLine, sRequirement))
 
 
 def extract_capture_clock_edge_type(oLine):

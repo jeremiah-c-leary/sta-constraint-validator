@@ -15,6 +15,7 @@ class TimingReport():
         self.launch_edge = None
         self.capture_edge = None
         self.requirement_line = None
+        self.requirement = None
         self.capture_clock_edge_type = None
         self.clock_pessimism = None
         self.output_delay = None

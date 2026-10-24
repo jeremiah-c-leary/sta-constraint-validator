@@ -592,6 +592,22 @@ class Test(unittest.TestCase):
         self.assertEqual('O_DAC_DATA_timing.rpt', oRequirementLine.filename)
         self.assertEqual(82, oRequirementLine.line_number)
 
+    def test_populate_timing_report_reports_requirement(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        self.assertEqual(0.000, oTimingReports.reports[0].requirement)
+        self.assertEqual(10.000, oTimingReports.reports[1].requirement)
+
+    def test_populate_timing_report_reports_negative_requirement(self):
+        lNegativeTimingReportFile = []
+        for sLine in lTimingReportFile:
+            lNegativeTimingReportFile.append(sLine.replace('Requirement:            0.000ns', 'Requirement:            -15.000ns'))
+        oNegativeTimingReportFile = timing_report_file.TimingReportFile('O_DAC_DATA_timing.rpt', lNegativeTimingReportFile)
+
+        oTimingReports = vivado.parse_timing_report(oNegativeTimingReportFile)
+
+        self.assertEqual(-15.000, oTimingReports.reports[0].requirement)
+
     def test_populate_timing_report_reports_rising_capture_clock_edge_type(self):
         oTimingReports = vivado.parse_timing_report(oTimingReportFile)
 
