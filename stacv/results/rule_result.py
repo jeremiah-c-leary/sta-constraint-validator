@@ -23,3 +23,13 @@ class RuleResult():
 
     def is_skipped(self):
         return self.status == SKIPPED
+
+
+def generate_rule_result(sRuleId, lDetails, sFailureMessage):
+    if has_mismatches(lDetails):
+        return RuleResult(sRuleId, FAILED, lDetails, sFailureMessage)
+    return RuleResult(sRuleId, PASSED, [], '')
+
+
+def has_mismatches(lDetails):
+    return len(lDetails) > 0

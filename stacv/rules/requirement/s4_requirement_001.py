@@ -41,7 +41,7 @@ When the rule fails, it lists each timing report whose setup requirement differs
 Refer to the vendor's timing constraints documentation for multicycle paths and output delays.
 '''
 
-from stacv.rules import clock_comparisons
+from stacv.results import rule_result
 from stacv.rules import edge_times
 from stacv.rules import rule_details
 from stacv.rules import tolerance
@@ -58,7 +58,7 @@ def check(oPortProfile):
     '''
     lDetails = get_setup_requirement_mismatches(oPortProfile)
 
-    return clock_comparisons.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
+    return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
 def get_setup_requirement_mismatches(oPortProfile):

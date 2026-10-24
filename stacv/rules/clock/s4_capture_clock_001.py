@@ -36,7 +36,7 @@ When the rule fails, it lists each timing report whose capture clock differs, wi
 Refer to the vendor's timing constraints documentation for output delays and generated clocks.
 '''
 
-from stacv.rules import clock_comparisons
+from stacv.results import rule_result
 from stacv.rules import rule_details
 
 
@@ -50,7 +50,7 @@ def check(oPortProfile):
     '''
     lDetails = get_capture_clock_mismatches(oPortProfile)
 
-    return clock_comparisons.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
+    return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
 def get_capture_clock_mismatches(oPortProfile):

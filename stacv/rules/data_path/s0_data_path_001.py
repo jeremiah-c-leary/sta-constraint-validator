@@ -34,7 +34,7 @@ When the rule fails, it lists each timing report whose data path ends somewhere 
 * The timing report was generated for every path captured by a clock, rather than for paths through the port, and the worst path is internal.
 '''
 
-from stacv.rules import clock_comparisons
+from stacv.results import rule_result
 from stacv.rules import rule_details
 
 
@@ -48,7 +48,7 @@ def check(oPortProfile):
     '''
     lDetails = get_data_path_end_mismatches(oPortProfile)
 
-    return clock_comparisons.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
+    return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
 def get_data_path_end_mismatches(oPortProfile):
