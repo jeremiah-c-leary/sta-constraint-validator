@@ -569,6 +569,9 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lExpected.append('s4_part_001           Passed')
         lExpected.append('s4_requirement_001    Passed')
         lExpected.append('s4_requirement_002    Passed')
+        lExpected.append('- stage 5 ' + '-' * 70)
+        lExpected.append('s5_slack_001          Passed')
+        lExpected.append('s5_slack_002          Passed')
         lExpected.append('-' * 80)
         self.assertEqual(lExpected, self.read_rule_checks_section())
 
@@ -605,6 +608,9 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lExpected.append('s4_part_001           Skipped  stage 0 failed')
         lExpected.append('s4_requirement_001    Skipped  stage 0 failed')
         lExpected.append('s4_requirement_002    Skipped  stage 0 failed')
+        lExpected.append('- stage 5 ' + '-' * 70)
+        lExpected.append('s5_slack_001          Skipped  stage 0 failed')
+        lExpected.append('s5_slack_002          Skipped  stage 0 failed')
         lExpected.append('-' * 80)
         self.assertEqual(lExpected, self.read_port_rule_checks('Section 3.1: P1.SDR-SS-O Rule Checks')[3:])
 
@@ -720,6 +726,8 @@ class TestExecuteJunit(unittest.TestCase):
         lExpected.append('s4_part_001')
         lExpected.append('s4_requirement_001')
         lExpected.append('s4_requirement_002')
+        lExpected.append('s5_slack_001')
+        lExpected.append('s5_slack_002')
         self.assertEqual(lExpected, lNames)
         self.assertEqual(['P1.SDR-SS-O'] * len(lExpected), lClassnames)
 
