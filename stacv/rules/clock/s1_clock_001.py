@@ -69,13 +69,7 @@ def check(oPortProfile):
         if sLaunchClockStartPoint != sCaptureClockStartPoint:
             lDetails.extend(create_details(oTimingReport))
 
-    if all_start_and_end_points_match(lDetails):
-        return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
-    return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetails, FAILURE_MESSAGE)
-
-
-def all_start_and_end_points_match(lDetails):
-    return len(lDetails) == 0
+    return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
 def create_details(oTimingReport):
