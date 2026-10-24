@@ -46,6 +46,7 @@ class Test(unittest.TestCase):
         lExpected.append('s0_timing_report_001')
         lExpected.append('s0_timing_report_002')
         lExpected.append('s0_trace_001')
+        lExpected.append('s0_data_path_001')
 
         self.assertEqual(lExpected, get_rule_ids(self.oMethodology.stages[0]))
 
