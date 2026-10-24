@@ -75,6 +75,7 @@ Methodology coverage
 =======================  ========  =========  ========
 Rule                     SDR-SS-O  SDR-SS-RT  SDR-SS-I
 =======================  ========  =========  ========
+s0_data_path_001         X
 s3_trace_001             X         X          X
 s3_part_001              X         X          X
 s3_part_002              X         X          X
@@ -82,8 +83,6 @@ s3_output_delay_001      X
 s3_input_delay_001                 X          X
 s4_process_corner_001    X         X          X
 s4_process_corner_002    X         X          X
-s4_timing_report_001     X         X          X
-s4_data_path_001         X
 s4_data_path_002                   X
 s4_data_path_003                              X
 s4_clock_path_001        X
@@ -119,6 +118,43 @@ s0_trace_001: A data trace and its clock trace connect the port to the part
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: stacv.rules.trace.s0_trace_001
+
+s0_data_path_001: Data path ends at the configured port
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:Stage: 0 - inputs
+:Applies to: SDR-SS-O
+:Reads: last element of the data path of every timing report, ``name`` of the port in the configuration
+:Depends on: none
+
+The data path of every timing report of a port must end at the port.
+Every timing report is checked, setup and hold, at every process corner.
+The last element of the data path is the net to the port, which the timing tool names after the port.
+If the data path ends anywhere else, the timing report times a different port or an internal path, and the results of the other rules do not apply to the port.
+
+**Violation**
+
+The port is configured with ``name = "O_DAC_CSF"``, but the data path of the timing report ends at ``O_DAC_DATA``:
+
+.. code-block:: text
+   :emphasize-lines: 1
+
+                            net (fo=0)                   0.000     2.986    O_DAC_DATA
+       U16                                                               r  O_DAC_DATA (OUT)
+
+**Result**
+
+When the rule fails, it lists each timing report whose data path ends somewhere else, with the file and line of the last element of the data path:
+
+.. code-block:: text
+
+     O_DAC_DATA_timing.rpt:47  data path ends at O_DAC_DATA, configured port O_DAC_CSF
+
+**Likely causes**
+
+* The wrong timing report is listed under the port.
+* The port name in the configuration is wrong.
+* The timing report was generated for every path captured by a clock, rather than for paths through the port, and the worst path is internal.
 
 Stage 1: Intra-Timing Report
 ----------------------------
@@ -185,17 +221,6 @@ s4_process_corner_002: Every timing report is at a process corner listed in the 
 A timing report at any other process corner is a failure.
 It usually means the timing reports were generated for a different device, or with different settings than intended.
 This rule waits for a second timing tool: the Vivado parser accepts only the Slow and Fast process corners, and stage 0 requires both.
-
-s4_timing_report_001: Every timing report matches a data port of a methodology
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-A timing report that matches no data port is not checked by any other rule, so it is a failure.
-It usually means a data port is missing from the methodology, or the wrong timing report was provided.
-
-s4_data_path_001: Data path ends at an output port
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The data path in the timing report must end at an output port.
 
 s4_data_path_002: Data path includes clock output pin and data input pin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
