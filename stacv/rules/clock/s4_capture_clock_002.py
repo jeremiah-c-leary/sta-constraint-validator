@@ -51,32 +51,22 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the configuration capture clock period to the capture clock period in the timing reports.
     '''
-    lMismatchedTimingReports = get_mismatched_timing_reports(oPortProfile.timing_reports.reports, oPortProfile.port)
-    lDetails = generate_error_messages(lMismatchedTimingReports, oPortProfile.port)
+    lDetails = get_capture_clock_mismatches(oPortProfile)
 
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
-def get_mismatched_timing_reports(lTimingReports, oPort):
-    lMismatchedTimingReports = []
-    for oTimingReport in lTimingReports:
-        if capture_clock_period_differs(oTimingReport, oPort):
-            lMismatchedTimingReports.append(oTimingReport)
-    return lMismatchedTimingReports
-
-
-def capture_clock_period_differs(oTimingReport, oPort):
-    return not tolerance.is_within_tolerance(oPort.capture_clock.period, oTimingReport.capture_clock.period, TOLERANCE)
-
-
-def generate_error_messages(lTimingReports, oPort):
+def get_capture_clock_mismatches(oPortProfile):
+    fConfigurationCaptureClockPeriod = oPortProfile.port.capture_clock.period
     lDetails = []
-    for oTimingReport in lTimingReports:
-        sErrorMessage = generate_error_message(oTimingReport, oPort)
-        lDetails.append(sErrorMessage)
+    for oTimingReport in oPortProfile.timing_reports.reports:
+        fTimingReportCaptureClockPeriod = oTimingReport.capture_clock.period
+        if not tolerance.is_within_tolerance(fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod, TOLERANCE):
+            sErrorMessage = generate_error_message(oTimingReport, fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod)
+            lDetails.append(sErrorMessage)
     return lDetails
 
 
-def generate_error_message(oTimingReport, oPort):
-    sMessage = f'capture clock period {oTimingReport.capture_clock.period:.3f}ns, configured period {oPort.capture_clock.period:.3f}ns'
+def generate_error_message(oTimingReport, fConfigurationCaptureClockPeriod, fTimingReportCaptureClockPeriod):
+    sMessage = f'capture clock period {fTimingReportCaptureClockPeriod:.3f}ns, configured period {fConfigurationCaptureClockPeriod:.3f}ns'
     return rule_details.format_detail(oTimingReport.capture_clock_line, sMessage)

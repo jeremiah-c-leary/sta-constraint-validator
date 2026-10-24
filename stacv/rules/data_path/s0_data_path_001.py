@@ -46,37 +46,22 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the last element of the data path in the timing reports to the configured port.
     '''
-    lMismatchedTimingReports = get_mismatched_timing_reports(oPortProfile.timing_reports.reports, oPortProfile.port)
-    lDetails = generate_error_messages(lMismatchedTimingReports, oPortProfile.port)
+    lDetails = get_data_path_end_mismatches(oPortProfile)
 
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
-def get_mismatched_timing_reports(lTimingReports, oPort):
-    lMismatchedTimingReports = []
-    for oTimingReport in lTimingReports:
-        if data_path_ends_elsewhere(oTimingReport, oPort):
-            lMismatchedTimingReports.append(oTimingReport)
-    return lMismatchedTimingReports
-
-
-def data_path_ends_elsewhere(oTimingReport, oPort):
-    return get_data_path_end(oTimingReport).resource != oPort.name
-
-
-def generate_error_messages(lTimingReports, oPort):
+def get_data_path_end_mismatches(oPortProfile):
+    sPortName = oPortProfile.port.name
     lDetails = []
-    for oTimingReport in lTimingReports:
-        sErrorMessage = generate_error_message(oTimingReport, oPort)
-        lDetails.append(sErrorMessage)
+    for oTimingReport in oPortProfile.timing_reports.reports:
+        oDataPathEnd = oTimingReport.data_path.get_last_delay()
+        if oDataPathEnd.resource != sPortName:
+            sErrorMessage = generate_error_message(oDataPathEnd, sPortName)
+            lDetails.append(sErrorMessage)
     return lDetails
 
 
-def generate_error_message(oTimingReport, oPort):
-    oDataPathEnd = get_data_path_end(oTimingReport)
-    sMessage = f'data path ends at {oDataPathEnd.resource}, configured port {oPort.name}'
+def generate_error_message(oDataPathEnd, sPortName):
+    sMessage = f'data path ends at {oDataPathEnd.resource}, configured port {sPortName}'
     return rule_details.format_detail(oDataPathEnd.line, sMessage)
-
-
-def get_data_path_end(oTimingReport):
-    return oTimingReport.data_path.get_last_delay()

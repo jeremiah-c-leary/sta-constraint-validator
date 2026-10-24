@@ -46,37 +46,22 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the last element of the capture clock path in the timing reports to the configured clock port.
     '''
-    lMismatchedTimingReports = get_mismatched_timing_reports(oPortProfile.timing_reports.reports, oPortProfile.port)
-    lDetails = generate_error_messages(lMismatchedTimingReports, oPortProfile.port)
+    lDetails = get_capture_clock_path_end_mismatches(oPortProfile)
 
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
-def get_mismatched_timing_reports(lTimingReports, oPort):
-    lMismatchedTimingReports = []
-    for oTimingReport in lTimingReports:
-        if capture_clock_path_ends_elsewhere(oTimingReport, oPort):
-            lMismatchedTimingReports.append(oTimingReport)
-    return lMismatchedTimingReports
-
-
-def capture_clock_path_ends_elsewhere(oTimingReport, oPort):
-    return get_capture_clock_path_end(oTimingReport).resource != oPort.capture_clock.port
-
-
-def generate_error_messages(lTimingReports, oPort):
+def get_capture_clock_path_end_mismatches(oPortProfile):
+    sClockPortName = oPortProfile.port.capture_clock.port
     lDetails = []
-    for oTimingReport in lTimingReports:
-        sErrorMessage = generate_error_message(oTimingReport, oPort)
-        lDetails.append(sErrorMessage)
+    for oTimingReport in oPortProfile.timing_reports.reports:
+        oCaptureClockPathEnd = oTimingReport.capture_clock_path.get_last_delay()
+        if oCaptureClockPathEnd.resource != sClockPortName:
+            sErrorMessage = generate_error_message(oCaptureClockPathEnd, sClockPortName)
+            lDetails.append(sErrorMessage)
     return lDetails
 
 
-def generate_error_message(oTimingReport, oPort):
-    oCaptureClockPathEnd = get_capture_clock_path_end(oTimingReport)
-    sMessage = f'capture clock path ends at {oCaptureClockPathEnd.resource}, configured clock port {oPort.capture_clock.port}'
+def generate_error_message(oCaptureClockPathEnd, sClockPortName):
+    sMessage = f'capture clock path ends at {oCaptureClockPathEnd.resource}, configured clock port {sClockPortName}'
     return rule_details.format_detail(oCaptureClockPathEnd.line, sMessage)
-
-
-def get_capture_clock_path_end(oTimingReport):
-    return oTimingReport.capture_clock_path.get_last_delay()
