@@ -434,6 +434,7 @@ def update_clock_uncertainty(oTimingReport):
 def update_slack(oTimingReport):
     oLine = oTimingReport.get_lines()[0]
     lWords = oLine.text.strip().split()
+    oTimingReport.slack_line = oLine
     oTimingReport.slack = float(remove_ns(oLine, lWords[3]))
 
 

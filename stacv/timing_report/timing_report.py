@@ -21,6 +21,7 @@ class TimingReport():
         self.output_delay = None
         self.output_delay_line = None
         self.clock_uncertainty = None
+        self.slack_line = None
         self.slack = None
 
     def get_lines(self):

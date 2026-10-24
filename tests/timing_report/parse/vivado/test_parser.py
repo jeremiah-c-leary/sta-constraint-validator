@@ -575,6 +575,16 @@ class Test(unittest.TestCase):
         self.assertEqual(0.272, oTimingReports.reports[0].slack)
         self.assertEqual(7.192, oTimingReports.reports[1].slack)
 
+    def test_populate_timing_report_reports_slack_line(self):
+        oTimingReports = vivado.parse_timing_report(oTimingReportFile)
+
+        oHoldSlackLine = oTimingReports.reports[0].slack_line
+        oSetupSlackLine = oTimingReports.reports[1].slack_line
+
+        self.assertEqual('O_DAC_DATA_timing.rpt', oHoldSlackLine.filename)
+        self.assertEqual(14, oHoldSlackLine.line_number)
+        self.assertEqual(75, oSetupSlackLine.line_number)
+
     def test_update_slack_reads_violated_slack(self):
         oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (VIOLATED) :        -0.123ns  (required time - arrival time)', '  slack   -0.123'])
         oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
