@@ -76,6 +76,7 @@ Methodology coverage
 Rule                     SDR-SS-O  SDR-SS-RT  SDR-SS-I
 =======================  ========  =========  ========
 s0_data_path_001         X
+s0_clock_path_001        X
 s3_trace_001             X         X          X
 s3_part_001              X         X          X
 s3_part_002              X         X          X
@@ -85,7 +86,6 @@ s4_process_corner_001    X         X          X
 s4_process_corner_002    X         X          X
 s4_data_path_002                   X
 s4_data_path_003                              X
-s4_clock_path_001        X
 s4_clock_path_002                             X
 s4_launch_clock_001      X         X          X
 s4_launch_clock_002      X         X          X
@@ -123,6 +123,43 @@ s0_data_path_001: Data path ends at the configured port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: stacv.rules.data_path.s0_data_path_001
+
+s0_clock_path_001: Capture clock path ends at the configured clock port
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+:Stage: 0 - inputs
+:Applies to: SDR-SS-O
+:Reads: last element of the capture clock path of every timing report, ``capture_clock.port`` of the port in the configuration
+:Depends on: none
+
+The capture clock path of every timing report of a port must end at the configured clock port.
+Every timing report is checked, setup and hold, at every process corner.
+The last element of the capture clock path is the net to the clock port, which the timing tool names after the port.
+If the capture clock path ends anywhere else, the timing report times the data against a different clock, and the results of the other rules do not apply to the port.
+
+**Violation**
+
+The port is configured with ``capture_clock = {port = "O_DAC_CSF", ...}``, but the capture clock path of the timing report ends at ``O_DAC_SCLK``:
+
+.. code-block:: text
+   :emphasize-lines: 1
+
+                            net (fo=0)                   0.000     3.959    O_DAC_SCLK
+       U15                                                               r  O_DAC_SCLK (OUT)
+
+**Result**
+
+When the rule fails, it lists each timing report whose capture clock path ends somewhere else, with the file and line of the last element of the capture clock path:
+
+.. code-block:: text
+
+     O_DAC_DATA_timing.rpt:65  capture clock path ends at O_DAC_SCLK, configured clock port O_DAC_CSF
+
+**Likely causes**
+
+* The clock port in the configuration is wrong.
+* The output delay constraint refers to a clock that is not forwarded on the clock port.
+* The wrong timing report is listed under the port.
 
 Stage 1: Intra-Timing Report
 ----------------------------
@@ -199,11 +236,6 @@ s4_data_path_003: Data path starts at an input port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The data path in the timing report must start at an input port.
-
-s4_clock_path_001: Clock path ends at an output port
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The capture clock path in the timing report must end at a port.
 
 s4_clock_path_002: Capture clock path starts at the interface clock input port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
