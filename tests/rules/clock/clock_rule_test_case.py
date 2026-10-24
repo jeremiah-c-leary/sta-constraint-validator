@@ -37,8 +37,8 @@ def build_config_text(sPartFile, sTracesFile, sTimingReportFile, oClocks):
     lText.append('[[port]]')
     lText.append('name = "O_DAC_DATA"')
     lText.append('methodology = "SDR-SS-O"')
-    lText.append(f'launch_clock = {{name = "{oClocks.launch_name}", period = {oClocks.launch_period}, setup_edge = 8}}')
-    lText.append(f'capture_clock = {{port = "O_DAC_SCLK", name = "{oClocks.capture_name}", period = {oClocks.capture_period}, setup_edge = "C"}}')
+    lText.append(f'launch_clock = {{name = "{oClocks.launch_name}", period = {oClocks.launch_period}, setup_edge = 8, hold_edge = 0}}')
+    lText.append(f'capture_clock = {{port = "O_DAC_SCLK", name = "{oClocks.capture_name}", period = {oClocks.capture_period}, setup_edge = "C", hold_edge = "A"}}')
     lText.append(f'timing_reports = ["{sTimingReportFile}"]')
     return '\n'.join(lText)
 

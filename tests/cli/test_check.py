@@ -33,8 +33,8 @@ def build_config_text(lTimingReports, sTracesFile, sPartFile):
         lText.append('[[port]]')
         lText.append(f'name = "PORT_{iPort}"')
         lText.append('methodology = "SDR-SS-O"')
-        lText.append('launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8}')
-        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50, setup_edge = "C"}')
+        lText.append('launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8, hold_edge = 0}')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50, setup_edge = "C", hold_edge = "A"}')
         lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
 
@@ -202,8 +202,8 @@ def build_named_ports_config_text(sDescription, lPorts, sTracesFile, sPartFile):
         lText.append('[[port]]')
         lText.append(f'name = "{sPortName}"')
         lText.append('methodology = "SDR-SS-O"')
-        lText.append('launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8}')
-        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50, setup_edge = "C"}')
+        lText.append('launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8, hold_edge = 0}')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50, setup_edge = "C", hold_edge = "A"}')
         lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
 
