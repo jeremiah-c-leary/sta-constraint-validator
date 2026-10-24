@@ -37,6 +37,7 @@ When the rule fails, it lists each setup timing report with a negative slack, wi
 '''
 
 from stacv.results import rule_result
+from stacv.rules import rule_details
 
 
 RULE_ID = 's5_slack_001'
@@ -47,6 +48,24 @@ def check(oPortProfile):
     '''
     Purpose:  Checks the setup slack in the setup timing reports is not negative.
     '''
-    lDetails = []
+    lDetails = get_negative_setup_slacks(oPortProfile)
 
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
+
+
+def get_negative_setup_slacks(oPortProfile):
+    lDetails = []
+    for oTimingReport in oPortProfile.timing_reports.get_setup_reports():
+        if is_negative(oTimingReport.slack):
+            sErrorMessage = generate_error_message(oTimingReport)
+            lDetails.append(sErrorMessage)
+    return lDetails
+
+
+def is_negative(fSlack):
+    return fSlack < 0.0
+
+
+def generate_error_message(oTimingReport):
+    sMessage = f'setup slack {oTimingReport.slack:.3f}ns'
+    return rule_details.format_detail(oTimingReport.slack_line, sMessage)
