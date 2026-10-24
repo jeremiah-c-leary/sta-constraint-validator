@@ -549,6 +549,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lExpected.append('s0_timing_report_002  Passed')
         lExpected.append('s0_trace_001          Passed')
         lExpected.append('s0_data_path_001      Passed')
+        lExpected.append('s0_clock_path_001     Passed')
         lExpected.append('- stage 1 ' + '-' * 70)
         lExpected.append('s1_clock_001          Passed')
         lExpected.append('- stage 2 ' + '-' * 70)
@@ -584,6 +585,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lExpected.append('s0_timing_report_002  Failed   ' + sTimingReport + ':14  hold timing report, Fast process corner')
         lExpected.append('s0_trace_001          Passed')
         lExpected.append('s0_data_path_001      Passed')
+        lExpected.append('s0_clock_path_001     Passed')
         lExpected.append('- stage 1 ' + '-' * 70)
         lExpected.append('s1_clock_001          Skipped  stage 0 failed')
         lExpected.append('- stage 2 ' + '-' * 70)
@@ -616,7 +618,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lExpected.append('s2_output_delay_001   Failed   ' + sTimingReport + ':85  2.000ns')
         lExpected.append(' ' * 31 + sTimingReport + ':229  2.500ns')
         lExpected.append('s2_output_delay_002   Passed')
-        self.assertEqual(lExpected, self.read_port_rule_checks('Section 3.1: P1.SDR-SS-O Rule Checks')[15:18])
+        self.assertEqual(lExpected, self.read_port_rule_checks('Section 3.1: P1.SDR-SS-O Rule Checks')[16:19])
 
     def test_rule_checks_give_each_port_its_own_numbered_section_separated_by_a_blank_line(self):
         lPorts = []
@@ -702,6 +704,7 @@ class TestExecuteJunit(unittest.TestCase):
         lExpected.append('s0_timing_report_002')
         lExpected.append('s0_trace_001')
         lExpected.append('s0_data_path_001')
+        lExpected.append('s0_clock_path_001')
         lExpected.append('s1_clock_001')
         lExpected.append('s2_clock_001')
         lExpected.append('s2_clock_002')

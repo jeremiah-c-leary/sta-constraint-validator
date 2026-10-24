@@ -1,6 +1,7 @@
 from stacv.methodology import methodology
 from stacv.methodology import stage
 
+from stacv.rules.clock import s0_clock_path_001
 from stacv.rules.clock import s1_clock_001
 from stacv.rules.clock import s2_clock_001
 from stacv.rules.clock import s2_clock_002
@@ -26,7 +27,7 @@ class SdrSourceSynchronousOutput(methodology.Methodology):
 
     def __init__(self):
         methodology.Methodology.__init__(self)
-        self.stages.append(stage.Stage('stage 0', [s0_timing_report_001, s0_timing_report_002, s0_trace_001, s0_data_path_001]))
+        self.stages.append(stage.Stage('stage 0', [s0_timing_report_001, s0_timing_report_002, s0_trace_001, s0_data_path_001, s0_clock_path_001]))
         self.stages.append(stage.Stage('stage 1', [s1_clock_001]))
         self.stages.append(stage.Stage('stage 2', [s2_clock_001, s2_clock_002, s2_data_path_001, s2_output_delay_001, s2_output_delay_002]))
         self.stages.append(stage.Stage('stage 3', [s3_output_delay_001, s3_output_delay_002]))
