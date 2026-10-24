@@ -45,6 +45,24 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the last element of the capture clock path in the timing reports to the configured clock port.
     '''
-    lDetails = []
+    lDetails = get_capture_clock_path_end_mismatches(oPortProfile)
 
     return clock_comparisons.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
+
+
+def get_capture_clock_path_end_mismatches(oPortProfile):
+    sClockPortName = oPortProfile.port.capture_clock.port
+    lDetails = []
+    for oTimingReport in oPortProfile.timing_reports.reports:
+        oCaptureClockPathEnd = oTimingReport.capture_clock_path.get_last_delay()
+        if oCaptureClockPathEnd.resource != sClockPortName:
+            sErrorMessage = generate_error_message(oCaptureClockPathEnd, sClockPortName)
+            lDetails.append(sErrorMessage)
+    return lDetails
+
+
+def generate_error_message(oCaptureClockPathEnd, sClockPortName):
+    sFilename = oCaptureClockPathEnd.line.filename
+    iLineNumber = oCaptureClockPathEnd.line.line_number
+    sMessage = f'capture clock path ends at {oCaptureClockPathEnd.resource}, configured clock port {sClockPortName}'
+    return f'{sFilename}:{iLineNumber}  {sMessage}'
