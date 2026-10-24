@@ -26,4 +26,4 @@ such as the following fails the build::
     - name: Validate timing constraints
       run: bin/stacv report timing/config.yaml build/reports/*.rpt --junit results.xml
 
-The checks and JUnit output need only the standard library and PyYAML.
+The checks and JUnit output need only the standard library.
