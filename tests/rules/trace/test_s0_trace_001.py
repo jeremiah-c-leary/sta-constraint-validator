@@ -98,17 +98,12 @@ def build_traces_text(lTraces):
     return '\n'.join(lText)
 
 
-def write_file(sFilename, sText):
-    with open(sFilename, 'w') as oFile:
-        oFile.write(sText)
-
-
 class Test(rule_test_case.RuleTestCase):
 
     def execute(self, lTraces):
-        write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile))
-        write_file(self.sPartFile, build_part_text())
-        write_file(self.sTracesFile, build_traces_text(lTraces))
+        rule_test_case.write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile))
+        rule_test_case.write_file(self.sPartFile, build_part_text())
+        rule_test_case.write_file(self.sTracesFile, build_traces_text(lTraces))
         return self.run_check()
 
     def test_passes_when_data_trace_and_clock_trace_exist(self):

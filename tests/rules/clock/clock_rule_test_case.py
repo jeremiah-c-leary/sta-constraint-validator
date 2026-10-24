@@ -73,16 +73,6 @@ def build_traces_text():
     return '\n'.join(lText)
 
 
-def read_lines(sFilename):
-    with open(sFilename) as oFile:
-        return oFile.read().split('\n')
-
-
-def write_file(sFilename, sText):
-    with open(sFilename, 'w') as oFile:
-        oFile.write(sText)
-
-
 class Clocks():
 
     def __init__(self, sLaunchName, fLaunchPeriod, sCaptureName, fCapturePeriod):
@@ -103,15 +93,15 @@ class ClockRuleTestCase(rule_test_case.RuleTestCase):
         return self.execute(oClocks, sTimingReport)
 
     def execute_with_last_report_line_changed(self, iLineNumber, sOld, sNew):
-        lLines = read_lines(sTimingReport)
+        lLines = rule_test_case.read_lines(sTimingReport)
         self.assertIn(sOld, lLines[iLineNumber - 1])
         lLines[iLineNumber - 1] = lLines[iLineNumber - 1].replace(sOld, sNew)
-        write_file(self.sChangedTimingReport, '\n'.join(lLines))
+        rule_test_case.write_file(self.sChangedTimingReport, '\n'.join(lLines))
         oClocks = Clocks(sPassingLaunchName, fPassingLaunchPeriod, sPassingCaptureName, fPassingCapturePeriod)
         return self.execute(oClocks, self.sChangedTimingReport)
 
     def execute(self, oClocks, sTimingReportFile):
-        write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile, oClocks))
-        write_file(self.sPartFile, build_part_text())
-        write_file(self.sTracesFile, build_traces_text())
+        rule_test_case.write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile, oClocks))
+        rule_test_case.write_file(self.sPartFile, build_part_text())
+        rule_test_case.write_file(self.sTracesFile, build_traces_text())
         return self.run_check()

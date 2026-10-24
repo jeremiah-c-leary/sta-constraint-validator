@@ -67,30 +67,20 @@ def build_traces_text():
     return '\n'.join(lText)
 
 
-def read_lines(sFilename):
-    with open(sFilename) as oFile:
-        return oFile.read().split('\n')
-
-
-def write_file(sFilename, sText):
-    with open(sFilename, 'w') as oFile:
-        oFile.write(sText)
-
-
 class Test(rule_test_case.RuleTestCase):
 
     def execute(self, sCaptureEdge, sTimingReportFile):
-        write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile))
-        write_file(self.sPartFile, build_part_text(sCaptureEdge))
-        write_file(self.sTracesFile, build_traces_text())
+        rule_test_case.write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile))
+        rule_test_case.write_file(self.sPartFile, build_part_text(sCaptureEdge))
+        rule_test_case.write_file(self.sTracesFile, build_traces_text())
         return self.run_check()
 
     def execute_with_requirement_lines_changed(self, sCaptureEdge, lLineNumbers):
-        lLines = read_lines(sTimingReport)
+        lLines = rule_test_case.read_lines(sTimingReport)
         for iLineNumber in lLineNumbers:
             self.assertIn('dac_sclk rise@', lLines[iLineNumber - 1])
             lLines[iLineNumber - 1] = lLines[iLineNumber - 1].replace('dac_sclk rise@', 'dac_sclk fall@')
-        write_file(self.sChangedTimingReport, '\n'.join(lLines))
+        rule_test_case.write_file(self.sChangedTimingReport, '\n'.join(lLines))
         return self.execute(sCaptureEdge, self.sChangedTimingReport)
 
     def test_passes_when_part_captures_on_rising_edge_and_reports_time_rising_edge(self):

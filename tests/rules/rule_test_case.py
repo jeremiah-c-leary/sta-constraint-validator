@@ -12,6 +12,16 @@ from stacv.cli import check
 sSuiteName = 'O_DAC_DATA.SDR-SS-O'
 
 
+def read_lines(sFilename):
+    with open(sFilename) as oFile:
+        return oFile.read().split('\n')
+
+
+def write_file(sFilename, sText):
+    with open(sFilename, 'w') as oFile:
+        oFile.write(sText)
+
+
 class RuleTestCase(unittest.TestCase):
 
     def setUp(self):

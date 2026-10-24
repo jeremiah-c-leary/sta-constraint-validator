@@ -76,16 +76,6 @@ def build_traces_text():
     return '\n'.join(lText)
 
 
-def read_lines(sFilename):
-    with open(sFilename) as oFile:
-        return oFile.read().split('\n')
-
-
-def write_file(sFilename, sText):
-    with open(sFilename, 'w') as oFile:
-        oFile.write(sText)
-
-
 class SetupEdges():
 
     def __init__(self, iLaunchEdge, sCaptureEdge, fCapturePeriod):
@@ -105,18 +95,18 @@ class Test(rule_test_case.RuleTestCase):
         return self.execute(oSetupEdges, sTimingReport)
 
     def execute_with_requirement_lines_changed(self, lLineNumbers, sOld, sNew):
-        lLines = read_lines(sTimingReport)
+        lLines = rule_test_case.read_lines(sTimingReport)
         for iLineNumber in lLineNumbers:
             self.assertIn(sOld, lLines[iLineNumber - 1])
             lLines[iLineNumber - 1] = lLines[iLineNumber - 1].replace(sOld, sNew)
-        write_file(self.sChangedTimingReport, '\n'.join(lLines))
+        rule_test_case.write_file(self.sChangedTimingReport, '\n'.join(lLines))
         oSetupEdges = SetupEdges(iPassingLaunchSetupEdge, sPassingCaptureSetupEdge, fPassingCapturePeriod)
         return self.execute(oSetupEdges, self.sChangedTimingReport)
 
     def execute(self, oSetupEdges, sTimingReportFile):
-        write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile, oSetupEdges))
-        write_file(self.sPartFile, build_part_text())
-        write_file(self.sTracesFile, build_traces_text())
+        rule_test_case.write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile, oSetupEdges))
+        rule_test_case.write_file(self.sPartFile, build_part_text())
+        rule_test_case.write_file(self.sTracesFile, build_traces_text())
         return self.run_check()
 
     def test_passes_when_setup_requirement_matches_configured_setup_edges(self):
