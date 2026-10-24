@@ -35,6 +35,7 @@ When the rule fails, it lists each timing report whose data path ends somewhere 
 '''
 
 from stacv.rules import clock_comparisons
+from stacv.rules import rule_details
 
 
 RULE_ID = 's0_data_path_001'
@@ -62,7 +63,5 @@ def get_data_path_end_mismatches(oPortProfile):
 
 
 def generate_error_message(oDataPathEnd, sPortName):
-    sFilename = oDataPathEnd.line.filename
-    iLineNumber = oDataPathEnd.line.line_number
     sMessage = f'data path ends at {oDataPathEnd.resource}, configured port {sPortName}'
-    return f'{sFilename}:{iLineNumber}  {sMessage}'
+    return rule_details.format_detail(oDataPathEnd.line, sMessage)

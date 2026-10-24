@@ -37,6 +37,7 @@ Refer to the vendor's timing constraints documentation for creating clocks.
 '''
 
 from stacv.rules import clock_comparisons
+from stacv.rules import rule_details
 from stacv.rules import tolerance
 
 
@@ -66,7 +67,5 @@ def get_launch_clock_mismatches(oPortProfile):
 
 
 def generate_error_message(oTimingReport, fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod):
-    sFilename = oTimingReport.launch_clock_line.filename
-    iLineNumber = oTimingReport.launch_clock_line.line_number
     sMessage = f'launch clock period {fTimingReportLaunchClockPeriod:.3f}ns, configured period {fConfigurationLaunchClockPeriod:.3f}ns'
-    return f'{sFilename}:{iLineNumber}  {sMessage}'
+    return rule_details.format_detail(oTimingReport.launch_clock_line, sMessage)

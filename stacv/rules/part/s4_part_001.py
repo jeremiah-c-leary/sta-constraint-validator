@@ -38,6 +38,7 @@ Refer to the vendor's timing constraints documentation for output delays.
 
 from stacv.rules import clock_comparisons
 from stacv.rules import path_lookups
+from stacv.rules import rule_details
 
 
 RULE_ID = 's4_part_001'
@@ -66,7 +67,5 @@ def get_capture_clock_edge_type_mismatches(oPortProfile):
 
 
 def generate_error_message(oTimingReport, oPartPin):
-    sFilename = oTimingReport.requirement_line.filename
-    iLineNumber = oTimingReport.requirement_line.line_number
     sMessage = f'capture clock edge {oTimingReport.capture_clock_edge_type}, part {oPartPin.name} captures on {oPartPin.capture_edge}'
-    return f'{sFilename}:{iLineNumber}  {sMessage}'
+    return rule_details.format_detail(oTimingReport.requirement_line, sMessage)

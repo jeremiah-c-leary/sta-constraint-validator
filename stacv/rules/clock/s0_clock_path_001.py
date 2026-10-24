@@ -35,6 +35,7 @@ When the rule fails, it lists each timing report whose capture clock path ends s
 '''
 
 from stacv.rules import clock_comparisons
+from stacv.rules import rule_details
 
 
 RULE_ID = 's0_clock_path_001'
@@ -62,7 +63,5 @@ def get_capture_clock_path_end_mismatches(oPortProfile):
 
 
 def generate_error_message(oCaptureClockPathEnd, sClockPortName):
-    sFilename = oCaptureClockPathEnd.line.filename
-    iLineNumber = oCaptureClockPathEnd.line.line_number
     sMessage = f'capture clock path ends at {oCaptureClockPathEnd.resource}, configured clock port {sClockPortName}'
-    return f'{sFilename}:{iLineNumber}  {sMessage}'
+    return rule_details.format_detail(oCaptureClockPathEnd.line, sMessage)

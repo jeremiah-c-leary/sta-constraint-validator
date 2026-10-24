@@ -43,6 +43,7 @@ Refer to the vendor's timing constraints documentation for multicycle paths and 
 
 from stacv.rules import clock_comparisons
 from stacv.rules import edge_times
+from stacv.rules import rule_details
 from stacv.rules import tolerance
 
 
@@ -78,7 +79,5 @@ def calculate_configuration_setup_requirement(oPort):
 
 
 def generate_error_message(oTimingReport, fConfigurationRequirement):
-    sFilename = oTimingReport.requirement_line.filename
-    iLineNumber = oTimingReport.requirement_line.line_number
     sMessage = f'setup requirement {oTimingReport.requirement:.3f}ns, configured setup requirement {fConfigurationRequirement:.3f}ns'
-    return f'{sFilename}:{iLineNumber}  {sMessage}'
+    return rule_details.format_detail(oTimingReport.requirement_line, sMessage)

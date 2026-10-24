@@ -37,6 +37,7 @@ Refer to the vendor's timing constraints documentation for output delays and gen
 '''
 
 from stacv.rules import clock_comparisons
+from stacv.rules import rule_details
 
 
 RULE_ID = 's4_capture_clock_001'
@@ -64,7 +65,5 @@ def get_capture_clock_mismatches(oPortProfile):
 
 
 def generate_error_message(oTimingReport, sConfigurationCaptureClockName, sTimingReportCaptureClockName):
-    sFilename = oTimingReport.capture_clock_line.filename
-    iLineNumber = oTimingReport.capture_clock_line.line_number
     sMessage = f'capture clock {sTimingReportCaptureClockName}, configured capture clock {sConfigurationCaptureClockName}'
-    return f'{sFilename}:{iLineNumber}  {sMessage}'
+    return rule_details.format_detail(oTimingReport.capture_clock_line, sMessage)
