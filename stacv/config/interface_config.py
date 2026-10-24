@@ -105,6 +105,7 @@ def build_capture_clock(dClock):
     oClockPin.name = dClock['name']
     oClockPin.period = dClock['period']
     oClockPin.setup_edge = dClock['setup_edge']
+    oClockPin.hold_edge = dClock['hold_edge']
     return oClockPin
 
 
@@ -113,6 +114,7 @@ def build_launch_clock(dClock):
     oClockPin.name = dClock['name']
     oClockPin.period = dClock['period']
     oClockPin.setup_edge = dClock['setup_edge']
+    oClockPin.hold_edge = dClock['hold_edge']
     return oClockPin
 
 

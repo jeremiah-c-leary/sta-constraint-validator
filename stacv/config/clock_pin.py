@@ -6,3 +6,4 @@ class ClockPin():
         self.name = None
         self.period = None
         self.setup_edge = None
+        self.hold_edge = None
