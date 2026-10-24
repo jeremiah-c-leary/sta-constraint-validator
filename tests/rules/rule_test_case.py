@@ -77,6 +77,7 @@ class RuleTestCase(unittest.TestCase):
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sChangedTimingReport = os.path.join(self.oTempDir.name, 'O_DAC_DATA_timing.rpt')
         self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')
+        self.sSuiteName = sSuiteName
 
     def tearDown(self):
         self.oTempDir.cleanup()
@@ -91,11 +92,11 @@ class RuleTestCase(unittest.TestCase):
     def find_testcase(self, sRuleId):
         oRoot = xml.etree.ElementTree.parse(self.sJunitFile).getroot()
         for oSuite in oRoot.findall('testsuite'):
-            if oSuite.get('name') == sSuiteName:
+            if oSuite.get('name') == self.sSuiteName:
                 for oTestcase in oSuite.findall('testcase'):
                     if oTestcase.get('name') == sRuleId:
                         return oTestcase
-        raise ValueError(f'{sSuiteName} {sRuleId} is not in the JUnit file')
+        raise ValueError(f'{self.sSuiteName} {sRuleId} is not in the JUnit file')
 
     def assert_rule_passed(self, sRuleId):
         oTestcase = self.find_testcase(sRuleId)

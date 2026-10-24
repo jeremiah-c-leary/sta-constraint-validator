@@ -45,6 +45,28 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the last element of the data path in the timing reports to the configured port.
     '''
-    lDetails = []
+    lDetails = get_data_path_end_mismatches(oPortProfile)
 
     return clock_comparisons.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
+
+
+def get_data_path_end_mismatches(oPortProfile):
+    sPortName = oPortProfile.port.name
+    lDetails = []
+    for oTimingReport in oPortProfile.timing_reports.reports:
+        oDataPathEnd = get_data_path_end(oTimingReport)
+        if oDataPathEnd.resource != sPortName:
+            sErrorMessage = generate_error_message(oDataPathEnd, sPortName)
+            lDetails.append(sErrorMessage)
+    return lDetails
+
+
+def get_data_path_end(oTimingReport):
+    return oTimingReport.data_path.delays[-1]
+
+
+def generate_error_message(oDataPathEnd, sPortName):
+    sFilename = oDataPathEnd.line.filename
+    iLineNumber = oDataPathEnd.line.line_number
+    sMessage = f'data path ends at {oDataPathEnd.resource}, configured port {sPortName}'
+    return f'{sFilename}:{iLineNumber}  {sMessage}'
