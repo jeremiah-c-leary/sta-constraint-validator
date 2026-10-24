@@ -1,13 +1,6 @@
-import argparse
-import contextlib
-import datetime
-import io
 import os
-import tempfile
-import unittest
-import xml.etree.ElementTree
 
-from stacv.cli import check
+from tests.rules import rule_test_case
 
 sTestDir = os.path.dirname(os.path.abspath(__file__))
 sParseDir = os.path.join(sTestDir, '..', '..', 'timing_report', 'parse', 'vivado')
@@ -16,7 +9,6 @@ sParseDir = os.path.join(sTestDir, '..', '..', 'timing_report', 'parse', 'vivado
 # Hold reports at both process corners have an output delay of 1.000ns.
 sTimingReport = os.path.abspath(os.path.join(sParseDir, 'O_DAC_DATA_timing.rpt'))
 
-sSuiteName = 'O_DAC_DATA.SDR-SS-O'
 sRuleId = 's0_trace_001'
 
 # The part has one pin, SDIN, clocked by SCLK.
@@ -111,49 +103,18 @@ def write_file(sFilename, sText):
         oFile.write(sText)
 
 
-class Test(unittest.TestCase):
-
-    def setUp(self):
-        self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
-        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
-        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
-        self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')
-
-    def tearDown(self):
-        self.oTempDir.cleanup()
+class Test(rule_test_case.RuleTestCase):
 
     def execute(self, lTraces):
         write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile))
         write_file(self.sPartFile, build_part_text())
         write_file(self.sTracesFile, build_traces_text(lTraces))
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=self.sJunitFile)
-        oDateTime = datetime.datetime(2026, 10, 22, 20, 0, 0)
-        lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
-        with contextlib.redirect_stdout(io.StringIO()):
-            return check.execute(oArgs, oDateTime, lArgv)
-
-    def find_testcase(self, sTestcaseName):
-        oRoot = xml.etree.ElementTree.parse(self.sJunitFile).getroot()
-        for oSuite in oRoot.findall('testsuite'):
-            if oSuite.get('name') == sSuiteName:
-                for oTestcase in oSuite.findall('testcase'):
-                    if oTestcase.get('name') == sTestcaseName:
-                        return oTestcase
-        raise ValueError(f'{sSuiteName} {sTestcaseName} is not in the JUnit file')
-
-    def assert_rule_passed(self):
-        oTestcase = self.find_testcase(sRuleId)
-        self.assertEqual([], list(oTestcase))
-
-    def assert_rule_failed(self):
-        oTestcase = self.find_testcase(sRuleId)
-        self.assertIsNotNone(oTestcase.find('failure'))
+        return self.run_check()
 
     def test_passes_when_data_trace_and_clock_trace_exist(self):
         self.execute(create_passing_traces())
 
-        self.assert_rule_passed()
+        self.assert_rule_passed(sRuleId)
 
     def test_fails_when_no_trace_has_port_as_device_pin(self):
         lTraces = []
@@ -161,7 +122,7 @@ class Test(unittest.TestCase):
         lTraces.append(create_passing_clock_trace())
         self.execute(lTraces)
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_fails_when_data_trace_part_pin_is_not_a_pin_of_the_part(self):
         lTraces = []
@@ -169,7 +130,7 @@ class Test(unittest.TestCase):
         lTraces.append(create_passing_clock_trace())
         self.execute(lTraces)
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_fails_when_no_trace_has_capture_clock_port_as_device_pin(self):
         lTraces = []
@@ -177,7 +138,7 @@ class Test(unittest.TestCase):
         lTraces.append(create_clock_trace('O_OTHER_SCLK', 'SCLK'))
         self.execute(lTraces)
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_fails_when_capture_clock_trace_part_pin_is_not_the_clock_pin(self):
         lTraces = []
@@ -185,7 +146,7 @@ class Test(unittest.TestCase):
         lTraces.append(create_clock_trace('O_DAC_SCLK', 'CSF'))
         self.execute(lTraces)
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_fails_when_clock_device_pin_and_part_pin_match_on_different_traces(self):
         # Neither trace connects O_DAC_SCLK to SCLK
@@ -195,7 +156,7 @@ class Test(unittest.TestCase):
         lTraces.append(create_clock_trace('O_OTHER_SCLK', 'SCLK'))
         self.execute(lTraces)
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_passes_when_another_clock_trace_to_the_clock_pin_is_listed_first(self):
         lTraces = []
@@ -204,7 +165,7 @@ class Test(unittest.TestCase):
         lTraces.append(create_passing_clock_trace())
         self.execute(lTraces)
 
-        self.assert_rule_passed()
+        self.assert_rule_passed(sRuleId)
 
     def test_stage_3_uses_clock_trace_from_capture_clock_port_when_another_is_listed_first(self):
         # With the 9.0 delay of O_OTHER_SCLK the maximum output delay would be 0.5 + 2.0 - 9.0 = -6.500
@@ -222,7 +183,7 @@ class Test(unittest.TestCase):
         lTraces.append(create_passing_clock_trace())
         self.execute(lTraces)
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_fails_when_clock_trace_has_no_device_to_part_delays(self):
         lTraces = []
@@ -230,7 +191,7 @@ class Test(unittest.TestCase):
         lTraces.append(create_trace('clock', 'O_DAC_SCLK', 'SCLK', 'part_to_device', fClockDelay))
         self.execute(lTraces)
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_passes_when_unrelated_traces_exist(self):
         lTraces = []
@@ -239,7 +200,7 @@ class Test(unittest.TestCase):
         lTraces.extend(create_passing_traces())
         self.execute(lTraces)
 
-        self.assert_rule_passed()
+        self.assert_rule_passed(sRuleId)
 
     def test_skips_stage_3_when_data_trace_is_missing(self):
         lTraces = []

@@ -1,13 +1,6 @@
-import argparse
-import contextlib
-import datetime
-import io
 import os
-import tempfile
-import unittest
-import xml.etree.ElementTree
 
-from stacv.cli import check
+from tests.rules import rule_test_case
 
 sTestDir = os.path.dirname(os.path.abspath(__file__))
 sParseDir = os.path.join(sTestDir, '..', '..', 'timing_report', 'parse', 'vivado')
@@ -19,8 +12,6 @@ sTimingReport = os.path.abspath(os.path.join(sParseDir, 'O_DAC_DATA_timing.rpt')
 # Lines of the last timing report in sTimingReport, Max at Slow Process Corner
 iLastReportLaunchClockLine = 221
 iLastReportCaptureClockLine = 223
-
-sSuiteName = 'O_DAC_DATA.SDR-SS-O'
 
 sPassingLaunchName = 'clk_100mhz'
 fPassingLaunchPeriod = 10.0
@@ -101,18 +92,7 @@ class Clocks():
         self.capture_period = fCapturePeriod
 
 
-class ClockRuleTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
-        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
-        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
-        self.sChangedTimingReport = os.path.join(self.oTempDir.name, 'O_DAC_DATA_timing.rpt')
-        self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')
-
-    def tearDown(self):
-        self.oTempDir.cleanup()
+class ClockRuleTestCase(rule_test_case.RuleTestCase):
 
     def execute_with_launch_clock(self, sName, fPeriod):
         oClocks = Clocks(sName, fPeriod, sPassingCaptureName, fPassingCapturePeriod)
@@ -134,25 +114,4 @@ class ClockRuleTestCase(unittest.TestCase):
         write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile, oClocks))
         write_file(self.sPartFile, build_part_text())
         write_file(self.sTracesFile, build_traces_text())
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=self.sJunitFile)
-        oDateTime = datetime.datetime(2026, 10, 22, 20, 0, 0)
-        lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
-        with contextlib.redirect_stdout(io.StringIO()):
-            return check.execute(oArgs, oDateTime, lArgv)
-
-    def find_testcase(self, sTestcaseName):
-        oRoot = xml.etree.ElementTree.parse(self.sJunitFile).getroot()
-        for oSuite in oRoot.findall('testsuite'):
-            if oSuite.get('name') == sSuiteName:
-                for oTestcase in oSuite.findall('testcase'):
-                    if oTestcase.get('name') == sTestcaseName:
-                        return oTestcase
-        raise ValueError(f'{sSuiteName} {sTestcaseName} is not in the JUnit file')
-
-    def assert_rule_passed(self, sRuleId):
-        oTestcase = self.find_testcase(sRuleId)
-        self.assertEqual([], list(oTestcase))
-
-    def assert_rule_failed(self, sRuleId):
-        oTestcase = self.find_testcase(sRuleId)
-        self.assertIsNotNone(oTestcase.find('failure'))
+        return self.run_check()

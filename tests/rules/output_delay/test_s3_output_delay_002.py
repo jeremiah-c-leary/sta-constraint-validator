@@ -1,13 +1,6 @@
-import argparse
-import contextlib
-import datetime
-import io
 import os
-import tempfile
-import unittest
-import xml.etree.ElementTree
 
-from stacv.cli import check
+from tests.rules import rule_test_case
 
 sTestDir = os.path.dirname(os.path.abspath(__file__))
 sParseDir = os.path.join(sTestDir, '..', '..', 'timing_report', 'parse', 'vivado')
@@ -16,7 +9,6 @@ sParseDir = os.path.join(sTestDir, '..', '..', 'timing_report', 'parse', 'vivado
 # Hold reports at both process corners have an output delay of 1.000ns.
 sTimingReport = os.path.abspath(os.path.join(sParseDir, 'O_DAC_DATA_timing.rpt'))
 
-sSuiteName = 'O_DAC_DATA.SDR-SS-O'
 sRuleId = 's3_output_delay_002'
 
 # With these traces, a part hold of 0.5 gives a calculated minimum output delay of:
@@ -104,49 +96,18 @@ def write_file(sFilename, sText):
         oFile.write(sText)
 
 
-class Test(unittest.TestCase):
-
-    def setUp(self):
-        self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
-        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
-        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
-        self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')
-
-    def tearDown(self):
-        self.oTempDir.cleanup()
+class Test(rule_test_case.RuleTestCase):
 
     def execute(self, fSetup, fHold, lTraces):
         write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile))
         write_file(self.sPartFile, build_part_text(fSetup, fHold))
         write_file(self.sTracesFile, build_traces_text(lTraces))
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=self.sJunitFile)
-        oDateTime = datetime.datetime(2026, 10, 22, 20, 0, 0)
-        lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
-        with contextlib.redirect_stdout(io.StringIO()):
-            return check.execute(oArgs, oDateTime, lArgv)
-
-    def find_rule_testcase(self):
-        oRoot = xml.etree.ElementTree.parse(self.sJunitFile).getroot()
-        for oSuite in oRoot.findall('testsuite'):
-            if oSuite.get('name') == sSuiteName:
-                for oTestcase in oSuite.findall('testcase'):
-                    if oTestcase.get('name') == sRuleId:
-                        return oTestcase
-        raise ValueError(f'{sSuiteName} {sRuleId} is not in the JUnit file')
-
-    def assert_rule_passed(self):
-        oTestcase = self.find_rule_testcase()
-        self.assertEqual([], list(oTestcase))
-
-    def assert_rule_failed(self):
-        oTestcase = self.find_rule_testcase()
-        self.assertIsNotNone(oTestcase.find('failure'))
+        return self.run_check()
 
     def test_passes_when_output_delay_matches_calculated_output_delay(self):
         self.execute(fPassingSetup, fPassingHold, create_passing_traces())
 
-        self.assert_rule_passed()
+        self.assert_rule_passed(sRuleId)
 
     def test_exit_code_is_zero_when_output_delay_matches_calculated_output_delay(self):
         iExitCode = self.execute(fPassingSetup, fPassingHold, create_passing_traces())
@@ -157,7 +118,7 @@ class Test(unittest.TestCase):
         # -10.0 + 2.0 - 0.5 = -8.500
         self.execute(fPassingSetup, 10.0, create_passing_traces())
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_exit_code_is_one_when_output_delay_does_not_match(self):
         iExitCode = self.execute(fPassingSetup, 10.0, create_passing_traces())
@@ -168,25 +129,25 @@ class Test(unittest.TestCase):
         # -0.4996 + 2.0 - 0.5 = 1.0004
         self.execute(fPassingSetup, 0.4996, create_passing_traces())
 
-        self.assert_rule_passed()
+        self.assert_rule_passed(sRuleId)
 
     def test_passes_when_calculated_output_delay_is_below_by_less_than_rounding(self):
         # -0.5004 + 2.0 - 0.5 = 0.9996
         self.execute(fPassingSetup, 0.5004, create_passing_traces())
 
-        self.assert_rule_passed()
+        self.assert_rule_passed(sRuleId)
 
     def test_fails_when_calculated_output_delay_is_above_by_more_than_rounding(self):
         # -0.4994 + 2.0 - 0.5 = 1.0006
         self.execute(fPassingSetup, 0.4994, create_passing_traces())
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_fails_when_calculated_output_delay_is_below_by_more_than_rounding(self):
         # -0.5006 + 2.0 - 0.5 = 0.9994
         self.execute(fPassingSetup, 0.5006, create_passing_traces())
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_uses_minimum_delay_of_data_trace(self):
         # -0.5 + 1.5 - 0.5 = 0.500
@@ -195,7 +156,7 @@ class Test(unittest.TestCase):
         lTraces.append(create_clock_trace(0.5, 0.5))
         self.execute(fPassingSetup, fPassingHold, lTraces)
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_uses_maximum_delay_of_clock_trace(self):
         # -0.5 + 2.0 - 1.0 = 0.500
@@ -204,7 +165,7 @@ class Test(unittest.TestCase):
         lTraces.append(create_clock_trace(1.0, 0.5))
         self.execute(fPassingSetup, fPassingHold, lTraces)
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_ignores_part_setup_and_setup_trace_delays(self):
         # Hold:  -0.5 + 2.0 - 0.5 = 1.000, which matches
@@ -214,7 +175,7 @@ class Test(unittest.TestCase):
         lTraces.append(create_clock_trace(0.5, 0.0))
         self.execute(9.0, fPassingHold, lTraces)
 
-        self.assert_rule_passed()
+        self.assert_rule_passed(sRuleId)
 
     def test_finds_data_trace_by_device_pin(self):
         lTraces = []
@@ -222,7 +183,7 @@ class Test(unittest.TestCase):
         lTraces.extend(create_passing_traces())
         self.execute(fPassingSetup, fPassingHold, lTraces)
 
-        self.assert_rule_passed()
+        self.assert_rule_passed(sRuleId)
 
     def test_finds_clock_trace_by_clock_pin_of_part_pin(self):
         lTraces = []
@@ -231,4 +192,4 @@ class Test(unittest.TestCase):
         lTraces.append(create_clock_trace(0.5, 0.5))
         self.execute(fPassingSetup, fPassingHold, lTraces)
 
-        self.assert_rule_passed()
+        self.assert_rule_passed(sRuleId)

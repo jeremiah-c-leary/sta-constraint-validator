@@ -1,13 +1,6 @@
-import argparse
-import contextlib
-import datetime
-import io
 import os
-import tempfile
-import unittest
-import xml.etree.ElementTree
 
-from stacv.cli import check
+from tests.rules import rule_test_case
 
 sTestDir = os.path.dirname(os.path.abspath(__file__))
 sParseDir = os.path.join(sTestDir, '..', '..', 'timing_report', 'parse', 'vivado')
@@ -17,7 +10,6 @@ sParseDir = os.path.join(sTestDir, '..', '..', 'timing_report', 'parse', 'vivado
 sTimingReport = os.path.abspath(os.path.join(sParseDir, 'O_DAC_DATA_timing.rpt'))
 lRequirementLines = [21, 82, 165, 226]
 
-sSuiteName = 'O_DAC_DATA.SDR-SS-O'
 sRuleId = 's4_part_001'
 
 
@@ -85,28 +77,13 @@ def write_file(sFilename, sText):
         oFile.write(sText)
 
 
-class Test(unittest.TestCase):
-
-    def setUp(self):
-        self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
-        self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
-        self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
-        self.sChangedTimingReport = os.path.join(self.oTempDir.name, 'O_DAC_DATA_timing.rpt')
-        self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')
-
-    def tearDown(self):
-        self.oTempDir.cleanup()
+class Test(rule_test_case.RuleTestCase):
 
     def execute(self, sCaptureEdge, sTimingReportFile):
         write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile))
         write_file(self.sPartFile, build_part_text(sCaptureEdge))
         write_file(self.sTracesFile, build_traces_text())
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=self.sJunitFile)
-        oDateTime = datetime.datetime(2026, 10, 24, 20, 0, 0)
-        lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
-        with contextlib.redirect_stdout(io.StringIO()):
-            return check.execute(oArgs, oDateTime, lArgv)
+        return self.run_check()
 
     def execute_with_requirement_lines_changed(self, sCaptureEdge, lLineNumbers):
         lLines = read_lines(sTimingReport)
@@ -116,27 +93,10 @@ class Test(unittest.TestCase):
         write_file(self.sChangedTimingReport, '\n'.join(lLines))
         return self.execute(sCaptureEdge, self.sChangedTimingReport)
 
-    def find_rule_testcase(self):
-        oRoot = xml.etree.ElementTree.parse(self.sJunitFile).getroot()
-        for oSuite in oRoot.findall('testsuite'):
-            if oSuite.get('name') == sSuiteName:
-                for oTestcase in oSuite.findall('testcase'):
-                    if oTestcase.get('name') == sRuleId:
-                        return oTestcase
-        raise ValueError(f'{sSuiteName} {sRuleId} is not in the JUnit file')
-
-    def assert_rule_passed(self):
-        oTestcase = self.find_rule_testcase()
-        self.assertEqual([], list(oTestcase))
-
-    def assert_rule_failed(self):
-        oTestcase = self.find_rule_testcase()
-        self.assertIsNotNone(oTestcase.find('failure'))
-
     def test_passes_when_part_captures_on_rising_edge_and_reports_time_rising_edge(self):
         self.execute('Rising', sTimingReport)
 
-        self.assert_rule_passed()
+        self.assert_rule_passed(sRuleId)
 
     def test_exit_code_is_zero_when_capture_clock_edge_type_matches(self):
         iExitCode = self.execute('Rising', sTimingReport)
@@ -146,7 +106,7 @@ class Test(unittest.TestCase):
     def test_fails_when_part_captures_on_falling_edge_and_reports_time_rising_edge(self):
         self.execute('Falling', sTimingReport)
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_exit_code_is_one_when_capture_clock_edge_type_differs(self):
         iExitCode = self.execute('Falling', sTimingReport)
@@ -156,17 +116,17 @@ class Test(unittest.TestCase):
     def test_passes_when_part_captures_on_falling_edge_and_reports_time_falling_edge(self):
         self.execute_with_requirement_lines_changed('Falling', lRequirementLines)
 
-        self.assert_rule_passed()
+        self.assert_rule_passed(sRuleId)
 
     def test_fails_when_part_captures_on_rising_edge_and_reports_time_falling_edge(self):
         self.execute_with_requirement_lines_changed('Rising', lRequirementLines)
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_fails_when_one_timing_report_times_a_different_edge_type(self):
         self.execute_with_requirement_lines_changed('Rising', [226])
 
-        self.assert_rule_failed()
+        self.assert_rule_failed(sRuleId)
 
     def test_failure_lists_each_timing_report_with_a_different_edge_type(self):
         self.execute('Falling', sTimingReport)
@@ -174,7 +134,7 @@ class Test(unittest.TestCase):
         lExpected = []
         for iLineNumber in lRequirementLines:
             lExpected.append(f'{sTimingReport}:{iLineNumber}  capture clock edge rise, part SDIN captures on Falling')
-        oFailure = self.find_rule_testcase().find('failure')
+        oFailure = self.find_testcase(sRuleId).find('failure')
         self.assertEqual('\n'.join(lExpected), oFailure.text)
 
     def test_failure_lists_only_the_timing_report_with_a_different_edge_type(self):
@@ -182,5 +142,5 @@ class Test(unittest.TestCase):
 
         lExpected = []
         lExpected.append(f'{self.sChangedTimingReport}:226  capture clock edge fall, part SDIN captures on Rising')
-        oFailure = self.find_rule_testcase().find('failure')
+        oFailure = self.find_testcase(sRuleId).find('failure')
         self.assertEqual('\n'.join(lExpected), oFailure.text)
