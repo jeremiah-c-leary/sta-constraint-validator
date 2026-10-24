@@ -53,6 +53,41 @@ def get_port_names(lPorts):
     return lPortNames
 
 
+def write_numbered_port_timing_reports(sDirectory, lTimingReports):
+    lPortTimingReports = []
+    for iPort, sTimingReport in enumerate(lTimingReports, start=1):
+        lPortTimingReports.append(write_port_timing_report(sDirectory, f'PORT_{iPort}', sTimingReport))
+    return lPortTimingReports
+
+
+def write_named_port_timing_reports(sDirectory, lPorts):
+    lPortTimingReports = []
+    for sPortName, sTimingReport in lPorts:
+        lPortTimingReports.append((sPortName, write_port_timing_report(sDirectory, sPortName, sTimingReport)))
+    return lPortTimingReports
+
+
+def write_port_timing_report(sDirectory, sPortName, sTimingReport):
+    # The fixture timing reports time the port O_DAC_DATA.
+    # The copy times sPortName instead, so the port passes the same rules as the fixture.
+    if not is_fixture_timing_report(sTimingReport):
+        return sTimingReport
+    sPortTimingReport = build_port_timing_report_filename(sDirectory, sPortName, sTimingReport)
+    with open(sTimingReport, newline='') as oFile:
+        sText = oFile.read()
+    with open(sPortTimingReport, 'w', newline='') as oFile:
+        oFile.write(sText.replace('O_DAC_DATA', sPortName))
+    return sPortTimingReport
+
+
+def is_fixture_timing_report(sTimingReport):
+    return sTimingReport in [sPassingReport, sFailingReport, sOutputDelayFailingReport]
+
+
+def build_port_timing_report_filename(sDirectory, sPortName, sTimingReport):
+    return os.path.join(sDirectory, f'{sPortName}_{os.path.basename(sTimingReport)}')
+
+
 def build_traces_text(lPortNames):
     # Every port connects to part pin SDIN.  With the part setup and hold of 0.5,
     # the calculated output delays match the output delays in sPassingReport:
@@ -119,14 +154,13 @@ class TestExecute(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def execute_with_reports(self, lTimingReports):
+        lTimingReports = write_numbered_port_timing_reports(self.oTempDir.name, lTimingReports)
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
             oFile.write(build_traces_text(build_numbered_port_names(lTimingReports)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-            
-            
         oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile]
@@ -311,6 +345,7 @@ class TestExecuteReportSummary(unittest.TestCase):
         lPorts = []
         lPorts.append(('P1', sFailingReport))
         lPorts.append(('P2', sPassingReport))
+        lPorts = write_named_port_timing_reports(self.oTempDir.name, lPorts)
         self.execute_with_config_text(build_named_ports_config_text('This interface is a summary test', lPorts, self.sTracesFile, self.sPartFile), get_port_names(lPorts))
 
         lExpected = []
@@ -331,6 +366,7 @@ class TestExecuteReportSummary(unittest.TestCase):
         lPorts = []
         lPorts.append(('O_DAC_DATA', sFailingReport))
         lPorts.append(('O_DAC_CSF', sPassingReport))
+        lPorts = write_named_port_timing_reports(self.oTempDir.name, lPorts)
         self.execute_with_config_text(build_named_ports_config_text('Long port names', lPorts, self.sTracesFile, self.sPartFile), get_port_names(lPorts))
 
         lExpected = []
@@ -469,6 +505,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def execute_with_ports(self, lPorts):
+        lPorts = write_named_port_timing_reports(self.oTempDir.name, lPorts)
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('Rule checks test', lPorts, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
@@ -537,12 +574,13 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lPorts = []
         lPorts.append(('P1', sFailingReport))
         self.execute_with_ports(lPorts)
+        sTimingReport = build_port_timing_report_filename(self.oTempDir.name, 'P1', sFailingReport)
 
         lExpected = []
         lExpected.append('Rule                  Result   Details')
         lExpected.append('- stage 0 ' + '-' * 70)
         lExpected.append('s0_timing_report_001  Passed')
-        lExpected.append('s0_timing_report_002  Failed   ' + sFailingReport + ':14  hold timing report, Fast process corner')
+        lExpected.append('s0_timing_report_002  Failed   ' + sTimingReport + ':14  hold timing report, Fast process corner')
         lExpected.append('s0_trace_001          Passed')
         lExpected.append('- stage 1 ' + '-' * 70)
         lExpected.append('s1_clock_001          Skipped  stage 0 failed')
@@ -570,10 +608,11 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
         lPorts = []
         lPorts.append(('P1', sOutputDelayFailingReport))
         self.execute_with_ports(lPorts)
+        sTimingReport = build_port_timing_report_filename(self.oTempDir.name, 'P1', sOutputDelayFailingReport)
 
         lExpected = []
-        lExpected.append('s2_output_delay_001   Failed   ' + sOutputDelayFailingReport + ':85  2.000ns')
-        lExpected.append(' ' * 31 + sOutputDelayFailingReport + ':229  2.500ns')
+        lExpected.append('s2_output_delay_001   Failed   ' + sTimingReport + ':85  2.000ns')
+        lExpected.append(' ' * 31 + sTimingReport + ':229  2.500ns')
         lExpected.append('s2_output_delay_002   Passed')
         self.assertEqual(lExpected, self.read_port_rule_checks('Section 3.1: P1.SDR-SS-O Rule Checks')[14:17])
 
@@ -608,6 +647,7 @@ class TestExecuteJunit(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def execute_with_ports(self, lPorts):
+        lPorts = write_named_port_timing_reports(self.oTempDir.name, lPorts)
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('JUnit test', lPorts, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
@@ -698,12 +738,13 @@ class TestExecuteJunit(unittest.TestCase):
         lPorts = []
         lPorts.append(('P1', sOutputDelayFailingReport))
         self.execute_with_ports(lPorts)
+        sTimingReport = build_port_timing_report_filename(self.oTempDir.name, 'P1', sOutputDelayFailingReport)
 
         oTestcase = self.find_testcase('P1.SDR-SS-O', 's2_output_delay_001')
         oFailure = oTestcase.find('failure')
         lExpected = []
-        lExpected.append(sOutputDelayFailingReport + ':85  2.000ns')
-        lExpected.append(sOutputDelayFailingReport + ':229  2.500ns')
+        lExpected.append(sTimingReport + ':85  2.000ns')
+        lExpected.append(sTimingReport + ':229  2.500ns')
         self.assertEqual(s2_output_delay_001.FAILURE_MESSAGE, oFailure.get('message'))
         self.assertEqual('\n'.join(lExpected), oFailure.text)
 

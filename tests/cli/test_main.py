@@ -8,11 +8,13 @@ from unittest import mock
 
 from stacv import __main__
 from tests.cli.test_check import build_config_text
+from tests.cli.test_check import build_port_timing_report_filename
 from tests.cli.test_check import build_numbered_port_names
 from tests.cli.test_check import build_traces_text
 from tests.cli.test_check import build_part_text
 from tests.cli.test_check import sFailingReport
 from tests.cli.test_check import sPassingReport
+from tests.cli.test_check import write_numbered_port_timing_reports
 
 
 class TestMainCheckDispatch(unittest.TestCase):
@@ -27,6 +29,7 @@ class TestMainCheckDispatch(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def run_main_with_reports(self, lTimingReports):
+        lTimingReports = write_numbered_port_timing_reports(self.oTempDir.name, lTimingReports)
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
@@ -62,6 +65,7 @@ class TestMainToolErrors(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def run_main_with_reports(self, lTimingReports):
+        lTimingReports = write_numbered_port_timing_reports(self.oTempDir.name, lTimingReports)
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
@@ -107,6 +111,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def run_main_with_reports(self, lTimingReports):
+        lTimingReports = write_numbered_port_timing_reports(self.oTempDir.name, lTimingReports)
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
@@ -128,37 +133,44 @@ class TestMainConsoleOutput(unittest.TestCase):
 
     def test_failing_rule_is_summarised(self):
         self.run_main_with_reports([sFailingReport])
+        sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
-        lExpected.append(f'Reading timing report file {sFailingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_failing_port_does_not_stop_later_ports(self):
         self.run_main_with_reports([sFailingReport, sPassingReport])
+        sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
+        sPort2TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_2', sPassingReport)
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
-        lExpected.append(f'Reading timing report file {sFailingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
-        lExpected.append(f'Reading timing report file {sPassingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort2TimingReport}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_every_failing_port_is_reported(self):
         self.run_main_with_reports([sFailingReport, sFailingReport])
+        sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
+        sPort2TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_2', sFailingReport)
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
-        lExpected.append(f'Reading timing report file {sFailingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
-        lExpected.append(f'Reading timing report file {sFailingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort2TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_failing_later_port_reports_a_failure(self):
         self.run_main_with_reports([sPassingReport, sFailingReport])
+        sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
+        sPort2TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_2', sFailingReport)
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
-        lExpected.append(f'Reading timing report file {sPassingReport}\n')
-        lExpected.append(f'Reading timing report file {sFailingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort2TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
@@ -216,6 +228,7 @@ class TestMainReportFile(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def run_main_with_report_option(self, lTimingReports):
+        lTimingReports = write_numbered_port_timing_reports(self.oTempDir.name, lTimingReports)
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
@@ -245,17 +258,19 @@ class TestMainReportFile(unittest.TestCase):
     def test_creating_report_is_written_after_reading_timing_reports(self):
         self.maxDiff = None
         self.run_main_with_report_option([sPassingReport])
+        sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
-        lExpected.append(f'Reading timing report file {sPassingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append(f'Creating report {self.sReportFile}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_creating_report_is_written_after_failed_rules(self):
         self.run_main_with_report_option([sFailingReport])
+        sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
-        lExpected.append(f'Reading timing report file {sFailingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         lExpected.append(f'Creating report {self.sReportFile}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
@@ -288,6 +303,7 @@ class TestMainJunitFile(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def run_main_with_junit_option(self, lTimingReports):
+        lTimingReports = write_numbered_port_timing_reports(self.oTempDir.name, lTimingReports)
         with open(self.sConfigFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
@@ -323,17 +339,19 @@ class TestMainJunitFile(unittest.TestCase):
 
     def test_creating_junit_file_is_written_after_reading_timing_reports(self):
         self.run_main_with_junit_option([sPassingReport])
+        sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
-        lExpected.append(f'Reading timing report file {sPassingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append(f'Creating JUnit file {self.sJunitFile}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_creating_junit_file_is_written_after_failed_rules(self):
         self.run_main_with_junit_option([sFailingReport])
+        sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         lExpected = []
         lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
-        lExpected.append(f'Reading timing report file {sFailingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         lExpected.append(f'Creating JUnit file {self.sJunitFile}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
