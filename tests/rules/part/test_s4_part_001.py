@@ -28,30 +28,6 @@ def build_config_text(sPartFile, sTracesFile, sTimingReportFile):
     return '\n'.join(lText)
 
 
-def build_part_text(sCaptureEdge):
-    # With the traces below, the calculated output delays match sTimingReport:
-    #    maximum:   0.5 + 2.0 - 0.5 = 2.000
-    #    minimum:  -0.5 + 2.0 - 0.5 = 1.000
-    lText = []
-    lText.append('[properties]')
-    lText.append('manufacturer = "Texas Instruments"')
-    lText.append('part_number = "DAC81404"')
-    lText.append('[datasheet]')
-    lText.append('name = "DACx1401 Quad, 16-Bit and 12-Bit, High-Voltage-Output DACs With Internal Reference"')
-    lText.append('url = "https://www.ti.com/lit/ds/symlink/dac81404.pdf"')
-    lText.append('version = "SLASEH2A -- November 2020 -- REVISED MAY 2021"')
-    lText.append('[[interface]]')
-    lText.append('name = "Serial Interface"')
-    lText.append('[[interface.pin]]')
-    lText.append('name = "SDIN"')
-    lText.append('methodology = "SDR-SS-I"')
-    lText.append('clock = {pin = "SCLK", max_frequency = 25}')
-    lText.append(f'capture_edge = "{sCaptureEdge}"')
-    lText.append('setup = {value = 0.5, symbol = "tSDIS", source = "Table 7.6"}')
-    lText.append('hold = {value = 0.5, symbol = "tSDIH", source = "Table 7.6"}')
-    return '\n'.join(lText)
-
-
 def build_traces_text():
     lText = []
     lText.append('[[trace]]')
@@ -71,7 +47,7 @@ class Test(rule_test_case.RuleTestCase):
 
     def execute(self, sCaptureEdge, sTimingReportFile):
         rule_test_case.write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile))
-        rule_test_case.write_file(self.sPartFile, build_part_text(sCaptureEdge))
+        rule_test_case.write_file(self.sPartFile, rule_test_case.build_part_text(sCaptureEdge, rule_test_case.fPassingSetup, rule_test_case.fPassingHold))
         rule_test_case.write_file(self.sTracesFile, build_traces_text())
         return self.run_check()
 
