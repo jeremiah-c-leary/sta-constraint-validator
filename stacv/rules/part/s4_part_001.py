@@ -36,15 +36,42 @@ When the rule fails, it lists each timing report whose capture clock edge type d
 Refer to the vendor's timing constraints documentation for output delays.
 '''
 
-from stacv.results import rule_result
+from stacv.rules import clock_comparisons
+from stacv.rules import path_lookups
 
 
 RULE_ID = 's4_part_001'
 FAILURE_MESSAGE = 'Capture clock edge type in timing reports does not match the capture edge of the part pin.'
+TIMING_REPORT_EDGE_TYPES = {'Rising': 'rise', 'Falling': 'fall'}
 
 
 def check(oPortProfile):
     '''
     Purpose:  Compares the capture clock edge type in the timing reports to the capture edge of the part pin.
     '''
-    return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
+    lDetails = get_capture_clock_edge_type_mismatches(oPortProfile)
+
+    return clock_comparisons.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
+
+
+def get_capture_clock_edge_type_mismatches(oPortProfile):
+    oPartPin = get_part_data_pin(oPortProfile)
+    sPartEdgeType = TIMING_REPORT_EDGE_TYPES[oPartPin.capture_edge]
+    lDetails = []
+    for oTimingReport in oPortProfile.timing_reports.reports:
+        if oTimingReport.capture_clock_edge_type != sPartEdgeType:
+            sErrorMessage = generate_error_message(oTimingReport, oPartPin)
+            lDetails.append(sErrorMessage)
+    return lDetails
+
+
+def get_part_data_pin(oPortProfile):
+    oDataTrace = path_lookups.get_data_trace(oPortProfile)
+    return path_lookups.get_part_data_pin(oPortProfile, oDataTrace)
+
+
+def generate_error_message(oTimingReport, oPartPin):
+    sFilename = oTimingReport.requirement_line.filename
+    iLineNumber = oTimingReport.requirement_line.line_number
+    sMessage = f'capture clock edge {oTimingReport.capture_clock_edge_type}, part {oPartPin.name} captures on {oPartPin.capture_edge}'
+    return f'{sFilename}:{iLineNumber}  {sMessage}'

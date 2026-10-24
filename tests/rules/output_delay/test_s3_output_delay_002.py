@@ -82,7 +82,7 @@ def build_part_text(fSetup, fHold):
     lText.append('name = "SDIN"')
     lText.append('methodology = "SDR-SS-I"')
     lText.append('clock = {pin = "SCLK", max_frequency = 25}')
-    lText.append('capture_edge = "Falling"')
+    lText.append('capture_edge = "Rising"')
     lText.append(f'setup = {{value = {fSetup}, symbol = "tSDIS", source = "Table 7.6"}}')
     lText.append(f'hold = {{value = {fHold}, symbol = "tSDIH", source = "Table 7.6"}}')
     return '\n'.join(lText)
