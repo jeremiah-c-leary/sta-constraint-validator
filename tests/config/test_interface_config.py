@@ -39,3 +39,19 @@ class Test(unittest.TestCase):
         lExpected.append(os.path.join(sProjectDir, 'tests', 'timing_report', 'parse', 'vivado', 'dac_spi.setup.rpt'))
         lExpected.append(os.path.join(sProjectDir, 'tests', 'timing_report', 'parse', 'vivado', 'dac_spi.hold.rpt'))
         self.assertEqual(lExpected, oPort.timing_reports)
+
+    def test_port_keeps_its_launch_clock_setup_edge(self):
+        oPort = self.oConfig.ports[0]
+
+        self.assertEqual(8, oPort.launch_clock.setup_edge)
+
+    def test_port_keeps_its_capture_clock_setup_edge(self):
+        oPort = self.oConfig.ports[0]
+
+        self.assertEqual('C', oPort.capture_clock.setup_edge)
+
+    def test_each_port_keeps_its_own_setup_edges(self):
+        oPort = self.oConfig.ports[1]
+
+        self.assertEqual(6, oPort.launch_clock.setup_edge)
+        self.assertEqual('B', oPort.capture_clock.setup_edge)

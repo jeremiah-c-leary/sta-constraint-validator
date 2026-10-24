@@ -17,8 +17,8 @@ timing_reports = [
 [[port]]
 name = "O_DAC_CSF"
 methodology = "SDR-SS-O"
-launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8}
-capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 20, setup_edge = "C"}
+launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 6}
+capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 20, setup_edge = "B"}
 timing_reports = [
     "$PROJ_DIR/tests/timing_report/parse/vivado/dac_spi.setup.rpt",
     "$PROJ_DIR/tests/timing_report/parse/vivado/dac_spi.hold.rpt",
