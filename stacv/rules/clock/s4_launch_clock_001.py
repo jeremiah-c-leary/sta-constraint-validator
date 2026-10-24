@@ -47,22 +47,32 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the configuration launch clock name to the launch clock name in the timing reports.
     '''
-    lDetails = get_launch_clock_mismatches(oPortProfile)
+    lMismatchedTimingReports = get_mismatched_timing_reports(oPortProfile.timing_reports.reports, oPortProfile.port)
+    lDetails = generate_error_messages(lMismatchedTimingReports, oPortProfile.port)
 
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
-def get_launch_clock_mismatches(oPortProfile):
-    sConfigurationLaunchClockName = oPortProfile.port.launch_clock.name
+def get_mismatched_timing_reports(lTimingReports, oPort):
+    lMismatchedTimingReports = []
+    for oTimingReport in lTimingReports:
+        if launch_clock_name_differs(oTimingReport, oPort):
+            lMismatchedTimingReports.append(oTimingReport)
+    return lMismatchedTimingReports
+
+
+def launch_clock_name_differs(oTimingReport, oPort):
+    return oTimingReport.launch_clock.name != oPort.launch_clock.name
+
+
+def generate_error_messages(lTimingReports, oPort):
     lDetails = []
-    for oTimingReport in oPortProfile.timing_reports.reports:
-        sTimingReportLaunchClockName = oTimingReport.launch_clock.name
-        if sConfigurationLaunchClockName != sTimingReportLaunchClockName:
-            sErrorMessage = generate_error_message(oTimingReport, sConfigurationLaunchClockName, sTimingReportLaunchClockName)
-            lDetails.append(sErrorMessage)
+    for oTimingReport in lTimingReports:
+        sErrorMessage = generate_error_message(oTimingReport, oPort)
+        lDetails.append(sErrorMessage)
     return lDetails
 
 
-def generate_error_message(oTimingReport, sConfigurationLaunchClockName, sTimingReportLaunchClockName):
-    sMessage = f'launch clock {sTimingReportLaunchClockName}, configured launch clock {sConfigurationLaunchClockName}'
+def generate_error_message(oTimingReport, oPort):
+    sMessage = f'launch clock {oTimingReport.launch_clock.name}, configured launch clock {oPort.launch_clock.name}'
     return rule_details.format_detail(oTimingReport.launch_clock_line, sMessage)

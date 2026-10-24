@@ -50,22 +50,32 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the configuration launch clock period to the launch clock period in the timing reports.
     '''
-    lDetails = get_launch_clock_mismatches(oPortProfile)
+    lMismatchedTimingReports = get_mismatched_timing_reports(oPortProfile.timing_reports.reports, oPortProfile.port)
+    lDetails = generate_error_messages(lMismatchedTimingReports, oPortProfile.port)
 
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
-def get_launch_clock_mismatches(oPortProfile):
-    fConfigurationLaunchClockPeriod = oPortProfile.port.launch_clock.period
+def get_mismatched_timing_reports(lTimingReports, oPort):
+    lMismatchedTimingReports = []
+    for oTimingReport in lTimingReports:
+        if launch_clock_period_differs(oTimingReport, oPort):
+            lMismatchedTimingReports.append(oTimingReport)
+    return lMismatchedTimingReports
+
+
+def launch_clock_period_differs(oTimingReport, oPort):
+    return not tolerance.is_within_tolerance(oPort.launch_clock.period, oTimingReport.launch_clock.period, TOLERANCE)
+
+
+def generate_error_messages(lTimingReports, oPort):
     lDetails = []
-    for oTimingReport in oPortProfile.timing_reports.reports:
-        fTimingReportLaunchClockPeriod = oTimingReport.launch_clock.period
-        if not tolerance.is_within_tolerance(fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod, TOLERANCE):
-            sErrorMessage = generate_error_message(oTimingReport, fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod)
-            lDetails.append(sErrorMessage)
+    for oTimingReport in lTimingReports:
+        sErrorMessage = generate_error_message(oTimingReport, oPort)
+        lDetails.append(sErrorMessage)
     return lDetails
 
 
-def generate_error_message(oTimingReport, fConfigurationLaunchClockPeriod, fTimingReportLaunchClockPeriod):
-    sMessage = f'launch clock period {fTimingReportLaunchClockPeriod:.3f}ns, configured period {fConfigurationLaunchClockPeriod:.3f}ns'
+def generate_error_message(oTimingReport, oPort):
+    sMessage = f'launch clock period {oTimingReport.launch_clock.period:.3f}ns, configured period {oPort.launch_clock.period:.3f}ns'
     return rule_details.format_detail(oTimingReport.launch_clock_line, sMessage)

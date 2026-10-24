@@ -58,19 +58,36 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the hold requirement in the hold timing reports to the time between the configured hold edges.
     '''
-    lDetails = get_hold_requirement_mismatches(oPortProfile)
+    fConfigurationRequirement = calculate_configuration_hold_requirement(oPortProfile.port)
+    lMismatchedTimingReports = get_mismatched_timing_reports(oPortProfile.timing_reports.get_hold_reports(), fConfigurationRequirement)
+    lDetails = generate_error_messages(lMismatchedTimingReports, fConfigurationRequirement)
 
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
-def get_hold_requirement_mismatches(oPortProfile):
-    fConfigurationRequirement = calculate_configuration_hold_requirement(oPortProfile.port)
+def get_mismatched_timing_reports(lTimingReports, fConfigurationRequirement):
+    lMismatchedTimingReports = []
+    for oTimingReport in lTimingReports:
+        if hold_requirement_differs(oTimingReport, fConfigurationRequirement):
+            lMismatchedTimingReports.append(oTimingReport)
+    return lMismatchedTimingReports
+
+
+def hold_requirement_differs(oTimingReport, fConfigurationRequirement):
+    return not tolerance.is_within_tolerance(fConfigurationRequirement, oTimingReport.requirement, TOLERANCE)
+
+
+def generate_error_messages(lTimingReports, fConfigurationRequirement):
     lDetails = []
-    for oTimingReport in oPortProfile.timing_reports.get_hold_reports():
-        if not tolerance.is_within_tolerance(fConfigurationRequirement, oTimingReport.requirement, TOLERANCE):
-            sErrorMessage = generate_error_message(oTimingReport, fConfigurationRequirement)
-            lDetails.append(sErrorMessage)
+    for oTimingReport in lTimingReports:
+        sErrorMessage = generate_error_message(oTimingReport, fConfigurationRequirement)
+        lDetails.append(sErrorMessage)
     return lDetails
+
+
+def generate_error_message(oTimingReport, fConfigurationRequirement):
+    sMessage = f'hold requirement {oTimingReport.requirement:.3f}ns, configured hold requirement {fConfigurationRequirement:.3f}ns'
+    return rule_details.format_detail(oTimingReport.requirement_line, sMessage)
 
 
 def calculate_configuration_hold_requirement(oPort):
@@ -78,8 +95,3 @@ def calculate_configuration_hold_requirement(oPort):
     fCaptureEdgeTime = edge_times.calculate_edge_time(oPort.capture_clock.period, iCaptureEdgeNumber)
     fLaunchEdgeTime = edge_times.calculate_edge_time(oPort.launch_clock.period, oPort.launch_clock.hold_edge)
     return fCaptureEdgeTime - fLaunchEdgeTime
-
-
-def generate_error_message(oTimingReport, fConfigurationRequirement):
-    sMessage = f'hold requirement {oTimingReport.requirement:.3f}ns, configured hold requirement {fConfigurationRequirement:.3f}ns'
-    return rule_details.format_detail(oTimingReport.requirement_line, sMessage)

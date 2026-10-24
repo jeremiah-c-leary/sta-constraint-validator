@@ -48,22 +48,32 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the configuration capture clock name to the capture clock name in the timing reports.
     '''
-    lDetails = get_capture_clock_mismatches(oPortProfile)
+    lMismatchedTimingReports = get_mismatched_timing_reports(oPortProfile.timing_reports.reports, oPortProfile.port)
+    lDetails = generate_error_messages(lMismatchedTimingReports, oPortProfile.port)
 
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
-def get_capture_clock_mismatches(oPortProfile):
-    sConfigurationCaptureClockName = oPortProfile.port.capture_clock.name
+def get_mismatched_timing_reports(lTimingReports, oPort):
+    lMismatchedTimingReports = []
+    for oTimingReport in lTimingReports:
+        if capture_clock_name_differs(oTimingReport, oPort):
+            lMismatchedTimingReports.append(oTimingReport)
+    return lMismatchedTimingReports
+
+
+def capture_clock_name_differs(oTimingReport, oPort):
+    return oTimingReport.capture_clock.name != oPort.capture_clock.name
+
+
+def generate_error_messages(lTimingReports, oPort):
     lDetails = []
-    for oTimingReport in oPortProfile.timing_reports.reports:
-        sTimingReportCaptureClockName = oTimingReport.capture_clock.name
-        if sConfigurationCaptureClockName != sTimingReportCaptureClockName:
-            sErrorMessage = generate_error_message(oTimingReport, sConfigurationCaptureClockName, sTimingReportCaptureClockName)
-            lDetails.append(sErrorMessage)
+    for oTimingReport in lTimingReports:
+        sErrorMessage = generate_error_message(oTimingReport, oPort)
+        lDetails.append(sErrorMessage)
     return lDetails
 
 
-def generate_error_message(oTimingReport, sConfigurationCaptureClockName, sTimingReportCaptureClockName):
-    sMessage = f'capture clock {sTimingReportCaptureClockName}, configured capture clock {sConfigurationCaptureClockName}'
+def generate_error_message(oTimingReport, oPort):
+    sMessage = f'capture clock {oTimingReport.capture_clock.name}, configured capture clock {oPort.capture_clock.name}'
     return rule_details.format_detail(oTimingReport.capture_clock_line, sMessage)

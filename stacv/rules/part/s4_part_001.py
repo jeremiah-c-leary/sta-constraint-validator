@@ -50,19 +50,30 @@ def check(oPortProfile):
     '''
     Purpose:  Compares the capture clock edge type in the timing reports to the capture edge of the part pin.
     '''
-    lDetails = get_capture_clock_edge_type_mismatches(oPortProfile)
+    oPartPin = path_lookups.get_part_data_pin(oPortProfile)
+    lMismatchedTimingReports = get_mismatched_timing_reports(oPortProfile.timing_reports.reports, oPartPin)
+    lDetails = generate_error_messages(lMismatchedTimingReports, oPartPin)
 
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 
-def get_capture_clock_edge_type_mismatches(oPortProfile):
-    oPartPin = path_lookups.get_part_data_pin(oPortProfile)
-    sPartEdgeType = TIMING_REPORT_EDGE_TYPES[oPartPin.capture_edge]
+def get_mismatched_timing_reports(lTimingReports, oPartPin):
+    lMismatchedTimingReports = []
+    for oTimingReport in lTimingReports:
+        if capture_clock_edge_type_differs(oTimingReport, oPartPin):
+            lMismatchedTimingReports.append(oTimingReport)
+    return lMismatchedTimingReports
+
+
+def capture_clock_edge_type_differs(oTimingReport, oPartPin):
+    return oTimingReport.capture_clock_edge_type != TIMING_REPORT_EDGE_TYPES[oPartPin.capture_edge]
+
+
+def generate_error_messages(lTimingReports, oPartPin):
     lDetails = []
-    for oTimingReport in oPortProfile.timing_reports.reports:
-        if oTimingReport.capture_clock_edge_type != sPartEdgeType:
-            sErrorMessage = generate_error_message(oTimingReport, oPartPin)
-            lDetails.append(sErrorMessage)
+    for oTimingReport in lTimingReports:
+        sErrorMessage = generate_error_message(oTimingReport, oPartPin)
+        lDetails.append(sErrorMessage)
     return lDetails
 
 
