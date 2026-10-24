@@ -54,15 +54,11 @@ def get_data_path_end_mismatches(oPortProfile):
     sPortName = oPortProfile.port.name
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
-        oDataPathEnd = get_data_path_end(oTimingReport)
+        oDataPathEnd = oTimingReport.data_path.get_last_delay()
         if oDataPathEnd.resource != sPortName:
             sErrorMessage = generate_error_message(oDataPathEnd, sPortName)
             lDetails.append(sErrorMessage)
     return lDetails
-
-
-def get_data_path_end(oTimingReport):
-    return oTimingReport.data_path.delays[-1]
 
 
 def generate_error_message(oDataPathEnd, sPortName):

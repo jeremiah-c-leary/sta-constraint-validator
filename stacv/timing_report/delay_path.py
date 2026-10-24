@@ -19,3 +19,6 @@ class DelayPath():
         for oDelay in self.delays:
             lResources.append(oDelay.resource)
         return lResources
+
+    def get_last_delay(self):
+        return self.delays[-1]
