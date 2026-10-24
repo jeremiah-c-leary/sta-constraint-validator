@@ -24,6 +24,7 @@ Refer to the vendor's timing constraints documentation for output delays.
 
 from stacv.results import rule_result
 from stacv.rules import path_lookups
+from stacv.rules import tolerance
 
 
 RULE_ID = 's3_output_delay_002'
@@ -38,7 +39,7 @@ def check(oPortProfile):
 
     fActualOutputDelay = get_output_delay_from_hold_reports(oPortProfile)
     fExpectedOutputDelay = calculate_expected_min_output_delay(oPortProfile)
-    if output_delay_in_range(fActualOutputDelay, fExpectedOutputDelay):
+    if tolerance.is_within_tolerance(fExpectedOutputDelay, fActualOutputDelay, TOLERANCE):
         return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
     return generate_error_result(fActualOutputDelay, fExpectedOutputDelay, oPortProfile)
 
@@ -69,10 +70,6 @@ def calculate_min_output_delay(oDataTrace, oPartPin, oClockTrace):
     fHold = oPartPin.hold.value
     fMinOutputDelay = -fHold + fMinTraceDataDelay - fMaxTraceClockDelay
     return fMinOutputDelay
-
-
-def output_delay_in_range(fActualOutputDelay, fExpectedOutputDelay):
-    return fActualOutputDelay - TOLERANCE < fExpectedOutputDelay < fActualOutputDelay + TOLERANCE
 
 
 def generate_error_result(fActualOutputDelay, fExpectedOutputDelay, oPortProfile):
