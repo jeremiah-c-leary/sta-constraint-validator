@@ -42,6 +42,7 @@ Refer to the vendor's timing constraints documentation for multicycle paths and 
 '''
 
 from stacv.rules import clock_comparisons
+from stacv.rules import edge_times
 from stacv.rules import tolerance
 
 
@@ -70,18 +71,10 @@ def get_setup_requirement_mismatches(oPortProfile):
 
 
 def calculate_configuration_setup_requirement(oPort):
-    iCaptureEdgeNumber = convert_edge_letter_to_number(oPort.capture_clock.setup_edge)
-    fCaptureEdgeTime = calculate_edge_time(oPort.capture_clock.period, iCaptureEdgeNumber)
-    fLaunchEdgeTime = calculate_edge_time(oPort.launch_clock.period, oPort.launch_clock.setup_edge)
+    iCaptureEdgeNumber = edge_times.convert_edge_letter_to_number(oPort.capture_clock.setup_edge)
+    fCaptureEdgeTime = edge_times.calculate_edge_time(oPort.capture_clock.period, iCaptureEdgeNumber)
+    fLaunchEdgeTime = edge_times.calculate_edge_time(oPort.launch_clock.period, oPort.launch_clock.setup_edge)
     return fCaptureEdgeTime - fLaunchEdgeTime
-
-
-def convert_edge_letter_to_number(sEdgeLetter):
-    return ord(sEdgeLetter) - ord('A')
-
-
-def calculate_edge_time(fPeriod, iEdgeNumber):
-    return (fPeriod / 2) * iEdgeNumber
 
 
 def generate_error_message(oTimingReport, fConfigurationRequirement):
