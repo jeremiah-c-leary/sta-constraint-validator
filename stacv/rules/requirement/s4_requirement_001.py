@@ -42,6 +42,7 @@ Refer to the vendor's timing constraints documentation for multicycle paths and 
 '''
 
 from stacv.rules import clock_comparisons
+from stacv.rules import tolerance
 
 
 RULE_ID = 's4_requirement_001'
@@ -62,7 +63,7 @@ def get_setup_requirement_mismatches(oPortProfile):
     fConfigurationRequirement = calculate_configuration_setup_requirement(oPortProfile.port)
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.get_setup_reports():
-        if not requirement_is_within_tolerance(fConfigurationRequirement, oTimingReport.requirement):
+        if not tolerance.is_within_tolerance(fConfigurationRequirement, oTimingReport.requirement, TOLERANCE):
             sErrorMessage = generate_error_message(oTimingReport, fConfigurationRequirement)
             lDetails.append(sErrorMessage)
     return lDetails
@@ -81,10 +82,6 @@ def convert_edge_letter_to_number(sEdgeLetter):
 
 def calculate_edge_time(fPeriod, iEdgeNumber):
     return (fPeriod / 2) * iEdgeNumber
-
-
-def requirement_is_within_tolerance(fExpected, fActual):
-    return fExpected - TOLERANCE < fActual < fExpected + TOLERANCE
 
 
 def generate_error_message(oTimingReport, fConfigurationRequirement):
