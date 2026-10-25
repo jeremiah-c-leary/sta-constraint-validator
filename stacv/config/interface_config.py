@@ -13,29 +13,29 @@ from stacv.config import value_type
 from stacv.config import clock_pin
 
 
-def read_interface_config(sConfigFile):
-    dConfig = read_file(sConfigFile)
-    return create_interface_config(dConfig, sConfigFile)
+def read_interface_config(sInterfaceFile):
+    dConfig = read_file(sInterfaceFile)
+    return create_interface_config(dConfig, sInterfaceFile)
 
 
-def read_file(sConfigFile):
+def read_file(sInterfaceFile):
     try:
-        return read_toml_file(sConfigFile)
+        return read_toml_file(sInterfaceFile)
     except FileNotFoundError:
-        raise interface_config_error.InterfaceConfigError('interface_config_006', sConfigFile, f'does not exist')
+        raise interface_config_error.InterfaceConfigError('interface_config_006', sInterfaceFile, f'does not exist')
 
 
-def read_toml_file(sConfigFile):
-    with open(sConfigFile, 'rb') as oFile:
+def read_toml_file(sInterfaceFile):
+    with open(sInterfaceFile, 'rb') as oFile:
         try:
             return tomllib.load(oFile)
         except tomllib.TOMLDecodeError as oError:
-            raise interface_config_error.InterfaceConfigError('interface_config_001', sConfigFile, f'is not valid TOML: {oError}') from oError
+            raise interface_config_error.InterfaceConfigError('interface_config_001', sInterfaceFile, f'is not valid TOML: {oError}') from oError
 
 
-def create_interface_config(dConfig, sConfigFile):
+def create_interface_config(dConfig, sInterfaceFile):
     oInterface = config.Interface()
-    oLocation = config.ConfigLocation(sConfigFile)
+    oLocation = config.ConfigLocation(sInterfaceFile)
     oInterface.description = get_required_string(dConfig, 'description', oLocation)
     oInterface.interface_name = get_required_string(dConfig, 'interface', oLocation)
     oInterface.part = get_required_file(dConfig, 'part', oLocation)

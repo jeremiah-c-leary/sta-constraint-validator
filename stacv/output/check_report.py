@@ -12,7 +12,7 @@ MAXIMUM_FILENAME_COLUMN_WIDTH = REPORT_WIDTH - MD5SUM_COLUMN_WIDTH - COLUMN_GAP
 RESULT_COLUMN_WIDTH = len('Skipped')
 
 
-def write_check_report(sFilename, oDateTime, lArgv, oInterface, oPortResults, sConfigFile):
+def write_check_report(sFilename, oDateTime, lArgv, oInterface, oPortResults, sInterfaceFile):
     print(f'Creating report {sFilename}')
     lLines = []
     lLines.extend(build_header(oDateTime, lArgv))
@@ -21,7 +21,7 @@ def write_check_report(sFilename, oDateTime, lArgv, oInterface, oPortResults, sC
     lLines.append('')
     lLines.extend(build_section_1(oInterface, oPortResults))
     lLines.append('')
-    lLines.extend(build_section_2(oPortResults, sConfigFile))
+    lLines.extend(build_section_2(oPortResults, sInterfaceFile))
     lLines.append('')
     lLines.extend(build_section_3(oPortResults))
     write_file(sFilename, lLines)
@@ -162,11 +162,11 @@ def build_separator(lWidths):
     return sRow
 
 
-def build_section_2(oPortResults, sConfigFile):
+def build_section_2(oPortResults, sInterfaceFile):
     lLines = []
     lLines.extend(build_section_2_header())
     lLines.append('')
-    lLines.extend(build_section_2_table(oPortResults, sConfigFile))
+    lLines.extend(build_section_2_table(oPortResults, sInterfaceFile))
     return lLines
 
 
@@ -178,16 +178,16 @@ def build_section_2_header():
     return lLines
 
 
-def build_section_2_table(oPortResults, sConfigFile):
-    lFiles = get_input_filenames(oPortResults, sConfigFile)
+def build_section_2_table(oPortResults, sInterfaceFile):
+    lFiles = get_input_filenames(oPortResults, sInterfaceFile)
     lLines = build_md5sum_table_header(lFiles)
     lLines.extend(build_md5sum_table_rows(lFiles))
     return lLines
 
 
-def get_input_filenames(oPortResults, sConfigFile):
+def get_input_filenames(oPortResults, sInterfaceFile):
     lFiles = []
-    lFiles.append(sConfigFile)
+    lFiles.append(sInterfaceFile)
     lFiles.extend(get_unique_timing_report_filenames(oPortResults))
     return lFiles
 
