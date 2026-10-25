@@ -151,3 +151,84 @@ class TestVisualizeEdgesHoldRequirement(VisualizeTestCase):
         sPort = build_port_text('O_DATA', 10, 50, [8, 'C'], [0, 'A'])
         self.run_visualize_edges([sPort])
         self.assert_rows_drawn(['                 | hold requirement'])
+
+
+class TestVisualizeEdgesCombinations(VisualizeTestCase):
+
+    def test_draws_the_whole_example_drawing_for_one_port(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('=' * 80)
+        lExpected.append('Port:  O_DATA')
+        lExpected.append('=' * 80)
+        lExpected.append('')
+        lExpected.append('                                                                             1     1     1     1     1     1     1')
+        lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____')
+        lExpected.append('launch clock   __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
+        lExpected.append('')
+        lExpected.append('                                         |---setup requirement-->|')
+        lExpected.append('                 |<---hold requirement---|')
+        lExpected.append('')
+        lExpected.append('                 A_______________________B                       C_______________________D                       E_______________________')
+        lExpected.append('capture clock  __|                       |_______________________|                       |_______________________|')
+        lExpected.append('')
+        self.assertEqual('\n'.join(lExpected) + '\n', self.oStdout.getvalue())
+
+    def test_draws_a_capture_period_five_times_the_launch_period(self):
+        sPort = build_port_text('O_DATA', 10, 50, [8, 'C'], [0, 'A'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('                                                                             1     1     1     1     1     1     1     1     1     1     2')
+        lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____')
+        lExpected.append('launch clock   __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
+        lExpected.append('')
+        lExpected.append('                                                                 |---------->| setup requirement')
+        lExpected.append('                 | hold requirement')
+        lExpected.append('')
+        lExpected.append('                 A_____________________________B                             C_____________________________D                             E_____________________________')
+        lExpected.append('capture clock  __|                             |_____________________________|                             |_____________________________|')
+        self.assert_rows_drawn(lExpected)
+
+    def test_gives_the_shortest_half_period_six_columns_when_the_capture_clock_is_faster(self):
+        sPort = build_port_text('O_DATA', 40, 10, [2, 'K'], [2, 'I'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('                 0_______________________1                       2_______________________3')
+        lExpected.append('launch clock   __|                       |_______________________|                       |_______________________')
+        lExpected.append('')
+        lExpected.append('                                                                 |---------->| setup requirement')
+        lExpected.append('                                                                 | hold requirement')
+        lExpected.append('')
+        lExpected.append('                 A_____B     C_____D     E_____F     G_____H     I_____J     K_____L     M_____')
+        lExpected.append('capture clock  __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
+        self.assert_rows_drawn(lExpected)
+
+    def test_rounds_an_edge_between_columns_half_up(self):
+        sPort = build_port_text('O_DATA', 10, 12.5, [2, 'C'], [2, 'A'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('                 0_____1     2_____3     4_____5')
+        lExpected.append('launch clock   __|     |_____|     |_____|     |_____')
+        lExpected.append('')
+        lExpected.append('                             |->| setup requirement')
+        lExpected.append('                 |<----------| hold requirement')
+        lExpected.append('')
+        lExpected.append('                 A_______B      C_______D      E_______')
+        lExpected.append('capture clock  __|       |______|       |______|')
+        self.assert_rows_drawn(lExpected)
+
+    def test_draws_tens_digits_above_edge_numbers_past_nineteen(self):
+        sPort = build_port_text('O_DATA', 10, 100, [10, 'C'], [10, 'A'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('                                                                             1     1     1     1     1     1     1     1     1     1     2     2     2     2     2     2     2     2     2     2     3     3     3     3     3     3     3     3     3     3     4')
+        lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____')
+        lExpected.append('launch clock   __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
+        lExpected.append('')
+        lExpected.append('                                                                             |---------------------setup requirement-------------------->|')
+        lExpected.append('                 |<---------------------hold requirement---------------------|')
+        lExpected.append('')
+        lExpected.append('                 A___________________________________________________________B                                                           C___________________________________________________________D                                                           E___________________________________________________________')
+        lExpected.append('capture clock  __|                                                           |___________________________________________________________|                                                           |___________________________________________________________|')
+        self.assert_rows_drawn(lExpected)
