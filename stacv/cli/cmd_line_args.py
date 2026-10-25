@@ -32,6 +32,7 @@ def add_subparsers(top_parser):
     subparsers = top_parser.add_subparsers()
 
     build_check_subparser(subparsers)
+    build_visualize_subparser(subparsers)
 
 
 def build_check_subparser(subparser):
@@ -40,6 +41,18 @@ def build_check_subparser(subparser):
     parser.add_argument('--report', help='Check report file name.')
     parser.add_argument('--junit', help='Generate a JUnit file.')
     parser.set_defaults(which='check')
+
+
+def build_visualize_subparser(subparser):
+    parser = subparser.add_parser('visualize', help='Draw what the interface file intends to time.')
+    parser.set_defaults(which='visualize')
+    visualizations = parser.add_subparsers(dest='visualization', required=True)
+    build_edges_subparser(visualizations)
+
+
+def build_edges_subparser(subparser):
+    parser = subparser.add_parser('edges', help='Draw the launch and capture clock edges of every port.')
+    parser.add_argument('interface_file', help='Interface TOML file.')
 
 
 def print_help_if_no_command_line_options_given(parser):
