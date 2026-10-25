@@ -146,7 +146,7 @@ class TestExecute(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
+        self.sInterfaceFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
 
@@ -155,15 +155,15 @@ class TestExecute(unittest.TestCase):
 
     def execute_with_reports(self, lTimingReports):
         lTimingReports = write_numbered_port_timing_reports(self.oTempDir.name, lTimingReports)
-        with open(self.sConfigFile, 'w') as oFile:
+        with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write(build_config_text(lTimingReports, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
             oFile.write(build_traces_text(build_numbered_port_names(lTimingReports)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=None, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sInterfaceFile, report=None, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
-        lArgv = ['stacv', 'check', self.sConfigFile]
+        lArgv = ['stacv', 'check', self.sInterfaceFile]
         with contextlib.redirect_stdout(io.StringIO()):
             return check.execute(oArgs, oDateTime, lArgv)
 
@@ -181,7 +181,7 @@ class TestExecuteReportHeader(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
+        self.sInterfaceFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
@@ -191,13 +191,13 @@ class TestExecuteReportHeader(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def execute_with_argv(self, lArgv):
-        with open(self.sConfigFile, 'w') as oFile:
+        with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write(build_config_text([sPassingReport], self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
             oFile.write(build_traces_text(build_numbered_port_names([sPassingReport])))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=self.sReportFile, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sInterfaceFile, report=self.sReportFile, junit=None)
         with contextlib.redirect_stdout(io.StringIO()):
             check.execute(oArgs, self.oDateTime, lArgv)
 
@@ -207,7 +207,7 @@ class TestExecuteReportHeader(unittest.TestCase):
         return lLines[0:6]
 
     def build_argv(self, sProgram):
-        return [sProgram, 'check', self.sConfigFile, '--report', self.sReportFile]
+        return [sProgram, 'check', self.sInterfaceFile, '--report', self.sReportFile]
 
     def test_report_starts_with_header(self):
         self.execute_with_argv(self.build_argv('stacv'))
@@ -216,13 +216,13 @@ class TestExecuteReportHeader(unittest.TestCase):
         lExpected.append('STA Constraint Validator check report\n')
         lExpected.append(f'Version {version.VERSION}\n')
         lExpected.append('Date:  2026-10-17 21:14:53\n')
-        lExpected.append(f'Command:  stacv check {self.sConfigFile} --report {self.sReportFile}\n')
+        lExpected.append(f'Command:  stacv check {self.sInterfaceFile} --report {self.sReportFile}\n')
         lExpected.append('-' * 80 + '\n')
         self.assertEqual(lExpected, self.read_report_header())
 
     def test_header_command_shows_program_name_without_path(self):
         self.execute_with_argv(self.build_argv('/home/user/stacv/bin/stacv'))
-        sExpected = f'Command:  stacv check {self.sConfigFile} --report {self.sReportFile}\n'
+        sExpected = f'Command:  stacv check {self.sInterfaceFile} --report {self.sReportFile}\n'
         self.assertEqual(sExpected, self.read_report_header()[4])
 
 
@@ -246,7 +246,7 @@ class TestExecuteReportTableOfContents(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
+        self.sInterfaceFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
@@ -255,15 +255,15 @@ class TestExecuteReportTableOfContents(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def execute_with_ports(self, lPorts):
-        with open(self.sConfigFile, 'w') as oFile:
+        with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('Table of contents test', lPorts, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
             oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=self.sReportFile, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sInterfaceFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
-        lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
+        lArgv = ['stacv', 'check', self.sInterfaceFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
             check.execute(oArgs, oDateTime, lArgv)
 
@@ -312,7 +312,7 @@ class TestExecuteReportSummary(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
+        self.sInterfaceFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
@@ -321,15 +321,15 @@ class TestExecuteReportSummary(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def execute_with_config_text(self, sConfigText, lPortNames):
-        with open(self.sConfigFile, 'w') as oFile:
+        with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write(sConfigText)
         with open(self.sTracesFile, 'w') as oFile:
             oFile.write(build_traces_text(lPortNames))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=self.sReportFile, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sInterfaceFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
-        lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
+        lArgv = ['stacv', 'check', self.sInterfaceFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
             check.execute(oArgs, oDateTime, lArgv)
 
@@ -382,7 +382,7 @@ class TestExecuteReportInputs(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
+        self.sInterfaceFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
@@ -391,15 +391,15 @@ class TestExecuteReportInputs(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def execute_with_ports(self, lPorts):
-        with open(self.sConfigFile, 'w') as oFile:
+        with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('Inputs test', lPorts, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
             oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=self.sReportFile, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sInterfaceFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
-        lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
+        lArgv = ['stacv', 'check', self.sInterfaceFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
             check.execute(oArgs, oDateTime, lArgv)
 
@@ -422,7 +422,7 @@ class TestExecuteReportInputs(unittest.TestCase):
         lPorts.append(('P2', sFailingReport))
         self.execute_with_ports(lPorts)
 
-        iWidth = max(len(self.sConfigFile), len(sPassingReport), len(sFailingReport))
+        iWidth = max(len(self.sInterfaceFile), len(sPassingReport), len(sFailingReport))
         if iWidth + 34 > 80:
             iWidth = 80 - 34
         lExpected = []
@@ -432,7 +432,7 @@ class TestExecuteReportInputs(unittest.TestCase):
         lExpected.append('')
         lExpected.append('md5sum' + ' ' * 26 + '  ' + 'Filename')
         lExpected.append('-' * 32 + '  ' + '-' * iWidth)
-        lExpected.append(calculate_md5(self.sConfigFile) + '  ' + self.sConfigFile)
+        lExpected.append(calculate_md5(self.sInterfaceFile) + '  ' + self.sInterfaceFile)
         lExpected.append(calculate_md5(sPassingReport) + '  ' + sPassingReport)
         lExpected.append(calculate_md5(sFailingReport) + '  ' + sFailingReport)
         self.assertEqual(lExpected, self.read_inputs_section())
@@ -447,7 +447,7 @@ class TestExecuteReportInputs(unittest.TestCase):
         lFilenames = []
         for sLine in self.read_inputs_section()[6:]:
             lFilenames.append(sLine.split('  ', 1)[1])
-        self.assertEqual([self.sConfigFile, sPassingReport, sFailingReport], lFilenames)
+        self.assertEqual([self.sInterfaceFile, sPassingReport, sFailingReport], lFilenames)
 
     def test_inputs_list_a_timing_report_reached_by_two_spellings_of_its_path_once(self):
         sTimingReport = self.copy_passing_report_to('timing.rpt')
@@ -459,7 +459,7 @@ class TestExecuteReportInputs(unittest.TestCase):
         lFilenames = []
         for sLine in self.read_inputs_section()[6:]:
             lFilenames.append(sLine.split('  ', 1)[1])
-        self.assertEqual([self.sConfigFile, sTimingReport], lFilenames)
+        self.assertEqual([self.sInterfaceFile, sTimingReport], lFilenames)
 
     def test_inputs_list_a_timing_report_reached_by_two_spellings_of_its_absolute_path_once(self):
         sTimingReport = self.copy_passing_report_to('timing.rpt')
@@ -471,7 +471,7 @@ class TestExecuteReportInputs(unittest.TestCase):
         lFilenames = []
         for sLine in self.read_inputs_section()[6:]:
             lFilenames.append(sLine.split('  ', 1)[1])
-        self.assertEqual([self.sConfigFile, sTimingReport], lFilenames)
+        self.assertEqual([self.sInterfaceFile, sTimingReport], lFilenames)
 
     def test_inputs_filename_separator_stops_at_80_characters(self):
         sTimingReport = self.copy_passing_report_to('long_timing_report_name_' + 'x' * 80 + '.rpt')
@@ -496,7 +496,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
+        self.sInterfaceFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
@@ -506,15 +506,15 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
 
     def execute_with_ports(self, lPorts):
         lPorts = write_named_port_timing_reports(self.oTempDir.name, lPorts)
-        with open(self.sConfigFile, 'w') as oFile:
+        with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('Rule checks test', lPorts, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
             oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=self.sReportFile, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sInterfaceFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
-        lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
+        lArgv = ['stacv', 'check', self.sInterfaceFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
             check.execute(oArgs, oDateTime, lArgv)
 
@@ -648,7 +648,7 @@ class TestExecuteJunit(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
+        self.sInterfaceFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')
@@ -658,15 +658,15 @@ class TestExecuteJunit(unittest.TestCase):
 
     def execute_with_ports(self, lPorts):
         lPorts = write_named_port_timing_reports(self.oTempDir.name, lPorts)
-        with open(self.sConfigFile, 'w') as oFile:
+        with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write(build_named_ports_config_text('JUnit test', lPorts, self.sTracesFile, self.sPartFile))
         with open(self.sTracesFile, 'w') as oFile:
             oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=None, junit=self.sJunitFile)
+        oArgs = argparse.Namespace(interface_file=self.sInterfaceFile, report=None, junit=self.sJunitFile)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
-        lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
+        lArgv = ['stacv', 'check', self.sInterfaceFile, '--junit', self.sJunitFile]
         with contextlib.redirect_stdout(io.StringIO()):
             return check.execute(oArgs, oDateTime, lArgv)
 

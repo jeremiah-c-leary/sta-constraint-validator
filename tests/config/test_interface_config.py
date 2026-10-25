@@ -6,14 +6,14 @@ from stacv.config import interface_config
 
 sTestDir = os.path.dirname(__file__)
 sProjectDir = os.path.abspath(os.path.join(sTestDir, '..', '..'))
-sConfigFile = os.path.join(sTestDir, 'interface_config.toml')
+sInterfaceFile = os.path.join(sTestDir, 'interface_config.toml')
 
 
 class Test(unittest.TestCase):
 
     def setUp(self):
         with mock.patch.dict(os.environ, {'PROJ_DIR': sProjectDir}):
-            self.oConfig = interface_config.read_interface_config(sConfigFile)
+            self.oConfig = interface_config.read_interface_config(sInterfaceFile)
 
     def test_config_keeps_its_description(self):
         self.assertEqual('Two ports on one interface', self.oConfig.description)

@@ -72,7 +72,7 @@ class RuleTestCase(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
+        self.sInterfaceFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sChangedTimingReport = os.path.join(self.oTempDir.name, 'O_DAC_DATA_timing.rpt')
@@ -83,9 +83,9 @@ class RuleTestCase(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def run_check(self):
-        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=None, junit=self.sJunitFile)
+        oArgs = argparse.Namespace(interface_file=self.sInterfaceFile, report=None, junit=self.sJunitFile)
         oDateTime = datetime.datetime(2026, 10, 24, 20, 0, 0)
-        lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
+        lArgv = ['stacv', 'check', self.sInterfaceFile, '--junit', self.sJunitFile]
         with contextlib.redirect_stdout(io.StringIO()):
             return check.execute(oArgs, oDateTime, lArgv)
 

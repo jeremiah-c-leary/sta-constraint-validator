@@ -74,7 +74,7 @@ class Test(rule_test_case.RuleTestCase):
         return self.execute(oHoldEdges, self.sChangedTimingReport)
 
     def execute(self, oHoldEdges, sTimingReportFile):
-        rule_test_case.write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile, oHoldEdges))
+        rule_test_case.write_file(self.sInterfaceFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile, oHoldEdges))
         rule_test_case.write_file(self.sPartFile, rule_test_case.build_passing_part_text())
         rule_test_case.write_file(self.sTracesFile, rule_test_case.build_passing_traces_text())
         return self.run_check()

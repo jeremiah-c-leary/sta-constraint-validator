@@ -80,7 +80,7 @@ def build_traces_text(lTraces):
 class Test(rule_test_case.RuleTestCase):
 
     def execute(self, lTraces):
-        rule_test_case.write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile))
+        rule_test_case.write_file(self.sInterfaceFile, build_config_text(self.sPartFile, self.sTracesFile))
         rule_test_case.write_file(self.sPartFile, rule_test_case.build_passing_part_text())
         rule_test_case.write_file(self.sTracesFile, build_traces_text(lTraces))
         return self.run_check()

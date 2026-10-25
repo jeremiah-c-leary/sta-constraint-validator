@@ -73,7 +73,7 @@ def build_traces_text(lTraces):
 class Test(rule_test_case.RuleTestCase):
 
     def execute(self, fSetup, fHold, lTraces):
-        rule_test_case.write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile))
+        rule_test_case.write_file(self.sInterfaceFile, build_config_text(self.sPartFile, self.sTracesFile))
         rule_test_case.write_file(self.sPartFile, rule_test_case.build_part_text('Rising', fSetup, fHold))
         rule_test_case.write_file(self.sTracesFile, build_traces_text(lTraces))
         return self.run_check()

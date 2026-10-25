@@ -31,7 +31,7 @@ def build_config_text(sPartFile, sTracesFile, sTimingReportFile):
 class Test(rule_test_case.RuleTestCase):
 
     def execute(self, sCaptureEdge, sTimingReportFile):
-        rule_test_case.write_file(self.sConfigFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile))
+        rule_test_case.write_file(self.sInterfaceFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile))
         rule_test_case.write_file(self.sPartFile, rule_test_case.build_part_text(sCaptureEdge, rule_test_case.fPassingSetup, rule_test_case.fPassingHold))
         rule_test_case.write_file(self.sTracesFile, rule_test_case.build_passing_traces_text())
         return self.run_check()
