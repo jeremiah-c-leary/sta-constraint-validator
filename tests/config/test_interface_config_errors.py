@@ -436,3 +436,60 @@ class Test(unittest.TestCase):
         for oPort in oConfig.ports:
             lMethodologies.append(oPort.methodology)
         self.assertEqual(['SDR-SS-O', 'SDR-SS-RT'], lMethodologies)
+
+    def build_config_with_part_and_traces(self, sPart, sTraces):
+        lText = []
+        lText.append('description = "Part and traces paths"')
+        lText.append('interface = "DAC_SPI_1"')
+        lText.append(f'part = "{sPart}"')
+        lText.append(f'traces = "{sTraces}"')
+        lText.append(self.sValidPort)
+        self.write_config_file('\n'.join(lText) + '\n')
+
+    def test_read_interface_config_resolves_relative_part_against_config_file_directory(self):
+        self.build_config_with_part_and_traces('part.toml', 'traces.toml')
+
+        oConfig = interface_config.read_interface_config(self.sConfigFile)
+
+        self.assertEqual(os.path.join(self.sDirectory, 'part.toml'), oConfig.part)
+
+    def test_read_interface_config_resolves_relative_traces_against_config_file_directory(self):
+        self.build_config_with_part_and_traces('part.toml', 'traces.toml')
+
+        oConfig = interface_config.read_interface_config(self.sConfigFile)
+
+        self.assertEqual(os.path.join(self.sDirectory, 'traces.toml'), oConfig.traces)
+
+    def test_read_interface_config_raises_error_naming_variable_if_part_uses_environment_variable_that_is_not_set(self):
+        self.build_config_with_part_and_traces('$STACV_UNSET_TEST_VARIABLE/part.toml', 'traces.toml')
+
+        sError = self.build_error_pattern('interface_config_004', 'key "part" uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
+        with mock.patch.dict(os.environ):
+            os.environ.pop('STACV_UNSET_TEST_VARIABLE', None)
+            with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+                interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_variable_if_traces_uses_environment_variable_that_is_not_set(self):
+        self.build_config_with_part_and_traces('part.toml', '$STACV_UNSET_TEST_VARIABLE/traces.toml')
+
+        sError = self.build_error_pattern('interface_config_004', 'key "traces" uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
+        with mock.patch.dict(os.environ):
+            os.environ.pop('STACV_UNSET_TEST_VARIABLE', None)
+            with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+                interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_file_if_part_does_not_exist(self):
+        self.build_config_with_part_and_traces('missing_part.toml', 'traces.toml')
+
+        sMissingFile = os.path.join(self.sDirectory, 'missing_part.toml')
+        sError = self.build_error_pattern('interface_config_005', 'key "part" lists a file that does not exist: ' + re.escape(sMissingFile) + '$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)
+
+    def test_read_interface_config_raises_error_naming_file_if_traces_does_not_exist(self):
+        self.build_config_with_part_and_traces('part.toml', 'missing_traces.toml')
+
+        sMissingFile = os.path.join(self.sDirectory, 'missing_traces.toml')
+        sError = self.build_error_pattern('interface_config_005', 'key "traces" lists a file that does not exist: ' + re.escape(sMissingFile) + '$')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sConfigFile)

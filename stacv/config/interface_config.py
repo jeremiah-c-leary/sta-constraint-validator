@@ -38,8 +38,8 @@ def create_interface_config(dConfig, sConfigFile):
     oLocation = config.ConfigLocation(sConfigFile)
     oInterface.description = get_required_string(dConfig, 'description', oLocation)
     oInterface.interface_name = get_required_string(dConfig, 'interface', oLocation)
-    oInterface.part = get_required_string(dConfig, 'part', oLocation)
-    oInterface.traces = get_required_string(dConfig, 'traces', oLocation)
+    oInterface.part = get_required_file(dConfig, 'part', oLocation)
+    oInterface.traces = get_required_file(dConfig, 'traces', oLocation)
     oInterface.ports = create_ports(dConfig, oLocation)
     return oInterface
 
@@ -77,6 +77,11 @@ def get_required_list_of_files(dDict, sKey, oLocation):
         sFile = resolve_file(sFilename, sKey, oLocation)
         lFiles.append(sFile)
     return lFiles
+
+
+def get_required_file(dDict, sKey, oLocation):
+    sFilename = get_required_string(dDict, sKey, oLocation)
+    return resolve_file(sFilename, sKey, oLocation)
 
 
 def resolve_file(sFilename, sKey, oLocation):

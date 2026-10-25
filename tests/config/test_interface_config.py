@@ -40,6 +40,14 @@ class Test(unittest.TestCase):
         lExpected.append(os.path.join(sProjectDir, 'tests', 'timing_report', 'parse', 'vivado', 'dac_spi.hold.rpt'))
         self.assertEqual(lExpected, oPort.timing_reports)
 
+    def test_part_path_has_environment_variables_expanded(self):
+        sExpected = os.path.join(sProjectDir, 'example', 'texas_instruments', 'DAC81404', 'part.toml')
+        self.assertEqual(sExpected, self.oConfig.part)
+
+    def test_traces_path_has_environment_variables_expanded(self):
+        sExpected = os.path.join(sProjectDir, 'example', 'texas_instruments', 'DAC81404', 'traces.toml')
+        self.assertEqual(sExpected, self.oConfig.traces)
+
     def test_port_keeps_its_launch_clock_setup_edge(self):
         oPort = self.oConfig.ports[0]
 
