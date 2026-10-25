@@ -4,8 +4,8 @@ import tempfile
 import unittest
 from unittest import mock
 
-from stacv.config import interface_config
-from stacv.config import interface_config_error
+from stacv.interface import interface_config
+from stacv.interface import interface_config_error
 
 
 class Test(unittest.TestCase):

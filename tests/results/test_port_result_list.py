@@ -1,6 +1,6 @@
 import unittest
 
-from stacv.config import config
+from stacv.interface import config
 from stacv.results import port_result
 from stacv.results import port_result_list
 

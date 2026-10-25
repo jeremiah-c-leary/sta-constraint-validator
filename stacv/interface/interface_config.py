@@ -7,10 +7,10 @@ import pathlib
 import re
 import tomllib
 
-from stacv.config import config
-from stacv.config import interface_config_error
-from stacv.config import value_type
-from stacv.config import clock_pin
+from stacv.interface import config
+from stacv.interface import interface_config_error
+from stacv.interface import value_type
+from stacv.interface import clock_pin
 
 
 def read_interface_config(sInterfaceFile):

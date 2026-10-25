@@ -1,5 +1,5 @@
 
-from stacv.config import interface_config
+from stacv.interface import interface_config
 from stacv.inputs import port_profile
 from stacv.methodology import methodology_factory
 from stacv.output import check_report

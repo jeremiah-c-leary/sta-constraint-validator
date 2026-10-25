@@ -3,7 +3,7 @@ import sys
 
 from stacv.cli import cmd_line_args
 from stacv.cli import check
-from stacv.config import interface_config_error
+from stacv.interface import interface_config_error
 from stacv.timing_report import timing_report_parse_error
 
 

@@ -2,7 +2,7 @@ import os
 import unittest
 from unittest import mock
 
-from stacv.config import interface_config
+from stacv.interface import interface_config
 
 sTestDir = os.path.dirname(__file__)
 sProjectDir = os.path.abspath(os.path.join(sTestDir, '..', '..'))
