@@ -21,7 +21,7 @@ class TestMainCheckDispatch(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
 
@@ -57,7 +57,7 @@ class TestMainToolErrors(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
 
@@ -101,7 +101,7 @@ class TestMainConsoleOutput(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.oStdout = io.StringIO()
@@ -218,7 +218,7 @@ class TestMainReportFile(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
@@ -293,7 +293,7 @@ class TestMainJunitFile(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')

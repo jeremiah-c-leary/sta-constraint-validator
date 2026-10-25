@@ -146,7 +146,7 @@ class TestExecute(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
 
@@ -181,7 +181,7 @@ class TestExecuteReportHeader(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
@@ -246,7 +246,7 @@ class TestExecuteReportTableOfContents(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
@@ -312,7 +312,7 @@ class TestExecuteReportSummary(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
@@ -382,7 +382,7 @@ class TestExecuteReportInputs(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
@@ -496,7 +496,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sReportFile = os.path.join(self.oTempDir.name, 'stacv_report.txt')
@@ -648,7 +648,7 @@ class TestExecuteJunit(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sJunitFile = os.path.join(self.oTempDir.name, 'stacv_junit.xml')

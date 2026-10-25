@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
         oTemporaryDirectory = tempfile.TemporaryDirectory()
         self.addCleanup(oTemporaryDirectory.cleanup)
         self.sDirectory = oTemporaryDirectory.name
-        self.sConfigFile = os.path.join(self.sDirectory, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.sDirectory, 'interface.toml')
         self.sValidPort = self.build_valid_port()
         self.write_empty_file('part.toml')
         self.write_empty_file('traces.toml')

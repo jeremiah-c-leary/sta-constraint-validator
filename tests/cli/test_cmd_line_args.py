@@ -16,12 +16,12 @@ def parse_arguments(lArguments):
 class TestCheckSubparser(unittest.TestCase):
 
     def test_check_command_selects_check(self):
-        oArgs = parse_arguments(['check', 'stacv.toml'])
+        oArgs = parse_arguments(['check', 'interface.toml'])
         self.assertEqual('check', oArgs.which)
 
     def test_check_command_stores_config_file(self):
-        oArgs = parse_arguments(['check', 'stacv.toml'])
-        self.assertEqual('stacv.toml', oArgs.config_file)
+        oArgs = parse_arguments(['check', 'interface.toml'])
+        self.assertEqual('interface.toml', oArgs.config_file)
 
     def test_check_command_requires_config_file(self):
         with contextlib.redirect_stderr(io.StringIO()):
@@ -35,17 +35,17 @@ class TestCheckSubparser(unittest.TestCase):
         self.assertEqual(2, oContext.exception.code)
 
     def test_check_report_option_stores_report_file(self):
-        oArgs = parse_arguments(['check', 'stacv.toml', '--report', 'stacv_report.txt'])
+        oArgs = parse_arguments(['check', 'interface.toml', '--report', 'stacv_report.txt'])
         self.assertEqual('stacv_report.txt', oArgs.report)
 
     def test_check_report_option_defaults_to_none(self):
-        oArgs = parse_arguments(['check', 'stacv.toml'])
+        oArgs = parse_arguments(['check', 'interface.toml'])
         self.assertIsNone(oArgs.report)
 
     def test_check_junit_option_stores_junit_file(self):
-        oArgs = parse_arguments(['check', 'stacv.toml', '--junit', 'stacv_junit.xml'])
+        oArgs = parse_arguments(['check', 'interface.toml', '--junit', 'stacv_junit.xml'])
         self.assertEqual('stacv_junit.xml', oArgs.junit)
 
     def test_check_junit_option_defaults_to_none(self):
-        oArgs = parse_arguments(['check', 'stacv.toml'])
+        oArgs = parse_arguments(['check', 'interface.toml'])
         self.assertIsNone(oArgs.junit)

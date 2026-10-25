@@ -72,7 +72,7 @@ class RuleTestCase(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
-        self.sConfigFile = os.path.join(self.oTempDir.name, 'stacv.toml')
+        self.sConfigFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sChangedTimingReport = os.path.join(self.oTempDir.name, 'O_DAC_DATA_timing.rpt')
