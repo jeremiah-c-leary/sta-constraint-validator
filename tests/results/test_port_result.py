@@ -1,6 +1,6 @@
 import unittest
 
-from stacv.interface import config
+from stacv.interface import port
 from stacv.results import port_result
 
 from tests.results.methodology_results_builder import build_failing_methodology_results
@@ -8,7 +8,7 @@ from tests.results.methodology_results_builder import build_passing_methodology_
 
 
 def build_port(sName, sMethodology):
-    oPort = config.Port()
+    oPort = port.Port()
     oPort.name = sName
     oPort.methodology = sMethodology
     return oPort

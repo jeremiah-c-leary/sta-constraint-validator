@@ -1,6 +1,6 @@
 import unittest
 
-from stacv.interface import config
+from stacv.interface import port
 from stacv.results import port_result
 from stacv.results import port_result_list
 
@@ -9,7 +9,7 @@ from tests.results.methodology_results_builder import build_passing_methodology_
 
 
 def build_port_result(sName, oMethodologyResults):
-    oPort = config.Port()
+    oPort = port.Port()
     oPort.name = sName
     oPort.methodology = 'SDR-SS-O'
     return port_result.PortResult(oPort, oMethodologyResults)
