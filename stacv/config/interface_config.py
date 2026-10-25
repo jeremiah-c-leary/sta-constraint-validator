@@ -156,4 +156,4 @@ def unset_variables_exist(lList):
 
 def check_if_file_exists(sFilename, sKey, oLocation):
     if not pathlib.Path(sFilename).is_file():
-        raise interface_config_error.InterfaceConfigError('interface_config_005', oLocation.filename, f'key "{sKey}"{oLocation.location} lists a file that does not exist: {sFilename}')
+        raise interface_config_error.InterfaceConfigError('interface_config_005', oLocation.filename, f'key "{sKey}"{oLocation.location} names a file that does not exist: {sFilename}')

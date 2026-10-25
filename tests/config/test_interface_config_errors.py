@@ -355,7 +355,7 @@ class Test(unittest.TestCase):
         lText.append(f'timing_reports = ["{sMissingFile}"]')
         self.write_config_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_005', 'key "timing_reports" in port O_DAC_CSF lists a file that does not exist: ' + re.escape(sMissingFile) + '$')
+        sError = self.build_error_pattern('interface_config_005', 'key "timing_reports" in port O_DAC_CSF names a file that does not exist: ' + re.escape(sMissingFile) + '$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
 
@@ -375,7 +375,7 @@ class Test(unittest.TestCase):
         self.write_config_file('\n'.join(lText) + '\n')
 
         sMissingFile = os.path.join(self.sDirectory, 'O_DAC_CSF_timing.rpt')
-        sError = self.build_error_pattern('interface_config_005', 'key "timing_reports" in port O_DAC_CSF lists a file that does not exist: ' + re.escape(sMissingFile) + '$')
+        sError = self.build_error_pattern('interface_config_005', 'key "timing_reports" in port O_DAC_CSF names a file that does not exist: ' + re.escape(sMissingFile) + '$')
         with mock.patch.dict(os.environ, {'STACV_TEST_REPORT_DIRECTORY': self.sDirectory}):
             with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
                 interface_config.read_interface_config(self.sConfigFile)
@@ -482,7 +482,7 @@ class Test(unittest.TestCase):
         self.build_config_with_part_and_traces('missing_part.toml', 'traces.toml')
 
         sMissingFile = os.path.join(self.sDirectory, 'missing_part.toml')
-        sError = self.build_error_pattern('interface_config_005', 'key "part" lists a file that does not exist: ' + re.escape(sMissingFile) + '$')
+        sError = self.build_error_pattern('interface_config_005', 'key "part" names a file that does not exist: ' + re.escape(sMissingFile) + '$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
 
@@ -490,6 +490,6 @@ class Test(unittest.TestCase):
         self.build_config_with_part_and_traces('part.toml', 'missing_traces.toml')
 
         sMissingFile = os.path.join(self.sDirectory, 'missing_traces.toml')
-        sError = self.build_error_pattern('interface_config_005', 'key "traces" lists a file that does not exist: ' + re.escape(sMissingFile) + '$')
+        sError = self.build_error_pattern('interface_config_005', 'key "traces" names a file that does not exist: ' + re.escape(sMissingFile) + '$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sConfigFile)
