@@ -76,3 +76,44 @@ class TestVisualizeEdgesDispatch(VisualizeTestCase):
     def test_interface_error_is_written_to_stderr(self):
         self.run_visualize_edges([])
         self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[interface_config_002\] ')
+
+
+class TestVisualizeEdgesPorts(VisualizeTestCase):
+
+    def test_names_each_port_between_dividers(self):
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']))
+        self.run_visualize_edges(lPorts)
+        lLines = self.oStdout.getvalue().split('\n')
+        lExpected = []
+        lExpected.append('=' * 80)
+        lExpected.append('Port:  O_DATA')
+        lExpected.append('=' * 80)
+        self.assertEqual(lExpected, lLines[0:3])
+        iSecondDivider = lLines.index('Port:  O_CHIP_SELECT') - 1
+        self.assertEqual('=' * 80, lLines[iSecondDivider])
+        self.assertEqual('=' * 80, lLines[iSecondDivider + 2])
+
+
+class TestVisualizeEdgesClocks(VisualizeTestCase):
+
+    def assert_rows_drawn(self, lExpectedRows):
+        self.assertIn('\n'.join(lExpectedRows) + '\n', self.oStdout.getvalue())
+
+    def test_draws_launch_clock_through_one_capture_period_after_the_last_configured_edge(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('                                                                             1     1     1     1     1     1     1')
+        lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____')
+        lExpected.append('launch clock   __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
+        self.assert_rows_drawn(lExpected)
+
+    def test_draws_capture_clock_through_one_capture_period_after_the_last_configured_edge(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('                 A_______________________B                       C_______________________D                       E_______________________')
+        lExpected.append('capture clock  __|                       |_______________________|                       |_______________________|')
+        self.assert_rows_drawn(lExpected)
