@@ -135,7 +135,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         self.run_main_with_reports([sFailingReport])
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         lExpected = []
-        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
+        lExpected.append(f'Reading interface file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
@@ -145,7 +145,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         sPort2TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_2', sPassingReport)
         lExpected = []
-        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
+        lExpected.append(f'Reading interface file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         lExpected.append(f'Reading timing report file {sPort2TimingReport}\n')
@@ -156,7 +156,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         sPort2TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_2', sFailingReport)
         lExpected = []
-        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
+        lExpected.append(f'Reading interface file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         lExpected.append(f'Reading timing report file {sPort2TimingReport}\n')
@@ -168,7 +168,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
         sPort2TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_2', sFailingReport)
         lExpected = []
-        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
+        lExpected.append(f'Reading interface file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append(f'Reading timing report file {sPort2TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
@@ -186,7 +186,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_VARIABLE', None)
             self.run_main_with_reports(['$STACV_UNSET_VARIABLE/report.rpt'])
-        self.assertEqual(f'Reading configuration file {self.sConfigFile}\n', self.oStdout.getvalue())
+        self.assertEqual(f'Reading interface file {self.sConfigFile}\n', self.oStdout.getvalue())
 
     def test_config_error_is_written_to_stderr(self):
         with mock.patch.dict(os.environ):
@@ -203,7 +203,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         sTimingReport = self.create_empty_timing_report()
         self.run_main_with_reports([sTimingReport])
         lExpected = []
-        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
+        lExpected.append(f'Reading interface file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sTimingReport}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
@@ -260,7 +260,7 @@ class TestMainReportFile(unittest.TestCase):
         self.run_main_with_report_option([sPassingReport])
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
         lExpected = []
-        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
+        lExpected.append(f'Reading interface file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append(f'Creating report {self.sReportFile}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
@@ -269,7 +269,7 @@ class TestMainReportFile(unittest.TestCase):
         self.run_main_with_report_option([sFailingReport])
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         lExpected = []
-        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
+        lExpected.append(f'Reading interface file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         lExpected.append(f'Creating report {self.sReportFile}\n')
@@ -341,7 +341,7 @@ class TestMainJunitFile(unittest.TestCase):
         self.run_main_with_junit_option([sPassingReport])
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
         lExpected = []
-        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
+        lExpected.append(f'Reading interface file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append(f'Creating JUnit file {self.sJunitFile}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
@@ -350,7 +350,7 @@ class TestMainJunitFile(unittest.TestCase):
         self.run_main_with_junit_option([sFailingReport])
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         lExpected = []
-        lExpected.append(f'Reading configuration file {self.sConfigFile}\n')
+        lExpected.append(f'Reading interface file {self.sConfigFile}\n')
         lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         lExpected.append(f'Creating JUnit file {self.sJunitFile}\n')
