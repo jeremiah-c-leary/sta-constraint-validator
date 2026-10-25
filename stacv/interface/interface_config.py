@@ -35,6 +35,14 @@ def read_toml_file(sInterfaceFile):
             raise interface_config_error.InterfaceConfigError('interface_config_001', sInterfaceFile, f'is not valid TOML: {oError}') from oError
 
 
+def check_timing_reports_exist(oInterface, sInterfaceFile):
+    oLocation = interface_location.InterfaceLocation(sInterfaceFile)
+    for oPort in oInterface.ports:
+        oLocation.set_port_name(oPort.name)
+        for sTimingReport in oPort.timing_reports:
+            check_if_file_exists(sTimingReport, 'timing_reports', oLocation)
+
+
 def create_interface_config(dConfig, sInterfaceFile):
     oInterface = interface.Interface()
     oLocation = interface_location.InterfaceLocation(sInterfaceFile)
@@ -56,7 +64,7 @@ def create_ports(dConfig, oLocation):
         oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
         oPort.capture_clock = build_capture_clock(dPort['capture_clock'])
         oPort.launch_clock = build_launch_clock(dPort['launch_clock'])
-        oPort.timing_reports = get_required_list_of_files(dPort, 'timing_reports', oLocation)
+        oPort.timing_reports = get_required_list_of_paths(dPort, 'timing_reports', oLocation)
         lPorts.append(oPort)
     return lPorts
 
@@ -73,12 +81,12 @@ def get_required_key_value(dDict, sKey, oLocation):
     return dDict[sKey]
 
 
-def get_required_list_of_files(dDict, sKey, oLocation):
-    lFiles = []
+def get_required_list_of_paths(dDict, sKey, oLocation):
+    lPaths = []
     for sFilename in get_required_list_of_strings(dDict, sKey, oLocation):
-        sFile = resolve_file(sFilename, sKey, oLocation)
-        lFiles.append(sFile)
-    return lFiles
+        sPath = resolve_path(sFilename, sKey, oLocation)
+        lPaths.append(sPath)
+    return lPaths
 
 
 def get_required_file(dDict, sKey, oLocation):
@@ -87,11 +95,15 @@ def get_required_file(dDict, sKey, oLocation):
 
 
 def resolve_file(sFilename, sKey, oLocation):
-    check_for_unset_environment_variables(sFilename, sKey, oLocation)
-    sFile = os.path.expandvars(sFilename)
-    sFile = resolve_relative_path(sFile, oLocation)
+    sFile = resolve_path(sFilename, sKey, oLocation)
     check_if_file_exists(sFile, sKey, oLocation)
     return sFile
+
+
+def resolve_path(sFilename, sKey, oLocation):
+    check_for_unset_environment_variables(sFilename, sKey, oLocation)
+    sPath = os.path.expandvars(sFilename)
+    return resolve_relative_path(sPath, oLocation)
 
 
 def get_required_list_of_strings(dDict, sKey, oLocation):

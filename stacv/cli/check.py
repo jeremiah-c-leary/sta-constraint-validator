@@ -16,6 +16,7 @@ from stacv.traces import traces
 def execute(oCmdLine, oDateTime, lArgv):
     print(f'Reading interface file {oCmdLine.interface_file}')
     oInterface = interface_config.read_interface_config(oCmdLine.interface_file)
+    interface_config.check_timing_reports_exist(oInterface, oCmdLine.interface_file)
     oPortResults = get_port_results(oInterface)
     if oCmdLine.report is not None:
         check_report.write_check_report(oCmdLine.report, oDateTime, lArgv, oInterface, oPortResults, oCmdLine.interface_file)

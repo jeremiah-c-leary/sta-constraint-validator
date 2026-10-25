@@ -11,6 +11,7 @@ import xml.etree.ElementTree
 
 from stacv import version
 from stacv.cli import check
+from stacv.interface import interface_config_error
 from stacv.rules.output_delay import s2_output_delay_001
 from stacv.rules.timing_report import s0_timing_report_002
 
@@ -166,6 +167,11 @@ class TestExecute(unittest.TestCase):
         lArgv = ['stacv', 'check', self.sInterfaceFile]
         with contextlib.redirect_stdout(io.StringIO()):
             return check.execute(oArgs, oDateTime, lArgv)
+
+    def test_execute_raises_error_if_timing_report_does_not_exist(self):
+        sMissingReport = os.path.join(self.oTempDir.name, 'missing_timing.rpt')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, 'interface_config_005'):
+            self.execute_with_reports([sMissingReport])
 
     def test_execute_returns_zero_when_every_rule_passes(self):
         self.assertEqual(0, self.execute_with_reports([sPassingReport]))
