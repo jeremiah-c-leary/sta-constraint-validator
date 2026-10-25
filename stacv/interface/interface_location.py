@@ -1,4 +1,4 @@
-class ConfigLocation():
+class InterfaceLocation():
 
     def __init__(self, sFilename):
         self.filename = sFilename

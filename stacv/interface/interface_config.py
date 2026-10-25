@@ -9,7 +9,7 @@ import tomllib
 
 from stacv.interface import interface
 from stacv.interface import port
-from stacv.interface import config_location
+from stacv.interface import interface_location
 from stacv.interface import interface_config_error
 from stacv.interface import value_type
 from stacv.interface import clock_pin
@@ -37,7 +37,7 @@ def read_toml_file(sInterfaceFile):
 
 def create_interface_config(dConfig, sInterfaceFile):
     oInterface = interface.Interface()
-    oLocation = config_location.ConfigLocation(sInterfaceFile)
+    oLocation = interface_location.InterfaceLocation(sInterfaceFile)
     oInterface.description = get_required_string(dConfig, 'description', oLocation)
     oInterface.interface_name = get_required_string(dConfig, 'interface', oLocation)
     oInterface.part = get_required_file(dConfig, 'part', oLocation)
