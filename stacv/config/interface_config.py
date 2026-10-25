@@ -134,11 +134,11 @@ def check_for_unset_environment_variables(sString, sKey, oLocation):
         raise interface_config_error.InterfaceConfigError('interface_config_004', oLocation.filename, f'key "{sKey}"{oLocation.location} uses environment variables that are not set: {", ".join(lUnsetVars)}')
 
 
-def resolve_relative_path(sTimingReport, oLocation):
-    sExpandedPath = sTimingReport
+def resolve_relative_path(sFilename, oLocation):
+    sExpandedPath = sFilename
     if not pathlib.Path(sExpandedPath).is_absolute():
         oParentPath = os.path.dirname(oLocation.filename)
-        sExpandedPath = os.path.join(oParentPath, sTimingReport)
+        sExpandedPath = os.path.join(oParentPath, sFilename)
     return os.path.normpath(sExpandedPath)
 
 
