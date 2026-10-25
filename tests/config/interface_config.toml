@@ -2,8 +2,8 @@
 
 description = "Two ports on one interface"
 interface = "DAC_SPI_1"
-part = "unknown"
-traces = "unknown"
+part = "$PROJ_DIR/example/texas_instruments/DAC81404/part.toml"
+traces = "$PROJ_DIR/example/texas_instruments/DAC81404/traces.toml"
 
 [[port]]
 name = "O_DAC_DATA"
