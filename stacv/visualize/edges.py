@@ -19,6 +19,8 @@ def draw_edges(oPort):
     lLines = []
     lLines.extend(draw_launch_clock(oPort.launch_clock, fColumnsPerNanosecond, iEndColumn))
     lLines.append('')
+    lLines.append(draw_setup_requirement(oPort, fColumnsPerNanosecond))
+    lLines.append('')
     lLines.extend(draw_capture_clock(oPort.capture_clock, fColumnsPerNanosecond, iEndColumn))
     return lLines
 
@@ -129,3 +131,53 @@ def build_clock_lines(oTensRow, oLabelRow, oWaveRow):
     lLines.append(oLabelRow.to_string())
     lLines.append(oWaveRow.to_string())
     return lLines
+
+
+def draw_setup_requirement(oPort, fColumnsPerNanosecond):
+    fLaunchTime = calculate_launch_edge_time(oPort.launch_clock, oPort.launch_clock.setup_edge)
+    fCaptureTime = calculate_capture_edge_time(oPort.capture_clock, oPort.capture_clock.setup_edge)
+    iLaunchColumn = calculate_column(fLaunchTime, fColumnsPerNanosecond)
+    iCaptureColumn = calculate_column(fCaptureTime, fColumnsPerNanosecond)
+    return draw_requirement('setup requirement', iLaunchColumn, iCaptureColumn)
+
+
+def draw_requirement(sText, iLaunchColumn, iCaptureColumn):
+    oRow = text_row.TextRow()
+    if iLaunchColumn == iCaptureColumn:
+        oRow.write(iLaunchColumn, '| ' + sText)
+        return oRow.to_string()
+    draw_arrow(oRow, iLaunchColumn, iCaptureColumn)
+    write_requirement_text(oRow, sText, iLaunchColumn, iCaptureColumn)
+    return oRow.to_string()
+
+
+def draw_arrow(oRow, iLaunchColumn, iCaptureColumn):
+    iFirstColumn = min(iLaunchColumn, iCaptureColumn)
+    iLastColumn = max(iLaunchColumn, iCaptureColumn)
+    oRow.write(iFirstColumn, '-' * (iLastColumn - iFirstColumn))
+    if iCaptureColumn > iLaunchColumn:
+        oRow.write(iCaptureColumn - 1, '>')
+    else:
+        oRow.write(iCaptureColumn + 1, '<')
+    oRow.write(iFirstColumn, '|')
+    oRow.write(iLastColumn, '|')
+
+
+def write_requirement_text(oRow, sText, iLaunchColumn, iCaptureColumn):
+    iDashCount = abs(iCaptureColumn - iLaunchColumn) - 2
+    if not text_fits_in_arrow(sText, iDashCount):
+        oRow.write(max(iLaunchColumn, iCaptureColumn) + 2, sText)
+        return
+    iTextColumn = find_first_dash_column(iLaunchColumn, iCaptureColumn) + (iDashCount - len(sText) + 1) // 2
+    oRow.write(iTextColumn, sText)
+
+
+def text_fits_in_arrow(sText, iDashCount):
+    # Keeps at least one dash on each side of the text.
+    return len(sText) <= iDashCount - 2
+
+
+def find_first_dash_column(iLaunchColumn, iCaptureColumn):
+    if iCaptureColumn > iLaunchColumn:
+        return iLaunchColumn + 1
+    return iCaptureColumn + 2

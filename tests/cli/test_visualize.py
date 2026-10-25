@@ -58,6 +58,9 @@ class VisualizeTestCase(unittest.TestCase):
                         __main__.main()
         return oContext.exception.code
 
+    def assert_rows_drawn(self, lExpectedRows):
+        self.assertIn('\n' + '\n'.join(lExpectedRows) + '\n', self.oStdout.getvalue())
+
 
 class TestVisualizeEdgesDispatch(VisualizeTestCase):
 
@@ -98,9 +101,6 @@ class TestVisualizeEdgesPorts(VisualizeTestCase):
 
 class TestVisualizeEdgesClocks(VisualizeTestCase):
 
-    def assert_rows_drawn(self, lExpectedRows):
-        self.assertIn('\n'.join(lExpectedRows) + '\n', self.oStdout.getvalue())
-
     def test_draws_launch_clock_through_one_capture_period_after_the_last_configured_edge(self):
         sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
         self.run_visualize_edges([sPort])
@@ -117,3 +117,21 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
         lExpected.append('                 A_______________________B                       C_______________________D                       E_______________________')
         lExpected.append('capture clock  __|                       |_______________________|                       |_______________________|')
         self.assert_rows_drawn(lExpected)
+
+
+class TestVisualizeEdgesSetupRequirement(VisualizeTestCase):
+
+    def test_draws_setup_requirement_from_launch_edge_to_capture_edge(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_visualize_edges([sPort])
+        self.assert_rows_drawn(['                                         |---setup requirement-->|'])
+
+    def test_writes_setup_requirement_after_an_arrow_too_short_to_hold_it(self):
+        sPort = build_port_text('O_DATA', 10, 20, [2, 'C'], [2, 'A'])
+        self.run_visualize_edges([sPort])
+        self.assert_rows_drawn(['                             |---------->| setup requirement'])
+
+    def test_points_setup_requirement_back_at_a_capture_edge_before_the_launch_edge(self):
+        sPort = build_port_text('O_DATA', 10, 40, [8, 'A'], [4, 'A'])
+        self.run_visualize_edges([sPort])
+        self.assert_rows_drawn(['                 |<---------------setup requirement--------------|'])
