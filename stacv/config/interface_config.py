@@ -74,12 +74,17 @@ def get_required_key_value(dDict, sKey, oLocation):
 def get_required_list_of_files(dDict, sKey, oLocation):
     lFiles = []
     for sFilename in get_required_list_of_strings(dDict, sKey, oLocation):
-        check_for_unset_environment_variables(sFilename, sKey, oLocation)
-        sFile = os.path.expandvars(sFilename)
-        sFile = resolve_relative_path(sFile, oLocation)
-        check_if_file_exists(sFile, sKey, oLocation)
+        sFile = resolve_file(sFilename, sKey, oLocation)
         lFiles.append(sFile)
     return lFiles
+
+
+def resolve_file(sFilename, sKey, oLocation):
+    check_for_unset_environment_variables(sFilename, sKey, oLocation)
+    sFile = os.path.expandvars(sFilename)
+    sFile = resolve_relative_path(sFile, oLocation)
+    check_if_file_exists(sFile, sKey, oLocation)
+    return sFile
 
 
 def get_required_list_of_strings(dDict, sKey, oLocation):
