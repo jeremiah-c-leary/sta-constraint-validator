@@ -14,11 +14,11 @@ from stacv.traces import traces
 
 
 def execute(oCmdLine, oDateTime, lArgv):
-    print(f'Reading configuration file {oCmdLine.config_file}')
-    oInterface = interface_config.read_interface_config(oCmdLine.config_file)
+    print(f'Reading configuration file {oCmdLine.interface_file}')
+    oInterface = interface_config.read_interface_config(oCmdLine.interface_file)
     oPortResults = get_port_results(oInterface)
     if oCmdLine.report is not None:
-        check_report.write_check_report(oCmdLine.report, oDateTime, lArgv, oInterface, oPortResults, oCmdLine.config_file)
+        check_report.write_check_report(oCmdLine.report, oDateTime, lArgv, oInterface, oPortResults, oCmdLine.interface_file)
     if oCmdLine.junit is not None:
         junit.generate_junit_file(oCmdLine.junit, oPortResults)
     if oPortResults.has_failures():

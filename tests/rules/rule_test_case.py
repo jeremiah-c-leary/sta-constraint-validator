@@ -83,7 +83,7 @@ class RuleTestCase(unittest.TestCase):
         self.oTempDir.cleanup()
 
     def run_check(self):
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=self.sJunitFile)
+        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=None, junit=self.sJunitFile)
         oDateTime = datetime.datetime(2026, 10, 24, 20, 0, 0)
         lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
         with contextlib.redirect_stdout(io.StringIO()):

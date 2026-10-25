@@ -161,7 +161,7 @@ class TestExecute(unittest.TestCase):
             oFile.write(build_traces_text(build_numbered_port_names(lTimingReports)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=None, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile]
         with contextlib.redirect_stdout(io.StringIO()):
@@ -197,7 +197,7 @@ class TestExecuteReportHeader(unittest.TestCase):
             oFile.write(build_traces_text(build_numbered_port_names([sPassingReport])))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=self.sReportFile, junit=None)
         with contextlib.redirect_stdout(io.StringIO()):
             check.execute(oArgs, self.oDateTime, lArgv)
 
@@ -261,7 +261,7 @@ class TestExecuteReportTableOfContents(unittest.TestCase):
             oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
@@ -327,7 +327,7 @@ class TestExecuteReportSummary(unittest.TestCase):
             oFile.write(build_traces_text(lPortNames))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
@@ -397,7 +397,7 @@ class TestExecuteReportInputs(unittest.TestCase):
             oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
@@ -416,7 +416,7 @@ class TestExecuteReportInputs(unittest.TestCase):
         shutil.copyfile(sPassingReport, sTimingReport)
         return sTimingReport
 
-    def test_inputs_list_config_file_then_timing_reports_in_declaration_order(self):
+    def test_inputs_list_interface_file_then_timing_reports_in_declaration_order(self):
         lPorts = []
         lPorts.append(('P1', sPassingReport))
         lPorts.append(('P2', sFailingReport))
@@ -512,7 +512,7 @@ class TestExecuteReportRuleChecks(unittest.TestCase):
             oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=self.sReportFile, junit=None)
+        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=self.sReportFile, junit=None)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--report', self.sReportFile]
         with contextlib.redirect_stdout(io.StringIO()):
@@ -664,7 +664,7 @@ class TestExecuteJunit(unittest.TestCase):
             oFile.write(build_traces_text(get_port_names(lPorts)))
         with open(self.sPartFile, 'w') as oFile:
             oFile.write(build_part_text())
-        oArgs = argparse.Namespace(config_file=self.sConfigFile, report=None, junit=self.sJunitFile)
+        oArgs = argparse.Namespace(interface_file=self.sConfigFile, report=None, junit=self.sJunitFile)
         oDateTime = datetime.datetime(2026, 10, 17, 21, 14, 53)
         lArgv = ['stacv', 'check', self.sConfigFile, '--junit', self.sJunitFile]
         with contextlib.redirect_stdout(io.StringIO()):

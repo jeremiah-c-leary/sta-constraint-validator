@@ -19,11 +19,11 @@ class TestCheckSubparser(unittest.TestCase):
         oArgs = parse_arguments(['check', 'interface.toml'])
         self.assertEqual('check', oArgs.which)
 
-    def test_check_command_stores_config_file(self):
+    def test_check_command_stores_interface_file(self):
         oArgs = parse_arguments(['check', 'interface.toml'])
-        self.assertEqual('interface.toml', oArgs.config_file)
+        self.assertEqual('interface.toml', oArgs.interface_file)
 
-    def test_check_command_requires_config_file(self):
+    def test_check_command_requires_interface_file(self):
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
                 parse_arguments(['check'])
