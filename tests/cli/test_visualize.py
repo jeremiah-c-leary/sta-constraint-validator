@@ -135,3 +135,19 @@ class TestVisualizeEdgesSetupRequirement(VisualizeTestCase):
         sPort = build_port_text('O_DATA', 10, 40, [8, 'A'], [4, 'A'])
         self.run_visualize_edges([sPort])
         self.assert_rows_drawn(['                 |<---------------setup requirement--------------|'])
+
+
+class TestVisualizeEdgesHoldRequirement(VisualizeTestCase):
+
+    def test_draws_hold_requirement_under_setup_requirement(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('                                         |---setup requirement-->|')
+        lExpected.append('                 |<---hold requirement---|')
+        self.assert_rows_drawn(lExpected)
+
+    def test_draws_hold_requirement_on_one_column_when_launch_and_capture_edges_line_up(self):
+        sPort = build_port_text('O_DATA', 10, 50, [8, 'C'], [0, 'A'])
+        self.run_visualize_edges([sPort])
+        self.assert_rows_drawn(['                 | hold requirement'])

@@ -20,6 +20,7 @@ def draw_edges(oPort):
     lLines.extend(draw_launch_clock(oPort.launch_clock, fColumnsPerNanosecond, iEndColumn))
     lLines.append('')
     lLines.append(draw_setup_requirement(oPort, fColumnsPerNanosecond))
+    lLines.append(draw_hold_requirement(oPort, fColumnsPerNanosecond))
     lLines.append('')
     lLines.extend(draw_capture_clock(oPort.capture_clock, fColumnsPerNanosecond, iEndColumn))
     return lLines
@@ -139,6 +140,14 @@ def draw_setup_requirement(oPort, fColumnsPerNanosecond):
     iLaunchColumn = calculate_column(fLaunchTime, fColumnsPerNanosecond)
     iCaptureColumn = calculate_column(fCaptureTime, fColumnsPerNanosecond)
     return draw_requirement('setup requirement', iLaunchColumn, iCaptureColumn)
+
+
+def draw_hold_requirement(oPort, fColumnsPerNanosecond):
+    fLaunchTime = calculate_launch_edge_time(oPort.launch_clock, oPort.launch_clock.hold_edge)
+    fCaptureTime = calculate_capture_edge_time(oPort.capture_clock, oPort.capture_clock.hold_edge)
+    iLaunchColumn = calculate_column(fLaunchTime, fColumnsPerNanosecond)
+    iCaptureColumn = calculate_column(fCaptureTime, fColumnsPerNanosecond)
+    return draw_requirement('hold requirement', iLaunchColumn, iCaptureColumn)
 
 
 def draw_requirement(sText, iLaunchColumn, iCaptureColumn):
