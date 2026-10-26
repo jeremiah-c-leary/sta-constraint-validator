@@ -114,6 +114,13 @@ class GenerateTestCase(unittest.TestCase):
     def assert_line_written(self, sExpectedLine):
         self.assertIn(sExpectedLine, self.get_output_lines())
 
+    def count_lines_starting_with(self, sStartOfLine):
+        iCount = 0
+        for sLine in self.get_output_lines():
+            if sLine.startswith(sStartOfLine):
+                iCount += 1
+        return iCount
+
     def assert_line_not_written(self, sStartOfLine):
         for sLine in self.get_output_lines():
             self.assertFalse(sLine.startswith(sStartOfLine), sLine)
@@ -136,3 +143,34 @@ class TestGenerateXdcDispatch(GenerateTestCase):
     def test_interface_error_is_written_to_stderr(self):
         self.run_generate_xdc([])
         self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[interface_config_002\] ')
+
+
+class TestGenerateXdcGeneratedClock(GenerateTestCase):
+
+    def test_divides_the_capture_clock_from_the_generator_when_it_is_slower(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins q_sclk_reg/C] -divide_by 4 [get_pins q_sclk_reg/Q]')
+
+    def test_multiplies_the_capture_clock_from_the_generator_when_it_is_faster(self):
+        sPort = build_port_text('O_DATA', 40, 10, [2, 'K'], [2, 'I'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins q_sclk_reg/C] -multiply_by 4 [get_pins q_sclk_reg/Q]')
+
+    def test_divides_by_one_when_the_periods_are_equal(self):
+        sPort = build_port_text('O_DATA', 10, 10, [0, 'C'], [0, 'A'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins q_sclk_reg/C] -divide_by 1 [get_pins q_sclk_reg/Q]')
+
+    def test_uses_the_pins_named_by_the_generator(self):
+        sGenerator = '{source = "u_clock_out/oddr_inst", master_pin = "CLK", target_pin = "OUT"}'
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'], sGenerator)
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins u_clock_out/oddr_inst/CLK] -divide_by 4 [get_pins u_clock_out/oddr_inst/OUT]')
+
+    def test_generates_a_capture_clock_shared_by_two_ports_once(self):
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']))
+        self.run_generate_xdc(lPorts)
+        self.assertEqual(1, self.count_lines_starting_with('create_generated_clock '))
