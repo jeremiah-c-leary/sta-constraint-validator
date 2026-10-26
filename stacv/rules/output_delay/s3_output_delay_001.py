@@ -23,7 +23,7 @@ Refer to the vendor's timing constraints documentation for output delays.
 '''
 
 from stacv.results import rule_result
-from stacv.rules import path_lookups
+from stacv.rules import output_delays
 from stacv.rules import rule_details
 from stacv.rules import tolerance
 
@@ -39,7 +39,7 @@ def check(oPortProfile):
     '''
 
     fActualOutputDelay = get_output_delay_from_setup_reports(oPortProfile)
-    fExpectedOutputDelay = calculate_expected_max_output_delay(oPortProfile)
+    fExpectedOutputDelay = output_delays.calculate_expected_max_output_delay(oPortProfile)
     if tolerance.is_within_tolerance(fExpectedOutputDelay, fActualOutputDelay, TOLERANCE):
         return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
     return generate_error_result(fActualOutputDelay, fExpectedOutputDelay, oPortProfile)
@@ -56,21 +56,6 @@ def get_first_setup_report(oPortProfile):
     '''
     lSetupReports = oPortProfile.timing_reports.get_setup_reports()
     return lSetupReports[0]
-
-
-def calculate_expected_max_output_delay(oPortProfile):
-    oDataTrace = path_lookups.get_data_trace(oPortProfile)
-    oPartPin = path_lookups.get_part_pin_at_end_of_trace(oPortProfile, oDataTrace)
-    oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartPin)
-    return calculate_max_output_delay(oDataTrace, oPartPin, oClockTrace)
-
-
-def calculate_max_output_delay(oDataTrace, oPartPin, oClockTrace):
-    fMaxTraceDataDelay = oDataTrace.device_to_part.max_delay
-    fMinTraceClockDelay = oClockTrace.device_to_part.min_delay
-    fSetup = oPartPin.setup.value
-    fMaxOutputDelay = fSetup + fMaxTraceDataDelay - fMinTraceClockDelay
-    return fMaxOutputDelay
 
 
 def generate_error_result(fActualOutputDelay, fExpectedOutputDelay, oPortProfile):
