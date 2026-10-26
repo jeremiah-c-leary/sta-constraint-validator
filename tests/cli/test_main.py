@@ -174,6 +174,26 @@ class TestMainConsoleOutput(unittest.TestCase):
         lExpected.append('FAILED: [s0_timing_report_002]\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
+    def test_passing_run_ends_with_check_passed(self):
+        self.run_main_with_reports([sPassingReport])
+        sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
+        lExpected = []
+        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
+        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
+        lExpected.append('Check Passed\n')
+        self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
+
+    def test_passing_ports_end_with_one_check_passed(self):
+        self.run_main_with_reports([sPassingReport, sPassingReport])
+        sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
+        sPort2TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_2', sPassingReport)
+        lExpected = []
+        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
+        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
+        lExpected.append(f'Reading timing report file {sPort2TimingReport}\n')
+        lExpected.append('Check Passed\n')
+        self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
+
     def test_failing_run_writes_nothing_to_stderr(self):
         self.run_main_with_reports([sFailingReport])
         self.assertEqual('', self.oStderr.getvalue())
@@ -263,6 +283,7 @@ class TestMainReportFile(unittest.TestCase):
         lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
         lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append(f'Creating report {self.sReportFile}\n')
+        lExpected.append('Check Passed\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_creating_report_is_written_after_failed_rules(self):
@@ -344,6 +365,7 @@ class TestMainJunitFile(unittest.TestCase):
         lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
         lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
         lExpected.append(f'Creating JUnit file {self.sJunitFile}\n')
+        lExpected.append('Check Passed\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_creating_junit_file_is_written_after_failed_rules(self):

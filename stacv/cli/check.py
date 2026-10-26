@@ -24,6 +24,7 @@ def execute(oCmdLine, oDateTime, lArgv):
         junit.generate_junit_file(oCmdLine.junit, oPortResults)
     if oPortResults.has_failures():
         return 1
+    print('Check Passed')
     return 0
 
 
