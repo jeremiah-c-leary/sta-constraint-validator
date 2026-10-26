@@ -174,3 +174,34 @@ class TestGenerateXdcGeneratedClock(GenerateTestCase):
         lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']))
         self.run_generate_xdc(lPorts)
         self.assertEqual(1, self.count_lines_starting_with('create_generated_clock '))
+
+
+class TestGenerateXdcOutputDelays(GenerateTestCase):
+
+    def test_writes_the_maximum_output_delay_against_the_clock_port(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -max 8.100 [get_ports O_DATA]')
+
+    def test_writes_the_minimum_output_delay_against_the_clock_port(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -min -2.700 [get_ports O_DATA]')
+
+    def test_applies_the_maximum_output_delay_to_a_falling_capture_edge(self):
+        sPort = build_port_text('O_DATA', 10, 40, [2, 'B'], [4, 'B'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -clock_fall -reference_pin [get_ports O_SCLK] -max 8.100 [get_ports O_DATA]')
+
+    def test_applies_the_minimum_output_delay_to_a_falling_capture_edge(self):
+        sPort = build_port_text('O_DATA', 10, 40, [2, 'B'], [4, 'B'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -clock_fall -reference_pin [get_ports O_SCLK] -min -2.700 [get_ports O_DATA]')
+
+    def test_writes_output_delays_for_every_port(self):
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']))
+        self.run_generate_xdc(lPorts)
+        self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -max 8.100 [get_ports O_CHIP_SELECT]')
+        self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -min -2.700 [get_ports O_CHIP_SELECT]')
