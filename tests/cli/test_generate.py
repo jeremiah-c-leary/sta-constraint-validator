@@ -262,3 +262,50 @@ class TestGenerateXdcHoldMulticycle(GenerateTestCase):
         self.run_generate_xdc(lPorts)
         self.assert_line_written('set_multicycle_path 3 -hold -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
         self.assert_line_written('set_multicycle_path 4 -hold -start -from [get_clocks clk_launch] -to [get_ports O_CHIP_SELECT]')
+
+
+class TestGenerateXdcErrors(GenerateTestCase):
+
+    def assert_error_written(self, sIdentifier):
+        self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[' + sIdentifier + r'\] ')
+
+    def test_exits_with_two_on_a_generate_error(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'], None)
+        self.assertEqual(2, self.run_generate_xdc([sPort]))
+
+    def test_writes_no_constraints_on_a_generate_error(self):
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [8, 'C'], [4, 'A']))
+        self.run_generate_xdc(lPorts)
+        self.assertEqual('', self.oStdout.getvalue())
+
+    def test_reports_a_capture_clock_without_a_generator(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'], None)
+        self.run_generate_xdc([sPort])
+        self.assert_error_written('generate_001')
+
+    def test_reports_a_setup_requirement_that_is_not_a_whole_number_of_step_periods(self):
+        sPort = build_port_text('O_DATA', 10, 40, [3, 'C'], [4, 'A'])
+        self.run_generate_xdc([sPort])
+        self.assert_error_written('generate_002')
+
+    def test_reports_a_hold_requirement_that_is_not_a_whole_number_of_step_periods(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [3, 'A'])
+        self.run_generate_xdc([sPort])
+        self.assert_error_written('generate_003')
+
+    def test_reports_a_setup_multicycle_less_than_one(self):
+        sPort = build_port_text('O_DATA', 10, 40, [8, 'C'], [4, 'A'])
+        self.run_generate_xdc([sPort])
+        self.assert_error_written('generate_004')
+
+    def test_reports_a_hold_multicycle_less_than_zero(self):
+        sPort = build_port_text('O_DATA', 10, 40, [6, 'C'], [6, 'C'])
+        self.run_generate_xdc([sPort])
+        self.assert_error_written('generate_005')
+
+    def test_reports_setup_and_hold_capture_edges_of_different_types(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [2, 'B'])
+        self.run_generate_xdc([sPort])
+        self.assert_error_written('generate_006')

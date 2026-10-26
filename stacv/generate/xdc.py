@@ -2,10 +2,14 @@
 Generates Vivado timing constraints for the ports of an interface.
 '''
 
+from stacv.generate import generate_error
 from stacv.inputs import port_profile
 from stacv.rules import edge_times
 from stacv.rules import output_delays
 from stacv.rules import requirements
+from stacv.rules import tolerance
+
+TOLERANCE = 0.0005
 
 
 def generate_constraints(oInterface, oTraceList, oPart):
@@ -28,12 +32,18 @@ def generate_clocks(lPorts):
 
 
 def create_generated_clock(oPort):
+    check_generator_exists(oPort)
     oCaptureClock = oPort.capture_clock
     oGenerator = oCaptureClock.generator
     sSourcePin = format_pin(oGenerator.source, oGenerator.master_pin)
     sTargetPin = format_pin(oGenerator.source, oGenerator.target_pin)
     sRatio = format_ratio(oPort.launch_clock.period, oCaptureClock.period)
     return f'create_generated_clock -name {oCaptureClock.name} -source {sSourcePin} {sRatio} {sTargetPin}'
+
+
+def check_generator_exists(oPort):
+    if oPort.capture_clock.generator is None:
+        raise generate_error.GenerateError('generate_001', oPort.name, f'capture clock {oPort.capture_clock.name} has no generator')
 
 
 def format_pin(sCell, sPin):
@@ -86,25 +96,60 @@ def is_falling_edge(sEdgeLetter):
 
 
 def create_multicycle_paths(oPort):
+    check_capture_edge_types_match(oPort)
     lLines = []
     iSetupMulticycle = calculate_setup_multicycle(oPort)
+    check_setup_multicycle(oPort, iSetupMulticycle)
     if iSetupMulticycle != 1:
         lLines.append(create_multicycle_path(oPort, iSetupMulticycle, '-setup'))
     iHoldMulticycle = calculate_hold_multicycle(oPort)
+    check_hold_multicycle(oPort, iHoldMulticycle)
     if iHoldMulticycle != 0:
         lLines.append(create_multicycle_path(oPort, iHoldMulticycle, '-hold'))
     return lLines
 
 
+def check_capture_edge_types_match(oPort):
+    bSetupIsFalling = is_falling_edge(oPort.capture_clock.setup_edge)
+    bHoldIsFalling = is_falling_edge(oPort.capture_clock.hold_edge)
+    if bSetupIsFalling != bHoldIsFalling:
+        raise generate_error.GenerateError('generate_006', oPort.name, f'setup capture edge {oPort.capture_clock.setup_edge} and hold capture edge {oPort.capture_clock.hold_edge} are not the same edge type')
+
+
 def calculate_setup_multicycle(oPort):
-    fSetupRequirement = requirements.calculate_configuration_setup_requirement(oPort)
-    return round(fSetupRequirement / find_step_period(oPort))
+    return count_setup_step_periods(oPort)
 
 
 def calculate_hold_multicycle(oPort):
+    return count_setup_step_periods(oPort) - count_hold_step_periods(oPort) - 1
+
+
+def count_setup_step_periods(oPort):
     fSetupRequirement = requirements.calculate_configuration_setup_requirement(oPort)
+    return count_step_periods(oPort, fSetupRequirement, 'generate_002', 'setup requirement')
+
+
+def count_hold_step_periods(oPort):
     fHoldRequirement = requirements.calculate_configuration_hold_requirement(oPort)
-    return round((fSetupRequirement - fHoldRequirement) / find_step_period(oPort)) - 1
+    return count_step_periods(oPort, fHoldRequirement, 'generate_003', 'hold requirement')
+
+
+def count_step_periods(oPort, fRequirement, sIdentifier, sRequirementName):
+    fStepPeriod = find_step_period(oPort)
+    iStepPeriods = round(fRequirement / fStepPeriod)
+    if not tolerance.is_within_tolerance(iStepPeriods * fStepPeriod, fRequirement, TOLERANCE):
+        raise generate_error.GenerateError(sIdentifier, oPort.name, f'{sRequirementName} {fRequirement:.3f}ns is not a whole number of {fStepPeriod:.3f}ns step periods')
+    return iStepPeriods
+
+
+def check_setup_multicycle(oPort, iSetupMulticycle):
+    if iSetupMulticycle < 1:
+        raise generate_error.GenerateError('generate_004', oPort.name, f'setup multicycle {iSetupMulticycle} is less than 1')
+
+
+def check_hold_multicycle(oPort, iHoldMulticycle):
+    if iHoldMulticycle < 0:
+        raise generate_error.GenerateError('generate_005', oPort.name, f'hold multicycle {iHoldMulticycle} is less than 0')
 
 
 def find_step_period(oPort):
