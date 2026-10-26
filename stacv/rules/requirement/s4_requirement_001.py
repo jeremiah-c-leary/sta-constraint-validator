@@ -42,7 +42,7 @@ Refer to the vendor's timing constraints documentation for multicycle paths and 
 '''
 
 from stacv.results import rule_result
-from stacv.rules import edge_times
+from stacv.rules import requirements
 from stacv.rules import rule_details
 from stacv.rules import tolerance
 
@@ -62,20 +62,13 @@ def check(oPortProfile):
 
 
 def get_setup_requirement_mismatches(oPortProfile):
-    fConfigurationRequirement = calculate_configuration_setup_requirement(oPortProfile.port)
+    fConfigurationRequirement = requirements.calculate_configuration_setup_requirement(oPortProfile.port)
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.get_setup_reports():
         if not tolerance.is_within_tolerance(fConfigurationRequirement, oTimingReport.requirement, TOLERANCE):
             sErrorMessage = generate_error_message(oTimingReport, fConfigurationRequirement)
             lDetails.append(sErrorMessage)
     return lDetails
-
-
-def calculate_configuration_setup_requirement(oPort):
-    iCaptureEdgeNumber = edge_times.convert_edge_letter_to_number(oPort.capture_clock.setup_edge)
-    fCaptureEdgeTime = edge_times.calculate_edge_time(oPort.capture_clock.period, iCaptureEdgeNumber)
-    fLaunchEdgeTime = edge_times.calculate_edge_time(oPort.launch_clock.period, oPort.launch_clock.setup_edge)
-    return fCaptureEdgeTime - fLaunchEdgeTime
 
 
 def generate_error_message(oTimingReport, fConfigurationRequirement):
