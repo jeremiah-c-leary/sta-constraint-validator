@@ -133,12 +133,13 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
         lExpected.append('                                                                             1     1     1')
         lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2')
         lExpected.append('clk_launch     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
-        lExpected.append('')
+        lExpected.append('(100 MHz)')
         lExpected.append('                 |<---------------setup requirement--------------|')
         lExpected.append('                 |<---hold requirement---|')
         lExpected.append('')
         lExpected.append('                 A_______________________B                       C_______________________D')
         lExpected.append('clk_capture    __|                       |_______________________|                       |')
+        lExpected.append('(25 MHz)')
         self.assert_rows_drawn(lExpected)
 
 
@@ -149,6 +150,33 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
         lLines = self.oStdout.getvalue().split('\n')
         self.assertIn('clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|', lLines)
         self.assertIn('dac_sclk       __|                       |_______________________|                       |', lLines)
+
+
+    def test_writes_each_clock_frequency_under_its_clock(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('clk_launch     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
+        lExpected.append('(100 MHz)')
+        self.assert_rows_drawn(lExpected)
+        lExpected = []
+        lExpected.append('clk_capture    __|                       |_______________________|                       |')
+        lExpected.append('(25 MHz)')
+        self.assert_rows_drawn(lExpected)
+
+    def test_trims_trailing_zeros_from_a_frequency(self):
+        sPort = build_port_text('O_DATA', 16, 32, [2, 'C'], [2, 'A'])
+        self.run_visualize_edges([sPort])
+        lLines = self.oStdout.getvalue().split('\n')
+        self.assertIn('(62.5 MHz)', lLines)
+        self.assertIn('(31.25 MHz)', lLines)
+
+    def test_rounds_a_frequency_to_three_decimals(self):
+        sPort = build_port_text('O_DATA', 30, 60, [2, 'C'], [2, 'A'])
+        self.run_visualize_edges([sPort])
+        lLines = self.oStdout.getvalue().split('\n')
+        self.assertIn('(33.333 MHz)', lLines)
+        self.assertIn('(16.667 MHz)', lLines)
 
 
 class TestVisualizeEdgesSetupRequirement(VisualizeTestCase):
@@ -198,12 +226,13 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected.append('                                                                             1     1     1')
         lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2')
         lExpected.append('clk_launch     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
-        lExpected.append('')
+        lExpected.append('(100 MHz)')
         lExpected.append('                                         |---setup requirement-->|')
         lExpected.append('                 |<---hold requirement---|')
         lExpected.append('')
         lExpected.append('                 A_______________________B                       C_______________________D')
         lExpected.append('clk_capture    __|                       |_______________________|                       |')
+        lExpected.append('(25 MHz)')
         lExpected.append('')
         self.assertEqual('\n'.join(lExpected) + '\n', self.oStdout.getvalue())
 
@@ -214,12 +243,13 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected.append('                                                                             1     1     1     1     1     1')
         lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5')
         lExpected.append('clk_launch     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |')
-        lExpected.append('')
+        lExpected.append('(100 MHz)')
         lExpected.append('                                                                 |---------->| setup requirement')
         lExpected.append('                 | hold requirement')
         lExpected.append('')
         lExpected.append('                 A_____________________________B                             C_____________________________D')
         lExpected.append('clk_capture    __|                             |_____________________________|                             |')
+        lExpected.append('(20 MHz)')
         self.assert_rows_drawn(lExpected)
 
     def test_gives_the_shortest_half_period_six_columns_when_the_capture_clock_is_faster(self):
@@ -228,12 +258,13 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected = []
         lExpected.append('                 0_______________________1                       2_________________')
         lExpected.append('clk_launch     __|                       |_______________________|')
-        lExpected.append('')
+        lExpected.append('(25 MHz)')
         lExpected.append('                                                                 |---------->| setup requirement')
         lExpected.append('                                                                 | hold requirement')
         lExpected.append('')
         lExpected.append('                 A_____B     C_____D     E_____F     G_____H     I_____J     K_____L')
         lExpected.append('clk_capture    __|     |_____|     |_____|     |_____|     |_____|     |_____|     |')
+        lExpected.append('(100 MHz)')
         self.assert_rows_drawn(lExpected)
 
     def test_draws_tens_digits_above_edge_numbers_past_nineteen(self):
@@ -243,10 +274,11 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected.append('                                                                             1     1     1     1     1     1     1     1     1     1     2     2     2     2     2     2     2     2     2     2     3')
         lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0')
         lExpected.append('clk_launch     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
-        lExpected.append('')
+        lExpected.append('(100 MHz)')
         lExpected.append('                                                                             |---------------------setup requirement-------------------->|')
         lExpected.append('                 |<---------------------hold requirement---------------------|')
         lExpected.append('')
         lExpected.append('                 A___________________________________________________________B                                                           C___________________________________________________________D')
         lExpected.append('clk_capture    __|                                                           |___________________________________________________________|                                                           |')
+        lExpected.append('(10 MHz)')
         self.assert_rows_drawn(lExpected)

@@ -18,12 +18,22 @@ def draw_edges(oPort):
     iEndColumn = calculate_column(calculate_end_time(oPort), fColumnsPerNanosecond)
     lLines = []
     lLines.extend(draw_launch_clock(oPort.launch_clock, fColumnsPerNanosecond, iEndColumn))
-    lLines.append('')
+    lLines.append(format_frequency(oPort.launch_clock.period))
     lLines.append(draw_setup_requirement(oPort, fColumnsPerNanosecond))
     lLines.append(draw_hold_requirement(oPort, fColumnsPerNanosecond))
     lLines.append('')
     lLines.extend(draw_capture_clock(oPort.capture_clock, fColumnsPerNanosecond, iEndColumn))
+    lLines.append(format_frequency(oPort.capture_clock.period))
     return lLines
+
+
+def format_frequency(fPeriod):
+    return f'({format_number(1000 / fPeriod)} MHz)'
+
+
+def format_number(fNumber):
+    # Up to three decimals, without trailing zeros.
+    return f'{fNumber:.3f}'.rstrip('0').rstrip('.')
 
 
 def calculate_columns_per_nanosecond(oPort):
