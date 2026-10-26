@@ -8,20 +8,31 @@ from unittest import mock
 from stacv import __main__
 
 
-def build_interface_text(sMissingTimingReport, sClockPort):
+def build_interface_text(lPortNames, sMissingTimingReport, sClockPort):
     lText = []
     lText.append('description = "block diagram test"')
     lText.append('interface = "DAC_SPI_1"')
     lText.append('part = "part.toml"')
     lText.append('traces = "traces.toml"')
-    lText.append('')
-    lText.append('[[port]]')
-    lText.append('name = "O_DAC_DATA"')
-    lText.append('methodology = "SDR-SS-O"')
-    lText.append('launch_clock = {name = "clk_launch", period = 10, setup_edge = 4, hold_edge = 4}')
-    lText.append(f'capture_clock = {{port = "{sClockPort}", name = "clk_capture", period = 40, setup_edge = "C", hold_edge = "A"}}')
-    lText.append(f'timing_reports = ["{sMissingTimingReport}"]')
+    for sPortName in lPortNames:
+        lText.append('')
+        lText.append('[[port]]')
+        lText.append(f'name = "{sPortName}"')
+        lText.append('methodology = "SDR-SS-O"')
+        lText.append('launch_clock = {name = "clk_launch", period = 10, setup_edge = 4, hold_edge = 4}')
+        lText.append(f'capture_clock = {{port = "{sClockPort}", name = "clk_capture", period = 40, setup_edge = "C", hold_edge = "A"}}')
+        lText.append(f'timing_reports = ["{sMissingTimingReport}"]')
     return '\n'.join(lText) + '\n'
+
+
+def find_port_names(lTraces, sClockPort):
+    # Without an explicit port order, every trace except the clock is a port, in trace order.
+    lPortNames = []
+    for sTrace in lTraces:
+        sDevicePin = sTrace.split('device_pin = "')[1].split('"')[0]
+        if sDevicePin != sClockPort:
+            lPortNames.append(sDevicePin)
+    return lPortNames
 
 
 def build_part_text(sPartNumber):
@@ -78,6 +89,7 @@ def build_dac81404_traces():
     lTraces.append(output_trace('data_output', 'O_DAC_DATA', 'SDIN'))
     lTraces.append(output_trace('chip_select', 'O_DAC_CSF', 'CSF'))
     lTraces.append(input_trace('data_input', 'I_DAC_DATA', 'SDO'))
+    lTraces.append(bidirectional_trace('data', 'IO_DAC_DATA', 'SDIO'))
     lTraces.append(output_trace('clock', 'O_DAC_SCLK', 'SCLK'))
     return lTraces
 
@@ -95,8 +107,10 @@ class BlockDiagramTestCase(unittest.TestCase):
         with open(os.path.join(self.sDirectory, sFilename), 'w') as oFile:
             oFile.write(sText)
 
-    def run_visualize_block_diagram(self, lTraces, sPartNumber='DAC81404', sClockPort='O_DAC_SCLK'):
-        self.write_file('interface.toml', build_interface_text(self.sMissingTimingReport, sClockPort))
+    def run_visualize_block_diagram(self, lTraces, sPartNumber='DAC81404', sClockPort='O_DAC_SCLK', lPortNames=None):
+        if lPortNames is None:
+            lPortNames = find_port_names(lTraces, sClockPort)
+        self.write_file('interface.toml', build_interface_text(lPortNames, self.sMissingTimingReport, sClockPort))
         self.write_file('part.toml', build_part_text(sPartNumber))
         self.write_file('traces.toml', '\n\n'.join(lTraces) + '\n')
         lArgv = ['stacv', 'visualize', 'block_diagram', self.sInterfaceFile]
@@ -128,18 +142,20 @@ class TestVisualizeBlockDiagramExample(BlockDiagramTestCase):
     def test_draws_the_example_block_diagram(self):
         self.run_visualize_block_diagram(build_dac81404_traces())
         lExpected = []
-        lExpected.append('--------------+                       +------------')
-        lExpected.append('  Device      |                       |  DAC81404')
-        lExpected.append('              |                       |')
-        lExpected.append('  O_DAC_DATA [X] --- data_output --> [X] SDIN')
-        lExpected.append('              |                       |')
-        lExpected.append('  O_DAC_CSF  [X] --- chip_select --> [X] CSF')
-        lExpected.append('              |                       |')
-        lExpected.append('  I_DAC_DATA [X] <-- data_input ---- [X] SDO')
-        lExpected.append('              |                       |')
-        lExpected.append('  O_DAC_SCLK [X] --- clock --------> [X] SCLK')
-        lExpected.append('              |                       |')
-        lExpected.append('--------------+                       +------------')
+        lExpected.append('---------------+                       +------------')
+        lExpected.append('  Device       |                       |  DAC81404')
+        lExpected.append('               |                       |')
+        lExpected.append('  O_DAC_DATA  [X] --- data_output --> [X] SDIN')
+        lExpected.append('               |                       |')
+        lExpected.append('  O_DAC_CSF   [X] --- chip_select --> [X] CSF')
+        lExpected.append('               |                       |')
+        lExpected.append('  I_DAC_DATA  [X] <-- data_input ---- [X] SDO')
+        lExpected.append('               |                       |')
+        lExpected.append('  IO_DAC_DATA [X] <-- data ---------> [X] SDIO')
+        lExpected.append('               |                       |')
+        lExpected.append('  O_DAC_SCLK  [X] --- clock --------> [X] SCLK')
+        lExpected.append('               |                       |')
+        lExpected.append('---------------+                       +------------')
         self.assert_rows_drawn(lExpected)
 
 
@@ -225,6 +241,16 @@ class TestVisualizeBlockDiagramRowOrder(BlockDiagramTestCase):
                 lTraceRows.append(sLine)
         self.assertEqual(lExpectedTraceRows, lTraceRows)
 
+    def test_draws_rows_in_the_order_of_the_interface_ports(self):
+        lPortNames = ['I_DAC_DATA', 'O_DAC_DATA', 'O_DAC_CSF']
+        self.run_visualize_block_diagram(build_dac81404_traces(), lPortNames=lPortNames)
+        lExpected = []
+        lExpected.append('  I_DAC_DATA [X] <-- data_input ---- [X] SDO')
+        lExpected.append('  O_DAC_DATA [X] --- data_output --> [X] SDIN')
+        lExpected.append('  O_DAC_CSF  [X] --- chip_select --> [X] CSF')
+        lExpected.append('  O_DAC_SCLK [X] --- clock --------> [X] SCLK')
+        self.assert_trace_rows_in_order(lExpected)
+
     def test_draws_the_clock_last_when_it_comes_first_in_the_traces(self):
         lTraces = []
         lTraces.append(output_trace('clock', 'O_DAC_SCLK', 'SCLK'))
@@ -235,32 +261,15 @@ class TestVisualizeBlockDiagramRowOrder(BlockDiagramTestCase):
         lExpected.append('  O_DAC_SCLK [X] --- clock --------> [X] SCLK')
         self.assert_trace_rows_in_order(lExpected)
 
-    def test_draws_outputs_before_inputs_when_an_input_comes_first_in_the_traces(self):
+    def test_leaves_out_a_trace_that_no_port_names(self):
         lTraces = []
-        lTraces.append(input_trace('data_input', 'I_DAC_DATA', 'SDO'))
         lTraces.append(output_trace('data_output', 'O_DAC_DATA', 'SDIN'))
+        lTraces.append(output_trace('chip_select_with_a_long_name', 'O_DAC_CSF', 'CSF'))
         lTraces.append(output_trace('clock', 'O_DAC_SCLK', 'SCLK'))
-        self.run_visualize_block_diagram(lTraces)
+        self.run_visualize_block_diagram(lTraces, lPortNames=['O_DAC_DATA'])
         lExpected = []
         lExpected.append('  O_DAC_DATA [X] --- data_output --> [X] SDIN')
-        lExpected.append('  I_DAC_DATA [X] <-- data_input ---- [X] SDO')
         lExpected.append('  O_DAC_SCLK [X] --- clock --------> [X] SCLK')
-        self.assert_trace_rows_in_order(lExpected)
-
-    def test_keeps_the_traces_file_order_among_outputs_and_among_inputs(self):
-        lTraces = []
-        lTraces.append(output_trace('data_output', 'O_DAC_DATA', 'SDIN'))
-        lTraces.append(input_trace('data_input', 'I_DAC_DATA', 'SDO'))
-        lTraces.append(output_trace('chip_select', 'O_DAC_CSF', 'CSF'))
-        lTraces.append(input_trace('alarm', 'I_DAC_ALARM', 'ALMOUT'))
-        lTraces.append(output_trace('clock', 'O_DAC_SCLK', 'SCLK'))
-        self.run_visualize_block_diagram(lTraces)
-        lExpected = []
-        lExpected.append('  O_DAC_DATA  [X] --- data_output --> [X] SDIN')
-        lExpected.append('  O_DAC_CSF   [X] --- chip_select --> [X] CSF')
-        lExpected.append('  I_DAC_DATA  [X] <-- data_input ---- [X] SDO')
-        lExpected.append('  I_DAC_ALARM [X] <-- alarm --------- [X] ALMOUT')
-        lExpected.append('  O_DAC_SCLK  [X] --- clock --------> [X] SCLK')
         self.assert_trace_rows_in_order(lExpected)
 
 

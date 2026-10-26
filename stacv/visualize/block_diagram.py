@@ -11,7 +11,7 @@ ARROW_LENGTH_AROUND_NAME = 8
 
 
 def draw_block_diagram(oInterface, oTraceList, oPart):
-    lTraces = order_traces(oTraceList.traces, find_clock_port(oInterface))
+    lTraces = select_traces(oInterface, oTraceList)
     iDeviceEdge = calculate_device_edge(lTraces)
     iLongestTraceName = find_longest_trace_name(lTraces)
     iPartEdge = calculate_part_edge(iDeviceEdge, iLongestTraceName)
@@ -34,36 +34,20 @@ def find_clock_port(oInterface):
     return oInterface.ports[0].capture_clock.port
 
 
-def order_traces(lTraces, sClockPort):
-    lOrderedTraces = []
-    lOrderedTraces.extend(select_output_traces(lTraces, sClockPort))
-    lOrderedTraces.extend(select_input_traces(lTraces))
-    lOrderedTraces.extend(select_clock_traces(lTraces, sClockPort))
-    return lOrderedTraces
+def select_traces(oInterface, oTraceList):
+    lTraces = []
+    for oPort in oInterface.ports:
+        lTraces.extend(find_traces_from_device_pin(oTraceList.traces, oPort.name))
+    lTraces.extend(find_traces_from_device_pin(oTraceList.traces, find_clock_port(oInterface)))
+    return lTraces
 
 
-def select_output_traces(lTraces, sClockPort):
-    lOutputTraces = []
+def find_traces_from_device_pin(lTraces, sDevicePin):
+    lMatchingTraces = []
     for oTrace in lTraces:
-        if not is_input_trace(oTrace) and not is_clock_trace(oTrace, sClockPort):
-            lOutputTraces.append(oTrace)
-    return lOutputTraces
-
-
-def select_input_traces(lTraces):
-    lInputTraces = []
-    for oTrace in lTraces:
-        if is_input_trace(oTrace):
-            lInputTraces.append(oTrace)
-    return lInputTraces
-
-
-def select_clock_traces(lTraces, sClockPort):
-    lClockTraces = []
-    for oTrace in lTraces:
-        if is_clock_trace(oTrace, sClockPort):
-            lClockTraces.append(oTrace)
-    return lClockTraces
+        if oTrace.device_pin == sDevicePin:
+            lMatchingTraces.append(oTrace)
+    return lMatchingTraces
 
 
 def is_input_trace(oTrace):
@@ -72,10 +56,6 @@ def is_input_trace(oTrace):
 
 def is_bidirectional_trace(oTrace):
     return oTrace.device_to_part is not None and oTrace.part_to_device is not None
-
-
-def is_clock_trace(oTrace, sClockPort):
-    return oTrace.device_pin == sClockPort
 
 
 def calculate_device_edge(lTraces):
