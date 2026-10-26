@@ -5,6 +5,7 @@ Draws the launch and capture clock edges of a port as text.
 import math
 
 from stacv.rules import edge_times
+from stacv.rules import requirements
 from stacv.visualize import text_row
 
 CLOCK_NAME_WIDTH = 15
@@ -24,7 +25,21 @@ def draw_edges(oPort):
     lLines.append('')
     lLines.extend(draw_capture_clock(oPort.capture_clock, fColumnsPerNanosecond, iEndColumn))
     lLines.append(format_frequency(oPort.capture_clock.period))
+    lLines.append('')
+    lLines.append('')
+    lLines.append(format_setup_requirement(oPort))
+    lLines.append(format_hold_requirement(oPort))
     return lLines
+
+
+def format_setup_requirement(oPort):
+    fRequirement = requirements.calculate_configuration_setup_requirement(oPort)
+    return f'setup requirement = {format_number(fRequirement)} ns'
+
+
+def format_hold_requirement(oPort):
+    fRequirement = requirements.calculate_configuration_hold_requirement(oPort)
+    return f'hold requirement = {format_number(fRequirement)} ns'
 
 
 def format_frequency(fPeriod):

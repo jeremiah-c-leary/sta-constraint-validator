@@ -213,6 +213,36 @@ class TestVisualizeEdgesHoldRequirement(VisualizeTestCase):
         self.assert_rows_drawn(['                 | hold requirement'])
 
 
+class TestVisualizeEdgesRequirementValues(VisualizeTestCase):
+
+    def test_writes_the_requirements_after_the_capture_clock(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('(25 MHz)')
+        lExpected.append('')
+        lExpected.append('')
+        lExpected.append('setup requirement = 20 ns')
+        lExpected.append('hold requirement = -20 ns')
+        self.assert_rows_drawn(lExpected)
+
+    def test_writes_requirements_that_are_not_whole_nanoseconds(self):
+        sPort = build_port_text('O_DATA', 5, 40, [1, 'C'], [1, 'A'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('setup requirement = 37.5 ns')
+        lExpected.append('hold requirement = -2.5 ns')
+        self.assert_rows_drawn(lExpected)
+
+    def test_writes_a_hold_requirement_of_zero(self):
+        sPort = build_port_text('O_DATA', 10, 50, [8, 'C'], [0, 'A'])
+        self.run_visualize_edges([sPort])
+        lExpected = []
+        lExpected.append('setup requirement = 10 ns')
+        lExpected.append('hold requirement = 0 ns')
+        self.assert_rows_drawn(lExpected)
+
+
 class TestVisualizeEdgesCombinations(VisualizeTestCase):
 
     def test_draws_the_whole_example_drawing_for_one_port(self):
@@ -233,6 +263,10 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected.append('                 A_______________________B                       C_______________________D')
         lExpected.append('clk_capture    __|                       |_______________________|                       |')
         lExpected.append('(25 MHz)')
+        lExpected.append('')
+        lExpected.append('')
+        lExpected.append('setup requirement = 20 ns')
+        lExpected.append('hold requirement = -20 ns')
         lExpected.append('')
         self.assertEqual('\n'.join(lExpected) + '\n', self.oStdout.getvalue())
 
