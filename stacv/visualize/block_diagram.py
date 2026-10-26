@@ -70,6 +70,10 @@ def is_input_trace(oTrace):
     return oTrace.device_to_part is None
 
 
+def is_bidirectional_trace(oTrace):
+    return oTrace.device_to_part is not None and oTrace.part_to_device is not None
+
+
 def is_clock_trace(oTrace, sClockPort):
     return oTrace.device_pin == sClockPort
 
@@ -140,6 +144,8 @@ def draw_trace_row(oTrace, iDeviceEdge, iLongestTraceName):
 
 def draw_arrow(oTrace, iLongestTraceName):
     iPadding = iLongestTraceName - len(oTrace.name)
+    if is_bidirectional_trace(oTrace):
+        return '<-- ' + oTrace.name + ' ' + '-' * (iPadding + 2) + '>'
     if is_input_trace(oTrace):
         return '<-- ' + oTrace.name + ' ' + '-' * (iPadding + 3)
     return '--- ' + oTrace.name + ' ' + '-' * (iPadding + 2) + '>'

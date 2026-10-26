@@ -56,6 +56,13 @@ def input_trace(sName, sDevicePin, sPartPin):
     return build_trace_text(sName, sDevicePin, sPartPin, 'part_to_device')
 
 
+def bidirectional_trace(sName, sDevicePin, sPartPin):
+    lText = []
+    lText.append(output_trace(sName, sDevicePin, sPartPin))
+    lText.append('part_to_device = {max_delay = 3.00, min_delay = 1.00}')
+    return '\n'.join(lText)
+
+
 def build_trace_text(sName, sDevicePin, sPartPin, sDirection):
     lText = []
     lText.append('[[trace]]')
@@ -255,3 +262,14 @@ class TestVisualizeBlockDiagramRowOrder(BlockDiagramTestCase):
         lExpected.append('  I_DAC_ALARM [X] <-- alarm --------- [X] ALMOUT')
         lExpected.append('  O_DAC_SCLK  [X] --- clock --------> [X] SCLK')
         self.assert_trace_rows_in_order(lExpected)
+
+
+class TestVisualizeBlockDiagramDirections(BlockDiagramTestCase):
+
+    def test_draws_both_arrow_heads_for_a_trace_in_both_directions(self):
+        lTraces = []
+        lTraces.append(output_trace('data_output', 'O_DAC_DATA', 'SDIN'))
+        lTraces.append(bidirectional_trace('data', 'IO_DAC_DATA', 'SDIO'))
+        lTraces.append(output_trace('clock', 'O_DAC_SCLK', 'SCLK'))
+        self.run_visualize_block_diagram(lTraces)
+        self.assert_rows_drawn(['  IO_DAC_DATA [X] <-- data ---------> [X] SDIO'])
