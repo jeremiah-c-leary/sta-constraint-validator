@@ -121,9 +121,9 @@ class GenerateTestCase(unittest.TestCase):
                 iCount += 1
         return iCount
 
-    def assert_line_not_written(self, sStartOfLine):
+    def assert_no_line_contains(self, sText):
         for sLine in self.get_output_lines():
-            self.assertFalse(sLine.startswith(sStartOfLine), sLine)
+            self.assertNotIn(sText, sLine)
 
 
 class TestGenerateXdcDispatch(GenerateTestCase):
@@ -205,3 +205,34 @@ class TestGenerateXdcOutputDelays(GenerateTestCase):
         self.run_generate_xdc(lPorts)
         self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -max 8.100 [get_ports O_CHIP_SELECT]')
         self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -min -2.700 [get_ports O_CHIP_SELECT]')
+
+
+class TestGenerateXdcSetupMulticycle(GenerateTestCase):
+
+    def test_moves_the_launch_edge_when_the_launch_clock_is_faster(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('set_multicycle_path 2 -setup -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
+
+    def test_moves_the_capture_edge_when_the_capture_clock_is_faster(self):
+        sPort = build_port_text('O_DATA', 40, 10, [0, 'E'], [0, 'C'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('set_multicycle_path 2 -setup -end -from [get_clocks clk_launch] -to [get_ports O_DATA]')
+
+    def test_moves_the_capture_edge_when_the_periods_are_equal(self):
+        sPort = build_port_text('O_DATA', 10, 10, [0, 'E'], [0, 'C'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('set_multicycle_path 2 -setup -end -from [get_clocks clk_launch] -to [get_ports O_DATA]')
+
+    def test_writes_no_setup_multicycle_of_one(self):
+        sPort = build_port_text('O_DATA', 10, 40, [6, 'C'], [6, 'A'])
+        self.run_generate_xdc([sPort])
+        self.assert_no_line_contains(' -setup ')
+
+    def test_writes_a_setup_multicycle_for_every_port(self):
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [2, 'C'], [2, 'A']))
+        self.run_generate_xdc(lPorts)
+        self.assert_line_written('set_multicycle_path 2 -setup -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
+        self.assert_line_written('set_multicycle_path 3 -setup -start -from [get_clocks clk_launch] -to [get_ports O_CHIP_SELECT]')

@@ -5,6 +5,7 @@ Generates Vivado timing constraints for the ports of an interface.
 from stacv.inputs import port_profile
 from stacv.rules import edge_times
 from stacv.rules import output_delays
+from stacv.rules import requirements
 
 
 def generate_constraints(oInterface, oTraceList, oPart):
@@ -53,6 +54,7 @@ def generate_port_constraints(oPortProfile):
     lLines = []
     lLines.append(create_max_output_delay(oPortProfile))
     lLines.append(create_min_output_delay(oPortProfile))
+    lLines.extend(create_multicycle_paths(oPortProfile.port))
     return lLines
 
 
@@ -81,3 +83,35 @@ def format_capture_clock(oCaptureClock):
 
 def is_falling_edge(sEdgeLetter):
     return edge_times.convert_edge_letter_to_number(sEdgeLetter) % 2 == 1
+
+
+def create_multicycle_paths(oPort):
+    lLines = []
+    iSetupMulticycle = calculate_setup_multicycle(oPort)
+    if iSetupMulticycle != 1:
+        lLines.append(create_multicycle_path(oPort, iSetupMulticycle, '-setup'))
+    return lLines
+
+
+def calculate_setup_multicycle(oPort):
+    fSetupRequirement = requirements.calculate_configuration_setup_requirement(oPort)
+    return round(fSetupRequirement / find_step_period(oPort))
+
+
+def find_step_period(oPort):
+    return min(oPort.launch_clock.period, oPort.capture_clock.period)
+
+
+def create_multicycle_path(oPort, iMulticycle, sCheck):
+    sEdge = select_moved_edge(oPort)
+    return f'set_multicycle_path {iMulticycle} {sCheck} {sEdge} -from [get_clocks {oPort.launch_clock.name}] -to [get_ports {oPort.name}]'
+
+
+def select_moved_edge(oPort):
+    if launch_clock_is_faster(oPort):
+        return '-start'
+    return '-end'
+
+
+def launch_clock_is_faster(oPort):
+    return oPort.launch_clock.period < oPort.capture_clock.period
