@@ -1,0 +1,49 @@
+# All delays are in nanoseconds
+# All frequencies are in MHz
+#
+# Every value comes from 6.6 Timing Specifications, which applies for
+# VA = VD = +2.7 V to +5.25 V and CL = 50 pF, with MIN and MAX over TMIN to TMAX.
+#
+# Not captured by this format:
+#   * Minimum SCLK frequency of 8 MHz (6.5 AC Electrical Characteristics)
+#   * SCLK duty cycle of 40% to 60% (6.5 AC Electrical Characteristics)
+#   * tCH and tCL, SCLK high and low times of at least 0.4 x tSCLK
+#   * tEN and tDIS, CS falling edge to DOUT enabled and CS rising edge to DOUT high-impedance
+
+[properties]
+manufacturer = "Texas Instruments"
+part_number = "ADC128S102"
+
+[datasheet]
+name = "ADC128S102 8-Channel, 500-ksps to 1-Msps, 12-Bit A/D Converter"
+url = "https://www.ti.com/lit/ds/symlink/adc128s102.pdf"
+version = "SNAS298G -- AUGUST 2005 -- REVISED JANUARY 2015"
+
+[[interface]]
+name = "Serial Interface"
+
+[[interface.pin]]
+name = "DIN"
+methodology = "SDR-SS-I"
+clock = {pin = "SCLK", max_frequency = 16}
+capture_edge = "Rising"
+setup = {value = 10, symbol = "tDS", source = "6.6 Timing Specifications"}
+hold = {value = 10, symbol = "tDH", source = "6.6 Timing Specifications"}
+
+[[interface.pin]]
+name = "CS"
+methodology = "SDR-SS-I"
+clock = {pin = "SCLK", max_frequency = 16}
+capture_edge = "Rising"
+setup = {value = 10, symbol = "tCSS", source = "6.6 Timing Specifications"}
+hold = {value = 10, symbol = "tCSH", source = "6.6 Timing Specifications"}
+
+[[interface.pin]]
+name = "DOUT"
+methodology = "SDR-SS-RT"
+clock = {pin = "SCLK", max_frequency = 16}
+cko_max = {value = 27, symbol = "tDACC", source = "6.6 Timing Specifications"}
+# No minimum is specified for DOUT: tDHLD is only typical (4 ns) and tDACC has
+# no MIN. 0 is the pessimistic assumption for the FPGA's hold check.
+cko_min = {value = 0, symbol = "tDHLD", source = "6.6 Timing Specifications, no minimum specified"}
+launch_edge = "Falling"

@@ -135,7 +135,7 @@ def build_part_text():
     lText.append('')
     lText.append('[[interface.pin]]')
     lText.append('name = "SDO"')
-    lText.append('methodology = "SDR-SS-O"')
+    lText.append('methodology = "SDR-SS-RT"')
     lText.append('clock = {pin = "SCLK", max_frequency = 12.5}')
     lText.append('cko_max = {value = 30, symbol = "tSDODLY", source = "Table 7.8"}')
     lText.append('cko_min = {value = 0, symbol = "tSDODLY", source = "Table 7.8"}')
