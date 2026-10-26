@@ -33,6 +33,7 @@ def add_subparsers(top_parser):
 
     build_check_subparser(subparsers)
     build_visualize_subparser(subparsers)
+    build_generate_subparser(subparsers)
 
 
 def build_check_subparser(subparser):
@@ -52,6 +53,18 @@ def build_visualize_subparser(subparser):
 
 def build_edges_subparser(subparser):
     parser = subparser.add_parser('edges', help='Draw the launch and capture clock edges of every port.')
+    parser.add_argument('interface_file', help='Interface TOML file.')
+
+
+def build_generate_subparser(subparser):
+    parser = subparser.add_parser('generate', help='Generate timing constraints from the interface file.')
+    parser.set_defaults(which='generate')
+    targets = parser.add_subparsers(dest='target', required=True)
+    build_xdc_subparser(targets)
+
+
+def build_xdc_subparser(subparser):
+    parser = subparser.add_parser('xdc', help='Generate Vivado timing constraints for every port.')
     parser.add_argument('interface_file', help='Interface TOML file.')
 
 

@@ -74,3 +74,28 @@ class TestVisualizeSubparser(unittest.TestCase):
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
                 parse_arguments(['visualize', 'edges'])
+
+
+class TestGenerateSubparser(unittest.TestCase):
+
+    def test_generate_command_selects_generate(self):
+        oArgs = parse_arguments(['generate', 'xdc', 'interface.toml'])
+        self.assertEqual('generate', oArgs.which)
+
+    def test_generate_xdc_stores_target(self):
+        oArgs = parse_arguments(['generate', 'xdc', 'interface.toml'])
+        self.assertEqual('xdc', oArgs.target)
+
+    def test_generate_xdc_stores_interface_file(self):
+        oArgs = parse_arguments(['generate', 'xdc', 'interface.toml'])
+        self.assertEqual('interface.toml', oArgs.interface_file)
+
+    def test_generate_command_requires_target(self):
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                parse_arguments(['generate'])
+
+    def test_generate_xdc_requires_interface_file(self):
+        with contextlib.redirect_stderr(io.StringIO()):
+            with self.assertRaises(SystemExit):
+                parse_arguments(['generate', 'xdc'])
