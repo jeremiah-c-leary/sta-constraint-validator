@@ -133,4 +133,5 @@ def build_sdr_ss_o_pin(dPin):
 dPinMap = {}
 dPinMap['SDR-SS-I'] = build_sdr_ss_i_pin
 dPinMap['SDR-SS-O'] = build_sdr_ss_o_pin
+dPinMap['SDR-SS-RT'] = build_sdr_ss_o_pin
 
