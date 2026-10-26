@@ -90,12 +90,21 @@ def create_multicycle_paths(oPort):
     iSetupMulticycle = calculate_setup_multicycle(oPort)
     if iSetupMulticycle != 1:
         lLines.append(create_multicycle_path(oPort, iSetupMulticycle, '-setup'))
+    iHoldMulticycle = calculate_hold_multicycle(oPort)
+    if iHoldMulticycle != 0:
+        lLines.append(create_multicycle_path(oPort, iHoldMulticycle, '-hold'))
     return lLines
 
 
 def calculate_setup_multicycle(oPort):
     fSetupRequirement = requirements.calculate_configuration_setup_requirement(oPort)
     return round(fSetupRequirement / find_step_period(oPort))
+
+
+def calculate_hold_multicycle(oPort):
+    fSetupRequirement = requirements.calculate_configuration_setup_requirement(oPort)
+    fHoldRequirement = requirements.calculate_configuration_hold_requirement(oPort)
+    return round((fSetupRequirement - fHoldRequirement) / find_step_period(oPort)) - 1
 
 
 def find_step_period(oPort):

@@ -236,3 +236,29 @@ class TestGenerateXdcSetupMulticycle(GenerateTestCase):
         self.run_generate_xdc(lPorts)
         self.assert_line_written('set_multicycle_path 2 -setup -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
         self.assert_line_written('set_multicycle_path 3 -setup -start -from [get_clocks clk_launch] -to [get_ports O_CHIP_SELECT]')
+
+
+class TestGenerateXdcHoldMulticycle(GenerateTestCase):
+
+    def test_moves_the_hold_launch_edge_when_the_launch_clock_is_faster(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('set_multicycle_path 3 -hold -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
+
+    def test_moves_the_hold_capture_edge_when_the_capture_clock_is_faster(self):
+        sPort = build_port_text('O_DATA', 40, 10, [0, 'E'], [0, 'A'])
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('set_multicycle_path 1 -hold -end -from [get_clocks clk_launch] -to [get_ports O_DATA]')
+
+    def test_writes_no_hold_multicycle_of_zero(self):
+        sPort = build_port_text('O_DATA', 10, 40, [6, 'C'], [8, 'C'])
+        self.run_generate_xdc([sPort])
+        self.assert_no_line_contains(' -hold ')
+
+    def test_writes_a_hold_multicycle_for_every_port(self):
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [2, 'C'], [4, 'A']))
+        self.run_generate_xdc(lPorts)
+        self.assert_line_written('set_multicycle_path 3 -hold -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
+        self.assert_line_written('set_multicycle_path 4 -hold -start -from [get_clocks clk_launch] -to [get_ports O_CHIP_SELECT]')
