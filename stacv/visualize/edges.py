@@ -70,13 +70,13 @@ def calculate_edge_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond):
 def draw_launch_clock(oLaunchClock, fColumnsPerNanosecond, iEndColumn):
     iLastEdge = find_last_edge(oLaunchClock.period, fColumnsPerNanosecond, iEndColumn)
     lEdgeLabels = build_launch_edge_labels(iLastEdge)
-    return draw_clock('launch clock', oLaunchClock.period, lEdgeLabels, fColumnsPerNanosecond, iEndColumn)
+    return draw_clock(oLaunchClock.name, oLaunchClock.period, lEdgeLabels, fColumnsPerNanosecond, iEndColumn)
 
 
 def draw_capture_clock(oCaptureClock, fColumnsPerNanosecond, iEndColumn):
     iLastEdge = find_last_edge(oCaptureClock.period, fColumnsPerNanosecond, iEndColumn)
     lEdgeLabels = build_capture_edge_labels(iLastEdge)
-    return draw_clock('capture clock', oCaptureClock.period, lEdgeLabels, fColumnsPerNanosecond, iEndColumn)
+    return draw_clock(oCaptureClock.name, oCaptureClock.period, lEdgeLabels, fColumnsPerNanosecond, iEndColumn)
 
 
 def find_last_edge(fPeriod, fColumnsPerNanosecond, iEndColumn):

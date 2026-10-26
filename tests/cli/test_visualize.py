@@ -107,7 +107,7 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
         lExpected = []
         lExpected.append('                                                                             1     1     1')
         lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2')
-        lExpected.append('launch clock   __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
+        lExpected.append('clk_launch     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
         self.assert_rows_drawn(lExpected)
 
     def test_stops_capture_clock_at_the_capture_edge_after_the_last_configured_edge(self):
@@ -115,7 +115,7 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('                 A_______________________B                       C_______________________D')
-        lExpected.append('capture clock  __|                       |_______________________|                       |')
+        lExpected.append('clk_capture    __|                       |_______________________|                       |')
         self.assert_rows_drawn(lExpected)
 
     def test_stops_capture_clock_at_edge_e_when_the_last_configured_edge_is_d(self):
@@ -123,7 +123,7 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('                 A_______________________B                       C_______________________D                       E')
-        lExpected.append('capture clock  __|                       |_______________________|                       |_______________________|')
+        lExpected.append('clk_capture    __|                       |_______________________|                       |_______________________|')
         self.assert_rows_drawn(lExpected)
 
     def test_stops_at_the_capture_edge_after_a_launch_edge_later_than_every_capture_edge(self):
@@ -132,14 +132,23 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
         lExpected = []
         lExpected.append('                                                                             1     1     1')
         lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2')
-        lExpected.append('launch clock   __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
+        lExpected.append('clk_launch     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
         lExpected.append('')
         lExpected.append('                 |<---------------setup requirement--------------|')
         lExpected.append('                 |<---hold requirement---|')
         lExpected.append('')
         lExpected.append('                 A_______________________B                       C_______________________D')
-        lExpected.append('capture clock  __|                       |_______________________|                       |')
+        lExpected.append('clk_capture    __|                       |_______________________|                       |')
         self.assert_rows_drawn(lExpected)
+
+
+    def test_labels_each_clock_with_its_name(self):
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = sPort.replace('clk_launch', 'clk_100mhz').replace('clk_capture', 'dac_sclk')
+        self.run_visualize_edges([sPort])
+        lLines = self.oStdout.getvalue().split('\n')
+        self.assertIn('clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|', lLines)
+        self.assertIn('dac_sclk       __|                       |_______________________|                       |', lLines)
 
 
 class TestVisualizeEdgesSetupRequirement(VisualizeTestCase):
@@ -188,13 +197,13 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected.append('')
         lExpected.append('                                                                             1     1     1')
         lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2')
-        lExpected.append('launch clock   __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
+        lExpected.append('clk_launch     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
         lExpected.append('')
         lExpected.append('                                         |---setup requirement-->|')
         lExpected.append('                 |<---hold requirement---|')
         lExpected.append('')
         lExpected.append('                 A_______________________B                       C_______________________D')
-        lExpected.append('capture clock  __|                       |_______________________|                       |')
+        lExpected.append('clk_capture    __|                       |_______________________|                       |')
         lExpected.append('')
         self.assertEqual('\n'.join(lExpected) + '\n', self.oStdout.getvalue())
 
@@ -204,13 +213,13 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected = []
         lExpected.append('                                                                             1     1     1     1     1     1')
         lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5')
-        lExpected.append('launch clock   __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |')
+        lExpected.append('clk_launch     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |')
         lExpected.append('')
         lExpected.append('                                                                 |---------->| setup requirement')
         lExpected.append('                 | hold requirement')
         lExpected.append('')
         lExpected.append('                 A_____________________________B                             C_____________________________D')
-        lExpected.append('capture clock  __|                             |_____________________________|                             |')
+        lExpected.append('clk_capture    __|                             |_____________________________|                             |')
         self.assert_rows_drawn(lExpected)
 
     def test_gives_the_shortest_half_period_six_columns_when_the_capture_clock_is_faster(self):
@@ -218,13 +227,13 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('                 0_______________________1                       2_________________')
-        lExpected.append('launch clock   __|                       |_______________________|')
+        lExpected.append('clk_launch     __|                       |_______________________|')
         lExpected.append('')
         lExpected.append('                                                                 |---------->| setup requirement')
         lExpected.append('                                                                 | hold requirement')
         lExpected.append('')
         lExpected.append('                 A_____B     C_____D     E_____F     G_____H     I_____J     K_____L')
-        lExpected.append('capture clock  __|     |_____|     |_____|     |_____|     |_____|     |_____|     |')
+        lExpected.append('clk_capture    __|     |_____|     |_____|     |_____|     |_____|     |_____|     |')
         self.assert_rows_drawn(lExpected)
 
     def test_draws_tens_digits_above_edge_numbers_past_nineteen(self):
@@ -233,11 +242,11 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected = []
         lExpected.append('                                                                             1     1     1     1     1     1     1     1     1     1     2     2     2     2     2     2     2     2     2     2     3')
         lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0')
-        lExpected.append('launch clock   __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
+        lExpected.append('clk_launch     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
         lExpected.append('')
         lExpected.append('                                                                             |---------------------setup requirement-------------------->|')
         lExpected.append('                 |<---------------------hold requirement---------------------|')
         lExpected.append('')
         lExpected.append('                 A___________________________________________________________B                                                           C___________________________________________________________D')
-        lExpected.append('capture clock  __|                                                           |___________________________________________________________|                                                           |')
+        lExpected.append('clk_capture    __|                                                           |___________________________________________________________|                                                           |')
         self.assert_rows_drawn(lExpected)
