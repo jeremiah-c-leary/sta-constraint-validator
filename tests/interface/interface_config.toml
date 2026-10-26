@@ -9,7 +9,7 @@ traces = "$PROJ_DIR/example/texas_instruments/DAC81404/traces.toml"
 name = "O_DAC_DATA"
 methodology = "SDR-SS-O"
 launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8, hold_edge = 0}
-capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 20, setup_edge = "C", hold_edge = "A"}
+capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 20, generator = {source = "q_spi_output_clock_reg", master_pin = "C", target_pin = "Q"}, setup_edge = "C", hold_edge = "A"}
 timing_reports = [
     "$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt",
 ]

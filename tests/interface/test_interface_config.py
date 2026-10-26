@@ -79,3 +79,23 @@ class Test(unittest.TestCase):
 
         self.assertEqual(4, oPort.launch_clock.hold_edge)
         self.assertEqual('B', oPort.capture_clock.hold_edge)
+
+    def test_capture_clock_keeps_its_generator_source(self):
+        oPort = self.oConfig.ports[0]
+
+        self.assertEqual('q_spi_output_clock_reg', oPort.capture_clock.generator.source)
+
+    def test_capture_clock_keeps_its_generator_master_pin(self):
+        oPort = self.oConfig.ports[0]
+
+        self.assertEqual('C', oPort.capture_clock.generator.master_pin)
+
+    def test_capture_clock_keeps_its_generator_target_pin(self):
+        oPort = self.oConfig.ports[0]
+
+        self.assertEqual('Q', oPort.capture_clock.generator.target_pin)
+
+    def test_capture_clock_without_a_generator_has_none(self):
+        oPort = self.oConfig.ports[1]
+
+        self.assertIsNone(oPort.capture_clock.generator)

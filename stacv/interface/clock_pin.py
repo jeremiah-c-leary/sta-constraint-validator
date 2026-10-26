@@ -5,5 +5,6 @@ class ClockPin():
         self.port = None
         self.name = None
         self.period = None
+        self.generator = None
         self.setup_edge = None
         self.hold_edge = None

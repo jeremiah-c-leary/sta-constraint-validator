@@ -13,6 +13,7 @@ from stacv.interface import interface_location
 from stacv.interface import interface_config_error
 from stacv.interface import value_type
 from stacv.interface import clock_pin
+from stacv.interface import clock_generator
 
 
 def read_interface_config(sInterfaceFile):
@@ -128,9 +129,19 @@ def build_capture_clock(dClock):
     oClockPin.port = dClock['port']
     oClockPin.name = dClock['name']
     oClockPin.period = dClock['period']
+    if 'generator' in dClock:
+        oClockPin.generator = build_clock_generator(dClock['generator'])
     oClockPin.setup_edge = dClock['setup_edge']
     oClockPin.hold_edge = dClock['hold_edge']
     return oClockPin
+
+
+def build_clock_generator(dGenerator):
+    oClockGenerator = clock_generator.ClockGenerator()
+    oClockGenerator.source = dGenerator['source']
+    oClockGenerator.master_pin = dGenerator['master_pin']
+    oClockGenerator.target_pin = dGenerator['target_pin']
+    return oClockGenerator
 
 
 def build_launch_clock(dClock):
