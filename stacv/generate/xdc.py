@@ -6,6 +6,7 @@ from stacv.generate import generate_error
 from stacv.inputs import port_profile
 from stacv.rules import edge_times
 from stacv.rules import output_delays
+from stacv.rules import path_lookups
 from stacv.rules import requirements
 from stacv.rules import tolerance
 
@@ -13,12 +14,34 @@ TOLERANCE = 0.0005
 
 
 def generate_constraints(oInterface, oTraceList, oPart):
+    check_ports_share_one_capture_clock(oInterface.ports)
     lLines = []
     lLines.extend(generate_clocks(oInterface.ports))
     for oPort in oInterface.ports:
         oPortProfile = port_profile.PortProfile(oPort, oTraceList, oPart, None)
         lLines.extend(generate_port_constraints(oPortProfile))
     return lLines
+
+
+def check_ports_share_one_capture_clock(lPorts):
+    # An interface has one clock, so every port must describe the same capture clock.
+    oFirstPort = lPorts[0]
+    sFirstCaptureClock = describe_capture_clock(oFirstPort.capture_clock)
+    for oPort in lPorts:
+        sCaptureClock = describe_capture_clock(oPort.capture_clock)
+        if sCaptureClock != sFirstCaptureClock:
+            raise generate_error.GenerateError('generate_010', oPort.name, f'capture clock {sCaptureClock} differs from capture clock {sFirstCaptureClock} of port {oFirstPort.name}')
+
+
+def describe_capture_clock(oCaptureClock):
+    sGenerator = describe_generator(oCaptureClock.generator)
+    return f'{oCaptureClock.name} on {oCaptureClock.port} with period {oCaptureClock.period:.3f}ns and generator {sGenerator}'
+
+
+def describe_generator(oGenerator):
+    if oGenerator is None:
+        return 'none'
+    return f'{oGenerator.source} {oGenerator.master_pin} -> {oGenerator.target_pin}'
 
 
 def generate_clocks(lPorts):
@@ -61,11 +84,24 @@ def calculate_ratio(fLongerPeriod, fShorterPeriod):
 
 
 def generate_port_constraints(oPortProfile):
+    check_traces_exist(oPortProfile)
     lLines = []
     lLines.append(create_max_output_delay(oPortProfile))
     lLines.append(create_min_output_delay(oPortProfile))
     lLines.extend(create_multicycle_paths(oPortProfile.port))
     return lLines
+
+
+def check_traces_exist(oPortProfile):
+    oPort = oPortProfile.port
+    if not oPortProfile.traces.trace_starts_with_device_pin_named(oPort.name):
+        raise generate_error.GenerateError('generate_007', oPort.name, 'has no trace from the device to the part')
+    oDataTrace = path_lookups.get_data_trace(oPortProfile)
+    if not oPortProfile.part.has_pin_named(oDataTrace.part_pin):
+        raise generate_error.GenerateError('generate_008', oPort.name, f'trace {oDataTrace.name} ends at pin {oDataTrace.part_pin}, which the part does not have')
+    oPartPin = path_lookups.get_part_pin_at_end_of_trace(oPortProfile, oDataTrace)
+    if path_lookups.get_clock_trace(oPortProfile, oPartPin) is None:
+        raise generate_error.GenerateError('generate_009', oPort.name, f'has no clock trace from {oPort.capture_clock.port} to part pin {oPartPin.clock.pin}')
 
 
 def create_max_output_delay(oPortProfile):

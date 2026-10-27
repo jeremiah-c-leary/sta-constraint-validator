@@ -309,3 +309,66 @@ class TestGenerateXdcErrors(GenerateTestCase):
         sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [2, 'B'])
         self.run_generate_xdc([sPort])
         self.assert_error_written('generate_006')
+
+
+class TestGenerateXdcInputErrors(GenerateTestCase):
+
+    def assert_error_written(self, sIdentifier):
+        self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[' + sIdentifier + r'\] ')
+
+    def write_traces(self, lTraces):
+        lText = []
+        for sDevicePin, sPartPin in lTraces:
+            lText.append('[[trace]]')
+            lText.append(f'name = "{sDevicePin}_trace"')
+            lText.append(f'device_pin = "{sDevicePin}"')
+            lText.append(f'part_pin = "{sPartPin}"')
+            lText.append('device_to_part = {max_delay = 1.5, min_delay = 0.5}')
+            lText.append('')
+        self.write_file('traces.toml', '\n'.join(lText))
+
+    def test_reports_a_port_without_a_trace(self):
+        sPort = build_port_text('O_NO_TRACE', 10, 40, [4, 'C'], [4, 'A'])
+        self.assertEqual(2, self.run_generate_xdc([sPort]))
+        self.assert_error_written('generate_007')
+
+    def test_reports_a_trace_to_a_pin_the_part_does_not_have(self):
+        self.write_traces([('O_DATA', 'SDIN_UNKNOWN'), ('O_SCLK', 'SCLK')])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.assertEqual(2, self.run_generate_xdc([sPort]))
+        self.assert_error_written('generate_008')
+
+    def test_reports_a_missing_clock_trace(self):
+        self.write_traces([('O_DATA', 'SDIN'), ('O_OTHER_SCLK', 'SCLK')])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.assertEqual(2, self.run_generate_xdc([sPort]))
+        self.assert_error_written('generate_009')
+
+    def test_reports_ports_that_give_the_capture_clock_different_periods(self):
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 50, [4, 'C'], [4, 'A']))
+        self.assertEqual(2, self.run_generate_xdc(lPorts))
+        self.assert_error_written('generate_010')
+
+    def test_reports_ports_that_give_the_capture_clock_different_names(self):
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']).replace('clk_capture', 'clk_other'))
+        self.assertEqual(2, self.run_generate_xdc(lPorts))
+        self.assert_error_written('generate_010')
+
+    def test_reports_ports_that_give_the_capture_clock_different_ports(self):
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']).replace('port = "O_SCLK"', 'port = "O_OTHER_SCLK"'))
+        self.assertEqual(2, self.run_generate_xdc(lPorts))
+        self.assert_error_written('generate_010')
+
+    def test_reports_ports_that_give_the_capture_clock_different_generators(self):
+        sOtherGenerator = '{source = "q_other_reg", master_pin = "C", target_pin = "Q"}'
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A'], sOtherGenerator))
+        self.assertEqual(2, self.run_generate_xdc(lPorts))
+        self.assert_error_written('generate_010')
