@@ -12,7 +12,7 @@ def execute(oCmdLine):
     if oCmdLine.visualization == 'block_diagram':
         print_block_diagram(oInterface)
         return 0
-    for oPort in oInterface.ports:
+    for oPort in oInterface.get_analyzed_ports():
         print_port_edges(oPort)
     return 0
 

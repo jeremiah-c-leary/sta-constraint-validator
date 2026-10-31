@@ -340,3 +340,15 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected.append('clk_capture    __|                                                           |___________________________________________________________|                                                           |')
         lExpected.append('(10 MHz)')
         self.assert_rows_drawn(lExpected)
+
+
+class TestVisualizeEdgesDeferredPorts(VisualizeTestCase):
+
+    def test_draws_nothing_for_a_deferred_port(self):
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append('[[port]]\nname = "O_DEFERRED"\nstatus = "defer"')
+        self.assertEqual(0, self.run_visualize_edges(lPorts))
+        self.assertNotIn('O_DEFERRED', self.oStdout.getvalue())
+        self.assertIn('Port:  O_DATA', self.oStdout.getvalue())
+

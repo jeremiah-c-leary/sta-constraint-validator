@@ -378,3 +378,14 @@ class TestGenerateXdcInputErrors(GenerateTestCase):
         self.assertEqual(2, self.run_generate_xdc([sPort]))
         self.assert_error_written('traces_config_001')
 
+
+class TestGenerateXdcDeferredPorts(GenerateTestCase):
+
+    def test_writes_nothing_for_a_deferred_port(self):
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append('[[port]]\nname = "O_NO_TRACE"\nstatus = "defer"')
+        self.assertEqual(0, self.run_generate_xdc(lPorts))
+        self.assert_no_line_contains('O_NO_TRACE')
+        self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -max 8.100 [get_ports O_DATA]')
+

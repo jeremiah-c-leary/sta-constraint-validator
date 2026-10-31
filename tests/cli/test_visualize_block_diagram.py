@@ -348,3 +348,20 @@ class TestVisualizeBlockDiagramErrors(BlockDiagramTestCase):
         self.assertEqual(2, self.run_visualize_block_diagram(lTraces))
         self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[traces_config_001\] ')
 
+
+class TestVisualizeBlockDiagramDeferredPorts(BlockDiagramTestCase):
+
+    def test_draws_the_trace_of_a_deferred_port(self):
+        lTraces = build_dac81404_traces()
+        self.write_file('interface.toml', build_interface_text(['O_DAC_DATA'], self.sMissingTimingReport, 'O_DAC_SCLK') + '\n[[port]]\nname = "O_DAC_CSF"\nstatus = "defer"\n')
+        self.assertEqual(0, self.run_with_interface_written(lTraces))
+        lTraceRows = []
+        for sLine in self.oStdout.getvalue().split('\n'):
+            if '[X]' in sLine:
+                lTraceRows.append(sLine)
+        lExpected = []
+        lExpected.append('  O_DAC_DATA [X] --- data_output --> [X] SDIN')
+        lExpected.append('  O_DAC_CSF  [X] --- chip_select --> [X] CSF')
+        lExpected.append('  O_DAC_SCLK [X] --- clock --------> [X] SCLK')
+        self.assertEqual(lExpected, lTraceRows)
+

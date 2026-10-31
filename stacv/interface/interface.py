@@ -1,3 +1,6 @@
+from stacv.interface import port
+
+
 class Interface():
     def __init__(self):
         self.description = None
@@ -10,3 +13,10 @@ class Interface():
             if oClock.name == sClockName:
                 return oClock
         return None
+
+    def get_analyzed_ports(self):
+        lPorts = []
+        for oPort in self.ports:
+            if oPort.status == port.ANALYZE:
+                lPorts.append(oPort)
+        return lPorts
