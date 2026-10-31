@@ -15,7 +15,6 @@ Welcome to sta-constraint-validator's documentation!
    create
    interface
    traces
-   device
    part
    checks
    trc

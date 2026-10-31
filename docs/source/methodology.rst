@@ -96,13 +96,13 @@ Part            The pins of the interface and the methodology of each pin.      
 Part            The clock pin each data pin is referenced to.                      ``SCLK``
 Part            The setup and hold of each data pin, and the clock edge they       5 ns, 5 ns on the falling edge
                 apply to (:doc:`part`).
-Board data      The trace from each part pin to a device port, and its delays      ``SDIN`` to ``O_DAC_DATA``
-                (:doc:`board_data`).
-Device          The launch clock and its frequency.                                ``clk_100mhz``, 100 MHz
-Device          The capture clock and its frequency.                               ``dac_sclk``, 20 MHz
-Device          The setup and hold launch and capture edges of each port.          8, C and 0, A
-Device          The process corners (:doc:`device`).                               Slow, Fast
-Timing reports  What the timing tool timed.
+Traces          The trace from each part pin to a device port, and its delays      ``SDIN`` to ``O_DAC_DATA``
+                (:doc:`traces`).
+Interface       The launch clock and its frequency.                                ``clk_100mhz``, 100 MHz
+Interface       The capture clock and its frequency.                               ``dac_sclk``, 20 MHz
+Interface       The setup and hold launch and capture edges of each port           8, C and 0, A
+                (:doc:`interface`).
+Timing reports  What the timing tool timed, and the process corners it timed at.   Slow, Fast
 ==============  =================================================================  ==============================
 
 The data ports and the clock port are not listed by the user.
@@ -217,8 +217,7 @@ A timing report that matches no methodology is a failure (``s4_timing_report_001
 Required timing reports
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The process corners are listed in the device definition (see :doc:`device`).
-Each timing report states the process corner it was timed at.
+The process corners are read from the timing reports: each timing report states the process corner it was timed at.
 
 Each data port must have at least one setup and one hold timing report at each process corner.
 With slow and fast process corners, each data port needs at least four timing reports:
