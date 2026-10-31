@@ -1,16 +1,18 @@
 Generating Constraints
 ======================
 
-stacv generates the timing constraints of an interface from the same files it uses to check the timing reports.
+stacv generates the timing constraints of an interface, and the script that writes its timing reports, from the same files it uses to check the timing reports.
 The constraints, the visualizations and the checks all come from one interface file, so the generated constraints time the edges and delays the checks expect.
 
 .. code-block:: text
 
    stacv generate xdc interface.toml
    stacv generate xdc interface.toml --output constraints.xdc
+   stacv generate report_tcl interface.toml --output report.tcl
 
 The ``xdc`` target writes a Vivado constraints file for the interface.
-It is written to standard output, or to the file named by ``--output``.
+The ``report_tcl`` target writes a Vivado script that writes the timing reports ``stacv check`` reads.
+Both are written to standard output, or to the file named by ``--output``.
 An ``sdc`` target is planned for other vendors.
 
 The intended process is:
@@ -19,10 +21,18 @@ The intended process is:
 #. Write the interface file.
 #. Confirm the launch and capture edges with ``stacv visualize edges``.
 #. Generate the constraints and apply them in the timing tool.
+#. Generate the report script and source it in the timing tool.
 #. Run the timing reports back through ``stacv check``.
 
 The checks confirm the timing tool applied the constraints as intended.
-The DAC81404 example in ``example/texas_instruments/DAC81404`` goes through the whole process, and ``example/constraints.xdc`` is its generated constraints file.
+The DAC81404 example in ``example/texas_instruments/DAC81404`` goes through the whole process.
+``example/constraints.xdc`` is its generated constraints file, and ``example/dac_spi_1_stacv_report.tcl`` is its generated report script.
+Its timing reports are under ``$PROJ_DIR``, so run it from the project directory with ``PROJ_DIR`` set:
+
+.. code-block:: text
+
+   export PROJ_DIR=$(pwd)
+   stacv check example/texas_instruments/DAC81404/interface.toml
 
 Applies to
 ----------
@@ -186,6 +196,54 @@ An argument is explained once, at the first constraint of the port that uses it.
 
 The section of a deferred port says ``Deferred``.
 
+Report script
+-------------
+
+The report script writes the setup and hold timing reports of every analyzed port, at the Slow and Fast corners, to the file the port lists in ``timing_reports``.
+Run it after the design is implemented and the constraints are applied:
+
+.. code-block:: text
+
+   source report.tcl
+
+The script is written for a reader, like the constraints file:
+
+* The header names the stacv version and the command that generated the script.
+* There is one section for each corner.
+  Each section turns on its corner, turns off the other, and lists every port of the interface under its name.
+* A deferred port is listed as ``Deferred``, with no reports.
+* The first report of a port starts its file, so reports from an earlier run are not kept.
+* The script ends by restoring the Vivado default, both corners on.
+
+Report paths
+^^^^^^^^^^^^
+
+The script writes each report where ``stacv check`` looks for it.
+Environment variables are left for the timing tool to read when the script runs, so the script works in any terminal or CI job that sets them:
+
+=============================================  ==================================================================
+``timing_reports`` entry                       Path in the script
+=============================================  ==================================================================
+``$SCRATCH_DIR/vivado/O_DATA_timing.rpt``      ``"$env(SCRATCH_DIR)/vivado/O_DATA_timing.rpt"``
+``${SCRATCH_DIR}/vivado/O_DATA_timing.rpt``    ``"$env(SCRATCH_DIR)/vivado/O_DATA_timing.rpt"``
+``/reports/O_DATA_timing.rpt``                 ``"/reports/O_DATA_timing.rpt"``
+``timing_reports/O_DATA_timing.rpt``           ``"<interface file directory>/timing_reports/O_DATA_timing.rpt"``
+=============================================  ==================================================================
+
+A relative path is relative to the interface file, as in ``stacv check``.
+It is written from the directory stacv runs in, so the timing tool must run in the same directory.
+Use an environment variable when it does not.
+Every path is quoted, so paths with spaces work.
+
+``stacv check`` accepts any number of timing reports for a port, so reports from other scripts can be used.
+The report script writes one file for each port.
+
+Not supported yet
+^^^^^^^^^^^^^^^^^
+
+* Input ports: the script reports paths to output ports only.
+* Buses: each port is reported as one path.
+
 Errors
 ------
 
@@ -200,5 +258,7 @@ Errors
 * has no trace from the device to the part (generate_007).
 * has a trace that ends at a pin the part does not have (generate_008).
 * has no clock trace from its clock port to the clock pin of the part pin (generate_009).
+
+``stacv generate report_tcl`` stops with an error when an analyzed port lists more than one timing report (generate_010).
 
 Errors in the interface and traces files, such as a clock no ``[[clock]]`` table defines or an empty delay without a default, are reported when the files are read, by every command.
