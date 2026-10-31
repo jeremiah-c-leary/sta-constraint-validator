@@ -130,3 +130,9 @@ class Test(unittest.TestCase):
         oPort = self.oConfig.ports[1]
 
         self.assertEqual('q_spi_output_clock_reg', oPort.capture_clock.generator.source)
+
+    def test_port_without_a_status_is_analyzed(self):
+        oPort = self.oConfig.ports[0]
+
+        self.assertEqual('analyze', oPort.status)
+

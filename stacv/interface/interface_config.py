@@ -96,12 +96,28 @@ def create_ports(dConfig, oLocation, oInterface):
         oLocation.set_port_number(iPort)
         oPort.name = get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
-        oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
-        oPort.capture_clock = build_capture_clock(dPort['capture_clock'], oInterface, oLocation)
-        oPort.launch_clock = build_launch_clock(dPort['launch_clock'], oInterface, oLocation)
-        oPort.timing_reports = get_required_list_of_paths(dPort, 'timing_reports', oLocation)
+        oPort.status = get_status(dPort, oLocation)
+        if oPort.status == port.ANALYZE:
+            read_analyzed_port(dPort, oPort, oInterface, oLocation)
         lPorts.append(oPort)
     return lPorts
+
+
+def get_status(dPort, oLocation):
+    if 'status' not in dPort:
+        return port.ANALYZE
+    sStatus = get_required_string(dPort, 'status', oLocation)
+    if sStatus not in [port.ANALYZE, port.DEFER]:
+        raise interface_config_error.InterfaceConfigError('interface_config_009', oLocation.filename, f'key "status"{oLocation.location} must be "{port.ANALYZE}" or "{port.DEFER}"')
+    return sStatus
+
+
+def read_analyzed_port(dPort, oPort, oInterface, oLocation):
+    # A deferred port needs only its name and status, so only analyzed ports read the rest.
+    oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
+    oPort.capture_clock = build_capture_clock(dPort['capture_clock'], oInterface, oLocation)
+    oPort.launch_clock = build_launch_clock(dPort['launch_clock'], oInterface, oLocation)
+    oPort.timing_reports = get_required_list_of_paths(dPort, 'timing_reports', oLocation)
 
 
 def get_required_array_of_tables(dDict, sKey, oLocation):

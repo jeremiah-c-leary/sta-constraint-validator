@@ -614,3 +614,44 @@ class TestClockErrors(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_007', 'key "capture_clock" in port O_DAC_DATA names clock dac_sclk, which no [[clock]] table defines')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
+
+
+class TestPortStatus(unittest.TestCase):
+
+    def setUp(self):
+        oTemporaryDirectory = tempfile.TemporaryDirectory()
+        self.addCleanup(oTemporaryDirectory.cleanup)
+        self.sDirectory = oTemporaryDirectory.name
+        self.sInterfaceFile = os.path.join(self.sDirectory, 'interface.toml')
+        for sFilename in ['part.toml', 'traces.toml']:
+            with open(os.path.join(self.sDirectory, sFilename), 'w') as oFile:
+                oFile.write('')
+
+    def read_interface_with_port(self, lPortLines):
+        lText = []
+        lText.append('description = "port status"')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append('part = "part.toml"')
+        lText.append('traces = "traces.toml"')
+        lText.append('[[port]]')
+        lText.extend(lPortLines)
+        with open(self.sInterfaceFile, 'w') as oFile:
+            oFile.write('\n'.join(lText) + '\n')
+        return interface_config.read_interface_config(self.sInterfaceFile)
+
+    def build_error_pattern(self, sIdentifier, sMessage):
+        return r'ERROR: \[' + sIdentifier + r'\] ' + re.escape(self.sInterfaceFile) + ' ' + re.escape(sMessage) + '$'
+
+    def test_deferred_port_needs_only_a_name_and_status(self):
+        oInterface = self.read_interface_with_port(['name = "O_DAC_CSF"', 'status = "defer"'])
+        self.assertEqual('defer', oInterface.ports[0].status)
+
+    def test_raises_error_if_status_is_not_analyze_or_defer(self):
+        sError = self.build_error_pattern('interface_config_009', 'key "status" in port O_DAC_CSF must be "analyze" or "defer"')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            self.read_interface_with_port(['name = "O_DAC_CSF"', 'status = "deferred"'])
+
+    def test_raises_error_if_status_is_not_a_string(self):
+        sError = self.build_error_pattern('interface_config_003', 'key "status" in port O_DAC_CSF must be a non-empty string')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            self.read_interface_with_port(['name = "O_DAC_CSF"', 'status = 7'])
