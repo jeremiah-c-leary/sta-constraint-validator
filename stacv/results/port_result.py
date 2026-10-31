@@ -22,3 +22,6 @@ class PortResult():
 
     def has_failures(self):
         return self.methodology_results.has_failures()
+
+    def is_deferred(self):
+        return False

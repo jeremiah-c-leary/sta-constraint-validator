@@ -1,10 +1,12 @@
 
 from stacv.interface import interface_config
+from stacv.interface import port
 from stacv.inputs import port_profile
 from stacv.methodology import methodology_factory
 from stacv.output import check_report
 from stacv.output import junit
 from stacv.part import part
+from stacv.results import deferred_port_result
 from stacv.results import port_result
 from stacv.results import port_result_list
 from stacv.timing_report import timing_report_file
@@ -39,6 +41,8 @@ def get_port_results(oInterface):
 
 
 def get_port_result(oPort, oTraceList, oPart):
+    if oPort.status == port.DEFER:
+        return deferred_port_result.DeferredPortResult(oPort)
     oTimingReports = create_timing_reports(oPort.timing_reports)
     oPortProfile = port_profile.PortProfile(oPort, oTraceList, oPart, oTimingReports)
     oMethodology = create_methodology(oPort)

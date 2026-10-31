@@ -404,6 +404,36 @@ class TestExecuteReportSummary(unittest.TestCase):
 
 
 
+    def execute_with_a_deferred_port(self):
+        lPorts = []
+        lPorts.append(('P1', sPassingReport))
+        lPorts.append(('P2', DEFERRED))
+        lPorts.append(('P3', sFailingReport))
+        lPorts = write_named_port_timing_reports(self.oTempDir.name, lPorts)
+        self.execute_with_config_text(build_named_ports_config_text('One port deferred', lPorts, self.sTracesFile, self.sPartFile), get_port_names(lPorts))
+
+    def read_report_lines(self):
+        with open(self.sReportFile, 'r') as oFile:
+            return oFile.read().splitlines()
+
+    def test_summary_lists_a_deferred_port_without_a_section(self):
+        self.execute_with_a_deferred_port()
+        lExpected = []
+        lExpected.append('Port   Methodology   Report Key    Section   Result')
+        lExpected.append('----   -----------   -----------   -------   --------')
+        lExpected.append('P1     SDR-SS-O      P1.SDR-SS-O   3.1       Passed')
+        lExpected.append('P2' + ' ' * 19 + 'P2' + ' ' * 12 + '-' + ' ' * 9 + 'Deferred')
+        lExpected.append('P3     SDR-SS-O      P3.SDR-SS-O   3.2       Failed')
+        self.assertEqual(lExpected, self.read_summary_section()[7:])
+
+    def test_rule_check_sections_number_only_the_analyzed_ports(self):
+        self.execute_with_a_deferred_port()
+        lLines = self.read_report_lines()
+        self.assertEqual(2, lLines.count('Section 3.1: P1.SDR-SS-O Rule Checks'))
+        self.assertEqual(2, lLines.count('Section 3.2: P3.SDR-SS-O Rule Checks'))
+        for sLine in lLines:
+            self.assertNotIn('Section 3.3', sLine)
+
 class TestExecuteReportInputs(unittest.TestCase):
 
     def setUp(self):
@@ -706,6 +736,14 @@ class TestExecuteJunit(unittest.TestCase):
                     if oTestcase.get('name') == sRuleId:
                         return oTestcase
         raise ValueError(f'{sSuiteName} {sRuleId} is not in the JUnit file')
+
+    def test_junit_deferred_port_has_one_skipped_testcase(self):
+        lPorts = []
+        lPorts.append(('P1', sPassingReport))
+        lPorts.append(('P2', DEFERRED))
+        self.execute_with_ports(lPorts)
+        oTestcase = self.find_testcase('P2', 'deferred')
+        self.assertEqual('port is deferred', oTestcase.find('skipped').get('message'))
 
     def test_junit_file_has_one_testsuite_per_port_named_by_report_key(self):
         lPorts = []

@@ -61,9 +61,18 @@ def build_table_of_contents(oPortResults):
     lLines.append(build_section_1_title())
     lLines.append(build_section_2_title())
     lLines.append(build_section_3_title())
-    for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
+    for iPortResult, oPortResult in enumerate(get_analyzed_port_results(oPortResults), start=1):
         lLines.append(build_section_3_port_title(iPortResult, oPortResult))
     return lLines
+
+
+def get_analyzed_port_results(oPortResults):
+    # Deferred ports have no rule checks, so only analyzed ports get a section.
+    lPortResults = []
+    for oPortResult in oPortResults.results:
+        if not oPortResult.is_deferred():
+            lPortResults.append(oPortResult)
+    return lPortResults
 
 
 def build_section_1_title():
@@ -113,17 +122,30 @@ def build_table(oPortResults):
 def build_unformatted_table(oPortResults):
     lTable = []
     lTable.append(['Port', 'Methodology', 'Report Key', 'Section', 'Result'])
-    for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
-        lRow = [oPortResult.port.name]
-        lRow.append(oPortResult.port.methodology)
-        lRow.append(oPortResult.get_identifier())
-        lRow.append(build_port_section_number(iPortResult))
-        if oPortResult.has_failures():
-            lRow.append('Failed')
+    iPortResult = 0
+    for oPortResult in oPortResults.results:
+        if oPortResult.is_deferred():
+            lTable.append(build_deferred_row(oPortResult))
         else:
-            lRow.append('Passed')
-        lTable.append(lRow)
+            iPortResult += 1
+            lTable.append(build_analyzed_row(iPortResult, oPortResult))
     return lTable
+
+
+def build_deferred_row(oPortResult):
+    return [oPortResult.port.name, '', oPortResult.get_identifier(), '-', 'Deferred']
+
+
+def build_analyzed_row(iPortResult, oPortResult):
+    lRow = [oPortResult.port.name]
+    lRow.append(oPortResult.port.methodology)
+    lRow.append(oPortResult.get_identifier())
+    lRow.append(build_port_section_number(iPortResult))
+    if oPortResult.has_failures():
+        lRow.append('Failed')
+    else:
+        lRow.append('Passed')
+    return lRow
 
 
 def format_table(lRows):
@@ -244,7 +266,7 @@ def generate_md5sum(sFilename):
 def build_section_3(oPortResults):
     lLines = []
     lLines.extend(build_section_3_header())
-    for iPortResult, oPortResult in enumerate(oPortResults.results, start=1):
+    for iPortResult, oPortResult in enumerate(get_analyzed_port_results(oPortResults), start=1):
         lLines.append('')
         lLines.extend(build_section_3_port(iPortResult, oPortResult))
     return lLines

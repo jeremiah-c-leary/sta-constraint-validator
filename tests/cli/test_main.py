@@ -7,6 +7,7 @@ import unittest
 from unittest import mock
 
 from stacv import __main__
+from tests.cli import test_check
 from tests.cli.test_check import build_config_text
 from tests.cli.test_check import build_port_timing_report_filename
 from tests.cli.test_check import build_numbered_port_names
@@ -122,8 +123,9 @@ class TestMainConsoleOutput(unittest.TestCase):
         with mock.patch('sys.argv', lArgv):
             with contextlib.redirect_stdout(self.oStdout):
                 with contextlib.redirect_stderr(self.oStderr):
-                    with self.assertRaises(SystemExit):
+                    with self.assertRaises(SystemExit) as oContext:
                         __main__.main()
+        self.iExitCode = oContext.exception.code
 
     def create_empty_timing_report(self):
         sTimingReport = os.path.join(self.oTempDir.name, 'empty.rpt')
@@ -207,6 +209,14 @@ class TestMainConsoleOutput(unittest.TestCase):
             os.environ.pop('STACV_UNSET_VARIABLE', None)
             self.run_main_with_reports(['$STACV_UNSET_VARIABLE/report.rpt'])
         self.assertEqual(f'Reading interface file {self.sInterfaceFile}\n', self.oStdout.getvalue())
+
+    def test_deferred_port_is_skipped_and_the_check_still_passes(self):
+        def add_deferred_port(lTimingReports, sTracesFile, sPartFile):
+            return test_check.build_config_text(lTimingReports, sTracesFile, sPartFile) + '\n[[port]]\nname = "PORT_2"\nstatus = "defer"\n'
+        with mock.patch(f'{__name__}.build_config_text', side_effect=add_deferred_port):
+            self.run_main_with_reports([sPassingReport])
+        self.assertEqual(0, self.iExitCode)
+        self.assertTrue(self.oStdout.getvalue().endswith('Check Passed\n'))
 
     def test_traces_error_exits_with_two_and_is_written_to_stderr(self):
         sTracesWithoutDefault = '[[trace]]\nname = "PORT_1"\ndevice_pin = "PORT_1"\npart_pin = "SDIN"\ndevice_to_part = {}\n'
