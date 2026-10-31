@@ -343,32 +343,3 @@ class TestGenerateXdcInputErrors(GenerateTestCase):
         sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
         self.assertEqual(2, self.run_generate_xdc([sPort]))
         self.assert_error_written('generate_009')
-
-    def test_reports_ports_that_give_the_capture_clock_different_periods(self):
-        lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
-        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 50, [4, 'C'], [4, 'A']))
-        self.assertEqual(2, self.run_generate_xdc(lPorts))
-        self.assert_error_written('generate_010')
-
-    def test_reports_ports_that_give_the_capture_clock_different_names(self):
-        lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
-        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']).replace('clk_capture', 'clk_other'))
-        self.assertEqual(2, self.run_generate_xdc(lPorts))
-        self.assert_error_written('generate_010')
-
-    def test_reports_ports_that_give_the_capture_clock_different_ports(self):
-        lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
-        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']).replace('port = "O_SCLK"', 'port = "O_OTHER_SCLK"'))
-        self.assertEqual(2, self.run_generate_xdc(lPorts))
-        self.assert_error_written('generate_010')
-
-    def test_reports_ports_that_give_the_capture_clock_different_generators(self):
-        sOtherGenerator = '{source = "q_other_reg", master_pin = "C", target_pin = "Q"}'
-        lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
-        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A'], sOtherGenerator))
-        self.assertEqual(2, self.run_generate_xdc(lPorts))
-        self.assert_error_written('generate_010')

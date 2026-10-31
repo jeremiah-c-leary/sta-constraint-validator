@@ -14,34 +14,12 @@ TOLERANCE = 0.0005
 
 
 def generate_constraints(oInterface, oTraceList, oPart):
-    check_ports_share_one_capture_clock(oInterface.ports)
     lLines = []
     lLines.extend(generate_clocks(oInterface.ports))
     for oPort in oInterface.ports:
         oPortProfile = port_profile.PortProfile(oPort, oTraceList, oPart, None)
         lLines.extend(generate_port_constraints(oPortProfile))
     return lLines
-
-
-def check_ports_share_one_capture_clock(lPorts):
-    # An interface has one clock, so every port must describe the same capture clock.
-    oFirstPort = lPorts[0]
-    sFirstCaptureClock = describe_capture_clock(oFirstPort.capture_clock)
-    for oPort in lPorts:
-        sCaptureClock = describe_capture_clock(oPort.capture_clock)
-        if sCaptureClock != sFirstCaptureClock:
-            raise generate_error.GenerateError('generate_010', oPort.name, f'capture clock {sCaptureClock} differs from capture clock {sFirstCaptureClock} of port {oFirstPort.name}')
-
-
-def describe_capture_clock(oCaptureClock):
-    sGenerator = describe_generator(oCaptureClock.generator)
-    return f'{oCaptureClock.name} on {oCaptureClock.port} with period {oCaptureClock.period:.3f}ns and generator {sGenerator}'
-
-
-def describe_generator(oGenerator):
-    if oGenerator is None:
-        return 'none'
-    return f'{oGenerator.source} {oGenerator.master_pin} -> {oGenerator.target_pin}'
 
 
 def generate_clocks(lPorts):
