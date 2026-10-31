@@ -579,3 +579,21 @@ class TestClockErrors(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_008', 'clock clk_100mhz is defined by more than one [[clock]] table')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
+
+    def test_raises_error_if_a_port_describes_its_clock_inline(self):
+        lText = []
+        lText.append('description = "clock described in the port, the old way"')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append('part = "part.toml"')
+        lText.append('traces = "traces.toml"')
+        lText.append('[[port]]')
+        lText.append('name = "O_DAC_DATA"')
+        lText.append('methodology = "SDR-SS-O"')
+        lText.append('launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8, hold_edge = 0}')
+        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50, setup_edge = "C", hold_edge = "A"}')
+        lText.append('timing_reports = ["O_DAC_DATA_timing.rpt"]')
+        with open(self.sInterfaceFile, 'w') as oFile:
+            oFile.write('\n'.join(lText) + '\n')
+        sError = self.build_error_pattern('interface_config_007', 'key "capture_clock" in port O_DAC_DATA names clock dac_sclk, which no [[clock]] table defines')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sInterfaceFile)

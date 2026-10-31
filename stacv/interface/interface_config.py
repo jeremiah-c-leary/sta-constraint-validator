@@ -161,17 +161,7 @@ def check_schema(oExpectedType, value, sKey, oLocation):
 
 
 def build_capture_clock(dClock, lClocks, oLocation):
-    if not is_inline_clock(dClock):
-        return build_referenced_clock(dClock, lClocks, 'capture_clock', oLocation)
-    oClockPin = clock_pin.ClockPin()
-    oClockPin.port = dClock['port']
-    oClockPin.name = dClock['name']
-    oClockPin.period = dClock['period']
-    if 'generator' in dClock:
-        oClockPin.generator = build_clock_generator(dClock['generator'])
-    oClockPin.setup_edge = dClock['setup_edge']
-    oClockPin.hold_edge = dClock['hold_edge']
-    return oClockPin
+    return build_referenced_clock(dClock, lClocks, 'capture_clock', oLocation)
 
 
 def build_clock_generator(dGenerator):
@@ -185,19 +175,7 @@ def build_clock_generator(dGenerator):
 
 
 def build_launch_clock(dClock, lClocks, oLocation):
-    if not is_inline_clock(dClock):
-        return build_referenced_clock(dClock, lClocks, 'launch_clock', oLocation)
-    oClockPin = clock_pin.ClockPin()
-    oClockPin.name = dClock['name']
-    oClockPin.period = dClock['period']
-    oClockPin.setup_edge = dClock['setup_edge']
-    oClockPin.hold_edge = dClock['hold_edge']
-    return oClockPin
-
-
-def is_inline_clock(dClock):
-    # The clock is described in the port, instead of referring to a [[clock]] table.
-    return 'period' in dClock
+    return build_referenced_clock(dClock, lClocks, 'launch_clock', oLocation)
 
 
 def build_referenced_clock(dClock, lClocks, sKey, oLocation):
