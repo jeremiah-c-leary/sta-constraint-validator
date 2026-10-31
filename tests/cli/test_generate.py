@@ -528,3 +528,43 @@ class TestGenerateXdcBlockDiagram(XdcFileTestCase):
         lExpected.append('#')
         self.assertEqual(lExpected, self.read_section('2:  Block Diagram'))
 
+
+class TestGenerateXdcTraceDelays(XdcFileTestCase):
+
+    def test_lists_the_delays_of_every_trace_in_the_block_diagram(self):
+        self.run_with_a_deferred_port()
+        lExpected = []
+        lExpected.append('#')
+        lExpected.append('# Trace               From           To    Maximum (ns)  Minimum (ns)  Default')
+        lExpected.append('# ------------------  -------------  ----  ------------  ------------  -------')
+        lExpected.append('# O_DATA_data         O_DATA         SDIN  1.5           0.5           No')
+        lExpected.append('# O_CHIP_SELECT_data  O_CHIP_SELECT  SDIN  1.5           0.5           No')
+        lExpected.append('# clock               O_SCLK         SCLK  1.2           0.4           No')
+        lExpected.append('#')
+        self.assertEqual(lExpected, self.read_section('3.1:  Trace Delays'))
+
+    def test_marks_default_delays_and_lists_each_direction_of_a_trace(self):
+        lTraces = []
+        lTraces.append('default_delay = {max_delay = 1.0, min_delay = 0.0}')
+        lTraces.append('[[trace]]\nname = "O_DATA_data"\ndevice_pin = "O_DATA"\npart_pin = "SDIN"\ndevice_to_part = {max_delay = 1.5, min_delay = 0.5}')
+        lTraces.append('[[trace]]\nname = "I_DATA_trace"\ndevice_pin = "I_DATA"\npart_pin = "SDOUT"\npart_to_device = {}')
+        lTraces.append('[[trace]]\nname = "IO_DATA_trace"\ndevice_pin = "IO_DATA"\npart_pin = "SDIO"\ndevice_to_part = {}\npart_to_device = {max_delay = 2.5, min_delay = 0.5}')
+        lTraces.append('[[trace]]\nname = "clock"\ndevice_pin = "O_SCLK"\npart_pin = "SCLK"\ndevice_to_part = {max_delay = 1.2, min_delay = 0.4}')
+        self.write_file('traces.toml', '\n\n'.join(lTraces) + '\n')
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append('[[port]]\nname = "I_DATA"\nstatus = "defer"')
+        lPorts.append('[[port]]\nname = "IO_DATA"\nstatus = "defer"')
+        self.run_generate_xdc(lPorts)
+        lExpected = []
+        lExpected.append('#')
+        lExpected.append('# Trace          From     To       Maximum (ns)  Minimum (ns)  Default')
+        lExpected.append('# -------------  -------  -------  ------------  ------------  -------')
+        lExpected.append('# O_DATA_data    O_DATA   SDIN     1.5           0.5           No')
+        lExpected.append('# I_DATA_trace   SDOUT    I_DATA   1             0             Yes')
+        lExpected.append('# IO_DATA_trace  IO_DATA  SDIO     1             0             Yes')
+        lExpected.append('# IO_DATA_trace  SDIO     IO_DATA  2.5           0.5           No')
+        lExpected.append('# clock          O_SCLK   SCLK     1.2           0.4           No')
+        lExpected.append('#')
+        self.assertEqual(lExpected, self.read_section('3.1:  Trace Delays'))
+

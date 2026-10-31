@@ -8,9 +8,12 @@ from stacv.generate import xdc_section
 from stacv.inputs import port_profile
 from stacv.interface import port
 from stacv.output import md5sum_table
+from stacv.output import number_format
+from stacv.output import text_table
 from stacv.visualize import block_diagram
 
 BANNER = '#' * 79
+TABLE_COLUMN_GAP = 2
 
 
 def generate_file(sInterfaceFile, oInterface, oTraceList, oPart):
@@ -28,7 +31,7 @@ def build_sections(sInterfaceFile, oInterface, oTraceList, oPart):
     lSections.append(xdc_section.Section('1', 'References', build_references(sInterfaceFile, oInterface, oPart)))
     lSections.append(xdc_section.Section('2', 'Block Diagram', build_block_diagram(oInterface, oTraceList, oPart)))
     lSections.append(xdc_section.Section('3', 'Inputs', None))
-    lSections.append(xdc_section.Section('3.1', 'Trace Delays', ['#']))
+    lSections.append(xdc_section.Section('3.1', 'Trace Delays', build_trace_delays(oInterface, oTraceList)))
     lSections.append(xdc_section.Section('3.2', 'Part Timing', ['#']))
     lSections.append(xdc_section.Section('4', 'Generated Clocks', None))
     lSections.extend(build_generated_clock_sections(oInterface))
@@ -55,6 +58,33 @@ def build_block_diagram(oInterface, oTraceList, oPart):
     lLines.extend(comment_lines(block_diagram.draw_block_diagram(oInterface, oTraceList, oPart)))
     lLines.append('#')
     return lLines
+
+
+def build_trace_delays(oInterface, oTraceList):
+    lRows = [['Trace', 'From', 'To', 'Maximum (ns)', 'Minimum (ns)', 'Default']]
+    for oTrace in block_diagram.select_traces(oInterface, oTraceList):
+        if oTrace.device_to_part is not None:
+            lRows.append(build_trace_delay_row(oTrace.name, oTrace.device_pin, oTrace.part_pin, oTrace.device_to_part))
+        if oTrace.part_to_device is not None:
+            lRows.append(build_trace_delay_row(oTrace.name, oTrace.part_pin, oTrace.device_pin, oTrace.part_to_device))
+    lLines = ['#']
+    lLines.extend(comment_lines(text_table.format_table(lRows, TABLE_COLUMN_GAP)))
+    lLines.append('#')
+    return lLines
+
+
+def build_trace_delay_row(sName, sFrom, sTo, oTraceDelay):
+    lRow = [sName, sFrom, sTo]
+    lRow.append(number_format.format_number(oTraceDelay.max_delay))
+    lRow.append(number_format.format_number(oTraceDelay.min_delay))
+    lRow.append(format_yes_or_no(oTraceDelay.is_default))
+    return lRow
+
+
+def format_yes_or_no(bValue):
+    if bValue:
+        return 'Yes'
+    return 'No'
 
 
 def comment_lines(lLines):
