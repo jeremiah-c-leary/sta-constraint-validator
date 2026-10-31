@@ -118,6 +118,9 @@ class BlockDiagramTestCase(unittest.TestCase):
         if lPortNames is None:
             lPortNames = find_port_names(lTraces, sClockPort)
         self.write_file('interface.toml', build_interface_text(lPortNames, self.sMissingTimingReport, sClockPort))
+        return self.run_with_interface_written(lTraces, sPartNumber)
+
+    def run_with_interface_written(self, lTraces, sPartNumber='DAC81404'):
         self.write_file('part.toml', build_part_text(sPartNumber))
         self.write_file('traces.toml', '\n\n'.join(lTraces) + '\n')
         lArgv = ['stacv', 'visualize', 'block_diagram', self.sInterfaceFile]
@@ -289,3 +292,48 @@ class TestVisualizeBlockDiagramDirections(BlockDiagramTestCase):
         lTraces.append(output_trace('clock', 'O_DAC_SCLK', 'SCLK'))
         self.run_visualize_block_diagram(lTraces)
         self.assert_rows_drawn(['  IO_DAC_DATA [X] <-- data ---------> [X] SDIO'])
+
+
+class TestVisualizeBlockDiagramClocks(BlockDiagramTestCase):
+
+    def test_draws_a_row_for_each_capture_clock_after_the_data_rows(self):
+        lText = []
+        lText.append('description = "two capture clocks"')
+        lText.append('name = "SPI_PAIR"')
+        lText.append('part = "part.toml"')
+        lText.append('traces = "traces.toml"')
+        lText.append('[[clock]]')
+        lText.append('name = "clk_launch"')
+        lText.append('period = 10')
+        lText.append('[[clock]]')
+        lText.append('name = "dac_sclk"')
+        lText.append('period = 40')
+        lText.append('port = "O_DAC_SCLK"')
+        lText.append('[[clock]]')
+        lText.append('name = "adc_sclk"')
+        lText.append('period = 40')
+        lText.append('port = "O_ADC_SCLK"')
+        for sPortName, sCaptureClock in [('O_DAC_DATA', 'dac_sclk'), ('O_ADC_DATA', 'adc_sclk')]:
+            lText.append('[[port]]')
+            lText.append(f'name = "{sPortName}"')
+            lText.append('methodology = "SDR-SS-O"')
+            lText.append('launch_clock = {name = "clk_launch", setup_edge = 4, hold_edge = 4}')
+            lText.append(f'capture_clock = {{name = "{sCaptureClock}", setup_edge = "C", hold_edge = "A"}}')
+            lText.append(f'timing_reports = ["{self.sMissingTimingReport}"]')
+        self.write_file('interface.toml', '\n'.join(lText) + '\n')
+        lTraces = []
+        lTraces.append(output_trace('dac_clock', 'O_DAC_SCLK', 'SCLK'))
+        lTraces.append(output_trace('dac_data', 'O_DAC_DATA', 'SDIN'))
+        lTraces.append(output_trace('adc_clock', 'O_ADC_SCLK', 'SCLK'))
+        lTraces.append(output_trace('adc_data', 'O_ADC_DATA', 'SDIN'))
+        self.run_with_interface_written(lTraces)
+        lTraceRows = []
+        for sLine in self.oStdout.getvalue().split('\n'):
+            if '[X]' in sLine:
+                lTraceRows.append(sLine)
+        lExpected = []
+        lExpected.append('  O_DAC_DATA [X] --- dac_data ---> [X] SDIN')
+        lExpected.append('  O_ADC_DATA [X] --- adc_data ---> [X] SDIN')
+        lExpected.append('  O_DAC_SCLK [X] --- dac_clock --> [X] SCLK')
+        lExpected.append('  O_ADC_SCLK [X] --- adc_clock --> [X] SCLK')
+        self.assertEqual(lExpected, lTraceRows)

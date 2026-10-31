@@ -29,16 +29,21 @@ def draw_block_diagram(oInterface, oTraceList, oPart):
     return lLines
 
 
-def find_clock_port(oInterface):
-    # An interface has one clock, so every port names the same clock port.
-    return oInterface.ports[0].capture_clock.port
+def find_clock_ports(oInterface):
+    # Each capture clock's port gets one row, in the order the ports first use it.
+    lClockPorts = []
+    for oPort in oInterface.ports:
+        if oPort.capture_clock.port not in lClockPorts:
+            lClockPorts.append(oPort.capture_clock.port)
+    return lClockPorts
 
 
 def select_traces(oInterface, oTraceList):
     lTraces = []
     for oPort in oInterface.ports:
         lTraces.extend(find_traces_from_device_pin(oTraceList.traces, oPort.name))
-    lTraces.extend(find_traces_from_device_pin(oTraceList.traces, find_clock_port(oInterface)))
+    for sClockPort in find_clock_ports(oInterface):
+        lTraces.extend(find_traces_from_device_pin(oTraceList.traces, sClockPort))
     return lTraces
 
 
