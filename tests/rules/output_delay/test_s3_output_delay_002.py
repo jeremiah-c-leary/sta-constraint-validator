@@ -47,7 +47,7 @@ def create_passing_traces():
 def build_config_text(sPartFile, sTracesFile):
     lText = []
     lText.append('description = "s3_output_delay_002 test"')
-    lText.append('interface = "DAC_SPI_1"')
+    lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
     lText.append(f'traces = "{sTracesFile}"')
     lText.append('[[port]]')

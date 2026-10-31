@@ -62,21 +62,21 @@ class Test(unittest.TestCase):
             interface_config.read_interface_config(self.sInterfaceFile)
 
     def test_read_interface_config_raises_error_if_description_is_missing(self):
-        self.write_interface_file('interface = "DAC_SPI_1"\n' + self.sValidPort)
+        self.write_interface_file('name = "DAC_SPI_1"\n' + self.sValidPort)
 
         sError = self.build_error_pattern('interface_config_002', 'missing required key "description"$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
-    def test_read_interface_config_raises_error_if_interface_is_missing(self):
+    def test_read_interface_config_raises_error_if_interface_name_is_missing(self):
         self.write_interface_file('description = "No interface name"' + self.sValidPort)
 
-        sError = self.build_error_pattern('interface_config_002', 'missing required key "interface"$')
+        sError = self.build_error_pattern('interface_config_002', 'missing required key "name"$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
     def test_read_interface_config_raises_error_if_port_is_missing(self):
-        self.write_interface_file('description = "No ports"\ninterface = "DAC_SPI_1"\npart = "part.toml"\ntraces = "traces.toml"\n')
+        self.write_interface_file('description = "No ports"\nname = "DAC_SPI_1"\npart = "part.toml"\ntraces = "traces.toml"\n')
 
         sError = self.build_error_pattern('interface_config_002', 'missing required key "port"$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
@@ -85,7 +85,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_port_if_methodology_is_missing(self):
         lText = []
         lText.append('description = "Port without methodology"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append('[[port]]')
@@ -100,7 +100,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_port_position_if_port_name_is_missing(self):
         lText = []
         lText.append('description = "Second port without name"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -118,7 +118,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_port_if_timing_reports_is_missing(self):
         lText = []
         lText.append('description = "Second port without timing reports"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -136,7 +136,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_port_if_timing_reports_is_a_string(self):
         lText = []
         lText.append('description = "Second port with timing reports as a string"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -155,7 +155,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_port_if_timing_reports_contains_a_non_string(self):
         lText = []
         lText.append('description = "Second port with a number in timing reports"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -172,42 +172,41 @@ class Test(unittest.TestCase):
             interface_config.read_interface_config(self.sInterfaceFile)
 
     def test_read_interface_config_raises_error_if_description_is_a_number(self):
-        self.write_interface_file('description = 5\ninterface = "DAC_SPI_1"\n' + self.sValidPort)
+        self.write_interface_file('description = 5\nname = "DAC_SPI_1"\n' + self.sValidPort)
 
         sError = self.build_error_pattern('interface_config_003', 'key "description" must be a non-empty string$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
-    def test_read_interface_config_raises_error_if_interface_is_a_number(self):
-        self.write_interface_file('description = "Interface name is a number"\ninterface = 7\n' + self.sValidPort)
+    def test_read_interface_config_raises_error_if_interface_name_is_a_number(self):
+        self.write_interface_file('description = "Interface name is a number"\nname = 7\n' + self.sValidPort)
 
-        sError = self.build_error_pattern('interface_config_003', 'key "interface" must be a non-empty string$')
+        sError = self.build_error_pattern('interface_config_003', 'key "name" must be a non-empty string$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
-    def test_read_interface_config_raises_error_if_interface_is_empty(self):
-        self.write_interface_file('description = "Interface name is empty"\ninterface = ""\n' + self.sValidPort)
+    def test_read_interface_config_raises_error_if_interface_name_is_empty(self):
+        self.write_interface_file('description = "Interface name is empty"\nname = ""\n' + self.sValidPort)
 
-        sError = self.build_error_pattern('interface_config_003', 'key "interface" must be a non-empty string$')
+        sError = self.build_error_pattern('interface_config_003', 'key "name" must be a non-empty string$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
-    def test_read_interface_config_raises_error_if_interface_is_an_array_of_tables(self):
+    def test_read_interface_config_raises_error_if_only_the_old_interface_key_names_the_interface(self):
         lText = []
-        lText.append('description = "Configuration written with the old interface array"')
-        lText.append('[[interface]]')
-        lText.append('name = "DAC_SPI_1"')
+        lText.append('description = "Configuration written with the old interface key"')
+        lText.append('interface = "DAC_SPI_1"')
         lText.append(self.sValidPort)
         self.write_interface_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_003', 'key "interface" must be a non-empty string$')
+        sError = self.build_error_pattern('interface_config_002', 'missing required key "name"$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
     def test_read_interface_config_raises_error_naming_port_position_if_port_name_is_a_number(self):
         lText = []
         lText.append('description = "Second port with a number as name"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -226,7 +225,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_port_if_methodology_is_a_number(self):
         lText = []
         lText.append('description = "Second port with a number as methodology"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -243,14 +242,14 @@ class Test(unittest.TestCase):
             interface_config.read_interface_config(self.sInterfaceFile)
 
     def test_read_interface_config_raises_error_if_port_is_a_number(self):
-        self.write_interface_file('description = "Port is a number"\ninterface = "DAC_SPI_1"\npart = "part.toml"\ntraces = "traces.toml"\nport = 5\n')
+        self.write_interface_file('description = "Port is a number"\nname = "DAC_SPI_1"\npart = "part.toml"\ntraces = "traces.toml"\nport = 5\n')
 
         sError = self.build_error_pattern('interface_config_003', 'key "port" must be an array of one or more tables$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
     def test_read_interface_config_raises_error_if_port_is_an_empty_list(self):
-        self.write_interface_file('description = "No ports in list"\ninterface = "DAC_SPI_1"\npart = "part.toml"\ntraces = "traces.toml"\nport = []\n')
+        self.write_interface_file('description = "No ports in list"\nname = "DAC_SPI_1"\npart = "part.toml"\ntraces = "traces.toml"\nport = []\n')
 
         sError = self.build_error_pattern('interface_config_003', 'key "port" must be an array of one or more tables$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
@@ -259,7 +258,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_port_if_timing_reports_is_an_empty_list(self):
         lText = []
         lText.append('description = "Second port with no timing reports in list"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -278,7 +277,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_port_and_variable_if_environment_variable_is_not_set(self):
         lText = []
         lText.append('description = "Second port uses an unset environment variable"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -299,7 +298,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_all_variables_if_two_environment_variables_are_not_set(self):
         lText = []
         lText.append('description = "Second port uses two unset environment variables"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -321,7 +320,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_variable_if_braced_environment_variable_is_not_set(self):
         lText = []
         lText.append('description = "Second port uses an unset braced environment variable"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -343,7 +342,7 @@ class Test(unittest.TestCase):
         sMissingFile = os.path.join(self.sDirectory, 'O_DAC_CSF_timing.rpt')
         lText = []
         lText.append('description = "Second port lists a timing report that does not exist"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -364,7 +363,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_expanded_path_if_timing_report_does_not_exist(self):
         lText = []
         lText.append('description = "Second port lists a timing report that does not exist using an environment variable"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -387,7 +386,7 @@ class Test(unittest.TestCase):
         sMissingFile = os.path.join(self.sDirectory, 'O_DAC_CSF_timing.rpt')
         lText = []
         lText.append('description = "Timing report is not written yet"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append('[[port]]')
@@ -405,7 +404,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_resolves_relative_timing_report_against_interface_file_directory(self):
         lText = []
         lText.append('description = "Timing report given relative to the config file"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append('[[port]]')
@@ -430,7 +429,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_both_positions_if_port_and_methodology_are_duplicated(self):
         lText = []
         lText.append('description = "First and third port share name and methodology"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.sValidPort)
@@ -445,7 +444,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_accepts_same_port_with_different_methodologies(self):
         lText = []
         lText.append('description = "Bidirectional port timed with two methodologies"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.build_port('IO_DAC_SDIO', 'SDR-SS-O'))
@@ -462,7 +461,7 @@ class Test(unittest.TestCase):
     def build_config_with_part_and_traces(self, sPart, sTraces):
         lText = []
         lText.append('description = "Part and traces paths"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append(f'part = "{sPart}"')
         lText.append(f'traces = "{sTraces}"')
         lText.append(self.sValidPort)
@@ -531,7 +530,7 @@ class TestClockErrors(unittest.TestCase):
     def write_interface_file(self, lClockNames, sLaunchClock, sCaptureClock):
         lText = []
         lText.append('description = "clock errors"')
-        lText.append('interface = "DAC_SPI_1"')
+        lText.append('name = "DAC_SPI_1"')
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         for sClockName in lClockNames:

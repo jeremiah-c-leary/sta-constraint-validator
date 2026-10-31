@@ -11,7 +11,7 @@ from stacv import __main__
 def build_interface_text(lPortNames, sMissingTimingReport, sClockPort):
     lText = []
     lText.append('description = "block diagram test"')
-    lText.append('interface = "DAC_SPI_1"')
+    lText.append('name = "DAC_SPI_1"')
     lText.append('part = "part.toml"')
     lText.append('traces = "traces.toml"')
     for sPortName in lPortNames:

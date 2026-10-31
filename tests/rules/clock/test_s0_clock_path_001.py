@@ -19,7 +19,7 @@ sPassingClockPortName = 'O_DAC_SCLK'
 def build_config_text(sPartFile, sTracesFile, sTimingReportFile, sClockPortName):
     lText = []
     lText.append('description = "s0_clock_path_001 test"')
-    lText.append('interface = "DAC_SPI_1"')
+    lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
     lText.append(f'traces = "{sTracesFile}"')
     lText.append('[[port]]')

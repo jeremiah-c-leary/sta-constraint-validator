@@ -49,7 +49,7 @@ def create_interface_config(dConfig, sInterfaceFile):
     oInterface = interface.Interface()
     oLocation = interface_location.InterfaceLocation(sInterfaceFile)
     oInterface.description = get_required_string(dConfig, 'description', oLocation)
-    oInterface.interface_name = get_required_string(dConfig, 'interface', oLocation)
+    oInterface.interface_name = get_required_string(dConfig, 'name', oLocation)
     oInterface.part = get_required_file(dConfig, 'part', oLocation)
     oInterface.traces = get_required_file(dConfig, 'traces', oLocation)
     oInterface.clocks = create_clocks(dConfig, oLocation)

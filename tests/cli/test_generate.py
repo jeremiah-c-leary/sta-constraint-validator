@@ -14,7 +14,7 @@ GENERATOR = '{source = "q_sclk_reg", master_pin = "C", target_pin = "Q"}'
 def build_interface_text(lPorts, sMissingTimingReport):
     lText = []
     lText.append('description = "generate test"')
-    lText.append('interface = "DAC_SPI_1"')
+    lText.append('name = "DAC_SPI_1"')
     lText.append('part = "part.toml"')
     lText.append('traces = "traces.toml"')
     for sPort in lPorts:

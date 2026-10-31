@@ -27,7 +27,7 @@ sOutputDelayFailingReport = os.path.abspath(os.path.join(sTestDir, '..', 'rules'
 def build_config_text(lTimingReports, sTracesFile, sPartFile):
     lText = []
     lText.append('description = "check.py test"')
-    lText.append('interface = "DAC_SPI_1"')
+    lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
     lText.append(f'traces = "{sTracesFile}"')
     for iPort, sTimingReport in enumerate(lTimingReports, start=1):
@@ -235,7 +235,7 @@ class TestExecuteReportHeader(unittest.TestCase):
 def build_named_ports_config_text(sDescription, lPorts, sTracesFile, sPartFile):
     lText = []
     lText.append(f'description = "{sDescription}"')
-    lText.append('interface = "DAC_SPI_1"')
+    lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
     lText.append(f'traces = "{sTracesFile}"')
     for sPortName, sTimingReport in lPorts:

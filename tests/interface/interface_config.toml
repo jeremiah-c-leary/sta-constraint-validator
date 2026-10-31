@@ -1,7 +1,7 @@
 # Interface configuration used by test_interface_config.py
 
 description = "Two ports on one interface"
-interface = "DAC_SPI_1"
+name = "DAC_SPI_1"
 part = "$PROJ_DIR/example/texas_instruments/DAC81404/part.toml"
 traces = "$PROJ_DIR/example/texas_instruments/DAC81404/traces.toml"
 

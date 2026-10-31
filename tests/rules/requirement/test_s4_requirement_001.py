@@ -25,7 +25,7 @@ fPassingCapturePeriod = 50.0
 def build_config_text(sPartFile, sTracesFile, sTimingReportFile, oSetupEdges):
     lText = []
     lText.append('description = "s4_requirement_001 test"')
-    lText.append('interface = "DAC_SPI_1"')
+    lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
     lText.append(f'traces = "{sTracesFile}"')
     lText.append('[[port]]')

@@ -19,7 +19,7 @@ sPassingPortName = 'O_DAC_DATA'
 def build_config_text(sPartFile, sTracesFile, sTimingReportFile, sPortName):
     lText = []
     lText.append('description = "s0_data_path_001 test"')
-    lText.append('interface = "DAC_SPI_1"')
+    lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
     lText.append(f'traces = "{sTracesFile}"')
     lText.append('[[port]]')

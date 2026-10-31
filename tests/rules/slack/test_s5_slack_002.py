@@ -23,7 +23,7 @@ iPassingLaunchHoldEdge = 0
 def build_config_text(sPartFile, sTracesFile, sTimingReportFile, iLaunchHoldEdge):
     lText = []
     lText.append('description = "s5_slack_002 test"')
-    lText.append('interface = "DAC_SPI_1"')
+    lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
     lText.append(f'traces = "{sTracesFile}"')
     lText.append('[[port]]')

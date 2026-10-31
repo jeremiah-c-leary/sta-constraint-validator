@@ -23,7 +23,7 @@ iPassingLaunchSetupEdge = 8
 def build_config_text(sPartFile, sTracesFile, sTimingReportFile, iLaunchSetupEdge):
     lText = []
     lText.append('description = "s5_slack_001 test"')
-    lText.append('interface = "DAC_SPI_1"')
+    lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
     lText.append(f'traces = "{sTracesFile}"')
     lText.append('[[port]]')

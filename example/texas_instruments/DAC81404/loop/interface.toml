@@ -7,7 +7,7 @@
 
 description = "DAC81404 serial interface, write path only, 25 MHz SCLK"
 
-interface = "DAC_SPI_1"
+name = "DAC_SPI_1"
 part = "../part.toml"
 traces = "../traces.toml"
 
