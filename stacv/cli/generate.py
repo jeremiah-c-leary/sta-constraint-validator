@@ -8,6 +8,6 @@ def execute(oCmdLine):
     oInterface = interface_config.read_interface_config(oCmdLine.interface_file)
     oTraceList = traces.create_trace_list(oInterface)
     oPart = part.create_part(oInterface)
-    for sLine in xdc_file.generate_file(oInterface, oTraceList, oPart):
+    for sLine in xdc_file.generate_file(oCmdLine.interface_file, oInterface, oTraceList, oPart):
         print(sLine)
     return 0

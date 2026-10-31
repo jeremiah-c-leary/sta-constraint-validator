@@ -7,12 +7,13 @@ from stacv.generate import xdc
 from stacv.generate import xdc_section
 from stacv.inputs import port_profile
 from stacv.interface import port
+from stacv.output import md5sum_table
 
 BANNER = '#' * 79
 
 
-def generate_file(oInterface, oTraceList, oPart):
-    lSections = build_sections(oInterface, oTraceList, oPart)
+def generate_file(sInterfaceFile, oInterface, oTraceList, oPart):
+    lSections = build_sections(sInterfaceFile, oInterface, oTraceList, oPart)
     lLines = []
     lLines.extend(build_header(oInterface))
     lLines.extend(build_table_of_contents(lSections))
@@ -21,9 +22,9 @@ def generate_file(oInterface, oTraceList, oPart):
     return remove_trailing_separators(lLines)
 
 
-def build_sections(oInterface, oTraceList, oPart):
+def build_sections(sInterfaceFile, oInterface, oTraceList, oPart):
     lSections = []
-    lSections.append(xdc_section.Section('1', 'References', ['#']))
+    lSections.append(xdc_section.Section('1', 'References', build_references(sInterfaceFile, oInterface, oPart)))
     lSections.append(xdc_section.Section('2', 'Block Diagram', ['#']))
     lSections.append(xdc_section.Section('3', 'Inputs', None))
     lSections.append(xdc_section.Section('3.1', 'Trace Delays', ['#']))
@@ -33,6 +34,26 @@ def build_sections(oInterface, oTraceList, oPart):
     lSections.append(xdc_section.Section('5', 'Ports', None))
     lSections.extend(build_port_sections(oInterface, oTraceList, oPart))
     return lSections
+
+
+def build_references(sInterfaceFile, oInterface, oPart):
+    lFiles = [sInterfaceFile, oInterface.part, oInterface.traces]
+    lLines = ['#']
+    lLines.extend(comment_lines(md5sum_table.build_md5sum_table(lFiles)))
+    lLines.append('#')
+    lLines.append(f'# Part:       {oPart.manufacturer} {oPart.part_number}')
+    lLines.append(f'# Datasheet:  {oPart.datasheet.name}')
+    lLines.append(f'# Revision:   {oPart.datasheet.version}')
+    lLines.append(f'# URL:        {oPart.datasheet.url}')
+    lLines.append('#')
+    return lLines
+
+
+def comment_lines(lLines):
+    lComments = []
+    for sLine in lLines:
+        lComments.append(('# ' + sLine).rstrip())
+    return lComments
 
 
 def build_generated_clock_sections(oInterface):

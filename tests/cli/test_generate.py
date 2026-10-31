@@ -1,4 +1,5 @@
 import contextlib
+import hashlib
 import io
 import os
 import tempfile
@@ -396,13 +397,26 @@ class TestGenerateXdcDeferredPorts(GenerateTestCase):
 BANNER = '#' * 79
 
 
-class TestGenerateXdcLayout(GenerateTestCase):
+class XdcFileTestCase(GenerateTestCase):
 
     def run_with_a_deferred_port(self):
         lPorts = []
         lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
         lPorts.append('[[port]]\nname = "O_CHIP_SELECT"\nstatus = "defer"')
         self.run_generate_xdc(lPorts)
+
+    def read_section(self, sTitle):
+        lLines = self.get_output_lines()
+        iStart = lLines.index(f'#  Section {sTitle}') + 2
+        iEnd = len(lLines)
+        for iLine in range(iStart, len(lLines)):
+            if lLines[iLine] == BANNER:
+                iEnd = iLine
+                break
+        return lLines[iStart:iEnd]
+
+
+class TestGenerateXdcLayout(XdcFileTestCase):
 
     def test_starts_with_a_header_naming_the_interface_and_the_stacv_version(self):
         self.run_with_a_deferred_port()
@@ -464,4 +478,34 @@ class TestGenerateXdcLayout(GenerateTestCase):
         iSection = lLines.index('#  Section 5.1:  O_DATA')
         iNextSection = lLines.index('#  Section 5.2:  O_CHIP_SELECT')
         self.assertIn('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -max 8.100 [get_ports O_DATA]', lLines[iSection:iNextSection])
+
+class TestGenerateXdcReferences(XdcFileTestCase):
+
+    def calculate_md5sum(self, sFilename):
+        with open(sFilename, 'rb') as oFile:
+            return hashlib.file_digest(oFile, 'md5').hexdigest()
+
+    def test_lists_the_input_files_and_the_part_datasheet(self):
+        self.run_with_a_deferred_port()
+        lFiles = []
+        lFiles.append(self.sInterfaceFile)
+        lFiles.append(os.path.join(self.sDirectory, 'part.toml'))
+        lFiles.append(os.path.join(self.sDirectory, 'traces.toml'))
+        iFileColumnWidth = 8
+        for sFile in lFiles:
+            iFileColumnWidth = max(iFileColumnWidth, len(sFile))
+        iFileColumnWidth = min(iFileColumnWidth, 46)
+        lExpected = []
+        lExpected.append('#')
+        lExpected.append('# md5sum                            Filename')
+        lExpected.append('# ' + '-' * 32 + '  ' + '-' * iFileColumnWidth)
+        for sFile in lFiles:
+            lExpected.append(f'# {self.calculate_md5sum(sFile)}  {sFile}')
+        lExpected.append('#')
+        lExpected.append('# Part:       Texas Instruments DAC81404')
+        lExpected.append('# Datasheet:  DAC81404')
+        lExpected.append('# Revision:   A')
+        lExpected.append('# URL:        https://www.ti.com/lit/ds/symlink/dac81404.pdf')
+        lExpected.append('#')
+        self.assertEqual(lExpected, self.read_section('1:  References'))
 
