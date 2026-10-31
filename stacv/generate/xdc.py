@@ -42,15 +42,6 @@ def calculate_ratio(fLongerPeriod, fShorterPeriod):
     return round(fLongerPeriod / fShorterPeriod)
 
 
-def generate_port_constraints(oPortProfile):
-    check_traces_exist(oPortProfile)
-    lLines = []
-    lLines.append(create_max_output_delay(oPortProfile))
-    lLines.append(create_min_output_delay(oPortProfile))
-    lLines.extend(create_multicycle_paths(oPortProfile.port))
-    return lLines
-
-
 def check_traces_exist(oPortProfile):
     oPort = oPortProfile.port
     if not oPortProfile.traces.trace_starts_with_device_pin_named(oPort.name):
@@ -88,20 +79,6 @@ def format_capture_clock(oCaptureClock):
 
 def is_falling_edge(sEdgeLetter):
     return edge_times.convert_edge_letter_to_number(sEdgeLetter) % 2 == 1
-
-
-def create_multicycle_paths(oPort):
-    check_capture_edge_types_match(oPort)
-    lLines = []
-    iSetupMulticycle = calculate_setup_multicycle(oPort)
-    check_setup_multicycle(oPort, iSetupMulticycle)
-    if iSetupMulticycle != 1:
-        lLines.append(create_multicycle_path(oPort, iSetupMulticycle, '-setup'))
-    iHoldMulticycle = calculate_hold_multicycle(oPort)
-    check_hold_multicycle(oPort, iHoldMulticycle)
-    if iHoldMulticycle != 0:
-        lLines.append(create_multicycle_path(oPort, iHoldMulticycle, '-hold'))
-    return lLines
 
 
 def check_capture_edge_types_match(oPort):

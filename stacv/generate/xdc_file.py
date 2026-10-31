@@ -207,7 +207,7 @@ def build_port_content(oPort, oTraceList, oPart):
     xdc.check_traces_exist(oPortProfile)
     sMaxOutputDelay = xdc.create_max_output_delay(oPortProfile)
     sMinOutputDelay = xdc.create_min_output_delay(oPortProfile)
-    lMulticyclePaths = xdc.create_multicycle_paths(oPort)
+    lMulticycleBlocks = build_multicycle_blocks(oPort)
     lContent = ['#']
     lContent.extend(comment_lines(edges.draw_edge_diagram(oPort)))
     lContent.append('#')
@@ -216,9 +216,77 @@ def build_port_content(oPort, oTraceList, oPart):
     lContent.append('#' + '-' * 78)
     lContent.extend(build_command_block(build_argument_comments(build_max_output_delay_arguments(oPortProfile)), sMaxOutputDelay))
     lContent.extend(build_command_block(build_argument_comments(build_min_output_delay_arguments(oPortProfile)), sMinOutputDelay))
-    for sCommand in lMulticyclePaths:
-        lContent.extend(build_command_block([], sCommand))
+    lContent.extend(lMulticycleBlocks)
     return lContent
+
+
+def build_multicycle_blocks(oPort):
+    xdc.check_capture_edge_types_match(oPort)
+    iSetupMulticycle = xdc.calculate_setup_multicycle(oPort)
+    xdc.check_setup_multicycle(oPort, iSetupMulticycle)
+    iHoldMulticycle = xdc.calculate_hold_multicycle(oPort)
+    xdc.check_hold_multicycle(oPort, iHoldMulticycle)
+    lLines = []
+    bSetupMulticycleWritten = iSetupMulticycle != 1
+    if bSetupMulticycleWritten:
+        lArguments = build_setup_multicycle_arguments(oPort, iSetupMulticycle)
+        lLines.extend(build_command_block(build_argument_comments(lArguments), xdc.create_multicycle_path(oPort, iSetupMulticycle, '-setup')))
+    if iHoldMulticycle != 0:
+        lArguments = build_hold_multicycle_arguments(oPort, iHoldMulticycle)
+        # The arguments both multicycles share are explained once, with the first one written.
+        if not bSetupMulticycleWritten:
+            lArguments.extend(build_shared_multicycle_arguments(oPort))
+        lLines.extend(build_command_block(build_argument_comments(lArguments), xdc.create_multicycle_path(oPort, iHoldMulticycle, '-hold')))
+    return lLines
+
+
+def build_setup_multicycle_arguments(oPort, iSetupMulticycle):
+    sStep = describe_step_clock(oPort)
+    fSetupRequirement = requirements.calculate_configuration_setup_requirement(oPort)
+    lMultiplier = []
+    lMultiplier.append(f'setup requirement / {sStep} period')
+    lMultiplier.append(f'{format_nanoseconds(fSetupRequirement)} / {format_nanoseconds(xdc.find_step_period(oPort))}')
+    lMultiplier.append(str(iSetupMulticycle))
+    lArguments = []
+    lArguments.append(('multiplier', lMultiplier))
+    lArguments.append(('-setup', ['this is the setup multicycle']))
+    lArguments.extend(build_shared_multicycle_arguments(oPort))
+    return lArguments
+
+
+def build_hold_multicycle_arguments(oPort, iHoldMulticycle):
+    sStep = describe_step_clock(oPort)
+    fSetupRequirement = requirements.calculate_configuration_setup_requirement(oPort)
+    fHoldRequirement = requirements.calculate_configuration_hold_requirement(oPort)
+    lMultiplier = []
+    lMultiplier.append(f'(setup requirement - hold requirement) / {sStep} period - 1')
+    lMultiplier.append(f'({format_nanoseconds(fSetupRequirement)} - {format_nanoseconds(fHoldRequirement)}) / {format_nanoseconds(xdc.find_step_period(oPort))} - 1')
+    lMultiplier.append(str(iHoldMulticycle))
+    lArguments = []
+    lArguments.append(('multiplier', lMultiplier))
+    lArguments.append(('-hold', ['this is the hold multicycle']))
+    return lArguments
+
+
+def build_shared_multicycle_arguments(oPort):
+    lArguments = []
+    lArguments.append((xdc.select_moved_edge(oPort), [describe_moved_edge(oPort)]))
+    lArguments.append(('-from', ['paths in the design that drive the output port']))
+    lArguments.append(('-to', ['the output data port']))
+    return lArguments
+
+
+def describe_moved_edge(oPort):
+    if xdc.launch_clock_is_faster(oPort):
+        return 'multiplier is relative to the launching clock'
+    return 'multiplier is relative to the capturing clock'
+
+
+def describe_step_clock(oPort):
+    # The multicycles count cycles of the faster clock.
+    if xdc.launch_clock_is_faster(oPort):
+        return 'launch'
+    return 'capture'
 
 
 def build_max_output_delay_arguments(oPortProfile):

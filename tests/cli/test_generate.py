@@ -728,3 +728,69 @@ class TestGenerateXdcOutputDelayComments(XdcFileTestCase):
         self.run_generate_xdc([build_port_text('O_DATA', 10, 40, [2, 'B'], [4, 'B'])])
         self.assert_lines_in_section('5.1:  O_DATA', ['# -clock_fall:           the capture edge B is a falling edge of clk_capture'])
 
+
+class TestGenerateXdcMulticycleComments(XdcFileTestCase):
+
+    def test_explains_each_argument_of_the_setup_multicycle(self):
+        self.run_with_a_deferred_port()
+        lExpected = []
+        lExpected.append('#')
+        lExpected.append('# multiplier:  setup requirement / launch period')
+        lExpected.append('#              20 ns / 10 ns')
+        lExpected.append('#              2')
+        lExpected.append('# -setup:      this is the setup multicycle')
+        lExpected.append('# -start:      multiplier is relative to the launching clock')
+        lExpected.append('# -from:       paths in the design that drive the output port')
+        lExpected.append('# -to:         the output data port')
+        lExpected.append('#')
+        lExpected.append('')
+        lExpected.append('set_multicycle_path 2 -setup -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
+        lExpected.append('')
+        self.assert_lines_in_section('5.1:  O_DATA', lExpected)
+
+    def test_explains_only_the_new_arguments_of_the_hold_multicycle(self):
+        self.run_with_a_deferred_port()
+        lExpected = []
+        lExpected.append('')
+        lExpected.append('#')
+        lExpected.append('# multiplier:  (setup requirement - hold requirement) / launch period - 1')
+        lExpected.append('#              (20 ns - -20 ns) / 10 ns - 1')
+        lExpected.append('#              3')
+        lExpected.append('# -hold:       this is the hold multicycle')
+        lExpected.append('#')
+        lExpected.append('')
+        lExpected.append('set_multicycle_path 3 -hold -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
+        self.assertEqual(lExpected, self.read_section('5.1:  O_DATA')[-len(lExpected) - 1:-1])
+
+    def test_counts_capture_periods_when_the_capture_clock_is_faster(self):
+        self.run_generate_xdc([build_port_text('O_DATA', 40, 10, [0, 'E'], [0, 'A'])])
+        lExpected = []
+        lExpected.append('# multiplier:  setup requirement / capture period')
+        lExpected.append('#              20 ns / 10 ns')
+        lExpected.append('#              2')
+        lExpected.append('# -setup:      this is the setup multicycle')
+        lExpected.append('# -end:        multiplier is relative to the capturing clock')
+        self.assert_lines_in_section('5.1:  O_DATA', lExpected)
+
+    def test_explains_the_shared_arguments_with_the_hold_multicycle_when_no_setup_multicycle_is_needed(self):
+        self.run_generate_xdc([build_port_text('O_DATA', 10, 40, [6, 'C'], [4, 'A'])])
+        lExpected = []
+        lExpected.append('#')
+        lExpected.append('# multiplier:  (setup requirement - hold requirement) / launch period - 1')
+        lExpected.append('#              (10 ns - -20 ns) / 10 ns - 1')
+        lExpected.append('#              2')
+        lExpected.append('# -hold:       this is the hold multicycle')
+        lExpected.append('# -start:      multiplier is relative to the launching clock')
+        lExpected.append('# -from:       paths in the design that drive the output port')
+        lExpected.append('# -to:         the output data port')
+        lExpected.append('#')
+        lExpected.append('')
+        lExpected.append('set_multicycle_path 2 -hold -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
+        self.assert_lines_in_section('5.1:  O_DATA', lExpected)
+
+    def test_writes_no_multicycle_block_when_the_default_edges_are_timed(self):
+        self.run_generate_xdc([build_port_text('O_DATA', 10, 40, [6, 'C'], [8, 'C'])])
+        lSection = self.read_section('5.1:  O_DATA')
+        # The last section of the file ends with its last command.
+        self.assertEqual('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -min -2.700 [get_ports O_DATA]', lSection[-1])
+
