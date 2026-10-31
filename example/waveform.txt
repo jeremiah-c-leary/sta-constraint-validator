@@ -10,7 +10,7 @@ NOTE:  All elements of the external delays are shown: data and clock trace delay
 DECISION POINT:  One could argue that only the setup and hold requirements are needed for the waveform visualization.  I want to ensure the edges are correct before I run an analysis.  Maybe the option for that is just `stacv visualize edges`
 DECISION POINT:  Maybe the waveform visualization is not useful because it is not to scale.  Then we would only need the edges diagram which only cares about the relative scale of the clock periods.
 
-===============================================================================
+== [IGNORE THIS OPTION FOR NOW] ===============================================
 stacv visualize waveform interface.toml
 
                                                                              1     1     1
@@ -37,15 +37,20 @@ launch clock   __|     |_____|     |_____|     |_____|     |_____|     |_____|  
 capture clock  __|                       |_______________________|                       |
 
 
-===============================================================================
+== [IMPLEMENT THIS OPTION] ====================================================
 stacv visualize edges interface.toml
 
                                                                              1     1     1
                  0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2
-launch clock   __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
-
+clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
+(100 MHz)
                                          |---setup requirement-->|
                  |<---hold requirement---|
 
                  A_______________________B                       C_______________________D
-capture clock  __|                       |_______________________|                       |
+O_DAC_SCLK     __|                       |_______________________|                       |
+(20 MHz)
+
+
+setup requirement = 20 ns
+hold requirement = -20 ns
