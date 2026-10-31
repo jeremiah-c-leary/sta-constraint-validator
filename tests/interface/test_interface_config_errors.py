@@ -461,7 +461,7 @@ class Test(unittest.TestCase):
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.build_port('IO_DAC_SDIO', 'SDR-SS-O'))
-        lText.append(self.build_port('IO_DAC_SDIO', 'SDR-SS-RT'))
+        lText.append(self.build_port('IO_DAC_SDIO', 'SDR-SS-RT').replace('[[port]]\n', '[[port]]\nstatus = "defer"\n'))
         self.write_interface_file('\n'.join(lText) + '\n')
 
         oConfig = interface_config.read_interface_config(self.sInterfaceFile)
@@ -655,3 +655,38 @@ class TestPortStatus(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_003', 'key "status" in port O_DAC_CSF must be a non-empty string')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             self.read_interface_with_port(['name = "O_DAC_CSF"', 'status = 7'])
+
+    def build_analyzed_port(self, sMethodology):
+        lLines = []
+        lLines.append('name = "I_DAC_DATA"')
+        lLines.append(f'methodology = "{sMethodology}"')
+        lLines.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 0}')
+        lLines.append('capture_clock = {name = "dac_sclk", setup_edge = "C", hold_edge = "A"}')
+        lLines.append('timing_reports = ["I_DAC_DATA_timing.rpt"]')
+        lLines.append('[[clock]]')
+        lLines.append('name = "clk_100mhz"')
+        lLines.append('period = 10')
+        lLines.append('[[clock]]')
+        lLines.append('name = "dac_sclk"')
+        lLines.append('period = 40')
+        lLines.append('port = "O_DAC_SCLK"')
+        return lLines
+
+    def test_raises_error_if_an_analyzed_port_names_a_methodology_stacv_does_not_support(self):
+        sError = self.build_error_pattern('interface_config_010', 'key "methodology" in port I_DAC_DATA names SDR-SS-I, which stacv does not support; correct it, or defer the port with status = "defer"')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            self.read_interface_with_port(self.build_analyzed_port('SDR-SS-I'))
+
+    def test_raises_error_if_an_analyzed_port_names_a_misspelled_methodology(self):
+        sError = self.build_error_pattern('interface_config_010', 'key "methodology" in port I_DAC_DATA names SDR-SS-0, which stacv does not support; correct it, or defer the port with status = "defer"')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            self.read_interface_with_port(self.build_analyzed_port('SDR-SS-0'))
+
+    def test_deferred_port_may_name_a_methodology_stacv_does_not_support(self):
+        oInterface = self.read_interface_with_port(['name = "I_DAC_DATA"', 'status = "defer"', 'methodology = "SDR-SS-RT"'])
+        self.assertEqual('defer', oInterface.ports[0].status)
+
+    def test_deferred_port_keeps_a_methodology_it_names(self):
+        oInterface = self.read_interface_with_port(['name = "I_DAC_DATA"', 'status = "defer"', 'methodology = "SDR-SS-RT"'])
+        self.assertEqual('SDR-SS-RT', oInterface.ports[0].methodology)
+

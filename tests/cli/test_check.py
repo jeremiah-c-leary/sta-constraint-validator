@@ -426,6 +426,20 @@ class TestExecuteReportSummary(unittest.TestCase):
         lExpected.append('P3     SDR-SS-O      P3.SDR-SS-O   3.2       Failed')
         self.assertEqual(lExpected, self.read_summary_section()[7:])
 
+    def test_summary_shows_the_methodology_a_deferred_port_names(self):
+        lPorts = []
+        lPorts.append(('P1', sPassingReport))
+        lPorts = write_named_port_timing_reports(self.oTempDir.name, lPorts)
+        sConfigText = build_named_ports_config_text('Deferred port with a methodology', lPorts, self.sTracesFile, self.sPartFile)
+        sConfigText += '\n[[port]]\nname = "P2"\nstatus = "defer"\nmethodology = "SDR-SS-RT"\n'
+        self.execute_with_config_text(sConfigText, get_port_names(lPorts))
+        lExpected = []
+        lExpected.append('Port   Methodology   Report Key     Section   Result')
+        lExpected.append('----   -----------   ------------   -------   --------')
+        lExpected.append('P1     SDR-SS-O      P1.SDR-SS-O    3.1       Passed')
+        lExpected.append('P2     SDR-SS-RT     P2.SDR-SS-RT   -         Deferred')
+        self.assertEqual(lExpected, self.read_summary_section()[7:])
+
     def test_rule_check_sections_number_only_the_analyzed_ports(self):
         self.execute_with_a_deferred_port()
         lLines = self.read_report_lines()

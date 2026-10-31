@@ -12,6 +12,7 @@ from stacv.interface import port
 from stacv.interface import interface_location
 from stacv.interface import interface_config_error
 from stacv.interface import value_type
+from stacv.methodology import methodology_factory
 from stacv.interface import clock
 from stacv.interface import clock_pin
 from stacv.interface import clock_generator
@@ -99,8 +100,15 @@ def create_ports(dConfig, oLocation, oInterface):
         oPort.status = get_status(dPort, oLocation)
         if oPort.status == port.ANALYZE:
             read_analyzed_port(dPort, oPort, oInterface, oLocation)
+        else:
+            read_deferred_port(dPort, oPort, oLocation)
         lPorts.append(oPort)
     return lPorts
+
+
+def check_methodology_is_supported(sMethodology, oLocation):
+    if not methodology_factory.is_supported(sMethodology):
+        raise interface_config_error.InterfaceConfigError('interface_config_010', oLocation.filename, f'key "methodology"{oLocation.location} names {sMethodology}, which stacv does not support; correct it, or defer the port with status = "{port.DEFER}"')
 
 
 def get_status(dPort, oLocation):
@@ -112,9 +120,16 @@ def get_status(dPort, oLocation):
     return sStatus
 
 
+def read_deferred_port(dPort, oPort, oLocation):
+    # A deferred port may name a methodology stacv does not support yet.
+    if 'methodology' in dPort:
+        oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
+
+
 def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     # A deferred port needs only its name and status, so only analyzed ports read the rest.
     oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
+    check_methodology_is_supported(oPort.methodology, oLocation)
     oPort.capture_clock = build_capture_clock(dPort['capture_clock'], oInterface, oLocation)
     oPort.launch_clock = build_launch_clock(dPort['launch_clock'], oInterface, oLocation)
     oPort.timing_reports = get_required_list_of_paths(dPort, 'timing_reports', oLocation)

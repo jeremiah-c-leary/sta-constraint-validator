@@ -17,7 +17,14 @@ class DeferredPortResult():
         self.rule_results.add_result(rule_result.RuleResult(RULE_ID, rule_result.SKIPPED, [MESSAGE], ''))
 
     def get_identifier(self):
-        return self.port.name
+        if self.port.methodology is None:
+            return self.port.name
+        return self.port.name + '.' + self.port.methodology
+
+    def get_methodology(self):
+        if self.port.methodology is None:
+            return ''
+        return self.port.methodology
 
     def get_number_of_failures(self):
         return self.get_results().get_number_of_failures()

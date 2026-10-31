@@ -133,7 +133,7 @@ def build_unformatted_table(oPortResults):
 
 
 def build_deferred_row(oPortResult):
-    return [oPortResult.port.name, '', oPortResult.get_identifier(), '-', 'Deferred']
+    return [oPortResult.port.name, oPortResult.get_methodology(), oPortResult.get_identifier(), '-', 'Deferred']
 
 
 def build_analyzed_row(iPortResult, oPortResult):
