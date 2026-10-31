@@ -1,14 +1,12 @@
 
-import hashlib
 import os
 
 from stacv import version
+from stacv.output import md5sum_table
 
 
 REPORT_WIDTH = 80
-MD5SUM_COLUMN_WIDTH = 32
 COLUMN_GAP = 2
-MAXIMUM_FILENAME_COLUMN_WIDTH = REPORT_WIDTH - MD5SUM_COLUMN_WIDTH - COLUMN_GAP
 RESULT_COLUMN_WIDTH = len('Skipped')
 
 
@@ -202,9 +200,7 @@ def build_section_2_header():
 
 def build_section_2_table(oPortResults, sInterfaceFile):
     lFiles = get_input_filenames(oPortResults, sInterfaceFile)
-    lLines = build_md5sum_table_header(lFiles)
-    lLines.extend(build_md5sum_table_rows(lFiles))
-    return lLines
+    return md5sum_table.build_md5sum_table(lFiles)
 
 
 def get_input_filenames(oPortResults, sInterfaceFile):
@@ -221,46 +217,6 @@ def get_unique_timing_report_filenames(oPortResults):
             if sFilename not in lFilenames:
                 lFilenames.append(sFilename)
     return lFilenames
-
-
-def build_md5sum_table_header(lFiles):
-    lLines = []
-    sGap = ' '*COLUMN_GAP
-    lLines.append(f'{"md5sum":<{MD5SUM_COLUMN_WIDTH}}{sGap}Filename')
-    lLines.append(build_md5sum_separator(lFiles))
-    return lLines
-
-
-def build_md5sum_separator(lFiles):
-    iFileColumnWidth = calculate_filename_column_width(lFiles)
-    sLine = '-'*MD5SUM_COLUMN_WIDTH + ' '*COLUMN_GAP + '-'*iFileColumnWidth
-    return sLine
-
-
-def calculate_filename_column_width(lFiles):
-    iFileColumnWidth = len('Filename')
-    for sFile in lFiles:
-        iFileColumnWidth = max(iFileColumnWidth, len(sFile))
-    if total_width_exceeds_report_width(iFileColumnWidth):
-        iFileColumnWidth = MAXIMUM_FILENAME_COLUMN_WIDTH
-    return iFileColumnWidth
-
-
-def total_width_exceeds_report_width(iFileColumnWidth):
-    return iFileColumnWidth > MAXIMUM_FILENAME_COLUMN_WIDTH
-
-
-def build_md5sum_table_rows(lFiles):
-    lLines = []
-    for sFile in lFiles:
-        sMd5sum = generate_md5sum(sFile)
-        lLines.append(sMd5sum + ' '*COLUMN_GAP + sFile)
-    return lLines
-
-
-def generate_md5sum(sFilename):
-    with open(sFilename, 'rb') as oFile:
-        return hashlib.file_digest(oFile, 'md5').hexdigest()
 
 
 def build_section_3(oPortResults):
