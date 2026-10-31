@@ -21,6 +21,10 @@ class TestExample(unittest.TestCase):
         sWorkingDir = os.getcwd()
         self.addCleanup(os.chdir, sWorkingDir)
         os.chdir(sProjectDir)
+        # The example's timing_reports start with $PROJ_DIR, as a user's flow would set it.
+        oEnvironment = mock.patch.dict(os.environ, {'PROJ_DIR': sProjectDir})
+        oEnvironment.start()
+        self.addCleanup(oEnvironment.stop)
 
     def run_stacv(self, lArguments):
         oStdout = io.StringIO()
