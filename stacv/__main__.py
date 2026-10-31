@@ -47,7 +47,7 @@ def main():
 
     if command_line_arguments.which == 'generate':
         try:
-            iExitCode = generate.execute(command_line_arguments)
+            iExitCode = generate.execute(command_line_arguments, sys.argv)
         except interface_config_error.InterfaceConfigError as oError:
             iExitCode = 2
             print(str(oError), file=sys.stderr)

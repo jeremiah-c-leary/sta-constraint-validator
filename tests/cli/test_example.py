@@ -9,6 +9,7 @@ from stacv import __main__
 sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sInterfaceFile = 'example/texas_instruments/DAC81404/interface.toml'
 sConstraintsFile = 'example/constraints.xdc'
+sReportScriptFile = 'example/dac_spi_1_stacv_report.tcl'
 
 
 class TestExample(unittest.TestCase):
@@ -46,3 +47,19 @@ class TestExample(unittest.TestCase):
         iExitCode, sOutput = self.run_stacv(['check', sInterfaceFile])
         self.assertEqual(0, iExitCode)
         self.assertTrue(sOutput.endswith('Check Passed\n'))
+
+    def test_generated_report_script_matches_the_example_report_script(self):
+        # Runs the command in the script's header, so the file is put back however the test ends.
+        with open(sReportScriptFile) as oFile:
+            sExpected = oFile.read()
+        self.addCleanup(self.write_report_script, sExpected)
+        iExitCode, sOutput = self.run_stacv(['generate', 'report_tcl', sInterfaceFile, '--output', sReportScriptFile])
+        with open(sReportScriptFile) as oFile:
+            sGenerated = oFile.read()
+        self.assertEqual(0, iExitCode)
+        self.assertEqual(f'Creating report script {sReportScriptFile}\n', sOutput)
+        self.assertEqual(sExpected, sGenerated)
+
+    def write_report_script(self, sText):
+        with open(sReportScriptFile, 'w') as oFile:
+            oFile.write(sText)

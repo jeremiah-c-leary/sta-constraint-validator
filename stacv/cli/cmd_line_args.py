@@ -63,16 +63,23 @@ def build_block_diagram_subparser(subparser):
 
 
 def build_generate_subparser(subparser):
-    parser = subparser.add_parser('generate', help='Generate timing constraints from the interface file.')
+    parser = subparser.add_parser('generate', help='Generate Vivado files from the interface file.')
     parser.set_defaults(which='generate')
     targets = parser.add_subparsers(dest='target', required=True)
     build_xdc_subparser(targets)
+    build_report_tcl_subparser(targets)
 
 
 def build_xdc_subparser(subparser):
     parser = subparser.add_parser('xdc', help='Generate Vivado timing constraints for every port.')
     parser.add_argument('interface_file', help='Interface TOML file.')
     parser.add_argument('--output', help='Constraints file name.  The constraints are written to stdout without it.')
+
+
+def build_report_tcl_subparser(subparser):
+    parser = subparser.add_parser('report_tcl', help='Generate a Vivado script that writes the timing reports of every analyzed port.')
+    parser.add_argument('interface_file', help='Interface TOML file.')
+    parser.add_argument('--output', help='Report script file name.  The script is written to stdout without it.')
 
 
 def print_help_if_no_command_line_options_given(parser):

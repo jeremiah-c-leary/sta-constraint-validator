@@ -133,6 +133,7 @@ def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     oPort.capture_clock = build_capture_clock(dPort['capture_clock'], oInterface, oLocation)
     oPort.launch_clock = build_launch_clock(dPort['launch_clock'], oInterface, oLocation)
     oPort.timing_reports = get_required_list_of_paths(dPort, 'timing_reports', oLocation)
+    oPort.timing_reports_as_written = dPort['timing_reports']
 
 
 def get_required_array_of_tables(dDict, sKey, oLocation):

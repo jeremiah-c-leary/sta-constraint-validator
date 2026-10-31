@@ -10,3 +10,5 @@ class Port():
         self.capture_clock = None
         self.launch_clock = None
         self.timing_reports = []
+        # As written in the interface file, before environment variables are expanded.
+        self.timing_reports_as_written = []

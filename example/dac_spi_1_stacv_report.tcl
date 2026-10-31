@@ -20,16 +20,15 @@
 config_timing_corners -corner Slow -delay_type min_max
 config_timing_corners -corner Fast -delay_type none
 
+# O_DAC_DATA
 report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 
+# O_DAC_CSF
 # Deferred
-#report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
-#report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
 
+# I_DAC_DATA
 # Deferred
-#report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
-#report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
 
 ###############################################################################
 # Fast Corner
@@ -37,16 +36,15 @@ report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -pat
 config_timing_corners -corner Fast -delay_type min_max
 config_timing_corners -corner Slow -delay_type none
 
+# O_DAC_DATA
 report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 
+# O_DAC_CSF
 # Deferred
-#report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
-#report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
 
+# I_DAC_DATA
 # Deferred
-#report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
-#report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
 
 ###############################################################################
 # Restore Vivado Default
