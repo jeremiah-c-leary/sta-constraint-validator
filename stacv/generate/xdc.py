@@ -15,39 +15,32 @@ TOLERANCE = 0.0005
 
 def generate_constraints(oInterface, oTraceList, oPart):
     lLines = []
-    lLines.extend(generate_clocks(oInterface.ports, oInterface.clocks))
+    lLines.extend(generate_clocks(oInterface))
     for oPort in oInterface.ports:
         oPortProfile = port_profile.PortProfile(oPort, oTraceList, oPart, None)
         lLines.extend(generate_port_constraints(oPortProfile))
     return lLines
 
 
-def generate_clocks(lPorts, lClocks):
+def generate_clocks(oInterface):
     lLines = []
     lClockNames = []
-    for oPort in lPorts:
+    for oPort in oInterface.ports:
         if oPort.capture_clock.name not in lClockNames:
             lClockNames.append(oPort.capture_clock.name)
-            lLines.append(create_generated_clock(oPort, lClocks))
+            lLines.append(create_generated_clock(oPort, oInterface))
     return lLines
 
 
-def create_generated_clock(oPort, lClocks):
+def create_generated_clock(oPort, oInterface):
     check_generator_exists(oPort)
     oCaptureClock = oPort.capture_clock
     oGenerator = oCaptureClock.generator
     sSourcePin = format_pin(oGenerator.source, oGenerator.master_pin)
     sTargetPin = format_pin(oGenerator.source, oGenerator.target_pin)
-    oMasterClock = find_clock(lClocks, oGenerator.master_clock)
+    oMasterClock = oInterface.get_clock_named(oGenerator.master_clock)
     sRatio = format_ratio(oMasterClock.period, oCaptureClock.period)
     return f'create_generated_clock -name {oCaptureClock.name} -source {sSourcePin} {sRatio} {sTargetPin}'
-
-
-def find_clock(lClocks, sName):
-    for oClock in lClocks:
-        if oClock.name == sName:
-            return oClock
-    return None
 
 
 def check_generator_exists(oPort):

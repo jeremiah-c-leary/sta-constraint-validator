@@ -52,31 +52,29 @@ def create_interface_config(dConfig, sInterfaceFile):
     oInterface.interface_name = get_required_string(dConfig, 'name', oLocation)
     oInterface.part = get_required_file(dConfig, 'part', oLocation)
     oInterface.traces = get_required_file(dConfig, 'traces', oLocation)
-    oInterface.clocks = create_clocks(dConfig, oLocation)
-    oInterface.ports = create_ports(dConfig, oLocation, oInterface.clocks)
+    create_clocks(dConfig, oInterface, oLocation)
+    oInterface.ports = create_ports(dConfig, oLocation, oInterface)
     return oInterface
 
 
-def create_clocks(dConfig, oLocation):
-    lClocks = []
+def create_clocks(dConfig, oInterface, oLocation):
     if 'clock' not in dConfig:
-        return lClocks
+        return
     for dClock in dConfig['clock']:
         oClock = build_clock(dClock)
-        check_clock_is_not_defined(lClocks, oClock.name, oLocation)
-        lClocks.append(oClock)
-    check_master_clocks_are_defined(lClocks, oLocation)
-    return lClocks
+        check_clock_is_not_defined(oInterface, oClock.name, oLocation)
+        oInterface.clocks.append(oClock)
+    check_master_clocks_are_defined(oInterface, oLocation)
 
 
-def check_master_clocks_are_defined(lClocks, oLocation):
-    for oClock in lClocks:
-        if oClock.generator is not None and find_clock(lClocks, oClock.generator.master_clock) is None:
+def check_master_clocks_are_defined(oInterface, oLocation):
+    for oClock in oInterface.clocks:
+        if oClock.generator is not None and oInterface.get_clock_named(oClock.generator.master_clock) is None:
             raise interface_config_error.InterfaceConfigError('interface_config_007', oLocation.filename, f'key "generator" of clock {oClock.name} names clock {oClock.generator.master_clock}, which no [[clock]] table defines')
 
 
-def check_clock_is_not_defined(lClocks, sName, oLocation):
-    if find_clock(lClocks, sName) is not None:
+def check_clock_is_not_defined(oInterface, sName, oLocation):
+    if oInterface.get_clock_named(sName) is not None:
         raise interface_config_error.InterfaceConfigError('interface_config_008', oLocation.filename, f'clock {sName} is defined by more than one [[clock]] table')
 
 
@@ -91,14 +89,7 @@ def build_clock(dClock):
     return oClock
 
 
-def find_clock(lClocks, sName):
-    for oClock in lClocks:
-        if oClock.name == sName:
-            return oClock
-    return None
-
-
-def create_ports(dConfig, oLocation, lClocks):
+def create_ports(dConfig, oLocation, oInterface):
     lPorts = []
     for iPort, dPort in enumerate(get_required_array_of_tables(dConfig, 'port', oLocation), start=1):
         oPort = port.Port()
@@ -106,8 +97,8 @@ def create_ports(dConfig, oLocation, lClocks):
         oPort.name = get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
         oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
-        oPort.capture_clock = build_capture_clock(dPort['capture_clock'], lClocks, oLocation)
-        oPort.launch_clock = build_launch_clock(dPort['launch_clock'], lClocks, oLocation)
+        oPort.capture_clock = build_capture_clock(dPort['capture_clock'], oInterface, oLocation)
+        oPort.launch_clock = build_launch_clock(dPort['launch_clock'], oInterface, oLocation)
         oPort.timing_reports = get_required_list_of_paths(dPort, 'timing_reports', oLocation)
         lPorts.append(oPort)
     return lPorts
@@ -167,8 +158,8 @@ def check_schema(oExpectedType, value, sKey, oLocation):
         raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be {oExpectedType.description}')
 
 
-def build_capture_clock(dClock, lClocks, oLocation):
-    return build_referenced_clock(dClock, lClocks, 'capture_clock', oLocation)
+def build_capture_clock(dClock, oInterface, oLocation):
+    return build_referenced_clock(dClock, oInterface, 'capture_clock', oLocation)
 
 
 def build_clock_generator(dGenerator):
@@ -180,12 +171,12 @@ def build_clock_generator(dGenerator):
     return oClockGenerator
 
 
-def build_launch_clock(dClock, lClocks, oLocation):
-    return build_referenced_clock(dClock, lClocks, 'launch_clock', oLocation)
+def build_launch_clock(dClock, oInterface, oLocation):
+    return build_referenced_clock(dClock, oInterface, 'launch_clock', oLocation)
 
 
-def build_referenced_clock(dClock, lClocks, sKey, oLocation):
-    oClock = find_defined_clock(lClocks, dClock['name'], sKey, oLocation)
+def build_referenced_clock(dClock, oInterface, sKey, oLocation):
+    oClock = find_defined_clock(oInterface, dClock['name'], sKey, oLocation)
     oClockPin = clock_pin.ClockPin()
     oClockPin.name = oClock.name
     oClockPin.period = oClock.period
@@ -196,8 +187,8 @@ def build_referenced_clock(dClock, lClocks, sKey, oLocation):
     return oClockPin
 
 
-def find_defined_clock(lClocks, sName, sKey, oLocation):
-    oClock = find_clock(lClocks, sName)
+def find_defined_clock(oInterface, sName, sKey, oLocation):
+    oClock = oInterface.get_clock_named(sName)
     if oClock is None:
         raise interface_config_error.InterfaceConfigError('interface_config_007', oLocation.filename, f'key "{sKey}"{oLocation.location} names clock {sName}, which no [[clock]] table defines')
     return oClock
