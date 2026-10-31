@@ -17,8 +17,7 @@ An ``sdc`` target is planned for other vendors.
 
 The intended process is:
 
-#. Write the part and traces files.
-#. Write the interface file.
+#. Create the interface, traces and part files from their templates with ``stacv create template``, and fill them in.
 #. Confirm the launch and capture edges with ``stacv visualize edges``.
 #. Generate the constraints and apply them in the timing tool.
 #. Generate the report script and source it in the timing tool.
