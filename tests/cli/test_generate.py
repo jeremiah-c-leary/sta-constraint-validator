@@ -371,3 +371,10 @@ class TestGenerateXdcInputErrors(GenerateTestCase):
         sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
         self.assertEqual(2, self.run_generate_xdc([sPort]))
         self.assert_error_written('generate_009')
+
+    def test_reports_a_traces_error(self):
+        self.write_file('traces.toml', '[[trace]]\nname = "O_DATA_trace"\ndevice_pin = "O_DATA"\npart_pin = "SDIN"\ndevice_to_part = {}\n')
+        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        self.assertEqual(2, self.run_generate_xdc([sPort]))
+        self.assert_error_written('traces_config_001')
+

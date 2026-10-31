@@ -208,6 +208,12 @@ class TestMainConsoleOutput(unittest.TestCase):
             self.run_main_with_reports(['$STACV_UNSET_VARIABLE/report.rpt'])
         self.assertEqual(f'Reading interface file {self.sInterfaceFile}\n', self.oStdout.getvalue())
 
+    def test_traces_error_exits_with_two_and_is_written_to_stderr(self):
+        sTracesWithoutDefault = '[[trace]]\nname = "PORT_1"\ndevice_pin = "PORT_1"\npart_pin = "SDIN"\ndevice_to_part = {}\n'
+        with mock.patch(f'{__name__}.build_traces_text', return_value=sTracesWithoutDefault):
+            self.run_main_with_reports([sPassingReport])
+        self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[traces_config_001\] ')
+
     def test_config_error_is_written_to_stderr(self):
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_VARIABLE', None)

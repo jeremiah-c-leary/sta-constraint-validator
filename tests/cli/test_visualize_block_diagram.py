@@ -337,3 +337,14 @@ class TestVisualizeBlockDiagramClocks(BlockDiagramTestCase):
         lExpected.append('  O_DAC_SCLK [X] --- dac_clock --> [X] SCLK')
         lExpected.append('  O_ADC_SCLK [X] --- adc_clock --> [X] SCLK')
         self.assertEqual(lExpected, lTraceRows)
+
+
+class TestVisualizeBlockDiagramErrors(BlockDiagramTestCase):
+
+    def test_reports_a_traces_error(self):
+        lTraces = []
+        lTraces.append(output_trace('data_output', 'O_DAC_DATA', 'SDIN').replace('{max_delay = 3.00, min_delay = 1.00}', '{}'))
+        lTraces.append(output_trace('clock', 'O_DAC_SCLK', 'SCLK'))
+        self.assertEqual(2, self.run_visualize_block_diagram(lTraces))
+        self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[traces_config_001\] ')
+

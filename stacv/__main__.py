@@ -8,6 +8,7 @@ from stacv.cli import visualize
 from stacv.generate import generate_error
 from stacv.interface import interface_config_error
 from stacv.timing_report import timing_report_parse_error
+from stacv.traces import traces_config_error
 
 
 def main():
@@ -23,6 +24,9 @@ def main():
         except interface_config_error.InterfaceConfigError as oError:
             iExitCode = 2
             print(str(oError), file=sys.stderr)
+        except traces_config_error.TracesConfigError as oError:
+            iExitCode = 2
+            print(str(oError), file=sys.stderr)
         except timing_report_parse_error.TimingReportParseError as oError:
             iExitCode = 2
             print(str(oError), file=sys.stderr)
@@ -35,6 +39,9 @@ def main():
         except interface_config_error.InterfaceConfigError as oError:
             iExitCode = 2
             print(str(oError), file=sys.stderr)
+        except traces_config_error.TracesConfigError as oError:
+            iExitCode = 2
+            print(str(oError), file=sys.stderr)
 
         sys.exit(iExitCode)
 
@@ -42,6 +49,9 @@ def main():
         try:
             iExitCode = generate.execute(command_line_arguments)
         except interface_config_error.InterfaceConfigError as oError:
+            iExitCode = 2
+            print(str(oError), file=sys.stderr)
+        except traces_config_error.TracesConfigError as oError:
             iExitCode = 2
             print(str(oError), file=sys.stderr)
         except generate_error.GenerateError as oError:
