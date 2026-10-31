@@ -794,3 +794,28 @@ class TestGenerateXdcMulticycleComments(XdcFileTestCase):
         # The last section of the file ends with its last command.
         self.assertEqual('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -min -2.700 [get_ports O_DATA]', lSection[-1])
 
+
+class TestGenerateXdcOutputFile(XdcFileTestCase):
+
+    def run_with_output_option(self):
+        self.sOutputFile = os.path.join(self.sDirectory, 'constraints.xdc')
+        self.write_file('interface.toml', build_interface_text([build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])], self.sMissingTimingReport))
+        oStdout = io.StringIO()
+        with mock.patch('sys.argv', ['stacv', 'generate', 'xdc', self.sInterfaceFile, '--output', self.sOutputFile]):
+            with contextlib.redirect_stdout(oStdout):
+                with self.assertRaises(SystemExit) as oContext:
+                    __main__.main()
+        return oContext.exception.code, oStdout.getvalue()
+
+    def test_writes_the_constraints_to_the_output_file(self):
+        self.run_generate_xdc([build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])])
+        sConstraints = self.oStdout.getvalue()
+        self.run_with_output_option()
+        with open(self.sOutputFile) as oFile:
+            self.assertEqual(sConstraints, oFile.read())
+
+    def test_writes_only_the_file_name_to_stdout(self):
+        iExitCode, sStdout = self.run_with_output_option()
+        self.assertEqual(0, iExitCode)
+        self.assertEqual(f'Creating XDC file {self.sOutputFile}\n', sStdout)
+

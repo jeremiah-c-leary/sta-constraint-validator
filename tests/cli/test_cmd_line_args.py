@@ -99,3 +99,12 @@ class TestGenerateSubparser(unittest.TestCase):
         with contextlib.redirect_stderr(io.StringIO()):
             with self.assertRaises(SystemExit):
                 parse_arguments(['generate', 'xdc'])
+
+    def test_generate_xdc_output_option_stores_output_file(self):
+        oArgs = parse_arguments(['generate', 'xdc', 'interface.toml', '--output', 'constraints.xdc'])
+        self.assertEqual('constraints.xdc', oArgs.output)
+
+    def test_generate_xdc_output_option_defaults_to_none(self):
+        oArgs = parse_arguments(['generate', 'xdc', 'interface.toml'])
+        self.assertIsNone(oArgs.output)
+

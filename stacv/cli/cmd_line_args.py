@@ -72,6 +72,7 @@ def build_generate_subparser(subparser):
 def build_xdc_subparser(subparser):
     parser = subparser.add_parser('xdc', help='Generate Vivado timing constraints for every port.')
     parser.add_argument('interface_file', help='Interface TOML file.')
+    parser.add_argument('--output', help='Constraints file name.  The constraints are written to stdout without it.')
 
 
 def print_help_if_no_command_line_options_given(parser):
