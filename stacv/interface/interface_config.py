@@ -12,6 +12,7 @@ from stacv.interface import port
 from stacv.interface import interface_location
 from stacv.interface import interface_config_error
 from stacv.interface import value_type
+from stacv.interface import clock
 from stacv.interface import clock_pin
 from stacv.interface import clock_generator
 
@@ -51,11 +52,39 @@ def create_interface_config(dConfig, sInterfaceFile):
     oInterface.interface_name = get_required_string(dConfig, 'interface', oLocation)
     oInterface.part = get_required_file(dConfig, 'part', oLocation)
     oInterface.traces = get_required_file(dConfig, 'traces', oLocation)
-    oInterface.ports = create_ports(dConfig, oLocation)
+    oInterface.clocks = create_clocks(dConfig)
+    oInterface.ports = create_ports(dConfig, oLocation, oInterface.clocks)
     return oInterface
 
 
-def create_ports(dConfig, oLocation):
+def create_clocks(dConfig):
+    lClocks = []
+    if 'clock' not in dConfig:
+        return lClocks
+    for dClock in dConfig['clock']:
+        lClocks.append(build_clock(dClock))
+    return lClocks
+
+
+def build_clock(dClock):
+    oClock = clock.Clock()
+    oClock.name = dClock['name']
+    oClock.period = dClock['period']
+    if 'port' in dClock:
+        oClock.port = dClock['port']
+    if 'generator' in dClock:
+        oClock.generator = build_clock_generator(dClock['generator'])
+    return oClock
+
+
+def find_clock(lClocks, sName):
+    for oClock in lClocks:
+        if oClock.name == sName:
+            return oClock
+    return None
+
+
+def create_ports(dConfig, oLocation, lClocks):
     lPorts = []
     for iPort, dPort in enumerate(get_required_array_of_tables(dConfig, 'port', oLocation), start=1):
         oPort = port.Port()
@@ -63,8 +92,8 @@ def create_ports(dConfig, oLocation):
         oPort.name = get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
         oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
-        oPort.capture_clock = build_capture_clock(dPort['capture_clock'])
-        oPort.launch_clock = build_launch_clock(dPort['launch_clock'])
+        oPort.capture_clock = build_capture_clock(dPort['capture_clock'], lClocks)
+        oPort.launch_clock = build_launch_clock(dPort['launch_clock'], lClocks)
         oPort.timing_reports = get_required_list_of_paths(dPort, 'timing_reports', oLocation)
         lPorts.append(oPort)
     return lPorts
@@ -124,7 +153,9 @@ def check_schema(oExpectedType, value, sKey, oLocation):
         raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be {oExpectedType.description}')
 
 
-def build_capture_clock(dClock):
+def build_capture_clock(dClock, lClocks):
+    if not is_inline_clock(dClock):
+        return build_referenced_clock(dClock, lClocks)
     oClockPin = clock_pin.ClockPin()
     oClockPin.port = dClock['port']
     oClockPin.name = dClock['name']
@@ -141,13 +172,34 @@ def build_clock_generator(dGenerator):
     oClockGenerator.source = dGenerator['source']
     oClockGenerator.master_pin = dGenerator['master_pin']
     oClockGenerator.target_pin = dGenerator['target_pin']
+    if 'master_clock' in dGenerator:
+        oClockGenerator.master_clock = dGenerator['master_clock']
     return oClockGenerator
 
 
-def build_launch_clock(dClock):
+def build_launch_clock(dClock, lClocks):
+    if not is_inline_clock(dClock):
+        return build_referenced_clock(dClock, lClocks)
     oClockPin = clock_pin.ClockPin()
     oClockPin.name = dClock['name']
     oClockPin.period = dClock['period']
+    oClockPin.setup_edge = dClock['setup_edge']
+    oClockPin.hold_edge = dClock['hold_edge']
+    return oClockPin
+
+
+def is_inline_clock(dClock):
+    # The clock is described in the port, instead of referring to a [[clock]] table.
+    return 'period' in dClock
+
+
+def build_referenced_clock(dClock, lClocks):
+    oClock = find_clock(lClocks, dClock['name'])
+    oClockPin = clock_pin.ClockPin()
+    oClockPin.name = oClock.name
+    oClockPin.period = oClock.period
+    oClockPin.port = oClock.port
+    oClockPin.generator = oClock.generator
     oClockPin.setup_edge = dClock['setup_edge']
     oClockPin.hold_edge = dClock['hold_edge']
     return oClockPin

@@ -95,7 +95,38 @@ class Test(unittest.TestCase):
 
         self.assertEqual('Q', oPort.capture_clock.generator.target_pin)
 
-    def test_capture_clock_without_a_generator_has_none(self):
+    def test_clock_without_a_generator_has_none(self):
+        oPort = self.oConfig.ports[0]
+
+        self.assertIsNone(oPort.launch_clock.generator)
+
+    def test_capture_clock_keeps_its_generator_master_clock(self):
+        oPort = self.oConfig.ports[0]
+
+        self.assertEqual('clk_100mhz', oPort.capture_clock.generator.master_clock)
+
+    def test_config_keeps_its_clocks_in_order(self):
+        lClockNames = []
+        for oClock in self.oConfig.clocks:
+            lClockNames.append(oClock.name)
+        self.assertEqual(['clk_100mhz', 'dac_sclk'], lClockNames)
+
+    def test_launch_clock_takes_its_period_from_its_clock(self):
+        oPort = self.oConfig.ports[0]
+
+        self.assertEqual(10.0, oPort.launch_clock.period)
+
+    def test_capture_clock_takes_its_period_from_its_clock(self):
+        oPort = self.oConfig.ports[0]
+
+        self.assertEqual(20, oPort.capture_clock.period)
+
+    def test_capture_clock_takes_its_port_from_its_clock(self):
+        oPort = self.oConfig.ports[0]
+
+        self.assertEqual('O_DAC_SCLK', oPort.capture_clock.port)
+
+    def test_ports_share_the_generator_of_their_clock(self):
         oPort = self.oConfig.ports[1]
 
-        self.assertIsNone(oPort.capture_clock.generator)
+        self.assertEqual('q_spi_output_clock_reg', oPort.capture_clock.generator.source)

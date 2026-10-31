@@ -5,3 +5,4 @@ class ClockGenerator():
         self.source = None
         self.master_pin = None
         self.target_pin = None
+        self.master_clock = None
