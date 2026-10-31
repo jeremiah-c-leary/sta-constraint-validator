@@ -13,7 +13,6 @@ device_to_part = {max_delay = 3.00, min_delay = 1.00}
 #part_pin = "SDO"
 #part_to_device = {max_delay = 3.00, min_delay = 1.00}
 
-# Leaving out for now
 #[[trace]]
 #name = "chip_select"
 #part_pin = "CSF"

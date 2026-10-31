@@ -22,6 +22,14 @@ setup = {value = 10, symbol = "tSDIS", source = "Table 7.6"}
 hold = {value = 10, symbol = "tSDIH", source = "Table 7.6"}
 
 [[interface.pin]]
+name = "CSF"
+methodology = "SDR-SS-I"
+clock = {pin = "SCLK", max_frequency = 25}
+capture_edge = "Falling"
+setup = {value = 30, symbol = "tCSS", source = "Table 7.6"}
+hold = {value = 10, symbol = "tCSH", source = "Table 7.6"}
+
+[[interface.pin]]
 name = "SDO"
 methodology = "SDR-SS-RT"
 clock = {pin = "SCLK", max_frequency = 12.5}
