@@ -3,7 +3,6 @@ Generates Vivado timing constraints for the ports of an interface.
 '''
 
 from stacv.generate import generate_error
-from stacv.inputs import port_profile
 from stacv.rules import edge_times
 from stacv.rules import output_delays
 from stacv.rules import path_lookups
@@ -11,25 +10,6 @@ from stacv.rules import requirements
 from stacv.rules import tolerance
 
 TOLERANCE = 0.0005
-
-
-def generate_constraints(oInterface, oTraceList, oPart):
-    lLines = []
-    lLines.extend(generate_clocks(oInterface))
-    for oPort in oInterface.get_analyzed_ports():
-        oPortProfile = port_profile.PortProfile(oPort, oTraceList, oPart, None)
-        lLines.extend(generate_port_constraints(oPortProfile))
-    return lLines
-
-
-def generate_clocks(oInterface):
-    lLines = []
-    lClockNames = []
-    for oPort in oInterface.get_analyzed_ports():
-        if oPort.capture_clock.name not in lClockNames:
-            lClockNames.append(oPort.capture_clock.name)
-            lLines.append(create_generated_clock(oPort, oInterface))
-    return lLines
 
 
 def create_generated_clock(oPort, oInterface):
