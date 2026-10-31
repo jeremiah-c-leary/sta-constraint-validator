@@ -30,14 +30,27 @@ def build_config_text(lTimingReports, sTracesFile, sPartFile):
     lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
     lText.append(f'traces = "{sTracesFile}"')
+    lText.extend(build_clock_tables())
     for iPort, sTimingReport in enumerate(lTimingReports, start=1):
         lText.append('[[port]]')
         lText.append(f'name = "PORT_{iPort}"')
         lText.append('methodology = "SDR-SS-O"')
-        lText.append('launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8, hold_edge = 0}')
-        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50, setup_edge = "C", hold_edge = "A"}')
+        lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 0}')
+        lText.append('capture_clock = {name = "dac_sclk", setup_edge = "C", hold_edge = "A"}')
         lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
+
+
+def build_clock_tables():
+    lText = []
+    lText.append('[[clock]]')
+    lText.append('name = "clk_100mhz"')
+    lText.append('period = 10.000')
+    lText.append('[[clock]]')
+    lText.append('name = "dac_sclk"')
+    lText.append('period = 50')
+    lText.append('port = "O_DAC_SCLK"')
+    return lText
 
 
 def build_numbered_port_names(lTimingReports):
@@ -238,12 +251,13 @@ def build_named_ports_config_text(sDescription, lPorts, sTracesFile, sPartFile):
     lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
     lText.append(f'traces = "{sTracesFile}"')
+    lText.extend(build_clock_tables())
     for sPortName, sTimingReport in lPorts:
         lText.append('[[port]]')
         lText.append(f'name = "{sPortName}"')
         lText.append('methodology = "SDR-SS-O"')
-        lText.append('launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8, hold_edge = 0}')
-        lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50, setup_edge = "C", hold_edge = "A"}')
+        lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 0}')
+        lText.append('capture_clock = {name = "dac_sclk", setup_edge = "C", hold_edge = "A"}')
         lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
 

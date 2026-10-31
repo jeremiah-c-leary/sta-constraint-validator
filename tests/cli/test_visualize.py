@@ -14,20 +14,44 @@ def build_interface_text(lPorts, sMissingTimingReport):
     lText.append('name = "DAC_SPI_1"')
     lText.append('part = "part.toml"')
     lText.append('traces = "traces.toml"')
+    for sClocks in find_distinct_clock_tables(lPorts):
+        lText.append('')
+        lText.append(sClocks)
     for sPort in lPorts:
         lText.append('')
-        lText.append(sPort)
+        lText.append(remove_clock_tables(sPort))
         lText.append(f'timing_reports = ["{sMissingTimingReport}"]')
     return '\n'.join(lText) + '\n'
 
 
+def find_distinct_clock_tables(lPorts):
+    # Each port text starts with the clock tables it uses; ports sharing clocks write them once.
+    lClockTables = []
+    for sPort in lPorts:
+        sClocks = sPort.split('[[port]]')[0].strip()
+        if sClocks not in lClockTables:
+            lClockTables.append(sClocks)
+    return lClockTables
+
+
+def remove_clock_tables(sPort):
+    return '[[port]]' + sPort.split('[[port]]')[1]
+
+
 def build_port_text(sName, fLaunchPeriod, fCapturePeriod, lSetupEdges, lHoldEdges):
     lText = []
+    lText.append('[[clock]]')
+    lText.append('name = "clk_launch"')
+    lText.append(f'period = {fLaunchPeriod}')
+    lText.append('[[clock]]')
+    lText.append('name = "clk_capture"')
+    lText.append(f'period = {fCapturePeriod}')
+    lText.append('port = "O_CLK"')
     lText.append('[[port]]')
     lText.append(f'name = "{sName}"')
     lText.append('methodology = "SDR-SS-O"')
-    lText.append(f'launch_clock = {{name = "clk_launch", period = {fLaunchPeriod}, setup_edge = {lSetupEdges[0]}, hold_edge = {lHoldEdges[0]}}}')
-    lText.append(f'capture_clock = {{port = "O_CLK", name = "clk_capture", period = {fCapturePeriod}, setup_edge = "{lSetupEdges[1]}", hold_edge = "{lHoldEdges[1]}"}}')
+    lText.append(f'launch_clock = {{name = "clk_launch", setup_edge = {lSetupEdges[0]}, hold_edge = {lHoldEdges[0]}}}')
+    lText.append(f'capture_clock = {{name = "clk_capture", setup_edge = "{lSetupEdges[1]}", hold_edge = "{lHoldEdges[1]}"}}')
     return '\n'.join(lText)
 
 

@@ -14,13 +14,20 @@ def build_interface_text(lPortNames, sMissingTimingReport, sClockPort):
     lText.append('name = "DAC_SPI_1"')
     lText.append('part = "part.toml"')
     lText.append('traces = "traces.toml"')
+    lText.append('[[clock]]')
+    lText.append('name = "clk_launch"')
+    lText.append('period = 10')
+    lText.append('[[clock]]')
+    lText.append('name = "clk_capture"')
+    lText.append('period = 40')
+    lText.append(f'port = "{sClockPort}"')
     for sPortName in lPortNames:
         lText.append('')
         lText.append('[[port]]')
         lText.append(f'name = "{sPortName}"')
         lText.append('methodology = "SDR-SS-O"')
-        lText.append('launch_clock = {name = "clk_launch", period = 10, setup_edge = 4, hold_edge = 4}')
-        lText.append(f'capture_clock = {{port = "{sClockPort}", name = "clk_capture", period = 40, setup_edge = "C", hold_edge = "A"}}')
+        lText.append('launch_clock = {name = "clk_launch", setup_edge = 4, hold_edge = 4}')
+        lText.append('capture_clock = {name = "clk_capture", setup_edge = "C", hold_edge = "A"}')
         lText.append(f'timing_reports = ["{sMissingTimingReport}"]')
     return '\n'.join(lText) + '\n'
 
