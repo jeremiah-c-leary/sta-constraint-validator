@@ -55,12 +55,12 @@
 #  Section 3.1:  Trace Delays
 ###############################################################################
 #
-# Trace        From        To          Maximum (ns)  Minimum (ns)
-# -----------  ----------  ----------  ------------  ------------
-# data_output  O_DAC_DATA  SDIN        3             1
-# chip_select  O_DAC_CSF   CSF         3             1
-# data_input   SDO         I_DAC_DATA  3             1
-# clock        O_DAC_SCLK  SCLK        3             1
+# Trace        From        To          Maximum (ns)  Minimum (ns)  Default
+# -----------  ----------  ----------  ------------  ------------  -------
+# data_output  O_DAC_DATA  SDIN        3             1             No
+# chip_select  O_DAC_CSF   CSF         1             0             Yes
+# data_input   SDO         I_DAC_DATA  1             0             Yes
+# clock        O_DAC_SCLK  SCLK        3             1             No
 #
 ###############################################################################
 #  Section 3.2:  Part Timing
@@ -159,10 +159,10 @@ set_multicycle_path 3 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #  Section 5.2:  O_DAC_CSF
 ###############################################################################
 #
-# Not generated
+# Deferred
 #
 ###############################################################################
 #  Section 5.3:  I_DAC_DATA
 ###############################################################################
 #
-# Not generated
+# Deferred
