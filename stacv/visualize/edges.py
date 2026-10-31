@@ -16,6 +16,15 @@ SHORTEST_HALF_PERIOD_COLUMNS = 6
 
 
 def draw_edges(oPort):
+    lLines = draw_edge_diagram(oPort)
+    lLines.append('')
+    lLines.append('')
+    lLines.append(format_setup_requirement(oPort))
+    lLines.append(format_hold_requirement(oPort))
+    return lLines
+
+
+def draw_edge_diagram(oPort):
     fColumnsPerNanosecond = calculate_columns_per_nanosecond(oPort)
     iEndColumn = calculate_column(calculate_end_time(oPort), fColumnsPerNanosecond)
     lLines = []
@@ -26,10 +35,6 @@ def draw_edges(oPort):
     lLines.append('')
     lLines.extend(draw_capture_clock(oPort.capture_clock, fColumnsPerNanosecond, iEndColumn))
     lLines.append(format_frequency(oPort.capture_clock.period))
-    lLines.append('')
-    lLines.append('')
-    lLines.append(format_setup_requirement(oPort))
-    lLines.append(format_hold_requirement(oPort))
     return lLines
 
 

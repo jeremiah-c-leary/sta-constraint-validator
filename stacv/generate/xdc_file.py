@@ -10,7 +10,10 @@ from stacv.interface import port
 from stacv.output import md5sum_table
 from stacv.output import number_format
 from stacv.output import text_table
+from stacv.rules import edge_times
+from stacv.rules import requirements
 from stacv.visualize import block_diagram
+from stacv.visualize import edges
 
 BANNER = '#' * 79
 TABLE_COLUMN_GAP = 2
@@ -199,10 +202,54 @@ def build_port_content(oPort, oTraceList, oPart):
     if oPort.status == port.DEFER:
         return ['#', '# Deferred', '#']
     oPortProfile = port_profile.PortProfile(oPort, oTraceList, oPart, None)
-    lContent = []
-    for sCommand in xdc.generate_port_constraints(oPortProfile):
+    lCommands = xdc.generate_port_constraints(oPortProfile)
+    lContent = ['#']
+    lContent.extend(comment_lines(edges.draw_edge_diagram(oPort)))
+    lContent.append('#')
+    lContent.extend(build_requirement_lines(oPort))
+    lContent.append('#')
+    lContent.append('#' + '-' * 78)
+    for sCommand in lCommands:
         lContent.extend(build_command_block([], sCommand))
     return lContent
+
+
+def build_requirement_lines(oPort):
+    lRequirements = []
+    lRequirements.append(build_setup_requirement(oPort))
+    lRequirements.append(build_hold_requirement(oPort))
+    iValueEnd = find_requirement_value_end(lRequirements)
+    lLines = []
+    for sLabel, sValue, sEdges in lRequirements:
+        lLines.append(f'# {sLabel}{sValue.rjust(iValueEnd - len(sLabel))} ns ({sEdges})')
+    return lLines
+
+
+def build_setup_requirement(oPort):
+    sValue = number_format.format_number(requirements.calculate_configuration_setup_requirement(oPort))
+    sEdges = describe_edges(oPort, oPort.launch_clock.setup_edge, oPort.capture_clock.setup_edge)
+    return ('setup requirement:', sValue, sEdges)
+
+
+def build_hold_requirement(oPort):
+    sValue = number_format.format_number(requirements.calculate_configuration_hold_requirement(oPort))
+    sEdges = describe_edges(oPort, oPort.launch_clock.hold_edge, oPort.capture_clock.hold_edge)
+    return ('hold requirement:', sValue, sEdges)
+
+
+def find_requirement_value_end(lRequirements):
+    # The values are right aligned, at least two spaces after the longest label.
+    iValueEnd = 0
+    for sLabel, sValue, sEdges in lRequirements:
+        iValueEnd = max(iValueEnd, len(sLabel) + 2 + len(sValue))
+    return iValueEnd
+
+
+def describe_edges(oPort, iLaunchEdge, sCaptureEdge):
+    fLaunchTime = edge_times.calculate_edge_time(oPort.launch_clock.period, iLaunchEdge)
+    iCaptureEdge = edge_times.convert_edge_letter_to_number(sCaptureEdge)
+    fCaptureTime = edge_times.calculate_edge_time(oPort.capture_clock.period, iCaptureEdge)
+    return f'launch edge {iLaunchEdge} at {format_nanoseconds(fLaunchTime)} -> capture edge {sCaptureEdge} at {format_nanoseconds(fCaptureTime)}'
 
 
 def build_command_block(lComments, sCommand):

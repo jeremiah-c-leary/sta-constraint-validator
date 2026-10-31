@@ -408,7 +408,8 @@ class XdcFileTestCase(GenerateTestCase):
     def read_section(self, sTitle):
         lLines = self.get_output_lines()
         iStart = lLines.index(f'#  Section {sTitle}') + 2
-        iEnd = len(lLines)
+        # The newline that ends the file leaves an empty last element.
+        iEnd = len(lLines) - 1
         for iLine in range(iStart, len(lLines)):
             if lLines[iLine] == BANNER:
                 iEnd = iLine
@@ -640,4 +641,39 @@ class TestGenerateXdcGeneratedClockSection(XdcFileTestCase):
         lExpected.append('create_generated_clock -name clk_capture -source [get_pins q_sclk_reg/C] -multiply_by 4 [get_pins q_sclk_reg/Q]')
         lExpected.append('')
         self.assertEqual(lExpected, self.read_section('4.1:  clk_capture Generated Clock'))
+
+
+class TestGenerateXdcPortSection(XdcFileTestCase):
+
+    def draw_edges(self):
+        oStdout = io.StringIO()
+        with mock.patch('sys.argv', ['stacv', 'visualize', 'edges', self.sInterfaceFile]):
+            with contextlib.redirect_stdout(oStdout):
+                with self.assertRaises(SystemExit):
+                    __main__.main()
+        lLines = oStdout.getvalue().rstrip('\n').split('\n')
+        # The drawing, without the port banner and the requirement lines that follow the capture clock.
+        return lLines[4:-4]
+
+    def test_starts_with_the_edges_and_the_requirements_with_their_edges(self):
+        self.run_with_a_deferred_port()
+        lExpected = ['#']
+        for sLine in self.draw_edges():
+            lExpected.append(('# ' + sLine).rstrip())
+        lExpected.append('#')
+        lExpected.append('# setup requirement:  20 ns (launch edge 4 at 20 ns -> capture edge C at 40 ns)')
+        lExpected.append('# hold requirement:  -20 ns (launch edge 4 at 20 ns -> capture edge A at 0 ns)')
+        lExpected.append('#')
+        lExpected.append('#' + '-' * 78)
+        self.assertEqual(lExpected, self.read_section('5.1:  O_DATA')[0:len(lExpected)])
+
+    def test_right_aligns_requirements_that_are_not_whole_nanoseconds(self):
+        self.run_generate_xdc([build_port_text('O_DATA', 2.5, 20, [2, 'C'], [2, 'A'])])
+        lSection = self.read_section('5.1:  O_DATA')
+        self.assertIn('# setup requirement:  17.5 ns (launch edge 2 at 2.5 ns -> capture edge C at 20 ns)', lSection)
+        self.assertIn('# hold requirement:   -2.5 ns (launch edge 2 at 2.5 ns -> capture edge A at 0 ns)', lSection)
+
+    def test_writes_deferred_for_a_deferred_port(self):
+        self.run_with_a_deferred_port()
+        self.assertEqual(['#', '# Deferred'], self.read_section('5.2:  O_CHIP_SELECT'))
 
