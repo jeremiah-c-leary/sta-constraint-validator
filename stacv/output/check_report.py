@@ -3,10 +3,12 @@ import os
 
 from stacv import version
 from stacv.output import md5sum_table
+from stacv.output import text_table
 
 
 REPORT_WIDTH = 80
 COLUMN_GAP = 2
+SUMMARY_COLUMN_GAP = 3
 RESULT_COLUMN_WIDTH = len('Skipped')
 
 
@@ -114,7 +116,7 @@ def build_major_divider():
 
 def build_table(oPortResults):
     lRows = build_unformatted_table(oPortResults)
-    return format_table(lRows)
+    return text_table.format_table(lRows, SUMMARY_COLUMN_GAP)
 
 
 def build_unformatted_table(oPortResults):
@@ -144,42 +146,6 @@ def build_analyzed_row(iPortResult, oPortResult):
     else:
         lRow.append('Passed')
     return lRow
-
-
-def format_table(lRows):
-    lWidths = get_column_widths(lRows)
-    lLines = []
-    lLines.append(format_row(lRows[0], lWidths))
-    lLines.append(build_separator(lWidths))
-    for lRow in lRows[1:]:
-        lLines.append(format_row(lRow, lWidths))
-    return lLines
-
-
-def get_column_widths(lRows):
-    lWidths = []
-    for iColumn in range(len(lRows[0])):
-        iMaxLength = 0
-        for lRow in lRows:
-            iMaxLength = max(iMaxLength, len(lRow[iColumn]))
-        lWidths.append(iMaxLength)
-    return lWidths
-
-
-def format_row(lRow, lWidths):
-    sRow = ''
-    for sColumn, iWidth in zip(lRow, lWidths):
-        sRow += f'{sColumn:<{iWidth}}   '
-    sRow = sRow.rstrip()
-    return sRow
-
-
-def build_separator(lWidths):
-    sRow = ''
-    for iWidth in lWidths:
-        sRow += '-' * iWidth + '   '
-    sRow = sRow.rstrip()
-    return sRow
 
 
 def build_section_2(oPortResults, sInterfaceFile):
