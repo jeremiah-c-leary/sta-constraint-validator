@@ -65,7 +65,14 @@ def create_clocks(dConfig, oLocation):
         oClock = build_clock(dClock)
         check_clock_is_not_defined(lClocks, oClock.name, oLocation)
         lClocks.append(oClock)
+    check_master_clocks_are_defined(lClocks, oLocation)
     return lClocks
+
+
+def check_master_clocks_are_defined(lClocks, oLocation):
+    for oClock in lClocks:
+        if oClock.generator is not None and find_clock(lClocks, oClock.generator.master_clock) is None:
+            raise interface_config_error.InterfaceConfigError('interface_config_007', oLocation.filename, f'key "generator" of clock {oClock.name} names clock {oClock.generator.master_clock}, which no [[clock]] table defines')
 
 
 def check_clock_is_not_defined(lClocks, sName, oLocation):
@@ -169,8 +176,7 @@ def build_clock_generator(dGenerator):
     oClockGenerator.source = dGenerator['source']
     oClockGenerator.master_pin = dGenerator['master_pin']
     oClockGenerator.target_pin = dGenerator['target_pin']
-    if 'master_clock' in dGenerator:
-        oClockGenerator.master_clock = dGenerator['master_clock']
+    oClockGenerator.master_clock = dGenerator['master_clock']
     return oClockGenerator
 
 

@@ -15,31 +15,39 @@ TOLERANCE = 0.0005
 
 def generate_constraints(oInterface, oTraceList, oPart):
     lLines = []
-    lLines.extend(generate_clocks(oInterface.ports))
+    lLines.extend(generate_clocks(oInterface.ports, oInterface.clocks))
     for oPort in oInterface.ports:
         oPortProfile = port_profile.PortProfile(oPort, oTraceList, oPart, None)
         lLines.extend(generate_port_constraints(oPortProfile))
     return lLines
 
 
-def generate_clocks(lPorts):
+def generate_clocks(lPorts, lClocks):
     lLines = []
     lClockNames = []
     for oPort in lPorts:
         if oPort.capture_clock.name not in lClockNames:
             lClockNames.append(oPort.capture_clock.name)
-            lLines.append(create_generated_clock(oPort))
+            lLines.append(create_generated_clock(oPort, lClocks))
     return lLines
 
 
-def create_generated_clock(oPort):
+def create_generated_clock(oPort, lClocks):
     check_generator_exists(oPort)
     oCaptureClock = oPort.capture_clock
     oGenerator = oCaptureClock.generator
     sSourcePin = format_pin(oGenerator.source, oGenerator.master_pin)
     sTargetPin = format_pin(oGenerator.source, oGenerator.target_pin)
-    sRatio = format_ratio(oPort.launch_clock.period, oCaptureClock.period)
+    oMasterClock = find_clock(lClocks, oGenerator.master_clock)
+    sRatio = format_ratio(oMasterClock.period, oCaptureClock.period)
     return f'create_generated_clock -name {oCaptureClock.name} -source {sSourcePin} {sRatio} {sTargetPin}'
+
+
+def find_clock(lClocks, sName):
+    for oClock in lClocks:
+        if oClock.name == sName:
+            return oClock
+    return None
 
 
 def check_generator_exists(oPort):
@@ -51,10 +59,10 @@ def format_pin(sCell, sPin):
     return f'[get_pins {sCell}/{sPin}]'
 
 
-def format_ratio(fLaunchPeriod, fCapturePeriod):
-    if fCapturePeriod < fLaunchPeriod:
-        return f'-multiply_by {calculate_ratio(fLaunchPeriod, fCapturePeriod)}'
-    return f'-divide_by {calculate_ratio(fCapturePeriod, fLaunchPeriod)}'
+def format_ratio(fMasterPeriod, fCapturePeriod):
+    if fCapturePeriod < fMasterPeriod:
+        return f'-multiply_by {calculate_ratio(fMasterPeriod, fCapturePeriod)}'
+    return f'-divide_by {calculate_ratio(fCapturePeriod, fMasterPeriod)}'
 
 
 def calculate_ratio(fLongerPeriod, fShorterPeriod):

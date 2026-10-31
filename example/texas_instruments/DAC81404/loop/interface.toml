@@ -19,7 +19,7 @@ period = 10.000
 name = "dac_sclk"
 period = 40.000
 port = "O_DAC_SCLK"
-generator = {source = "q_spi_output_clock_reg", master_pin = "C", target_pin = "Q"}
+generator = {source = "q_spi_output_clock_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_100mhz"}
 
 [[port]]
 name = "O_DAC_DATA"

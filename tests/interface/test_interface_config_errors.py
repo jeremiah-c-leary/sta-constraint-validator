@@ -580,6 +580,23 @@ class TestClockErrors(unittest.TestCase):
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
+    def test_raises_error_if_a_generator_names_a_master_clock_that_is_not_defined(self):
+        lText = []
+        lText.append('description = "master clock is not defined"')
+        lText.append('name = "DAC_SPI_1"')
+        lText.append('part = "part.toml"')
+        lText.append('traces = "traces.toml"')
+        lText.append('[[clock]]')
+        lText.append('name = "dac_sclk"')
+        lText.append('period = 40')
+        lText.append('port = "O_DAC_SCLK"')
+        lText.append('generator = {source = "q_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_100mhz"}')
+        with open(self.sInterfaceFile, 'w') as oFile:
+            oFile.write('\n'.join(lText) + '\n')
+        sError = self.build_error_pattern('interface_config_007', 'key "generator" of clock dac_sclk names clock clk_100mhz, which no [[clock]] table defines')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sInterfaceFile)
+
     def test_raises_error_if_a_port_describes_its_clock_inline(self):
         lText = []
         lText.append('description = "clock described in the port, the old way"')

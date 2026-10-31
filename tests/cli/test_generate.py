@@ -8,7 +8,7 @@ from unittest import mock
 from stacv import __main__
 
 
-GENERATOR = '{source = "q_sclk_reg", master_pin = "C", target_pin = "Q"}'
+GENERATOR = '{source = "q_sclk_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_launch"}'
 
 
 def build_interface_text(lPorts, sMissingTimingReport):
@@ -183,7 +183,7 @@ class TestGenerateXdcGeneratedClock(GenerateTestCase):
         self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins q_sclk_reg/C] -divide_by 1 [get_pins q_sclk_reg/Q]')
 
     def test_uses_the_pins_named_by_the_generator(self):
-        sGenerator = '{source = "u_clock_out/oddr_inst", master_pin = "CLK", target_pin = "OUT"}'
+        sGenerator = '{source = "u_clock_out/oddr_inst", master_pin = "CLK", target_pin = "OUT", master_clock = "clk_launch"}'
         sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'], sGenerator)
         self.run_generate_xdc([sPort])
         self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins u_clock_out/oddr_inst/CLK] -divide_by 4 [get_pins u_clock_out/oddr_inst/OUT]')
@@ -194,6 +194,14 @@ class TestGenerateXdcGeneratedClock(GenerateTestCase):
         lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']))
         self.run_generate_xdc(lPorts)
         self.assertEqual(1, self.count_lines_starting_with('create_generated_clock '))
+
+
+    def test_divides_by_the_period_of_the_master_clock(self):
+        sGenerator = '{source = "q_sclk_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_master"}'
+        sMasterClock = '[[clock]]\nname = "clk_master"\nperiod = 20\n'
+        sPort = sMasterClock + build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'], sGenerator)
+        self.run_generate_xdc([sPort])
+        self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins q_sclk_reg/C] -divide_by 2 [get_pins q_sclk_reg/Q]')
 
 
 class TestGenerateXdcOutputDelays(GenerateTestCase):
