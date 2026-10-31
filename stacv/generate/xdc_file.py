@@ -8,6 +8,7 @@ from stacv.generate import xdc_section
 from stacv.inputs import port_profile
 from stacv.interface import port
 from stacv.output import md5sum_table
+from stacv.visualize import block_diagram
 
 BANNER = '#' * 79
 
@@ -25,7 +26,7 @@ def generate_file(sInterfaceFile, oInterface, oTraceList, oPart):
 def build_sections(sInterfaceFile, oInterface, oTraceList, oPart):
     lSections = []
     lSections.append(xdc_section.Section('1', 'References', build_references(sInterfaceFile, oInterface, oPart)))
-    lSections.append(xdc_section.Section('2', 'Block Diagram', ['#']))
+    lSections.append(xdc_section.Section('2', 'Block Diagram', build_block_diagram(oInterface, oTraceList, oPart)))
     lSections.append(xdc_section.Section('3', 'Inputs', None))
     lSections.append(xdc_section.Section('3.1', 'Trace Delays', ['#']))
     lSections.append(xdc_section.Section('3.2', 'Part Timing', ['#']))
@@ -45,6 +46,13 @@ def build_references(sInterfaceFile, oInterface, oPart):
     lLines.append(f'# Datasheet:  {oPart.datasheet.name}')
     lLines.append(f'# Revision:   {oPart.datasheet.version}')
     lLines.append(f'# URL:        {oPart.datasheet.url}')
+    lLines.append('#')
+    return lLines
+
+
+def build_block_diagram(oInterface, oTraceList, oPart):
+    lLines = ['#']
+    lLines.extend(comment_lines(block_diagram.draw_block_diagram(oInterface, oTraceList, oPart)))
     lLines.append('#')
     return lLines
 

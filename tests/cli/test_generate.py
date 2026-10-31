@@ -509,3 +509,22 @@ class TestGenerateXdcReferences(XdcFileTestCase):
         lExpected.append('#')
         self.assertEqual(lExpected, self.read_section('1:  References'))
 
+
+class TestGenerateXdcBlockDiagram(XdcFileTestCase):
+
+    def draw_block_diagram(self):
+        oStdout = io.StringIO()
+        with mock.patch('sys.argv', ['stacv', 'visualize', 'block_diagram', self.sInterfaceFile]):
+            with contextlib.redirect_stdout(oStdout):
+                with self.assertRaises(SystemExit):
+                    __main__.main()
+        return oStdout.getvalue().rstrip('\n').split('\n')
+
+    def test_writes_the_block_diagram_as_comments(self):
+        self.run_with_a_deferred_port()
+        lExpected = ['#']
+        for sLine in self.draw_block_diagram():
+            lExpected.append(('# ' + sLine).rstrip())
+        lExpected.append('#')
+        self.assertEqual(lExpected, self.read_section('2:  Block Diagram'))
+
