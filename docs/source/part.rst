@@ -1,114 +1,150 @@
-Part
-====
+Part File
+=========
 
-The part is the external device the FPGA/ASIC is communicating with.
-It is typically provided by a vendor. 
+The part file describes the timing of the part, the external device the FPGA or ASIC communicates with, as its datasheet gives it.
+It is written once for each part, and can be used by every interface to that part.
+The interface file names it with its ``part`` key.
 
-.. code-block:: yaml
+.. code-block:: text
 
-    part:
-        vendor:  <vendor_name>
-        name:  <part_name>
-        interface:
-            - <interface_name>:
-                timing_model : <interface_type>
-                clock:
-                    input:
-                       - <clock_pin_name>:
-                            max_freq: <frequency>
-                    output:
-                       - <clock_pin_name>:
-                            max_freq: <frequency>
-                data:
-                    input:
-                        - <input_pin_name>:
-                            clock: <clock_name>
-                            <clock_edge>:
-                                setup:
-                                    id: <timing_id>
-                                    value: <setup_value>
-                                hold:
-                                    id: <timing_id>
-                                    value: <hold_value>
-                    output:
-                        - <output_pin_name>:
-                            clock: <clock_name>
-                            <clock_edge>:
-                                clock_to_out_max:
-                                    id: <timing_id>
-                                    value: <clock_to_out_max>
-                                clock_to_out_min:
-                                    id: <timing_id>
-                                    min: <clock_to_out_min>
+   stacv create template part --output part.toml
 
-+------------------+----------+------------------------------------------------------------------------------+
-| **Element**      | **Type** | **Description**                                                              |
-+------------------+----------+------------------------------------------------------------------------------+
-| vendor_name      | string   | The manufacturer of the part.                                                |
-+------------------+----------+------------------------------------------------------------------------------+
-| part_name        | string   | The name of the part.                                                        |
-+------------------+----------+------------------------------------------------------------------------------+
-| interface_name   | string   | Parts can have multiple interfaces.  Each must be uniquely identified.       |
-+------------------+----------+------------------------------------------------------------------------------+
-| timing_model     | string   | The type of timing required for this interface.                              |
-+------------------+----------+------------------------------------------------------------------------------+
-| clock_pin_name   | string   | The clock pin the data pins are referenced to.                               |
-+------------------+----------+------------------------------------------------------------------------------+
-| input_pin_name   | string   | Each input pin will have an entry.                                           |
-+------------------+----------+------------------------------------------------------------------------------+
-| clock_edge       | string   | The edge the setup, hold or clock to out applies to:                         |
-|                  |          | "rising_edge" or "falling_edge"                                              |
-+------------------+----------+------------------------------------------------------------------------------+
-| timing_id        | float    | The name of the timing parameter from the part datasheet.                    |
-+------------------+----------+------------------------------------------------------------------------------+
-| setup_value      | float    | The setup requirement for the input pin.                                     |
-+------------------+----------+------------------------------------------------------------------------------+
-| hold_value       | float    | The hold requirement for the input pin.                                      |
-+------------------+----------+------------------------------------------------------------------------------+
-| output_pin_name  | string   | Each output pin will have an entry.                                          |
-+------------------+----------+------------------------------------------------------------------------------+
-| clock_to_out_max | float    | The maximum delay of the pin relavite to the clock pin.                      |
-+------------------+----------+------------------------------------------------------------------------------+
-| clock_to_out_min | float    | The minimum delay of the pin relavite to the clock pin.                      |
-+------------------+----------+------------------------------------------------------------------------------+
+Delays are in nanoseconds and frequencies are in MHz.
+Every key in the part file is required.
 
-Example
--------
+Properties
+----------
 
-The following example uses a Texas Instruments DAC81404 part.
+.. code-block:: toml
 
-.. code-block:: yaml
+   [properties]
+   manufacturer = "MANUFACTURER"
+   part_number = "PART_NUMBER"
 
-    part:
-        vendor:  Texas Instruments
-        name:  DAC81404
-        interface:
-            - serial_interface:
-                timing_model : 'source synchronous with round trip'
-                clock:
-                    SCLK:
-                        max_freq: '50 MHz'
-                data:
-                    - SDIN:
-                        falling_edge:
-                            setup:
-                                id: 'tSDIS'
-                                value: '5 ns'
-                            hold:
-                                id: 'tSDIH'
-                                value: '5 ns'
-                    - SYNC_F:
-                        falling_edge:
-                            setup:
-                                id: 'tCSS'
-                                value: '20 ns'
-                            hold:
-                                id: 'tCSH'
-                                value: '5 ns'
-                    - SDO:
-                        rising_edge:
-                            clock_to_out:
-                                name:  'tSDODLY'
-                                max: '20 ns'
-                                min: '0 ns'
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
 
+   * - Key
+     - Description
+   * - ``manufacturer``
+     - The name of the company that manufactures the part.
+   * - ``part_number``
+     - The manufacturer's part number of the part.
+
+Datasheet
+---------
+
+.. code-block:: toml
+
+   [datasheet]
+   name = "DATASHEET_NAME"
+   url = "DATASHEET_URL"
+   version = "DATASHEET_VERSION"
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Key
+     - Description
+   * - ``name``
+     - The name of the datasheet.
+   * - ``url``
+     - Where the datasheet can be found.
+   * - ``version``
+     - The version of the datasheet.
+
+The datasheet is listed in the References section of the constraints file, so a reviewer can check every value against it.
+
+Interfaces
+----------
+
+Each interface of the part, as the manufacturer names it, has an ``[[interface]]`` table.
+
+.. code-block:: toml
+
+   [[interface]]
+   name = "INTERFACE_NAME"
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Key
+     - Description
+   * - ``name``
+     - The name of the interface, as the manufacturer names it.
+
+Pins
+----
+
+Each pin of an interface has an ``[[interface.pin]]`` table, after its ``[[interface]]`` table.
+Pins are described from the part's point of view.
+
+.. code-block:: toml
+
+   # A part input:  the part captures the data.
+   [[interface.pin]]
+   name = "DATA_IN"
+   methodology = "SDR-SS-I"
+   clock = {pin = "CLK", max_frequency = 25}
+   capture_edge = "Falling"
+   setup = {value = 10, symbol = "tSetup", source = "Table X"}
+   hold = {value = 10, symbol = "tHold", source = "Table X"}
+
+   # A part output:  the part launches the data on the clock it receives.
+   [[interface.pin]]
+   name = "DATA_OUT"
+   methodology = "SDR-SS-RT"
+   clock = {pin = "CLK", max_frequency = 12.5}
+   cko_max = {value = 30, symbol = "tCkoMax", source = "Table Z"}
+   cko_min = {value = 0, symbol = "tCkoMin", source = "Table Z"}
+   launch_edge = "Rising"
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Key
+     - Description
+   * - ``name``
+     - The name of the pin.
+   * - ``methodology``
+     - The :doc:`methodology <methodology>` of the pin.
+       It decides the timing keys the pin has:
+
+       * ``SDR-SS-I``: ``capture_edge``, ``setup``, ``hold``
+       * ``SDR-SS-O``, ``SDR-SS-RT``: ``launch_edge``, ``cko_max``, ``cko_min``
+   * - ``clock``
+     - The clock pin of the part the data is captured or launched on:
+
+       * ``pin``: the name of the clock pin.
+       * ``max_frequency``: the maximum frequency of the clock for this pin, in MHz.
+   * - ``capture_edge``
+     - The clock edge the part captures the data on: ``"Rising"`` or ``"Falling"``.
+   * - ``launch_edge``
+     - The clock edge the part launches the data on: ``"Rising"`` or ``"Falling"``.
+   * - ``setup``
+     - The setup requirement of the pin.
+   * - ``hold``
+     - The hold requirement of the pin.
+   * - ``cko_max``
+     - The maximum clock-to-out delay of the pin.
+   * - ``cko_min``
+     - The minimum clock-to-out delay of the pin.
+
+``setup``, ``hold``, ``cko_max`` and ``cko_min`` each have the same keys:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Key
+     - Description
+   * - ``value``
+     - The value from the datasheet.
+   * - ``symbol``
+     - The symbol of the value in the datasheet, such as ``tSU``.
+   * - ``source``
+     - Where in the datasheet the value comes from, such as a table number.

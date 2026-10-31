@@ -12,7 +12,8 @@ Welcome to sta-constraint-validator's documentation!
 
    process
    methodology
-   board_data
+   interface
+   traces
    device
    part
    checks
