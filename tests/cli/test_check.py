@@ -15,6 +15,9 @@ from stacv.interface import interface_config_error
 from stacv.rules.output_delay import s2_output_delay_001
 from stacv.rules.timing_report import s0_timing_report_002
 
+# A port given this instead of a timing report is written as a deferred port.
+DEFERRED = None
+
 sTestDir = os.path.dirname(os.path.abspath(__file__))
 sParseDir = os.path.join(sTestDir, '..', 'timing_report', 'parse', 'vivado')
 sRuleDir = os.path.join(sTestDir, '..', 'rules', 'timing_report')
@@ -255,6 +258,9 @@ def build_named_ports_config_text(sDescription, lPorts, sTracesFile, sPartFile):
     for sPortName, sTimingReport in lPorts:
         lText.append('[[port]]')
         lText.append(f'name = "{sPortName}"')
+        if sTimingReport == DEFERRED:
+            lText.append('status = "defer"')
+            continue
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 0}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "C", hold_edge = "A"}')
