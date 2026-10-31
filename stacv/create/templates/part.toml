@@ -1,0 +1,41 @@
+# stacv part file.  Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/part.rst
+#
+# All delays are in nanoseconds.
+# All frequencies are in MHz.
+
+[properties]
+manufacturer = "MANUFACTURER"
+part_number = "PART_NUMBER"
+
+[datasheet]
+name = "DATASHEET_NAME"
+url = "DATASHEET_URL"
+version = "DATASHEET_VERSION"
+
+[[interface]]
+name = "INTERFACE_NAME"
+
+[[interface.pin]]
+name = "DATA_IN"
+methodology = "SDR-SS-I"
+clock = {pin = "CLK", max_frequency = 25}
+capture_edge = "Falling"
+setup = {value = 10, symbol = "tSetup", source = "Table X"}
+hold = {value = 10, symbol = "tHold", source = "Table X"}
+
+[[interface.pin]]
+name = "CS"
+methodology = "SDR-SS-I"
+clock = {pin = "CLK", max_frequency = 25}
+capture_edge = "Falling"
+setup = {value = 30, symbol = "tSetup", source = "Table Y"}
+hold = {value = 10, symbol = "tHold", source = "Table Y"}
+
+[[interface.pin]]
+name = "DATA_OUT"
+methodology = "SDR-SS-RT"
+clock = {pin = "CLK", max_frequency = 12.5}
+cko_max = {value = 30, symbol = "tCkoMax", source = "Table Z"}
+cko_min = {value = 0, symbol = "tCkoMin", source = "Table Z"}
+launch_edge = "Rising"

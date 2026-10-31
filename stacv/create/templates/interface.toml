@@ -1,0 +1,45 @@
+# stacv interface file.  Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/interface.rst
+#
+# Paths are relative to this file.
+#
+# All periods are in nanoseconds.
+
+description = "INTERFACE_DESCRIPTION"
+name = "INTERFACE_NAME"
+part = "part.toml"
+traces = "traces.toml"
+
+[[clock]]
+name = "clk_100mhz"
+period = 10.000
+
+[[clock]]
+name = "clk_25mhz"
+period = 40.000
+port = "O_CLK"
+generator = {source = "DEVICE_ELEMENT", master_pin = "MASTER_PIN", target_pin = "TARGET_PIN", master_clock = "clk_100mhz"}
+
+[[port]]
+status = "analyze"
+name = "O_DATA"
+methodology = "SDR-SS-O"
+launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
+capture_clock = {name = "clk_25mhz", setup_edge = "D", hold_edge = "B"}
+timing_reports = [
+    "O_DATA_timing.rpt",
+]
+
+[[port]]
+status = "defer"
+name = "O_CS"
+methodology = "SDR-SS-O"
+launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 0}
+capture_clock = {name = "clk_25mhz", setup_edge = "C", hold_edge = "A"}
+timing_reports = [
+    "O_CS_timing.rpt",
+]
+
+[[port]]
+status = "defer"
+name = "I_DATA"

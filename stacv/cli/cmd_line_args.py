@@ -34,6 +34,7 @@ def add_subparsers(top_parser):
     build_check_subparser(subparsers)
     build_visualize_subparser(subparsers)
     build_generate_subparser(subparsers)
+    build_create_subparser(subparsers)
 
 
 def build_check_subparser(subparser):
@@ -80,6 +81,19 @@ def build_report_tcl_subparser(subparser):
     parser = subparser.add_parser('report_tcl', help='Generate a Vivado script that writes the timing reports of every analyzed port.')
     parser.add_argument('interface_file', help='Interface TOML file.')
     parser.add_argument('--output', help='Report script file name.  The script is written to stdout without it.')
+
+
+def build_create_subparser(subparser):
+    parser = subparser.add_parser('create', help='Create files to start an interface from.')
+    parser.set_defaults(which='create')
+    targets = parser.add_subparsers(dest='target', required=True)
+    build_template_subparser(targets)
+
+
+def build_template_subparser(subparser):
+    parser = subparser.add_parser('template', help='Create a template of an interface, traces or part file.')
+    parser.add_argument('file_type', choices=['interface', 'traces', 'part'], help='The file to create a template of.')
+    parser.add_argument('--output', help='Template file name.  The template is written to stdout without it.  An existing file is not overwritten.')
 
 
 def print_help_if_no_command_line_options_given(parser):
