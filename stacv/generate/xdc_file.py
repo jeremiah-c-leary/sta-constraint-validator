@@ -32,7 +32,7 @@ def build_sections(sInterfaceFile, oInterface, oTraceList, oPart):
     lSections.append(xdc_section.Section('2', 'Block Diagram', build_block_diagram(oInterface, oTraceList, oPart)))
     lSections.append(xdc_section.Section('3', 'Inputs', None))
     lSections.append(xdc_section.Section('3.1', 'Trace Delays', build_trace_delays(oInterface, oTraceList)))
-    lSections.append(xdc_section.Section('3.2', 'Part Timing', ['#']))
+    lSections.append(xdc_section.Section('3.2', 'Part Timing', build_part_timing(oInterface, oTraceList, oPart)))
     lSections.append(xdc_section.Section('4', 'Generated Clocks', None))
     lSections.extend(build_generated_clock_sections(oInterface))
     lSections.append(xdc_section.Section('5', 'Ports', None))
@@ -79,6 +79,38 @@ def build_trace_delay_row(sName, sFrom, sTo, oTraceDelay):
     lRow.append(number_format.format_number(oTraceDelay.min_delay))
     lRow.append(format_yes_or_no(oTraceDelay.is_default))
     return lRow
+
+
+def build_part_timing(oInterface, oTraceList, oPart):
+    lRows = [['Pin', 'Timing', 'Value (ns)', 'Symbol', 'Source']]
+    for oPin in find_part_pins(oInterface, oTraceList, oPart):
+        if len(lRows) > 1:
+            lRows.append(['', '', '', '', ''])
+        lRows.extend(build_part_timing_rows(oPin))
+    lLines = ['#']
+    lLines.extend(comment_lines(text_table.format_table(lRows, TABLE_COLUMN_GAP)))
+    lLines.append('#')
+    return lLines
+
+
+def find_part_pins(oInterface, oTraceList, oPart):
+    # The part pins the traces reach, once each, in the order of the traces.
+    lPins = []
+    for oTrace in block_diagram.select_traces(oInterface, oTraceList):
+        oPin = oPart.get_pin_named(oTrace.part_pin)
+        if oPin is not None and oPin not in lPins:
+            lPins.append(oPin)
+    return lPins
+
+
+def build_part_timing_rows(oPin):
+    if oPin.methodology == 'SDR-SS-I':
+        return [build_part_timing_row(oPin, 'setup', oPin.setup), build_part_timing_row(oPin, 'hold', oPin.hold)]
+    return [build_part_timing_row(oPin, 'cko_max', oPin.cko_max), build_part_timing_row(oPin, 'cko_min', oPin.cko_min)]
+
+
+def build_part_timing_row(oPin, sTiming, oConstraint):
+    return [oPin.name, sTiming, number_format.format_number(oConstraint.value), oConstraint.symbol, oConstraint.source]
 
 
 def format_yes_or_no(bValue):

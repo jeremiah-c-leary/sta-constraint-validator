@@ -568,3 +568,41 @@ class TestGenerateXdcTraceDelays(XdcFileTestCase):
         lExpected.append('#')
         self.assertEqual(lExpected, self.read_section('3.1:  Trace Delays'))
 
+
+class TestGenerateXdcPartTiming(XdcFileTestCase):
+
+    def test_lists_the_timing_of_each_part_pin_the_traces_reach(self):
+        self.run_with_a_deferred_port()
+        lExpected = []
+        lExpected.append('#')
+        lExpected.append('# Pin   Timing  Value (ns)  Symbol  Source')
+        lExpected.append('# ----  ------  ----------  ------  ---------')
+        lExpected.append('# SDIN  setup   7           tSDIS   Table 7.6')
+        lExpected.append('# SDIN  hold    2           tSDIH   Table 7.6')
+        lExpected.append('#')
+        self.assertEqual(lExpected, self.read_section('3.2:  Part Timing'))
+
+    def test_groups_the_timing_of_each_pin_and_lists_clock_to_out_of_outputs(self):
+        sOutputPin = '[[interface.pin]]\nname = "SDO"\nmethodology = "SDR-SS-RT"\nclock = {pin = "SCLK", max_frequency = 12.5}\ncko_max = {value = 30, symbol = "tSDODLY", source = "Table 7.8"}\ncko_min = {value = 0, symbol = "tSDODLY", source = "Table 7.8"}\nlaunch_edge = "Rising"\n'
+        self.write_file('part.toml', build_part_text() + '\n' + sOutputPin)
+        lTraces = []
+        lTraces.append('[[trace]]\nname = "O_DATA_data"\ndevice_pin = "O_DATA"\npart_pin = "SDIN"\ndevice_to_part = {max_delay = 1.5, min_delay = 0.5}')
+        lTraces.append('[[trace]]\nname = "I_DATA_data"\ndevice_pin = "I_DATA"\npart_pin = "SDO"\npart_to_device = {max_delay = 1.5, min_delay = 0.5}')
+        lTraces.append('[[trace]]\nname = "clock"\ndevice_pin = "O_SCLK"\npart_pin = "SCLK"\ndevice_to_part = {max_delay = 1.2, min_delay = 0.4}')
+        self.write_file('traces.toml', '\n\n'.join(lTraces) + '\n')
+        lPorts = []
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append('[[port]]\nname = "I_DATA"\nstatus = "defer"')
+        self.run_generate_xdc(lPorts)
+        lExpected = []
+        lExpected.append('#')
+        lExpected.append('# Pin   Timing   Value (ns)  Symbol   Source')
+        lExpected.append('# ----  -------  ----------  -------  ---------')
+        lExpected.append('# SDIN  setup    7           tSDIS    Table 7.6')
+        lExpected.append('# SDIN  hold     2           tSDIH    Table 7.6')
+        lExpected.append('#')
+        lExpected.append('# SDO   cko_max  30          tSDODLY  Table 7.8')
+        lExpected.append('# SDO   cko_min  0           tSDODLY  Table 7.8')
+        lExpected.append('#')
+        self.assertEqual(lExpected, self.read_section('3.2:  Part Timing'))
+
