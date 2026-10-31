@@ -11,6 +11,8 @@ from stacv.output import md5sum_table
 from stacv.output import number_format
 from stacv.output import text_table
 from stacv.rules import edge_times
+from stacv.rules import output_delays
+from stacv.rules import path_lookups
 from stacv.rules import requirements
 from stacv.visualize import block_diagram
 from stacv.visualize import edges
@@ -202,16 +204,81 @@ def build_port_content(oPort, oTraceList, oPart):
     if oPort.status == port.DEFER:
         return ['#', '# Deferred', '#']
     oPortProfile = port_profile.PortProfile(oPort, oTraceList, oPart, None)
-    lCommands = xdc.generate_port_constraints(oPortProfile)
+    xdc.check_traces_exist(oPortProfile)
+    sMaxOutputDelay = xdc.create_max_output_delay(oPortProfile)
+    sMinOutputDelay = xdc.create_min_output_delay(oPortProfile)
+    lMulticyclePaths = xdc.create_multicycle_paths(oPort)
     lContent = ['#']
     lContent.extend(comment_lines(edges.draw_edge_diagram(oPort)))
     lContent.append('#')
     lContent.extend(build_requirement_lines(oPort))
     lContent.append('#')
     lContent.append('#' + '-' * 78)
-    for sCommand in lCommands:
+    lContent.extend(build_command_block(build_argument_comments(build_max_output_delay_arguments(oPortProfile)), sMaxOutputDelay))
+    lContent.extend(build_command_block(build_argument_comments(build_min_output_delay_arguments(oPortProfile)), sMinOutputDelay))
+    for sCommand in lMulticyclePaths:
         lContent.extend(build_command_block([], sCommand))
     return lContent
+
+
+def build_max_output_delay_arguments(oPortProfile):
+    oCaptureClock = oPortProfile.port.capture_clock
+    oGenerator = oCaptureClock.generator
+    lArguments = []
+    lArguments.append(('-clock', ['the capture clock']))
+    if xdc.is_falling_edge(oCaptureClock.setup_edge):
+        lArguments.append(('-clock_fall', [describe_falling_capture_edges(oCaptureClock)]))
+    lReferencePin = []
+    lReferencePin.append(f'{oCaptureClock.name} is generated at {oGenerator.source}/{oGenerator.target_pin}.  Without the reference pin,')
+    lReferencePin.append(f'the delay from {oGenerator.target_pin} to {oCaptureClock.port} is left out of the clock path and the timing')
+    lReferencePin.append('report is wrong without any warning.')
+    lArguments.append(('-reference_pin', lReferencePin))
+    lArguments.append(('-max', ['this is the setup check']))
+    lArguments.append(('maximum output delay', build_max_output_delay_calculation(oPortProfile)))
+    lArguments.append(('objects', ['which data port the output delay applies to']))
+    return lArguments
+
+
+def describe_falling_capture_edges(oCaptureClock):
+    if oCaptureClock.setup_edge == oCaptureClock.hold_edge:
+        return f'the capture edge {oCaptureClock.setup_edge} is a falling edge of {oCaptureClock.name}'
+    return f'the capture edges {oCaptureClock.setup_edge} and {oCaptureClock.hold_edge} are falling edges of {oCaptureClock.name}'
+
+
+def build_max_output_delay_calculation(oPortProfile):
+    oDataTrace, oPartPin, oClockTrace = find_output_delay_inputs(oPortProfile)
+    lLines = []
+    lLines.append(f'{oDataTrace.name} maximum - {oClockTrace.name} minimum + {oPartPin.name} setup')
+    lLines.append(f'{format_value(oDataTrace.device_to_part.max_delay)} - {format_value(oClockTrace.device_to_part.min_delay)} + {format_value(oPartPin.setup.value)}')
+    lLines.append(format_nanoseconds(output_delays.calculate_expected_max_output_delay(oPortProfile)))
+    return lLines
+
+
+def build_min_output_delay_arguments(oPortProfile):
+    lArguments = []
+    lArguments.append(('-min', ['this is a hold check']))
+    lArguments.append(('minimum output delay', build_min_output_delay_calculation(oPortProfile)))
+    return lArguments
+
+
+def build_min_output_delay_calculation(oPortProfile):
+    oDataTrace, oPartPin, oClockTrace = find_output_delay_inputs(oPortProfile)
+    lLines = []
+    lLines.append(f'{oDataTrace.name} minimum - {oClockTrace.name} maximum - {oPartPin.name} hold')
+    lLines.append(f'{format_value(oDataTrace.device_to_part.min_delay)} - {format_value(oClockTrace.device_to_part.max_delay)} - {format_value(oPartPin.hold.value)}')
+    lLines.append(format_nanoseconds(output_delays.calculate_expected_min_output_delay(oPortProfile)))
+    return lLines
+
+
+def find_output_delay_inputs(oPortProfile):
+    oDataTrace = path_lookups.get_data_trace(oPortProfile)
+    oPartPin = path_lookups.get_part_pin_at_end_of_trace(oPortProfile, oDataTrace)
+    oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartPin)
+    return oDataTrace, oPartPin, oClockTrace
+
+
+def format_value(fValue):
+    return number_format.format_number(fValue)
 
 
 def build_requirement_lines(oPort):

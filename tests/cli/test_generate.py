@@ -417,6 +417,13 @@ class XdcFileTestCase(GenerateTestCase):
         return lLines[iStart:iEnd]
 
 
+    def assert_lines_in_section(self, sTitle, lExpected):
+        lSection = self.read_section(sTitle)
+        for iStart in range(len(lSection) - len(lExpected) + 1):
+            if lSection[iStart:iStart + len(lExpected)] == lExpected:
+                return
+        self.fail('\n'.join(['Lines not found in section:'] + lExpected + ['Section:'] + lSection))
+
 class TestGenerateXdcLayout(XdcFileTestCase):
 
     def test_starts_with_a_header_naming_the_interface_and_the_stacv_version(self):
@@ -676,4 +683,48 @@ class TestGenerateXdcPortSection(XdcFileTestCase):
     def test_writes_deferred_for_a_deferred_port(self):
         self.run_with_a_deferred_port()
         self.assertEqual(['#', '# Deferred'], self.read_section('5.2:  O_CHIP_SELECT'))
+
+class TestGenerateXdcOutputDelayComments(XdcFileTestCase):
+
+    def test_explains_each_argument_of_the_maximum_output_delay(self):
+        self.run_with_a_deferred_port()
+        lExpected = []
+        lExpected.append('#')
+        lExpected.append('# -clock:                the capture clock')
+        lExpected.append('# -reference_pin:        clk_capture is generated at q_sclk_reg/Q.  Without the reference pin,')
+        lExpected.append('#                        the delay from Q to O_SCLK is left out of the clock path and the timing')
+        lExpected.append('#                        report is wrong without any warning.')
+        lExpected.append('# -max:                  this is the setup check')
+        lExpected.append('# maximum output delay:  O_DATA_data maximum - clock minimum + SDIN setup')
+        lExpected.append('#                        1.5 - 0.4 + 7')
+        lExpected.append('#                        8.1 ns')
+        lExpected.append('# objects:               which data port the output delay applies to')
+        lExpected.append('#')
+        lExpected.append('')
+        lExpected.append('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -max 8.100 [get_ports O_DATA]')
+        lExpected.append('')
+        self.assert_lines_in_section('5.1:  O_DATA', lExpected)
+
+    def test_explains_only_the_new_arguments_of_the_minimum_output_delay(self):
+        self.run_with_a_deferred_port()
+        lExpected = []
+        lExpected.append('')
+        lExpected.append('#')
+        lExpected.append('# -min:                  this is a hold check')
+        lExpected.append('# minimum output delay:  O_DATA_data minimum - clock maximum - SDIN hold')
+        lExpected.append('#                        0.5 - 1.2 - 2')
+        lExpected.append('#                        -2.7 ns')
+        lExpected.append('#')
+        lExpected.append('')
+        lExpected.append('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -min -2.700 [get_ports O_DATA]')
+        lExpected.append('')
+        self.assert_lines_in_section('5.1:  O_DATA', lExpected)
+
+    def test_explains_falling_capture_edges(self):
+        self.run_generate_xdc([build_port_text('O_DATA', 10, 40, [6, 'D'], [8, 'B'])])
+        self.assert_lines_in_section('5.1:  O_DATA', ['# -clock_fall:           the capture edges D and B are falling edges of clk_capture'])
+
+    def test_explains_one_falling_capture_edge_used_for_setup_and_hold(self):
+        self.run_generate_xdc([build_port_text('O_DATA', 10, 40, [2, 'B'], [4, 'B'])])
+        self.assert_lines_in_section('5.1:  O_DATA', ['# -clock_fall:           the capture edge B is a falling edge of clk_capture'])
 
