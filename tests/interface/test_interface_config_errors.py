@@ -515,3 +515,55 @@ class Test(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_005', 'key "traces" names a file that does not exist: ' + re.escape(sMissingFile) + '$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
+
+
+class TestClockErrors(unittest.TestCase):
+
+    def setUp(self):
+        oTemporaryDirectory = tempfile.TemporaryDirectory()
+        self.addCleanup(oTemporaryDirectory.cleanup)
+        self.sDirectory = oTemporaryDirectory.name
+        self.sInterfaceFile = os.path.join(self.sDirectory, 'interface.toml')
+        for sFilename in ['part.toml', 'traces.toml']:
+            with open(os.path.join(self.sDirectory, sFilename), 'w') as oFile:
+                oFile.write('')
+
+    def write_interface_file(self, lClockNames, sLaunchClock, sCaptureClock):
+        lText = []
+        lText.append('description = "clock errors"')
+        lText.append('interface = "DAC_SPI_1"')
+        lText.append('part = "part.toml"')
+        lText.append('traces = "traces.toml"')
+        for sClockName in lClockNames:
+            lText.append('[[clock]]')
+            lText.append(f'name = "{sClockName}"')
+            lText.append('period = 10.000')
+        lText.append('[[port]]')
+        lText.append('name = "O_DAC_DATA"')
+        lText.append('methodology = "SDR-SS-O"')
+        lText.append(f'launch_clock = {{name = "{sLaunchClock}", setup_edge = 8, hold_edge = 0}}')
+        lText.append(f'capture_clock = {{name = "{sCaptureClock}", setup_edge = "C", hold_edge = "A"}}')
+        lText.append('timing_reports = ["O_DAC_DATA_timing.rpt"]')
+        with open(self.sInterfaceFile, 'w') as oFile:
+            oFile.write('\n'.join(lText) + '\n')
+
+    def build_error_pattern(self, sIdentifier, sMessage):
+        return r'ERROR: \[' + sIdentifier + r'\] ' + re.escape(self.sInterfaceFile) + ' ' + re.escape(sMessage) + '$'
+
+    def test_raises_error_if_a_launch_clock_is_not_defined(self):
+        self.write_interface_file(['dac_sclk'], 'clk_100mhz', 'dac_sclk')
+        sError = self.build_error_pattern('interface_config_007', 'key "launch_clock" in port O_DAC_DATA names clock clk_100mhz, which no [[clock]] table defines')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sInterfaceFile)
+
+    def test_raises_error_if_a_capture_clock_is_not_defined(self):
+        self.write_interface_file(['clk_100mhz'], 'clk_100mhz', 'dac_sclk')
+        sError = self.build_error_pattern('interface_config_007', 'key "capture_clock" in port O_DAC_DATA names clock dac_sclk, which no [[clock]] table defines')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sInterfaceFile)
+
+    def test_raises_error_if_two_clocks_share_a_name(self):
+        self.write_interface_file(['clk_100mhz', 'dac_sclk', 'clk_100mhz'], 'clk_100mhz', 'dac_sclk')
+        sError = self.build_error_pattern('interface_config_008', 'clock clk_100mhz is defined by more than one [[clock]] table')
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+            interface_config.read_interface_config(self.sInterfaceFile)
