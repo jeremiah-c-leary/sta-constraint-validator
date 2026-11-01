@@ -85,3 +85,14 @@ class TestCreateTemplate(unittest.TestCase):
         iExitCode = self.run_stacv(['create', 'template'])
         self.assertEqual(2, iExitCode)
         self.assertIn('usage:', self.oStderr.getvalue())
+
+    def test_deferred_output_port_of_the_interface_template_has_no_edge_errors_when_analyzed(self):
+        sTemplate = read_example_template('interface')
+        sDeferredPort = 'status = "defer"\nname = "O_CS"'
+        self.assertIn(sDeferredPort, sTemplate)
+        sInterfaceFile = self.build_path('interface.toml')
+        with open(sInterfaceFile, 'w') as oFile:
+            oFile.write(sTemplate.replace(sDeferredPort, 'status = "analyze"\nname = "O_CS"'))
+        iExitCode = self.run_stacv(['visualize', 'edges', sInterfaceFile])
+        self.assertNotIn('ERROR', self.oStdout.getvalue() + self.oStderr.getvalue())
+        self.assertEqual(0, iExitCode)

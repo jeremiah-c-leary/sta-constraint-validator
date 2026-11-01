@@ -35,8 +35,8 @@ timing_reports = [
 status = "defer"
 name = "O_CS"
 methodology = "SDR-SS-O"
-launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 0}
-capture_clock = {name = "clk_25mhz", setup_edge = "C", hold_edge = "A"}
+launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
+capture_clock = {name = "clk_25mhz", setup_edge = "D", hold_edge = "B"}
 timing_reports = [
     "O_CS_timing.rpt",
 ]
