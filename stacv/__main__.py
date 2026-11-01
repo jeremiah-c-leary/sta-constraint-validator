@@ -60,3 +60,7 @@ def main():
             print(str(oError), file=sys.stderr)
 
         sys.exit(iExitCode)
+
+
+if __name__ == '__main__':
+    main()

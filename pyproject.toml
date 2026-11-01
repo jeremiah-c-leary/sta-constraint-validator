@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stacv"
+dynamic = ["version"]
+description = "Writes and checks the static timing constraints of the external interfaces of an FPGA."
+readme = "README.rst"
+requires-python = ">=3.11"
+license = {text = "GPL-3.0-only"}
+authors = [{name = "Jeremiah Leary"}]
+
+[project.urls]
+Repository = "https://github.com/jeremiah-c-leary/sta-constraint-validator"
+
+[project.scripts]
+stacv = "stacv.__main__:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "stacv.version.VERSION"}
+
+[tool.setuptools.packages.find]
+include = ["stacv*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+"stacv.create" = ["templates/*.toml"]

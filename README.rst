@@ -31,8 +31,14 @@ Commands
    It exits with 0 when every port passes, 1 when a rule fails and 2 on an input error, so it can fail a CI pipeline.
    ``--report`` writes a report file with the md5sum of every input, to keep as a record, and ``--junit`` writes a JUnit file.
 
-Run stacv from a clone with ``bin/stacv``.
-It needs Python 3.11 and only the standard library.
+stacv needs Python 3.11 and only the standard library.
+Install it from a clone, which adds the ``stacv`` command:
+
+.. code-block:: text
+
+   python3.11 -m pip install .
+
+Or run it from the clone without installing, with ``bin/stacv`` or ``python3.11 -m stacv``.
 
 Example
 -------
