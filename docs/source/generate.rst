@@ -218,7 +218,8 @@ Report paths
 ^^^^^^^^^^^^
 
 The script writes each report where ``stacv check`` looks for it.
-Environment variables are left for the timing tool to read when the script runs, so the script works in any terminal or CI job that sets them:
+Environment variables are left for the timing tool to read when the script runs, so the script works in any terminal or CI job that sets them.
+They do not need to be set where stacv runs, and a path that starts with one is written as it is:
 
 =============================================  ==================================================================
 ``timing_reports`` entry                       Path in the script
