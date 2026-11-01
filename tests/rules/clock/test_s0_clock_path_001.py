@@ -1,15 +1,12 @@
-import os
-
 from tests.rules import rule_test_case
 
-sTestDir = os.path.dirname(os.path.abspath(__file__))
-sParseDir = os.path.join(sTestDir, '..', '..', 'timing_report', 'parse', 'vivado')
-
 # The capture clock path of every timing report in this file ends at O_DAC_SCLK.
-# The last element of each capture clock path is on lines 65, 131, 209 and 275.
-# Lines 65 and 209 are in hold timing reports, lines 131 and 275 in setup timing reports.
-sTimingReport = os.path.abspath(os.path.join(sParseDir, 'O_DAC_DATA_timing.rpt'))
-lCaptureClockPathEndLines = [65, 131, 209, 275]
+# The last element of each capture clock path, the net to the clock port, is on lines 64, 141, 218 and 295.
+# Lines 64 and 218 are in setup timing reports, lines 141 and 295 in hold timing reports.
+sTimingReport = rule_test_case.sTimingReport
+lCaptureClockPathEndLines = rule_test_case.build_all_lines(rule_test_case.iCaptureClockPathEndLine)
+iSetupClockPathEndLine = lCaptureClockPathEndLines[0]
+iHoldClockPathEndLine = lCaptureClockPathEndLines[1]
 
 sRuleId = 's0_clock_path_001'
 
@@ -27,13 +24,13 @@ def build_config_text(sPartFile, sTracesFile, sTimingReportFile, sClockPortName)
     lText.append('period = 10.000')
     lText.append('[[clock]]')
     lText.append('name = "dac_sclk"')
-    lText.append('period = 50.0')
+    lText.append('period = 40.0')
     lText.append(f'port = "{sClockPortName}"')
     lText.append('[[port]]')
     lText.append('name = "O_DAC_DATA"')
     lText.append('methodology = "SDR-SS-O"')
-    lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 0}')
-    lText.append(f'capture_clock = {{name = "dac_sclk", setup_edge = "C", hold_edge = "A"}}')
+    lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
+    lText.append(f'capture_clock = {{name = "dac_sclk", setup_edge = "D", hold_edge = "B"}}')
     lText.append(f'timing_reports = ["{sTimingReportFile}"]')
     return '\n'.join(lText)
 
@@ -79,12 +76,12 @@ class Test(rule_test_case.RuleTestCase):
         self.assertEqual(1, iExitCode)
 
     def test_fails_when_capture_clock_path_of_one_setup_timing_report_ends_elsewhere(self):
-        self.execute_with_capture_clock_path_ends_changed([275], 'O_DAC_OTHER')
+        self.execute_with_capture_clock_path_ends_changed([iSetupClockPathEndLine], 'O_DAC_OTHER')
 
         self.assert_rule_failed(sRuleId)
 
     def test_fails_when_capture_clock_path_of_one_hold_timing_report_ends_elsewhere(self):
-        self.execute_with_capture_clock_path_ends_changed([65], 'O_DAC_OTHER')
+        self.execute_with_capture_clock_path_ends_changed([iHoldClockPathEndLine], 'O_DAC_OTHER')
 
         self.assert_rule_failed(sRuleId)
 
@@ -105,9 +102,9 @@ class Test(rule_test_case.RuleTestCase):
         self.assertEqual('\n'.join(lExpected), oFailure.text)
 
     def test_failure_lists_only_the_timing_report_whose_capture_clock_path_ends_elsewhere(self):
-        self.execute_with_capture_clock_path_ends_changed([275], 'O_DAC_OTHER')
+        self.execute_with_capture_clock_path_ends_changed([iSetupClockPathEndLine], 'O_DAC_OTHER')
 
         lExpected = []
-        lExpected.append(f'{self.sChangedTimingReport}:275  capture clock path ends at O_DAC_OTHER, configured clock port O_DAC_SCLK')
+        lExpected.append(f'{self.sChangedTimingReport}:{iSetupClockPathEndLine}  capture clock path ends at O_DAC_OTHER, configured clock port O_DAC_SCLK')
         oFailure = self.find_testcase(sRuleId).find('failure')
         self.assertEqual('\n'.join(lExpected), oFailure.text)

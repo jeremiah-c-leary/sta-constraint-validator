@@ -11,15 +11,68 @@ from stacv.cli import check
 
 sSuiteName = 'O_DAC_DATA.SDR-SS-O'
 
-# With the passing traces, the calculated output delays match O_DAC_DATA_timing.rpt:
-#    maximum:   0.5 + 2.0 - 0.5 = 2.000
-#    minimum:  -0.5 + 2.0 - 0.5 = 1.000
-fPassingSetup = 0.5
-fPassingHold = 0.5
+# The rule tests check the DAC81404 example: its timing report is a Vivado run of the constraints stacv generates for it.
+sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sExampleDir = os.path.join(sProjectDir, 'example', 'texas_instruments', 'DAC81404')
+sTimingReport = os.path.join(sExampleDir, 'timing_reports', 'O_DAC_DATA_timing.rpt')
+
+# The example's clocks and edges.
+fLaunchPeriod = 10.0
+fCapturePeriod = 40.0
+iLaunchEdge = 8
+sCaptureSetupEdge = 'D'
+sCaptureHoldEdge = 'B'
+
+# The timing report holds four reports, each 77 lines long, in this order:
+#    setup at the Slow Process Corner
+#    hold at the Slow Process Corner
+#    setup at the Fast Process Corner
+#    hold at the Fast Process Corner
+iReportLength = 77
+lSetupReportOffsets = [0, 2 * iReportLength]
+lHoldReportOffsets = [iReportLength, 3 * iReportLength]
+
+# Lines of the first report, the setup report at the Slow Process Corner.
+iSlackLine = 14
+iLaunchClockLine = 16
+iCaptureClockLine = 18
+iRequirementLine = 21
+iOutputDelayLine = 24
+iDataPathEndLine = 50
+iCaptureClockPathEndLine = 64
+
+
+def build_lines(iLine, lOffsets):
+    lLines = []
+    for iOffset in lOffsets:
+        lLines.append(iLine + iOffset)
+    return lLines
+
+
+def build_setup_lines(iLine):
+    return build_lines(iLine, lSetupReportOffsets)
+
+
+def build_hold_lines(iLine):
+    return build_lines(iLine, lHoldReportOffsets)
+
+
+def build_all_lines(iLine):
+    return sorted(build_setup_lines(iLine) + build_hold_lines(iLine))
+
+
+# With the passing part and traces, the calculated output delays match the timing report:
+#    maximum:   setup + data max_delay - clock min_delay =  10 + 3.0 - 1.0 =  12.000
+#    minimum:  -hold  + data min_delay - clock max_delay = -10 + 1.0 - 3.0 = -12.000
+sPassingCaptureEdge = 'Falling'
+fPassingSetup = 10.0
+fPassingHold = 10.0
+fPassingMaxDelay = 3.0
+fPassingMinDelay = 1.0
 
 
 def build_passing_part_text():
-    return build_part_text('Rising', fPassingSetup, fPassingHold)
+    return build_part_text(sPassingCaptureEdge, fPassingSetup, fPassingHold)
 
 
 def build_part_text(sCaptureEdge, fSetup, fHold):
@@ -49,12 +102,12 @@ def build_passing_traces_text():
     lText.append('name = "data_output"')
     lText.append('device_pin = "O_DAC_DATA"')
     lText.append('part_pin = "SDIN"')
-    lText.append('device_to_part = {max_delay = 2.0, min_delay = 2.0}')
+    lText.append(f'device_to_part = {{max_delay = {fPassingMaxDelay}, min_delay = {fPassingMinDelay}}}')
     lText.append('[[trace]]')
     lText.append('name = "clock"')
     lText.append('device_pin = "O_DAC_SCLK"')
     lText.append('part_pin = "SCLK"')
-    lText.append('device_to_part = {max_delay = 0.5, min_delay = 0.5}')
+    lText.append(f'device_to_part = {{max_delay = {fPassingMaxDelay}, min_delay = {fPassingMinDelay}}}')
     return '\n'.join(lText)
 
 

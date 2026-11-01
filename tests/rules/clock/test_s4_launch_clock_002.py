@@ -3,7 +3,7 @@ import unittest
 
 from tests.rules.clock import clock_rule_test_case
 from tests.rules.clock.clock_rule_test_case import fPassingLaunchPeriod
-from tests.rules.clock.clock_rule_test_case import iLastReportLaunchClockLine
+from tests.rules.clock.clock_rule_test_case import iFirstReportLaunchClockLine
 from tests.rules.clock.clock_rule_test_case import sPassingLaunchName
 
 sRuleId = 's4_launch_clock_002'
@@ -55,7 +55,7 @@ class Test(clock_rule_test_case.ClockRuleTestCase):
         self.assert_rule_failed(sRuleId)
 
     def test_fails_when_one_timing_report_has_a_different_launch_clock_period(self):
-        self.execute_with_last_report_line_changed(iLastReportLaunchClockLine, 'period=10.000ns', 'period=8.000ns')
+        self.execute_with_first_report_line_changed(iFirstReportLaunchClockLine, 'period=10.000ns', 'period=8.000ns')
 
         self.assert_rule_failed(sRuleId)
 

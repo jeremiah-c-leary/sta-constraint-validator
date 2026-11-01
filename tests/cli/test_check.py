@@ -19,10 +19,9 @@ from stacv.rules.timing_report import s0_timing_report_002
 DEFERRED = None
 
 sTestDir = os.path.dirname(os.path.abspath(__file__))
-sParseDir = os.path.join(sTestDir, '..', 'timing_report', 'parse', 'vivado')
 sRuleDir = os.path.join(sTestDir, '..', 'rules', 'timing_report')
 
-sPassingReport = os.path.abspath(os.path.join(sParseDir, 'O_DAC_DATA_timing.rpt'))
+sPassingReport = os.path.abspath(os.path.join(sTestDir, '..', '..', 'example', 'texas_instruments', 'DAC81404', 'timing_reports', 'O_DAC_DATA_timing.rpt'))
 sFailingReport = os.path.abspath(os.path.join(sRuleDir, 's0_timing_report_002.failing.rpt'))
 sOutputDelayFailingReport = os.path.abspath(os.path.join(sTestDir, '..', 'rules', 'output_delay', 's2_output_delay_001.failing.rpt'))
 
@@ -38,8 +37,8 @@ def build_config_text(lTimingReports, sTracesFile, sPartFile):
         lText.append('[[port]]')
         lText.append(f'name = "PORT_{iPort}"')
         lText.append('methodology = "SDR-SS-O"')
-        lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 0}')
-        lText.append('capture_clock = {name = "dac_sclk", setup_edge = "C", hold_edge = "A"}')
+        lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
+        lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
         lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
 
@@ -51,7 +50,7 @@ def build_clock_tables():
     lText.append('period = 10.000')
     lText.append('[[clock]]')
     lText.append('name = "dac_sclk"')
-    lText.append('period = 50')
+    lText.append('period = 40.0')
     lText.append('port = "O_DAC_SCLK"')
     return lText
 
@@ -106,14 +105,14 @@ def build_port_timing_report_filename(sDirectory, sPortName, sTimingReport):
 
 
 def build_traces_text(lPortNames):
-    # Every port connects to part pin SDIN.  With the part setup and hold of 0.5,
+    # Every port connects to part pin SDIN.  With the part setup and hold of 10,
     # the calculated output delays match the output delays in sPassingReport:
-    #    maximum:   0.5 + 2.0 - 0.5 = 2.000
-    #    minimum:  -0.5 + 2.0 - 0.5 = 1.000
+    #    maximum:   10 + 3.0 - 1.0 =  12.000
+    #    minimum:  -10 + 1.0 - 3.0 = -12.000
     lText = []
     for sPortName in lPortNames:
-        lText.extend(build_trace_text(sPortName, 'SDIN', 2.0, 2.0))
-    lText.extend(build_trace_text('O_DAC_SCLK', 'SCLK', 0.5, 0.5))
+        lText.extend(build_trace_text(sPortName, 'SDIN', 3.0, 1.0))
+    lText.extend(build_trace_text('O_DAC_SCLK', 'SCLK', 3.0, 1.0))
     return '\n'.join(lText)
 
 
@@ -145,9 +144,9 @@ def build_part_text():
     lText.append('name = "SDIN"')
     lText.append('methodology = "SDR-SS-I"')
     lText.append('clock = {pin = "SCLK", max_frequency = 25}')
-    lText.append('capture_edge = "Rising"')
-    lText.append('setup = {value = 0.5, symbol = "tSDIS", source = "Table 7.6"}')
-    lText.append('hold = {value = 0.5, symbol = "tSDIH", source = "Table 7.6"}')
+    lText.append('capture_edge = "Falling"')
+    lText.append('setup = {value = 10, symbol = "tSDIS", source = "Table 7.6"}')
+    lText.append('hold = {value = 10, symbol = "tSDIH", source = "Table 7.6"}')
     lText.append('')
     lText.append('[[interface.pin]]')
     lText.append('name = "SDO"')
@@ -262,8 +261,8 @@ def build_named_ports_config_text(sDescription, lPorts, sTracesFile, sPartFile):
             lText.append('status = "defer"')
             continue
         lText.append('methodology = "SDR-SS-O"')
-        lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 0}')
-        lText.append('capture_clock = {name = "dac_sclk", setup_edge = "C", hold_edge = "A"}')
+        lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
+        lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
         lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
 

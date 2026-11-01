@@ -11,8 +11,8 @@ sFixtureDir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fixtures
 
 class TestFailingExample(unittest.TestCase):
     '''
-    The DAC81404 example before its constraints were corrected.
-    The output delays in its timing report do not match the part and traces.
+    The DAC81404 example after its data trace changed.
+    The output delays in its timing report were calculated for the old trace, so they do not match the new one.
     '''
 
     def setUp(self):

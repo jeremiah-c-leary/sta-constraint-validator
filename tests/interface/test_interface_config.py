@@ -58,7 +58,7 @@ class Test(unittest.TestCase):
     def test_port_keeps_its_capture_clock_setup_edge(self):
         oPort = self.oConfig.ports[0]
 
-        self.assertEqual('C', oPort.capture_clock.setup_edge)
+        self.assertEqual('D', oPort.capture_clock.setup_edge)
 
     def test_each_port_keeps_its_own_setup_edges(self):
         oPort = self.oConfig.ports[1]
@@ -69,12 +69,12 @@ class Test(unittest.TestCase):
     def test_port_keeps_its_launch_clock_hold_edge(self):
         oPort = self.oConfig.ports[0]
 
-        self.assertEqual(0, oPort.launch_clock.hold_edge)
+        self.assertEqual(8, oPort.launch_clock.hold_edge)
 
     def test_port_keeps_its_capture_clock_hold_edge(self):
         oPort = self.oConfig.ports[0]
 
-        self.assertEqual('A', oPort.capture_clock.hold_edge)
+        self.assertEqual('B', oPort.capture_clock.hold_edge)
 
     def test_each_port_keeps_its_own_hold_edges(self):
         oPort = self.oConfig.ports[1]

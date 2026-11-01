@@ -6,7 +6,8 @@ default_delay = {max_delay = 1.0, min_delay = 0.0}
 name = "data_output"
 device_pin = "O_DAC_DATA"
 part_pin = "SDIN"
-device_to_part = {max_delay = 3.00, min_delay = 1.00}
+# The timing report was run for a data trace of 3.00 and 1.00.
+device_to_part = {max_delay = 4.00, min_delay = 2.00}
 
 [[trace]]
 name = "data_input"

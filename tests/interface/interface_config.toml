@@ -13,20 +13,22 @@ period = 10.000
 name = "dac_sclk"
 period = 20
 port = "O_DAC_SCLK"
+idle = "low"
 generator = {source = "q_spi_output_clock_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_100mhz"}
 
 [[port]]
 name = "O_DAC_DATA"
 methodology = "SDR-SS-O"
-launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 0}
-capture_clock = {name = "dac_sclk", setup_edge = "C", hold_edge = "A"}
+launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
+capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
 timing_reports = [
     "$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt",
 ]
 
 [[port]]
 name = "O_DAC_CSF"
-methodology = "SDR-SS-O"
+# The setup and hold edges of an SDR-SS-O-FLC port are independent.
+methodology = "SDR-SS-O-FLC"
 launch_clock = {name = "clk_100mhz", setup_edge = 6, hold_edge = 4}
 capture_clock = {name = "dac_sclk", setup_edge = "B", hold_edge = "B"}
 timing_reports = [

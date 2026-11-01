@@ -1,40 +1,37 @@
-import os
-
 from tests.rules import rule_test_case
 
-sTestDir = os.path.dirname(os.path.abspath(__file__))
-sParseDir = os.path.join(sTestDir, '..', '..', 'timing_report', 'parse', 'vivado')
 
-# Setup reports at both process corners have an output delay of 2.000ns.
-# Hold reports at both process corners have an output delay of 1.000ns.
-sTimingReport = os.path.abspath(os.path.join(sParseDir, 'O_DAC_DATA_timing.rpt'))
+# Setup reports at both process corners have an output delay of 12.000ns.
+# Hold reports at both process corners have an output delay of -12.000ns.
+sTimingReport = rule_test_case.sTimingReport
 
 sRuleId = 's0_trace_001'
 
 # The part has one pin, SDIN, clocked by SCLK.
 # The port O_DAC_DATA is captured by the clock on port O_DAC_SCLK.
-# These delays, with a part setup and hold of 0.5, pass every stage 3 rule.
-fDataDelay = 2.0
-fClockDelay = 0.5
+# These delays, with the passing part setup and hold, pass every stage 3 rule.
+fMaxDelay = rule_test_case.fPassingMaxDelay
+fMinDelay = rule_test_case.fPassingMinDelay
 
 
-def create_trace(sName, sDevicePin, sPartPin, sDirection, fDelay):
+def create_trace(sName, sDevicePin, sPartPin, sDirection, fMaxDelay, fMinDelay):
     dTrace = {}
     dTrace['name'] = sName
     dTrace['device_pin'] = sDevicePin
     dTrace['part_pin'] = sPartPin
     dTrace['direction'] = sDirection
-    dTrace['delay'] = fDelay
+    dTrace['max_delay'] = fMaxDelay
+    dTrace['min_delay'] = fMinDelay
     return dTrace
 
 
 def create_data_trace(sDevicePin, sPartPin):
     # Each trace is named after its pins, as trace names are unique in a traces file.
-    return create_trace(f'data_{sDevicePin}_{sPartPin}', sDevicePin, sPartPin, 'device_to_part', fDataDelay)
+    return create_trace(f'data_{sDevicePin}_{sPartPin}', sDevicePin, sPartPin, 'device_to_part', fMaxDelay, fMinDelay)
 
 
 def create_clock_trace(sDevicePin, sPartPin):
-    return create_trace(f'clock_{sDevicePin}_{sPartPin}', sDevicePin, sPartPin, 'device_to_part', fClockDelay)
+    return create_trace(f'clock_{sDevicePin}_{sPartPin}', sDevicePin, sPartPin, 'device_to_part', fMaxDelay, fMinDelay)
 
 
 def create_passing_data_trace():
@@ -63,13 +60,13 @@ def build_config_text(sPartFile, sTracesFile):
     lText.append('period = 10')
     lText.append('[[clock]]')
     lText.append('name = "dac_sclk"')
-    lText.append('period = 50')
+    lText.append('period = 40.0')
     lText.append('port = "O_DAC_SCLK"')
     lText.append('[[port]]')
     lText.append('name = "O_DAC_DATA"')
     lText.append('methodology = "SDR-SS-O"')
-    lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 0}')
-    lText.append('capture_clock = {name = "dac_sclk", setup_edge = "C", hold_edge = "A"}')
+    lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
+    lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
     lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
 
@@ -81,7 +78,7 @@ def build_traces_text(lTraces):
         lText.append(f'name = "{dTrace["name"]}"')
         lText.append(f'device_pin = "{dTrace["device_pin"]}"')
         lText.append(f'part_pin = "{dTrace["part_pin"]}"')
-        lText.append(f'{dTrace["direction"]} = {{max_delay = {dTrace["delay"]}, min_delay = {dTrace["delay"]}}}')
+        lText.append(f'{dTrace["direction"]} = {{max_delay = {dTrace["max_delay"]}, min_delay = {dTrace["min_delay"]}}}')
     return '\n'.join(lText)
 
 
@@ -143,17 +140,17 @@ class Test(rule_test_case.RuleTestCase):
     def test_passes_when_another_clock_trace_to_the_clock_pin_is_listed_first(self):
         lTraces = []
         lTraces.append(create_passing_data_trace())
-        lTraces.append(create_trace('other_clock', 'O_OTHER_SCLK', 'SCLK', 'device_to_part', 9.0))
+        lTraces.append(create_trace('other_clock', 'O_OTHER_SCLK', 'SCLK', 'device_to_part', 9.0, 9.0))
         lTraces.append(create_passing_clock_trace())
         self.execute(lTraces)
 
         self.assert_rule_passed(sRuleId)
 
     def test_stage_3_uses_clock_trace_from_capture_clock_port_when_another_is_listed_first(self):
-        # With the 9.0 delay of O_OTHER_SCLK the maximum output delay would be 0.5 + 2.0 - 9.0 = -6.500
+        # With the 9.0 delay of O_OTHER_SCLK the maximum output delay would be 10 + 3.0 - 9.0 = 4.000
         lTraces = []
         lTraces.append(create_passing_data_trace())
-        lTraces.append(create_trace('other_clock', 'O_OTHER_SCLK', 'SCLK', 'device_to_part', 9.0))
+        lTraces.append(create_trace('other_clock', 'O_OTHER_SCLK', 'SCLK', 'device_to_part', 9.0, 9.0))
         lTraces.append(create_passing_clock_trace())
         self.execute(lTraces)
 
@@ -161,7 +158,7 @@ class Test(rule_test_case.RuleTestCase):
 
     def test_fails_when_data_trace_has_no_device_to_part_delays(self):
         lTraces = []
-        lTraces.append(create_trace('data_output', 'O_DAC_DATA', 'SDIN', 'part_to_device', fDataDelay))
+        lTraces.append(create_trace('data_output', 'O_DAC_DATA', 'SDIN', 'part_to_device', fMaxDelay, fMinDelay))
         lTraces.append(create_passing_clock_trace())
         self.execute(lTraces)
 
@@ -170,7 +167,7 @@ class Test(rule_test_case.RuleTestCase):
     def test_fails_when_clock_trace_has_no_device_to_part_delays(self):
         lTraces = []
         lTraces.append(create_passing_data_trace())
-        lTraces.append(create_trace('clock', 'O_DAC_SCLK', 'SCLK', 'part_to_device', fClockDelay))
+        lTraces.append(create_trace('clock', 'O_DAC_SCLK', 'SCLK', 'part_to_device', fMaxDelay, fMinDelay))
         self.execute(lTraces)
 
         self.assert_rule_failed(sRuleId)

@@ -1,7 +1,7 @@
 
 from tests.rules.clock import clock_rule_test_case
 from tests.rules.clock.clock_rule_test_case import fPassingCapturePeriod
-from tests.rules.clock.clock_rule_test_case import iLastReportCaptureClockLine
+from tests.rules.clock.clock_rule_test_case import iFirstReportCaptureClockLine
 from tests.rules.clock.clock_rule_test_case import sPassingCaptureName
 
 sRuleId = 's4_capture_clock_001'
@@ -35,11 +35,11 @@ class Test(clock_rule_test_case.ClockRuleTestCase):
         self.assert_rule_failed(sRuleId)
 
     def test_fails_when_one_timing_report_has_a_different_capture_clock(self):
-        self.execute_with_last_report_line_changed(iLastReportCaptureClockLine, 'clocked by dac_sclk', 'clocked by spi_sclk')
+        self.execute_with_first_report_line_changed(iFirstReportCaptureClockLine, 'clocked by dac_sclk', 'clocked by spi_sclk')
 
         self.assert_rule_failed(sRuleId)
 
     def test_ignores_capture_clock_period(self):
-        self.execute_with_capture_clock(sPassingCaptureName, 40.0)
+        self.execute_with_capture_clock(sPassingCaptureName, 50.0)
 
         self.assert_rule_passed(sRuleId)

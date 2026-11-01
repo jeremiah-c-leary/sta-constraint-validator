@@ -1,22 +1,18 @@
-import os
-
 from tests.rules import rule_test_case
 
-sTestDir = os.path.dirname(os.path.abspath(__file__))
-sParseDir = os.path.join(sTestDir, '..', '..', 'timing_report', 'parse', 'vivado')
 
 # Every timing report in this file is launched by clk_100mhz with a period of 10.000ns
-# and captured by dac_sclk with a period of 50.000ns.
-sTimingReport = os.path.abspath(os.path.join(sParseDir, 'O_DAC_DATA_timing.rpt'))
+# and captured by dac_sclk with a period of 40.000ns.
+sTimingReport = rule_test_case.sTimingReport
 
-# Lines of the last timing report in sTimingReport, Max at Slow Process Corner
-iLastReportLaunchClockLine = 221
-iLastReportCaptureClockLine = 223
+# Lines of the first timing report in sTimingReport, Max at Slow Process Corner
+iFirstReportLaunchClockLine = rule_test_case.iLaunchClockLine
+iFirstReportCaptureClockLine = rule_test_case.iCaptureClockLine
 
 sPassingLaunchName = 'clk_100mhz'
 fPassingLaunchPeriod = 10.0
 sPassingCaptureName = 'dac_sclk'
-fPassingCapturePeriod = 50.0
+fPassingCapturePeriod = 40.0
 
 
 def build_config_text(sPartFile, sTracesFile, sTimingReportFile, oClocks):
@@ -35,8 +31,8 @@ def build_config_text(sPartFile, sTracesFile, sTimingReportFile, oClocks):
     lText.append('[[port]]')
     lText.append('name = "O_DAC_DATA"')
     lText.append('methodology = "SDR-SS-O"')
-    lText.append(f'launch_clock = {{name = "{oClocks.launch_name}", setup_edge = 8, hold_edge = 0}}')
-    lText.append(f'capture_clock = {{name = "{oClocks.capture_name}", setup_edge = "C", hold_edge = "A"}}')
+    lText.append(f'launch_clock = {{name = "{oClocks.launch_name}", setup_edge = 8, hold_edge = 8}}')
+    lText.append(f'capture_clock = {{name = "{oClocks.capture_name}", setup_edge = "D", hold_edge = "B"}}')
     lText.append(f'timing_reports = ["{sTimingReportFile}"]')
     return '\n'.join(lText)
 
@@ -60,7 +56,7 @@ class ClockRuleTestCase(rule_test_case.RuleTestCase):
         oClocks = Clocks(sPassingLaunchName, fPassingLaunchPeriod, sName, fPeriod)
         return self.execute(oClocks, sTimingReport)
 
-    def execute_with_last_report_line_changed(self, iLineNumber, sOld, sNew):
+    def execute_with_first_report_line_changed(self, iLineNumber, sOld, sNew):
         lLines = rule_test_case.read_lines(sTimingReport)
         self.assertIn(sOld, lLines[iLineNumber - 1])
         lLines[iLineNumber - 1] = lLines[iLineNumber - 1].replace(sOld, sNew)
