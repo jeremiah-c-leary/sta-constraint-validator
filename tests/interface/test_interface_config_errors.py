@@ -445,22 +445,6 @@ class Test(unittest.TestCase):
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
-    @unittest.skip('Leaving this for later.')
-    def test_read_interface_config_raises_error_naming_both_positions_if_port_and_methodology_are_duplicated(self):
-        lText = []
-        lText.append('description = "First and third port share name and methodology"')
-        lText.append('name = "DAC_SPI_1"')
-        lText.append('part = "part.toml"')
-        lText.append('traces = "traces.toml"')
-        lText.append(self.sValidPort)
-        lText.append(self.build_port('O_DAC_CSF', 'SDR-SS-O'))
-        lText.append(self.build_port('O_DAC_DATA', 'SDR-SS-O'))
-        self.write_interface_file('\n'.join(lText) + '\n')
-
-        sError = self.build_error_pattern('interface_config_009', 'duplicate port "O_DAC_DATA" with methodology "SDR-SS-O" in port number 3, first used in port number 1$')
-        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
-            interface_config.read_interface_config(self.sInterfaceFile)
-
     def test_read_interface_config_accepts_same_port_with_different_methodologies(self):
         lText = []
         lText.append('description = "Bidirectional port timed with two methodologies"')

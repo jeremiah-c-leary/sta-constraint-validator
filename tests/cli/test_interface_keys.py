@@ -34,9 +34,9 @@ def build_interface(dReplacements=None):
     return '\n'.join(lText) + '\n'
 
 
-class TestInterfaceKeys(unittest.TestCase):
+class InterfaceTestCase(unittest.TestCase):
     '''
-    Every key of every interface table is checked: unknown keys, missing keys and the type of each value.
+    Runs stacv visualize edges on an interface file, with empty part and traces files beside it.
     '''
 
     def setUp(self):
@@ -64,6 +64,12 @@ class TestInterfaceKeys(unittest.TestCase):
         iExitCode = self.run_edges(build_interface(dReplacements))
         self.assertEqual(f'ERROR: [{sIdentifier}] {self.sInterfaceFile} {sMessage}\n', self.oStderr.getvalue())
         self.assertEqual(2, iExitCode)
+
+
+class TestInterfaceKeys(InterfaceTestCase):
+    '''
+    Every key of every interface table is checked: unknown keys, missing keys and the type of each value.
+    '''
 
     def test_valid_interface_draws_its_edges(self):
         iExitCode = self.run_edges(build_interface())

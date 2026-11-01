@@ -99,21 +99,23 @@ Interface file
      - ``key "capture_clock"<location> names clock <name>, which has no key "idle"; <methodology> is timed to the first and last edges of a clock that stops``
      - Add ``idle`` to the capture clock.
      - Stops
-   * - interface_config_014 (new)
+   * - interface_config_014
      - ``key "<key>"<location> has <edge> <value>; launch edges are numbers: 0, 1, 2, ...``
      - Write the launch edge as a whole number, even for a rising edge and odd for a falling edge.
      - Stops
-   * - interface_config_015 (new)
+   * - interface_config_015
      - ``key "<key>"<location> has <edge> <value>; capture edges are letters: A, B, C, ...``
      - Write the capture edge in capital letters, A, C, E, ... for a rising edge and B, D, F, ... for a falling edge.
+       After Z, the letters continue AA, AB, ...
      - Stops
-   * - interface_config_016 (new)
+   * - interface_config_016
      - ``key "period" of clock <name> must be greater than 0``
      - Correct the period, in nanoseconds.
      - Stops
-   * - interface_config_017 (new)
-     - ``port <name> is defined by more than one [[port]] table``
+   * - interface_config_017
+     - ``port <name> with methodology <methodology> is defined by more than one [[port]] table``
      - Remove or rename one of the tables.
+       A port can appear once for each methodology, such as a bidirectional port timed as an output and as a round trip.
      - Stops
    * - interface_config_018 (new)
      - ``key "capture_clock"<location> has setup_edge <edge> and hold_edge <edge>, which are not the same edge type``

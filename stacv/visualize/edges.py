@@ -163,7 +163,7 @@ def draw_stopped_clock(oClock, fColumnsPerNanosecond, iEndColumn, iFirstEdge, iL
 
 def draw_running_edge(fPeriod, iEdgeNumber, iLastEdge, oLabelRow, oWaveRow, fColumnsPerNanosecond, iEndColumn):
     iColumn = calculate_edge_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond)
-    oLabelRow.write(iColumn, chr(ord('A') + iEdgeNumber))
+    oLabelRow.write(iColumn, edge_times.convert_edge_number_to_letter(iEdgeNumber))
     oWaveRow.write(iColumn, '|')
     if iEdgeNumber == iLastEdge:
         return
@@ -268,7 +268,7 @@ def build_launch_edge_labels(iLastEdge):
 def build_capture_edge_labels(iLastEdge):
     lEdgeLabels = []
     for iEdgeNumber in range(iLastEdge + 1):
-        lEdgeLabels.append(chr(ord('A') + iEdgeNumber))
+        lEdgeLabels.append(edge_times.convert_edge_number_to_letter(iEdgeNumber))
     return lEdgeLabels
 
 

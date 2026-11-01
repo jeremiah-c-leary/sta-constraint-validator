@@ -80,7 +80,7 @@ Ports refer to clocks by name.
        Each clock name is defined once (interface_config_009).
    * - ``period``
      - Yes
-     - The period of the clock in nanoseconds.
+     - The period of the clock in nanoseconds, greater than 0 (interface_config_016).
    * - ``port``
      - No
      - The device port the clock leaves the device on, to the part.
@@ -118,6 +118,7 @@ Ports
 -----
 
 Each port of the interface has a ``[[port]]`` table.
+A port can have more than one table, one for each methodology, such as a bidirectional port; the same port and methodology twice is an error (interface_config_017).
 
 .. code-block:: toml
 
@@ -191,6 +192,8 @@ Edges are counted from the first rising edge of each clock, at time 0:
 
 * Launch edges are numbers: 0, 2, 4, ... are rising edges and 1, 3, 5, ... are falling edges.
 * Capture edges are letters: A, C, E, ... are rising edges and B, D, F, ... are falling edges.
+
+A launch edge written as a letter, or a capture edge written as a number, is an error (interface_config_014, interface_config_015).
 
 Edge *n* of a clock is at (period / 2) × *n*, so the setup requirement is the time of the capture setup edge minus the time of the launch setup edge, and the hold requirement is the time of the capture hold edge minus the time of the launch hold edge.
 Check the edges with ``stacv visualize edges`` before generating the constraints.

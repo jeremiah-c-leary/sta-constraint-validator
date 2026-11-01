@@ -97,6 +97,7 @@ def build_clock(dClock, iClock, sFilename):
     oClock = clock.Clock()
     oClock.name = READER.get_required_string(dClock, 'name', oLocation)
     oClock.period = READER.get_required_number(dClock, 'period', oLocation)
+    check_period_is_positive(oClock.period, oLocation)
     if 'port' in dClock:
         oClock.port = READER.get_required_string(dClock, 'port', oLocation)
     if 'idle' in dClock:
@@ -104,6 +105,11 @@ def build_clock(dClock, iClock, sFilename):
     if 'generator' in dClock:
         oClock.generator = build_clock_generator(READER.get_required_table(dClock, 'generator', oLocation), oClock.name, sFilename)
     return oClock
+
+
+def check_period_is_positive(fPeriod, oLocation):
+    if fPeriod <= 0:
+        READER.raise_error(16, oLocation.filename, f'key "period"{oLocation.location} must be greater than 0')
 
 
 def has_valid_name(dTable):
@@ -120,6 +126,7 @@ def read_idle(dClock, sClockName, oLocation):
 
 def create_ports(dConfig, oLocation, oInterface):
     lPorts = []
+    lPortKeys = []
     for iPort, dPort in enumerate(READER.get_required_array_of_tables(dConfig, 'port', oLocation), start=1):
         oPort = port.Port()
         oLocation.set_port_number(iPort)
@@ -133,10 +140,19 @@ def create_ports(dConfig, oLocation, oInterface):
         oLocation.set_port_name(oPort.name)
         if oPort.status == port.ANALYZE:
             read_analyzed_port(dPort, oPort, oInterface, oLocation)
+            check_port_is_not_defined(lPortKeys, oPort, oLocation)
         else:
             read_deferred_port(dPort, oPort, oLocation)
         lPorts.append(oPort)
     return lPorts
+
+
+def check_port_is_not_defined(lPortKeys, oPort, oLocation):
+    # A bidirectional port is timed with one methodology for each direction, so a port is identified by both.
+    sPortKey = oPort.name + '.' + oPort.methodology
+    if sPortKey in lPortKeys:
+        READER.raise_error(17, oLocation.filename, f'port {oPort.name} with methodology {oPort.methodology} is defined by more than one [[port]] table')
+    lPortKeys.append(sPortKey)
 
 
 def check_methodology_is_supported(sMethodology, oLocation):
@@ -211,9 +227,49 @@ def build_referenced_clock(dPort, sKey, sPortName, oInterface, oLocation):
     oClockPin.port = oClock.port
     oClockPin.generator = oClock.generator
     oClockPin.idle = oClock.idle
-    oClockPin.setup_edge = READER.get_required_key_value(dClock, 'setup_edge', oTableLocation)
-    oClockPin.hold_edge = READER.get_required_key_value(dClock, 'hold_edge', oTableLocation)
+    oClockPin.setup_edge = read_edge(dClock, 'setup_edge', sKey, oLocation, oTableLocation)
+    oClockPin.hold_edge = read_edge(dClock, 'hold_edge', sKey, oLocation, oTableLocation)
     return oClockPin
+
+
+def read_edge(dClock, sEdge, sKey, oPortLocation, oTableLocation):
+    # Edges are written by role: launch edges are numbers and capture edges are letters.
+    edge = READER.get_required_key_value(dClock, sEdge, oTableLocation)
+    if sKey == 'launch_clock':
+        check_launch_edge(edge, sEdge, sKey, oPortLocation)
+    else:
+        check_capture_edge(edge, sEdge, sKey, oPortLocation)
+    return edge
+
+
+def check_launch_edge(edge, sEdge, sKey, oLocation):
+    if not is_launch_edge(edge):
+        READER.raise_error(14, oLocation.filename, f'key "{sKey}"{oLocation.location} has {sEdge} {format_edge(edge)}; launch edges are numbers: 0, 1, 2, ...')
+
+
+def check_capture_edge(edge, sEdge, sKey, oLocation):
+    if not is_capture_edge(edge):
+        READER.raise_error(15, oLocation.filename, f'key "{sKey}"{oLocation.location} has {sEdge} {format_edge(edge)}; capture edges are letters: A, B, C, ...')
+
+
+def is_launch_edge(edge):
+    # A TOML true or false is a bool, which Python also counts as an int.
+    if isinstance(edge, bool) or not isinstance(edge, int):
+        return False
+    return edge >= 0
+
+
+def is_capture_edge(edge):
+    if not isinstance(edge, str):
+        return False
+    return re.fullmatch('[A-Z]+', edge) is not None
+
+
+def format_edge(edge):
+    # Shows the edge as it is written in the file, with quotes around text.
+    if isinstance(edge, str):
+        return f'"{edge}"'
+    return str(edge)
 
 
 def check_capture_clock_stops_if_needed(oPort, oLocation):
