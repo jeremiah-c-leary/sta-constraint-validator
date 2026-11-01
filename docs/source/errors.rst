@@ -199,20 +199,20 @@ Part file
    * - Identifier
      - Message
      - Correction
-   * - part_config_001 (new)
+   * - part_config_001
      - ``is not valid TOML: <reason>``
      - Correct the TOML syntax at the line given.
-   * - part_config_002 (new)
+   * - part_config_002
      - ``missing required key "<key>"<location>``
      - Add the key.
        Every key in the part file is required.
-   * - part_config_003 (new)
+   * - part_config_003
      - ``key "<key>"<location> must be <type>``
      - Write the value as the type given.
-   * - part_config_004 (new)
+   * - part_config_004
      - ``key "<key>"<location> is not a key stacv reads; the keys are <keys>``
      - Correct the key name.
-   * - part_config_005 (new)
+   * - part_config_005
      - ``key "methodology"<location> names <methodology>; a part pin is SDR-SS-I, SDR-SS-O or SDR-SS-RT``
      - Correct the methodology.
    * - part_config_006 (new)

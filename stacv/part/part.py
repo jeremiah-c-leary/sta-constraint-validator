@@ -1,13 +1,25 @@
 
-import tomllib
+from stacv.config import config_reader
+from stacv.config import value_type
 
 from stacv.part import clock_pin
 from stacv.part import constraint
 from stacv.part import datasheet
 from stacv.part import interface
 from stacv.part import interface_list
+from stacv.part import part_config_error
+from stacv.part import part_location
 from stacv.part import pin
 from stacv.part import pin_list
+
+READER = config_reader.ConfigReader('part_config', part_config_error.PartConfigError)
+TOP_LEVEL_KEYS = ['properties', 'datasheet', 'interface']
+PROPERTIES_KEYS = ['manufacturer', 'part_number']
+DATASHEET_KEYS = ['name', 'url', 'version']
+INTERFACE_KEYS = ['name', 'pin']
+PIN_KEYS = ['name', 'methodology', 'clock']
+CLOCK_KEYS = ['pin', 'max_frequency']
+CONSTRAINT_KEYS = ['value', 'symbol', 'source']
 
 
 class Part():
@@ -26,112 +38,162 @@ class Part():
 
 
 def create_part(oInterface):
-    dPart = read_toml_file(oInterface.part)
-    return build_part(dPart)
+    dPart = READER.read_toml_file(oInterface.part)
+    return build_part(dPart, oInterface.part)
 
 
-def read_toml_file(sFilename):
-    with open(sFilename, 'rb') as oFile:
-        return tomllib.load(oFile)
-
-
-def build_part(dPart):
+def build_part(dPart, sFilename):
+    oLocation = part_location.PartLocation(sFilename)
+    READER.check_keys(dPart, TOP_LEVEL_KEYS, oLocation)
     oPart = Part()
-    oPart.manufacturer = dPart['properties']['manufacturer']
-    oPart.part_number = dPart['properties']['part_number']
-    oPart.datasheet = build_datasheet(dPart['datasheet'])
-    oPart.interfaces = build_interface_list(dPart['interface'])
+    oPropertiesLocation = table_location(sFilename, 'properties')
+    dProperties = read_table(dPart, 'properties', PROPERTIES_KEYS, sFilename)
+    oPart.manufacturer = READER.get_required_string(dProperties, 'manufacturer', oPropertiesLocation)
+    oPart.part_number = READER.get_required_string(dProperties, 'part_number', oPropertiesLocation)
+    oPart.datasheet = build_datasheet(read_table(dPart, 'datasheet', DATASHEET_KEYS, sFilename), table_location(sFilename, 'datasheet'))
+    oPart.interfaces = build_interface_list(READER.get_required_array_of_tables(dPart, 'interface', oLocation), sFilename)
     return oPart
 
 
-def build_interface_list(dInterfaces):
-    oInterfaceList = interface_list.InterfaceList()
-    oInterfaceList.interfaces = build_interfaces(dInterfaces)
-    return oInterfaceList
+def read_table(dPart, sTable, lKeys, sFilename):
+    dTable = READER.get_required_table(dPart, sTable, part_location.PartLocation(sFilename))
+    READER.check_keys(dTable, lKeys, table_location(sFilename, sTable))
+    return dTable
 
 
-def build_interfaces(dInterfaces):
-    lInterfaces = []
-    for dInterface in dInterfaces:
-        oInterface = build_interface(dInterface)
-        lInterfaces.append(oInterface)
-    return lInterfaces
+def table_location(sFilename, sTable):
+    oLocation = part_location.PartLocation(sFilename)
+    oLocation.set_table(sTable)
+    return oLocation
 
 
-def build_interface(dInterface):
-    oInterface = interface.Interface()
-    oInterface.name = dInterface['name']
-    oInterface.pins = build_pin_list(dInterface['pin'])
-    return oInterface
-
-
-def build_pin_list(dPins):
-    oPinList = pin_list.PinList()
-    oPinList.pins = build_pins(dPins)
-    return oPinList
-
-
-def build_pins(dPins):
-    lPins = []
-    for dPin in dPins:
-        oPin = create_pin(dPin)
-        lPins.append(oPin)
-    return lPins
-
-
-def create_pin(dPin):
-    return dPinMap[dPin['methodology']](dPin)
-
-
-def build_datasheet(dDatasheet):
+def build_datasheet(dDatasheet, oLocation):
     oDatasheet = datasheet.Datasheet()
-    oDatasheet.name = dDatasheet['name']
-    oDatasheet.url = dDatasheet['url']
-    oDatasheet.version = dDatasheet['version']
+    oDatasheet.name = READER.get_required_string(dDatasheet, 'name', oLocation)
+    oDatasheet.url = READER.get_required_string(dDatasheet, 'url', oLocation)
+    oDatasheet.version = READER.get_required_string(dDatasheet, 'version', oLocation)
     return oDatasheet
 
 
-def build_sdr_ss_i_pin(dPin):
-    oPin = build_base_pin(dPin)
-    oPin.capture_edge = dPin['capture_edge']
-    oPin.setup = build_constraint(dPin['setup'])
-    oPin.hold = build_constraint(dPin['hold'])
-    return oPin
+def build_interface_list(lInterfaces, sFilename):
+    oInterfaceList = interface_list.InterfaceList()
+    oInterfaceList.interfaces = []
+    for iInterface, dInterface in enumerate(lInterfaces, start=1):
+        oInterfaceList.interfaces.append(build_interface(dInterface, iInterface, sFilename))
+    return oInterfaceList
 
 
-def build_base_pin(dPin):
+def build_interface(dInterface, iInterface, sFilename):
+    oLocation = part_location.PartLocation(sFilename)
+    oLocation.set_interface_number(iInterface)
+    if has_valid_name(dInterface):
+        oLocation.set_interface_name(dInterface['name'])
+    READER.check_keys(dInterface, INTERFACE_KEYS, oLocation)
+    oInterface = interface.Interface()
+    oInterface.name = READER.get_required_string(dInterface, 'name', oLocation)
+    oInterface.pins = build_pin_list(READER.get_required_array_of_tables(dInterface, 'pin', oLocation), oInterface.name, sFilename)
+    return oInterface
+
+
+def has_valid_name(dTable):
+    # A table is named by its name only once the name is valid; until then it is named by its number.
+    return 'name' in dTable and value_type.STRING.is_valid(dTable['name'])
+
+
+def build_pin_list(lPins, sInterfaceName, sFilename):
+    oPinList = pin_list.PinList()
+    oPinList.pins = []
+    for iPin, dPin in enumerate(lPins, start=1):
+        oPinList.pins.append(build_pin(dPin, iPin, sInterfaceName, sFilename))
+    return oPinList
+
+
+def build_pin(dPin, iPin, sInterfaceName, sFilename):
+    oLocation = part_location.PartLocation(sFilename)
+    oLocation.set_pin_number(iPin, sInterfaceName)
+    if has_valid_name(dPin):
+        oLocation.set_pin_name(dPin['name'], sInterfaceName)
+    # The methodology decides the keys a pin has, so it is read before the keys are checked.
+    sMethodology = READER.get_required_string(dPin, 'methodology', oLocation)
+    oPinType = find_pin_type(sMethodology, oLocation)
+    READER.check_keys(dPin, PIN_KEYS + oPinType.keys, oLocation)
     oPin = pin.Pin()
-    oPin.name = dPin['name']
-    oPin.methodology = dPin['methodology']
-    oPin.clock = build_clock_pin(dPin['clock'])
+    oPin.name = READER.get_required_string(dPin, 'name', oLocation)
+    oLocation.set_pin_name(oPin.name, sInterfaceName)
+    oPin.methodology = sMethodology
+    oPin.clock = build_clock_pin(dPin, oPin.name, sInterfaceName, oLocation)
+    oPinType.build(oPin, dPin, sInterfaceName, oLocation)
     return oPin
 
 
-def build_clock_pin(dClock):
+def find_pin_type(sMethodology, oLocation):
+    if sMethodology not in PIN_TYPES:
+        READER.raise_error(5, oLocation.filename, f'key "methodology"{oLocation.location} names {sMethodology}; a part pin is {describe_pin_methodologies()}')
+    return PIN_TYPES[sMethodology]
+
+
+def describe_pin_methodologies():
+    lNames = list(PIN_TYPES)
+    return ', '.join(lNames[:-1]) + ' or ' + lNames[-1]
+
+
+def read_pin_table(dPin, sTable, lKeys, oPinLocation, oTableLocation):
+    dTable = READER.get_required_table(dPin, sTable, oPinLocation)
+    READER.check_keys(dTable, lKeys, oTableLocation)
+    return dTable
+
+
+def pin_table_location(sTable, sPinName, sInterfaceName, sFilename):
+    oLocation = part_location.PartLocation(sFilename)
+    oLocation.set_pin_table(sTable, sPinName, sInterfaceName)
+    return oLocation
+
+
+def build_clock_pin(dPin, sPinName, sInterfaceName, oPinLocation):
+    oLocation = pin_table_location('clock', sPinName, sInterfaceName, oPinLocation.filename)
+    dClock = read_pin_table(dPin, 'clock', CLOCK_KEYS, oPinLocation, oLocation)
     oClockPin = clock_pin.ClockPin()
-    oClockPin.pin = dClock['pin']
-    oClockPin.max_frequency = dClock['max_frequency']
+    oClockPin.pin = READER.get_required_string(dClock, 'pin', oLocation)
+    oClockPin.max_frequency = READER.get_required_number(dClock, 'max_frequency', oLocation)
     return oClockPin
 
 
-def build_constraint(dConstraint):
+def build_constraint(dPin, sTable, sPinName, sInterfaceName, oPinLocation):
+    oLocation = pin_table_location(sTable, sPinName, sInterfaceName, oPinLocation.filename)
+    dConstraint = read_pin_table(dPin, sTable, CONSTRAINT_KEYS, oPinLocation, oLocation)
     oConstraint = constraint.Constraint()
-    oConstraint.value = dConstraint['value']
-    oConstraint.symbol = dConstraint['symbol']
-    oConstraint.source = dConstraint['source']
+    oConstraint.value = READER.get_required_number(dConstraint, 'value', oLocation)
+    oConstraint.symbol = READER.get_required_string(dConstraint, 'symbol', oLocation)
+    oConstraint.source = READER.get_required_string(dConstraint, 'source', oLocation)
     return oConstraint
 
 
-def build_sdr_ss_o_pin(dPin):
-    oPin = build_base_pin(dPin)
-    oPin.launch_edge = dPin['launch_edge']
-    oPin.cko_max = build_constraint(dPin['cko_max'])
-    oPin.cko_min = build_constraint(dPin['cko_min'])
-    return oPin
+def build_input_pin(oPin, dPin, sInterfaceName, oLocation):
+    oPin.capture_edge = READER.get_required_string(dPin, 'capture_edge', oLocation)
+    oPin.setup = build_constraint(dPin, 'setup', oPin.name, sInterfaceName, oLocation)
+    oPin.hold = build_constraint(dPin, 'hold', oPin.name, sInterfaceName, oLocation)
 
 
-dPinMap = {}
-dPinMap['SDR-SS-I'] = build_sdr_ss_i_pin
-dPinMap['SDR-SS-O'] = build_sdr_ss_o_pin
-dPinMap['SDR-SS-RT'] = build_sdr_ss_o_pin
+def build_output_pin(oPin, dPin, sInterfaceName, oLocation):
+    oPin.launch_edge = READER.get_required_string(dPin, 'launch_edge', oLocation)
+    oPin.cko_max = build_constraint(dPin, 'cko_max', oPin.name, sInterfaceName, oLocation)
+    oPin.cko_min = build_constraint(dPin, 'cko_min', oPin.name, sInterfaceName, oLocation)
 
+
+class PinType():
+    '''
+    The keys a part pin of one methodology has, beyond the keys every pin has, and how they are read.
+    '''
+
+    def __init__(self, lKeys, fBuild):
+        self.keys = lKeys
+        self.build = fBuild
+
+
+INPUT_PIN = PinType(['capture_edge', 'setup', 'hold'], build_input_pin)
+OUTPUT_PIN = PinType(['launch_edge', 'cko_max', 'cko_min'], build_output_pin)
+
+PIN_TYPES = {}
+PIN_TYPES['SDR-SS-I'] = INPUT_PIN
+PIN_TYPES['SDR-SS-O'] = OUTPUT_PIN
+PIN_TYPES['SDR-SS-RT'] = OUTPUT_PIN
