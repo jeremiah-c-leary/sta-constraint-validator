@@ -343,14 +343,8 @@ class TestRoundTripReportScript(RoundTripTestCase):
 
 class TestRoundTripCheck(RoundTripTestCase):
 
-    def test_defers_a_round_trip_port_without_reading_its_timing_report(self):
-        # SDR-SS-RT has no rules yet, and its timing report is not written yet.
+    def test_reads_the_timing_reports_of_a_round_trip_port(self):
+        # The SDR-SS-RT rules read the timing reports, so a report that is not written yet is an input error.
         iExitCode = self.run_stacv(self.build_round_trip_tables(), ['check', self.sInterfaceFile])
-        lExpected = []
-        lExpected.append(f'Reading interface file {os.path.relpath(self.sInterfaceFile)}')
-        lExpected.append('DEFERRED: I_DATA.SDR-SS-RT')
-        lExpected.append('Check Passed')
-        lExpected.append('')
-        self.assertEqual('', self.oStderr.getvalue())
-        self.assertEqual('\n'.join(lExpected), self.oStdout.getvalue())
-        self.assertEqual(0, iExitCode)
+        self.assertEqual(2, iExitCode)
+        self.assertIn('[interface_config_006]', self.oStderr.getvalue())

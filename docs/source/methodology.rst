@@ -43,7 +43,6 @@ Not supported yet
 -----------------
 
 * Methodologies other than SDR-SS-O, SDR-SS-O-FLC and SDR-SS-RT: a port with another methodology can be listed with ``status = "defer"`` until it is supported (see :doc:`interface`).
-* Checking SDR-SS-RT: ``stacv generate`` writes its constraints and report script, but ``stacv check`` has no SDR-SS-RT rules yet, so it reports the port as ``DEFERRED`` without reading its timing reports.
 * Buses: give each bit its own ``[[port]]`` (interface_config_022).
 * A device port shared by two interfaces, such as a shared SPI bus.
   Each interface would calculate its own output delay for the shared port, but the timing reports carry only one.
@@ -389,4 +388,47 @@ The hold edge I, at 40 ns, gives a hold requirement of -40 ns: the next bit, lau
    capture_clock = {name = "clk_100mhz", setup_edge = "Y", hold_edge = "I"}
 
 The edges are drawn with the launch clock on top, as for SDR-SS-O, and the drawing ends at the edge of the forwarded clock after the last edge of the port.
-The rules ``stacv check`` runs for SDR-SS-RT are not written yet: they will be written from the timing reports of the example, as the SDR-SS-O rules were.
+The capture edges are chosen to match the design: they must be the clock cycle on which the device samples the data.
+In the example, Y samples the data near the start of the time it is valid, so the setup slack is small and the hold slack large.
+Edges in the middle of that time would make the interface more robust.
+
+A timing report of a round trip runs from the launch clock to the capture register:
+
+.. code-block:: text
+
+   launch clock path -> clock port -> input delay -> data port -> capture register
+
+The launch clock path runs through the device to the clock port, as ``-reference_pin`` makes it, and the input delay starts there.
+So the rules check that the launch clock path ends at the clock port, and the data path starts at the data port: together they show the whole clock path to the pin is included, and the right input port is timed.
+
+These rules are checked on the timing reports of each SDR-SS-RT port:
+
+=======  =====================  ==================================================================
+Stage    Rule                   Checks
+=======  =====================  ==================================================================
+0        s0_timing_report_001   A setup timing report exists at each process corner.
+0        s0_timing_report_002   A hold timing report exists at each process corner.
+0        s0_trace_001           A data trace from the part and its clock trace connect the port.
+0        s0_data_path_002       The data path starts at the port.
+0        s0_clock_path_002      The launch clock path ends at the launch clock's port.
+1        s1_clock_001           The launch and capture clock paths start at the same point.
+2        s2_clock_001           The launch clock path is the same in every timing report.
+2        s2_clock_002           The capture clock path is the same in every timing report.
+2        s2_data_path_001       The data path is the same in every timing report.
+2        s2_input_delay_001     The input delay is the same in every setup timing report.
+2        s2_input_delay_002     The input delay is the same in every hold timing report.
+3        s3_input_delay_001     The maximum input delay matches the calculated input delay.
+3        s3_input_delay_002     The minimum input delay matches the calculated input delay.
+4        s4_capture_clock_001   The capture clock name matches the interface.
+4        s4_capture_clock_002   The capture clock period matches the interface.
+4        s4_launch_clock_001    The launch clock name matches the interface.
+4        s4_launch_clock_002    The launch clock period matches the interface.
+4        s4_part_002            The launch clock edge is the edge type the part launches on.
+4        s4_requirement_001     The setup requirement is the time between the setup edges.
+4        s4_requirement_002     The hold requirement is the time between the hold edges.
+5        s5_slack_001           Setup slack is not negative.
+5        s5_slack_002           Hold slack is not negative.
+=======  =====================  ==================================================================
+
+The timing tool reports a round trip from launch edge 0, such as ``dac_sclk_rd rise@0.000ns`` to ``clk_100mhz rise@40.000ns``, rather than from the configured edges 2 and Y.
+The requirement is the same, so s4_requirement_001 and s4_requirement_002 compare the requirements, not the edges.

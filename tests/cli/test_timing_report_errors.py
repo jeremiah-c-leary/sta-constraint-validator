@@ -103,3 +103,11 @@ class TestTimingReportErrors(unittest.TestCase):
     def test_slack_that_is_not_a_number_of_ns(self):
         self.change_line(14, '7.524ns', 'none')
         self.assert_error('vivado_tr_parse_016', 14, 'slack must be a number of ns')
+
+    def test_report_without_an_output_or_input_delay(self):
+        self.change_line(24, 'Output Delay:', 'Other Delay:')
+        self.assert_error('vivado_tr_parse_013', 14, 'timing report has no "Output Delay:" or "Input Delay:"')
+
+    def test_input_delay_in_other_units(self):
+        self.change_line(24, 'Output Delay:           12.000ns', 'Input Delay:            12.000ps')
+        self.assert_error('vivado_tr_parse_015', 24, '"Input Delay:" must be in ns')

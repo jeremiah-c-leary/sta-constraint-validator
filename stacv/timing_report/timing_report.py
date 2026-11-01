@@ -20,6 +20,9 @@ class TimingReport():
         self.clock_pessimism = None
         self.output_delay = None
         self.output_delay_line = None
+        self.input_delay = None
+        self.input_delay_line = None
+        self.launch_clock_edge_type = None
         self.clock_uncertainty = None
         self.slack_line = None
         self.slack = None

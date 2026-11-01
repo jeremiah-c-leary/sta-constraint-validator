@@ -75,34 +75,39 @@ Methodology coverage
 =======================  ========  ============  =========  ========
 Rule                     SDR-SS-O  SDR-SS-O-FLC  SDR-SS-RT  SDR-SS-I
 =======================  ========  ============  =========  ========
-s0_timing_report_001     X         X             P          P
-s0_timing_report_002     X         X             P          P
-s0_trace_001             X         X             P          P
+s0_timing_report_001     X         X             X          P
+s0_timing_report_002     X         X             X          P
+s0_trace_001             X         X             X          P
 s0_data_path_001         X         X
+s0_data_path_002                                 X
 s0_clock_path_001        X         X
-s1_clock_001             X         X             P          P
-s2_clock_001             X         X             P          P
-s2_clock_002             X         X             P          P
-s2_data_path_001         X         X             P          P
+s0_clock_path_002                                X
+s1_clock_001             X         X             X          P
+s2_clock_001             X         X             X          P
+s2_clock_002             X         X             X          P
+s2_data_path_001         X         X             X          P
 s2_output_delay_001      X         X
 s2_output_delay_002      X         X
+s2_input_delay_001                               X          P
+s2_input_delay_002                               X          P
 s3_output_delay_001      X         X
 s3_output_delay_002      X         X
-s3_input_delay_001                               P          P
+s3_input_delay_001                               X          P
+s3_input_delay_002                               X          P
 s4_process_corner_001    P         P             P          P
 s4_process_corner_002    P         P             P          P
-s4_data_path_002                                 P
 s4_data_path_003                                            P
 s4_clock_path_002                                           P
-s4_launch_clock_001      X         X             P          P
-s4_launch_clock_002      X         X             P          P
-s4_capture_clock_001     X         X             P          P
-s4_capture_clock_002     X         X             P          P
-s4_requirement_001       X         X             P          P
-s4_requirement_002       X         X             P          P
+s4_launch_clock_001      X         X             X          P
+s4_launch_clock_002      X         X             X          P
+s4_capture_clock_001     X         X             X          P
+s4_capture_clock_002     X         X             X          P
+s4_requirement_001       X         X             X          P
+s4_requirement_002       X         X             X          P
 s4_part_001              X         X
-s5_slack_001             X         X             P          P
-s5_slack_002             X         X             P          P
+s4_part_002                                      X
+s5_slack_001             X         X             X          P
+s5_slack_002             X         X             X          P
 =======================  ========  ============  =========  ========
 
 ``X`` marks a rule stacv checks, and ``P`` a rule that is planned for the methodology.
@@ -137,6 +142,16 @@ s0_clock_path_001: Capture clock path ends at the configured clock port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: stacv.rules.clock.s0_clock_path_001
+
+s0_data_path_002: Data path starts at the configured port
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.data_path.s0_data_path_002
+
+s0_clock_path_002: Launch clock path ends at the configured clock port
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.clock.s0_clock_path_002
 
 Stage 1: Intra-Timing Report
 ----------------------------
@@ -174,6 +189,16 @@ s2_output_delay_002: Output delays match in every hold timing report
 
 .. automodule:: stacv.rules.output_delay.s2_output_delay_002
 
+s2_input_delay_001: Input delays match in every setup timing report
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.input_delay.s2_input_delay_001
+
+s2_input_delay_002: Input delays match in every hold timing report
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.input_delay.s2_input_delay_002
+
 Stage 3: Board and Part
 -----------------------
 
@@ -186,6 +211,16 @@ s3_output_delay_002: Minimum output delays match the calculated output delays
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: stacv.rules.output_delay.s3_output_delay_002
+
+s3_input_delay_001: Maximum input delays match the calculated input delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.input_delay.s3_input_delay_001
+
+s3_input_delay_002: Minimum input delays match the calculated input delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.input_delay.s3_input_delay_002
 
 Stage 4: Intent
 ---------------
@@ -207,13 +242,6 @@ s4_process_corner_002: Every timing report is at a process corner listed in the 
 A timing report at any other process corner is a failure.
 It usually means the timing reports were generated for a different device, or with different settings than intended.
 This rule waits for a second timing tool: the Vivado parser accepts only the Slow and Fast process corners, and stage 0 requires both.
-
-s4_data_path_002: Data path includes clock output pin and data input pin
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-*Planned: stacv does not check this rule yet.*
-
-The data path must include the clock output port and a data input port.
 
 s4_data_path_003: Data path starts at an input port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -263,6 +291,11 @@ s4_part_001: Capture clock edge is the edge type the part requires
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: stacv.rules.part.s4_part_001
+
+s4_part_002: Launch clock edge is the edge type the part launches on
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.part.s4_part_002
 
 Stage 5: Slack
 --------------

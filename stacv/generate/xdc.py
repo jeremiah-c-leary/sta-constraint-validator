@@ -4,7 +4,6 @@ Generates Vivado timing constraints for the ports of an interface.
 
 from stacv.generate import generate_error
 from stacv.methodology import methodology
-from stacv.methodology import methodology_factory
 from stacv.rules import edge_times
 from stacv.rules import input_delays
 from stacv.rules import output_delays
@@ -62,7 +61,7 @@ def calculate_ratio(fLongerPeriod, fShorterPeriod):
 
 def check_traces_exist(oPortProfile):
     oPort = oPortProfile.port
-    oDataTrace = find_data_trace(oPortProfile)
+    oDataTrace = path_lookups.get_port_data_trace(oPortProfile)
     if oDataTrace is None:
         raise generate_error.GenerateError('generate_007', oPort.name, f'has no trace {describe_data_trace_direction(oPort)}')
     if not oPortProfile.part.has_pin_named(oDataTrace.part_pin):
@@ -73,13 +72,7 @@ def check_traces_exist(oPortProfile):
 
 
 def is_input(oPort):
-    return methodology_factory.create_methodology(oPort.methodology).data_direction == methodology.INPUT
-
-
-def find_data_trace(oPortProfile):
-    if is_input(oPortProfile.port):
-        return path_lookups.get_input_data_trace(oPortProfile)
-    return path_lookups.get_data_trace(oPortProfile)
+    return oPort.data_direction == methodology.INPUT
 
 
 def describe_part_end_of_trace(oPort):

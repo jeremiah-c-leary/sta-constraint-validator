@@ -58,7 +58,8 @@ Example
    PASSED: O_DAC_DATA.SDR-SS-O
    Reading timing report file example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt
    PASSED: O_DAC_SDEN_F.SDR-SS-O-FLC
-   DEFERRED: I_DAC_DATA.SDR-SS-RT
+   Reading timing report file example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt
+   PASSED: I_DAC_DATA.SDR-SS-RT
    Check Passed
 
 Documentation

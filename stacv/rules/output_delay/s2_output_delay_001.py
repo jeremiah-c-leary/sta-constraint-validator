@@ -32,7 +32,7 @@ The setup timing report at the Fast process corner uses a different output delay
 Refer to the vendor's timing constraints documentation for output delays.
 '''
 
-from stacv.rules import output_delay_comparisons
+from stacv.rules import delay_comparisons
 
 
 RULE_ID = 's2_output_delay_001'
@@ -45,4 +45,4 @@ def check(oPortProfile):
     '''
 
     lSetupReports = oPortProfile.timing_reports.get_setup_reports()
-    return output_delay_comparisons.check_output_delays_match(lSetupReports, RULE_ID, FAILURE_MESSAGE)
+    return delay_comparisons.check_delays_match(lSetupReports, delay_comparisons.OUTPUT_DELAY, RULE_ID, FAILURE_MESSAGE)

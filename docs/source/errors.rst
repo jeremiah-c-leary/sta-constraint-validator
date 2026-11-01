@@ -331,8 +331,8 @@ The file is followed by the line the error is on: ``ERROR: [<identifier>] <file>
      - ``timing report has no "Clock Pessimism Removal (CPR):"``, or ``"Clock Pessimism Removal (CPR):" has no value``
      - Write the report with ``report_timing -path full_clock_expanded``.
    * - vivado_tr_parse_013
-     - ``timing report has no "Output Delay:"``, or ``"Output Delay:" has no value``
-     - The report is not to an output port; check the port name.
+     - ``timing report has no "Output Delay:" or "Input Delay:"``, or ``"Output Delay:" has no value``, or ``"Input Delay:" has no value``
+     - The report is not to an output port or from an input port; check the port name.
    * - vivado_tr_parse_014
      - ``"Clock Uncertainty:" has no value``
      - The file is incomplete or edited; write it again.

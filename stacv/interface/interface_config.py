@@ -80,16 +80,8 @@ def resolve_timing_reports(oInterface, sInterfaceFile):
     # Only check reads the timing reports, so their environment variables are expanded here and not when the interface is read.
     oLocation = interface_location.InterfaceLocation(sInterfaceFile)
     for oPort in oInterface.ports:
-        if is_checked(oPort):
-            oLocation.set_port_name(oPort.name)
-            oPort.timing_reports = resolve_files(oPort.timing_reports_as_written, 'timing_reports', oLocation)
-
-
-def is_checked(oPort):
-    # A port whose methodology has no rules yet is deferred by check, so its timing reports may not exist yet.
-    if oPort.status == port.DEFER:
-        return False
-    return methodology_factory.create_methodology(oPort.methodology).has_rules()
+        oLocation.set_port_name(oPort.name)
+        oPort.timing_reports = resolve_files(oPort.timing_reports_as_written, 'timing_reports', oLocation)
 
 
 def resolve_files(lFilenames, sKey, oLocation):
@@ -233,13 +225,15 @@ def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     oPort.capture_clock = build_referenced_clock(dPort, 'capture_clock', oPort.name, oInterface, oLocation)
     check_capture_clock_stops_if_needed(oPort, oLocation)
     oPort.launch_clock = build_referenced_clock(dPort, 'launch_clock', oPort.name, oInterface, oLocation)
-    set_forwarded_clock(oPort)
+    set_methodology_roles(oPort)
     oPort.edge_errors = find_edge_errors(oPort, oLocation)
     oPort.timing_reports_as_written = READER.get_required_list_of_strings(dPort, 'timing_reports', oLocation)
 
 
-def set_forwarded_clock(oPort):
-    oPort.forwarded_clock_key = methodology_factory.create_methodology(oPort.methodology).forwarded_clock_key
+def set_methodology_roles(oPort):
+    oMethodology = methodology_factory.create_methodology(oPort.methodology)
+    oPort.data_direction = oMethodology.data_direction
+    oPort.forwarded_clock_key = oMethodology.forwarded_clock_key
     if oPort.forwarded_clock_key == methodology.LAUNCH_CLOCK:
         oPort.forwarded_clock = oPort.launch_clock
     else:

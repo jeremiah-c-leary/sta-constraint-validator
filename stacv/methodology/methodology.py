@@ -21,9 +21,6 @@ class Methodology():
         self.data_direction = OUTPUT
         self.forwarded_clock_key = CAPTURE_CLOCK
 
-    def has_rules(self):
-        return len(self.stages) > 0
-
     def check(self, oPortProfile):
         oMethodologyResults = methodology_results.MethodologyResults()
         sSkipStageReason = None

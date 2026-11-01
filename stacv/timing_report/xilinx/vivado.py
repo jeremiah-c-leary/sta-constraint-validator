@@ -127,7 +127,7 @@ def populate_timing_report(oTimingReport):
     update_capture_edge(oTimingReport)
     update_requirement(oTimingReport)
     update_clock_pessimism(oTimingReport)
-    update_output_delay(oTimingReport)
+    update_port_delay(oTimingReport)
     update_clock_uncertainty(oTimingReport)
     update_slack(oTimingReport)
 
@@ -397,6 +397,7 @@ def update_requirement(oTimingReport):
     oTimingReport.requirement_line = oLine
     oTimingReport.requirement = extract_requirement(oLine)
     oTimingReport.capture_clock_edge_type = extract_capture_clock_edge_type(oLine)
+    oTimingReport.launch_clock_edge_type = extract_launch_clock_edge_type(oLine)
 
 
 def extract_requirement(oLine):
@@ -411,17 +412,32 @@ def extract_capture_clock_edge_type(oLine):
     return sCaptureClockEdge.split('@')[0]
 
 
+def extract_launch_clock_edge_type(oLine):
+    # The requirement is the capture edge minus the launch edge: (<capture clock> rise@40.000ns - <launch clock> rise@0.000ns)
+    lWords = oLine.text.split()
+    if len(lWords) < 7:
+        return None
+    return lWords[6].split('@')[0]
+
+
 def update_clock_pessimism(oTimingReport):
     sKey = 'Clock Pessimism Removal (CPR):'
     sErrorId = 'vivado_tr_parse_012'
     oTimingReport.clock_pessimism = extract_time_field_value_as_float(oTimingReport, sKey, sErrorId)
 
 
-def update_output_delay(oTimingReport):
-    sKey = 'Output Delay:'
+def update_port_delay(oTimingReport):
+    # A path to an output port has an output delay, and a path from an input port an input delay.
     sErrorId = 'vivado_tr_parse_013'
-    oTimingReport.output_delay = extract_time_field_value_as_float(oTimingReport, sKey, sErrorId)
-    oTimingReport.output_delay_line = extract_key_line(oTimingReport, sKey, sErrorId)
+    if has_key_line(oTimingReport, 'Output Delay:'):
+        oTimingReport.output_delay = extract_time_field_value_as_float(oTimingReport, 'Output Delay:', sErrorId)
+        oTimingReport.output_delay_line = extract_key_line(oTimingReport, 'Output Delay:', sErrorId)
+        return
+    if has_key_line(oTimingReport, 'Input Delay:'):
+        oTimingReport.input_delay = extract_time_field_value_as_float(oTimingReport, 'Input Delay:', sErrorId)
+        oTimingReport.input_delay_line = extract_key_line(oTimingReport, 'Input Delay:', sErrorId)
+        return
+    raise timing_report_parse_error.TimingReportParseError(sErrorId, oTimingReport.get_lines()[0], 'timing report has no "Output Delay:" or "Input Delay:"')
 
 
 def update_clock_uncertainty(oTimingReport):
@@ -467,11 +483,11 @@ def has_type(oLine):
 
 
 def extract_path_type(oLine):
-    lWords = oLine.text.split()
-    if len(lWords) < 3:
-        return None
-    if lWords[2] == 'Max':
-        return 'setup'
-    if lWords[2] == 'Min':
-        return 'hold'
+    # A path to an output port is "Max at ...", and a path to a register "Setup (Max at ...)".
+    lWords = oLine.text.replace('(', ' ').split()
+    for sWord in lWords[2:4]:
+        if sWord == 'Max':
+            return 'setup'
+        if sWord == 'Min':
+            return 'hold'
     return None

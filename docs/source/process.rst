@@ -33,7 +33,7 @@ Check output
    Reading timing report file timing_reports/O_DAC_SDEN_F_timing.rpt
    FAILED: [s5_slack_001] O_DAC_SDEN_F.SDR-SS-O-FLC
        timing_reports/O_DAC_SDEN_F_timing.rpt:14  setup slack -10.295ns
-   DEFERRED: I_DAC_DATA.SDR-SS-RT
+   DEFERRED: O_DAC_LDAC
 
 * ``PASSED:`` every rule of the port passed.
 * ``FAILED:`` one line for each failing rule, followed by its details, each indented four spaces with the file and line it comes from.

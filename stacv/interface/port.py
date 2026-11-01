@@ -12,6 +12,8 @@ class Port():
         # The port clock the device forwards to the part: the capture clock of an output, the launch clock of a round trip.
         self.forwarded_clock = None
         self.forwarded_clock_key = None
+        # Whether the device sends the data to the part, or receives it.
+        self.data_direction = None
         self.timing_reports = []
         # As written in the interface file, before environment variables are expanded.
         self.timing_reports_as_written = []

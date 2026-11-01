@@ -22,3 +22,6 @@ class DelayPath():
 
     def get_last_delay(self):
         return self.delays[-1]
+
+    def get_first_delay(self):
+        return self.delays[0]
