@@ -12,7 +12,24 @@
 #             analyzed port on the interface will have setup and hold reports
 #             for each corner. Each port will have its own file.
 #
+# Requires:   PROJ_DIR
+#
 ###############################################################################
+
+###############################################################################
+# Verify Environment Variables Exist
+###############################################################################
+if {![info exists env(PROJ_DIR)]} {
+    error "stacv: environment variable PROJ_DIR is not set"
+}
+
+###############################################################################
+# Verify Report Directories Exist
+###############################################################################
+# O_DAC_DATA
+if {![file isdirectory "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"]} {
+    error "stacv: O_DAC_DATA report directory does not exist: $env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
+}
 
 ###############################################################################
 # Slow Corner

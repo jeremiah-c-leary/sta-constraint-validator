@@ -18,8 +18,11 @@ ENVIRONMENT_VARIABLE = re.compile(r'\$\{(\w+)\}|\$(\w+)')
 
 def generate_file(sInterfaceFile, oInterface, lArgv):
     check_one_timing_report_per_port(oInterface)
+    lVariables = find_required_variables(oInterface)
     lLines = []
-    lLines.extend(build_header(oInterface, lArgv))
+    lLines.extend(build_header(oInterface, lArgv, lVariables))
+    lLines.extend(build_variable_checks(lVariables))
+    lLines.extend(build_directory_checks(oInterface, sInterfaceFile))
     for sCorner in CORNERS:
         lLines.append('')
         lLines.extend(build_corner(sCorner, oInterface, sInterfaceFile))
@@ -35,7 +38,21 @@ def check_one_timing_report_per_port(oInterface):
             raise generate_error.GenerateError('generate_010', oPort.name, f'has {iTimingReports} timing reports; the report script writes one file for each port')
 
 
-def build_header(oInterface, lArgv):
+def find_required_variables(oInterface):
+    # Each variable is listed once, in the order it first appears in the report paths.
+    lVariables = []
+    for oPort in oInterface.get_analyzed_ports():
+        for oMatch in ENVIRONMENT_VARIABLE.finditer(oPort.timing_reports_as_written[0]):
+            add_new_variable(lVariables, get_variable_name(oMatch))
+    return lVariables
+
+
+def add_new_variable(lVariables, sVariable):
+    if sVariable not in lVariables:
+        lVariables.append(sVariable)
+
+
+def build_header(oInterface, lArgv, lVariables):
     lLines = []
     lLines.append(BANNER)
     lLines.append('#')
@@ -51,8 +68,62 @@ def build_header(oInterface, lArgv):
     lLines.append('#             analyzed port on the interface will have setup and hold reports')
     lLines.append('#             for each corner. Each port will have its own file.')
     lLines.append('#')
+    lLines.extend(build_requires(lVariables))
     lLines.append(BANNER)
     return lLines
+
+
+def build_requires(lVariables):
+    if len(lVariables) == 0:
+        return []
+    lLines = []
+    lLines.append(f'# Requires:   {lVariables[0]}')
+    for sVariable in lVariables[1:]:
+        lLines.append(f'#             {sVariable}')
+    lLines.append('#')
+    return lLines
+
+
+def build_variable_checks(lVariables):
+    if len(lVariables) == 0:
+        return []
+    lLines = ['']
+    lLines.extend(build_banner('Verify Environment Variables Exist'))
+    for sVariable in lVariables:
+        lLines.append(f'if {{![info exists env({sVariable})]}} {{')
+        lLines.append(f'    error "stacv: environment variable {sVariable} is not set"')
+        lLines.append('}')
+    return lLines
+
+
+def build_directory_checks(oInterface, sInterfaceFile):
+    # Vivado does not create directories, so they are checked before the corners are changed.
+    lPorts = oInterface.get_analyzed_ports()
+    if len(lPorts) == 0:
+        return []
+    lLines = ['']
+    lLines.extend(build_banner('Verify Report Directories Exist'))
+    for oPort in lPorts:
+        lLines.extend(build_directory_check(oPort, sInterfaceFile))
+    return lLines
+
+
+def build_directory_check(oPort, sInterfaceFile):
+    sDirectory = find_report_directory(oPort, sInterfaceFile)
+    lLines = []
+    lLines.append(f'# {oPort.name}')
+    lLines.append(f'if {{![file isdirectory "{sDirectory}"]}} {{')
+    lLines.append(f'    error "stacv: {oPort.name} report directory does not exist: {sDirectory}"')
+    lLines.append('}')
+    return lLines
+
+
+def find_report_directory(oPort, sInterfaceFile):
+    sPath = convert_to_tcl_path(oPort.timing_reports_as_written[0], sInterfaceFile)
+    sDirectory = os.path.dirname(sPath)
+    if sDirectory == '':
+        return '.'
+    return sDirectory
 
 
 def build_command(lArgv):
@@ -119,10 +190,15 @@ def starts_with_environment_variable(sPath):
 
 
 def convert_to_tcl_variable(oMatch):
+    return f'$env({get_variable_name(oMatch)})'
+
+
+def get_variable_name(oMatch):
+    # Group 1 is the ${NAME} form and group 2 the $NAME form.
     sName = oMatch.group(1)
     if sName is None:
         sName = oMatch.group(2)
-    return f'$env({sName})'
+    return sName
 
 
 def build_restore_defaults():
