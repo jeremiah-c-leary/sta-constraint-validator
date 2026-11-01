@@ -63,6 +63,7 @@ Ports refer to clocks by name.
    name = "clk_25mhz"
    period = 40.000
    port = "O_CLK"
+   idle = "low"
    generator = {source = "DEVICE_ELEMENT", master_pin = "MASTER_PIN", target_pin = "TARGET_PIN", master_clock = "clk_100mhz"}
 
 .. list-table::
@@ -83,6 +84,11 @@ Ports refer to clocks by name.
      - No
      - The device port the clock leaves the device on, to the part.
        Not used for a clock that stays inside the device.
+   * - ``idle``
+     - No
+     - The level of a clock that stops between transfers, such as an SPI clock: ``"low"`` or ``"high"`` (interface_config_011).
+       Not used for a clock that runs all the time.
+       An ``SDR-SS-O-FLC`` port needs it on its capture clock (interface_config_012).
    * - ``generator``
      - No
      - The element in the device that generates the clock.
@@ -150,7 +156,7 @@ Each port of the interface has a ``[[port]]`` table.
    * - ``methodology``
      - Yes
      - The :doc:`methodology <methodology>` of the port.
-       An analyzed port must be ``SDR-SS-O``; a port with another methodology is deferred until stacv supports it (interface_config_010).
+       An analyzed port must be ``SDR-SS-O`` or ``SDR-SS-O-FLC``; a port with another methodology is deferred until stacv supports it (interface_config_010).
    * - ``launch_clock``
      - Yes
      - The clock that launches the data, and its edges.

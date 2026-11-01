@@ -188,6 +188,7 @@ Every number in a constraint is shown with the calculation and the inputs it com
 :Section 5, Ports: One section for each port of the interface.
 
 The section of an analyzed port starts with its edges diagram and its setup and hold requirements, with the edges they come from.
+An ``SDR-SS-O-FLC`` port has two windows, each followed by its requirement (see :doc:`methodology`).
 The requirements are the values to compare with the requirements in the timing reports.
 
 Each constraint is preceded by a comment explaining its arguments, in the order they appear.

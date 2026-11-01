@@ -6,15 +6,16 @@ These methodologies are defined relative to the device being timed.
 
 The following represent a subset of named methodologies:
 
-=========== ==================================================================
-Identifier  Name
-=========== ==================================================================
-SDR-SS-O    Single Data Rate (SDR) Source Synchronous (SS) Output (SDR-SS-O)
-SDR-SS-RT   SDR SS Round Trip (SDR-SS-RT)
-SDR-SS-I    SDR SS Input (SDR-SS-I)
-DDR-SS-O    Double Data Rate (DDR) SS Output (DDR-SS-O)
-DDR-SS-I    DDR SS Input (DDR-SS-I)
-=========== ==================================================================
+============= ==================================================================
+Identifier    Name
+============= ==================================================================
+SDR-SS-O      Single Data Rate (SDR) Source Synchronous (SS) Output (SDR-SS-O)
+SDR-SS-O-FLC  SDR SS Output to the First and Last Clock (SDR-SS-O-FLC)
+SDR-SS-RT     SDR SS Round Trip (SDR-SS-RT)
+SDR-SS-I      SDR SS Input (SDR-SS-I)
+DDR-SS-O      Double Data Rate (DDR) SS Output (DDR-SS-O)
+DDR-SS-I      DDR SS Input (DDR-SS-I)
+============= ==================================================================
 
 An interface, such as SPI, could use more than one methodology.
 For example, an SPI interface to a DAC could use:
@@ -23,7 +24,7 @@ For example, an SPI interface to a DAC could use:
 Pin       Methodology
 ========= ==============
 MOSI      SDR-SS-O
-CS_F      SDR-SS-O
+CS_F      SDR-SS-O-FLC
 MISO      SDR-SS-RT
 ========= ==============
 
@@ -31,8 +32,8 @@ An interface is considered fully timed when the methodology of each pin is valid
 
 The part defines the methodology of each of its pins.
 The pins are grouped into interfaces, and a part can have more than one interface.
-The methodology names are relative to the device, even in the part:
-a part input pin, which the device drives, uses an output methodology such as SDR-SS-O.
+The methodology names of the part pins are from the part's point of view:
+a part input pin, which the device drives, is ``SDR-SS-I`` (see :doc:`part`).
 
 Each interface is timed independently, with its own board data.
 The traces in the board data connect each pin of the part interface to a device port.
@@ -92,7 +93,7 @@ Each source provides only the information it knows:
 ==============  =================================================================  ==============================
 Source          Provides                                                           Example
 ==============  =================================================================  ==============================
-Part            The pins of the interface and the methodology of each pin.         ``SDIN``: SDR-SS-O
+Part            The pins of the interface and the methodology of each pin.         ``SDIN``: SDR-SS-I
 Part            The clock pin each data pin is referenced to.                      ``SCLK``
 Part            The setup and hold of each data pin, and the clock edge they       5 ns, 5 ns on the falling edge
                 apply to (:doc:`part`).
@@ -108,7 +109,7 @@ Timing reports  What the timing tool timed, and the process corners it timed at.
 The data ports and the clock port are not listed by the user.
 They are found by following the traces from the part pins:
 
-* the data ports are the device ports connected to the part's SDR-SS-O data pins
+* the data ports are the device ports connected to the part's SDR-SS-I data pins
 * the clock port is the device port connected to the part clock pin
 
 The user does not provide the output delays.
@@ -368,3 +369,56 @@ It will be replaced once more methodologies are supported.
    timing_reports:
      - timing_reports/O_DAC_DATA_timing.rpt
 
+Single Data Rate Source Synchronous Output to the First and Last Clock (SDR-SS-O-FLC)
+--------------------------------------------------------------------------------------
+
+Some signals are timed to the first and last edges of a clock that stops between transfers, rather than to every edge.
+A chip select is the usual example: its setup is to the first clock edge after it is asserted, and its hold is from the last clock edge before it is released.
+The clock is idle before the first edge and after the last.
+
+The timing tool assumes every clock runs all the time, so it times the signal as SDR-SS-O, against the edges either side of each change.
+SDR-SS-O-FLC therefore uses the SDR-SS-O constraints and checks unchanged.
+The part pin is still ``SDR-SS-I``, with the datasheet's setup and hold to the first and last clock edges, such as tCSS and tCSH.
+
+What differs is the edges diagram, in ``stacv visualize edges`` and in the constraints file.
+It is drawn in two windows, so it can be compared with the datasheet figure:
+
+* The setup window, with the clock idle up to its first pulse, and the first clock edge marked.
+* The hold window, with the clock idle after its last pulse, and the last clock edge marked.
+
+Each window shows whole clock pulses, so the capture clock of an SDR-SS-O-FLC port needs its ``idle`` level (see :doc:`interface`).
+A clock that idles low pulses high, rising then falling; a clock that idles high pulses low.
+The DAC81404 chip select, captured on the falling edge with the clock idle low:
+
+.. code-block:: text
+
+                                                                                1     1     1
+                    0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2
+   clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
+   (100 MHz)
+                                                                    |---setup requirement-->|
+                                              first clock edge ---->|
+
+                                                                    C_______________________D
+   dac_sclk       __________________________________________________|                       |
+   (25 MHz)
+
+   setup requirement = 20 ns
+
+                                                                                1     1     1
+                    0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2
+   clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
+   (100 MHz)
+                                            |<---hold requirement---|
+                       last clock edge ---->|
+
+                    A_______________________B
+   dac_sclk       __|                       |________________________________________________
+   (25 MHz)
+
+   hold requirement = -20 ns
+
+A label is drawn on the right of its edge, pointing back at it, when there is no room on the left.
+Both windows end where the first pulse ends, or at the latest edge of the port when it is later.
+
+A data port on the same clock stays SDR-SS-O: its bits are captured within the transfer, where the clock runs.
