@@ -2,7 +2,6 @@
 import os
 
 from stacv.interface import interface_config
-from stacv.interface import port
 from stacv.inputs import port_profile
 from stacv.methodology import methodology_factory
 from stacv.output import check_report
@@ -43,7 +42,7 @@ def get_port_results(oInterface):
 
 
 def get_port_result(oPort, oTraceList, oPart):
-    if oPort.status == port.DEFER:
+    if not interface_config.is_checked(oPort):
         oDeferredPortResult = deferred_port_result.DeferredPortResult(oPort)
         print(f'DEFERRED: {oDeferredPortResult.get_identifier()}')
         return oDeferredPortResult

@@ -42,7 +42,8 @@ If a device connects to two of the same part, each connection is a separate inte
 Not supported yet
 -----------------
 
-* Methodologies other than SDR-SS-O and SDR-SS-O-FLC: a port with another methodology, such as SDR-SS-RT, can be listed with ``status = "defer"`` until it is supported (see :doc:`interface`).
+* Methodologies other than SDR-SS-O, SDR-SS-O-FLC and SDR-SS-RT: a port with another methodology can be listed with ``status = "defer"`` until it is supported (see :doc:`interface`).
+* Checking SDR-SS-RT: ``stacv generate`` writes its constraints and report script, but ``stacv check`` has no SDR-SS-RT rules yet, so it reports the port as ``DEFERRED`` without reading its timing reports.
 * Buses: give each bit its own ``[[port]]`` (interface_config_022).
 * A device port shared by two interfaces, such as a shared SPI bus.
   Each interface would calculate its own output delay for the shared port, but the timing reports carry only one.
@@ -357,3 +358,35 @@ A label is drawn on the right of its edge, pointing back at it, when there is no
 Both windows end where the first pulse ends, or at the latest edge of the port when it is later.
 
 A data port on the same clock stays SDR-SS-O: its bits are captured within the transfer, where the clock runs.
+
+Single Data Rate Source Synchronous Round Trip (SDR-SS-RT)
+-----------------------------------------------------------
+
+A round trip reads data from the part on a clock the device forwards to it.
+The device forwards the clock, the part launches the data on it, and the device captures the data with its own clock.
+On the DAC81404, ``SDO`` is launched on the rising edge of ``SCLK`` and captured in the device by ``clk_100mhz``.
+
+The launch clock is the forwarded clock, so the launch clock has the ``port`` and the ``generator``, and the capture clock stays inside the device.
+The part pin is ``SDR-SS-RT``, with the datasheet's clock to out, such as tSDODLY, as ``cko_max`` and ``cko_min`` (see :doc:`part`).
+
+The data port is constrained with input delays: the clock trace, the part's clock to out and the data trace (see :doc:`generate`).
+For the DAC81404 example, the read clock ``dac_sclk_rd`` runs at 80 ns, as the part's ``SDO`` allows 12.5 MHz at most:
+
+.. code-block:: text
+
+   setup (max) input delay = clock trace max + cko_max + data trace max = 3 + 30 + 1 = 34 ns
+   hold (min) input delay  = clock trace min + cko_min + data trace min = 1 +  0 + 0 =  1 ns
+
+Launch edge 2 at 80 ns is captured by edge Y at 120 ns, a setup requirement of 40 ns.
+The hold edge I, at 40 ns, gives a hold requirement of -40 ns: the next bit, launched at 160 ns, must not reach the device before edge Y.
+
+.. code-block:: toml
+
+   [[port]]
+   name = "I_DAC_DATA"
+   methodology = "SDR-SS-RT"
+   launch_clock = {name = "dac_sclk_rd", setup_edge = 2, hold_edge = 2}
+   capture_clock = {name = "clk_100mhz", setup_edge = "Y", hold_edge = "I"}
+
+The edges are drawn with the launch clock on top, as for SDR-SS-O, and the drawing ends at the edge of the forwarded clock after the last edge of the port.
+The rules ``stacv check`` runs for SDR-SS-RT are not written yet: they will be written from the timing reports of the example, as the SDR-SS-O rules were.

@@ -85,7 +85,8 @@ Ports refer to clocks by name.
      - No
      - The device port the clock leaves the device on, to the part.
        Not used for a clock that stays inside the device.
-       The capture clock of an analyzed port needs it (interface_config_021).
+       The clock the device forwards to the part needs it (interface_config_021): the capture clock of an SDR-SS-O or SDR-SS-O-FLC port, and the launch clock of an SDR-SS-RT port.
+       Two clocks can leave on the same port, such as a write clock and a slower read clock.
    * - ``idle``
      - No
      - The level of a clock that stops between transfers, such as an SPI clock: ``"low"`` or ``"high"`` (interface_config_012).
@@ -95,7 +96,7 @@ Ports refer to clocks by name.
      - No
      - The element in the device that generates the clock.
        Not used for a clock that stays inside the device.
-       ``stacv generate xdc`` needs it on the capture clock of every analyzed port (generate_001).
+       ``stacv generate xdc`` needs it on the clock every analyzed port forwards to the part (generate_001).
 
 The ``generator`` table has these keys, all required:
 
@@ -160,7 +161,7 @@ A port can have more than one table, one for each methodology, such as a bidirec
    * - ``methodology``
      - Yes
      - The :doc:`methodology <methodology>` of the port.
-       An analyzed port must be ``SDR-SS-O`` or ``SDR-SS-O-FLC``; a port with another methodology is deferred until stacv supports it (interface_config_011).
+       An analyzed port must be ``SDR-SS-O``, ``SDR-SS-O-FLC`` or ``SDR-SS-RT``; a port with another methodology is deferred until stacv supports it (interface_config_011).
    * - ``launch_clock``
      - Yes
      - The clock that launches the data, and its edges.

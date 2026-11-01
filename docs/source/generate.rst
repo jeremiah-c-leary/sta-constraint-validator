@@ -74,7 +74,7 @@ It also tells a reviewer where the forwarded clock comes from.
 :master_clock: The clock at the master pin.
 
 ``generator`` is optional for ``stacv check`` and ``stacv visualize``.
-``stacv generate`` stops with an error if the capture clock of an analyzed port has none.
+``stacv generate`` stops with an error if the clock an analyzed port forwards to the part has none.
 
 Port status
 ^^^^^^^^^^^
@@ -109,7 +109,8 @@ Delays taken from the default are marked in the constraints file, so they are no
 Assumptions
 -----------
 
-* The launch clock is defined by the design, so it is not generated.
+* The clock that stays in the device is defined by the design, so it is not generated:
+  the launch clock of an SDR-SS-O or SDR-SS-O-FLC port, and the capture clock of an SDR-SS-RT port.
 * Both clocks have a 50% duty cycle.
 * The longer period is an integer multiple of the shorter period.
 
@@ -122,15 +123,20 @@ Constraints
 Generated clock
 ^^^^^^^^^^^^^^^
 
-Each capture clock is generated once, on its generator:
+Each clock the device forwards to the part is generated once, on its generator, in the order the ports first use it.
+That is the capture clock of an SDR-SS-O or SDR-SS-O-FLC port, and the launch clock of an SDR-SS-RT port.
 
 :Name: The name of the clock.
 :Source: ``generator.source`` / ``generator.master_pin``
 :Object: ``generator.source`` / ``generator.target_pin``
-:Ratio: Divide by capture period / master clock period when the capture clock is slower.
-        Multiply by master clock period / capture period when the capture clock is faster.
+:Ratio: Divide by clock period / master clock period when the clock is slower.
+        Multiply by master clock period / clock period when the clock is faster.
+:Add: ``-add`` when a clock is already generated at the same ``source`` and ``target_pin``.
+      Without it, the second clock would replace the first.
 
 The generated clock is defined where it is generated, not on the clock port.
+
+Two clocks can be generated at the same pin, such as the DAC81404 write clock ``dac_sclk`` at 25 MHz and its read clock ``dac_sclk_rd`` at 12.5 MHz, the fastest SCLK the part allows for a read.
 
 Output delays
 ^^^^^^^^^^^^^
@@ -146,6 +152,20 @@ The generated clock is defined at the target pin of its generator, so without th
 The timing report is then wrong without any warning.
 
 When the capture edges are falling edges (B, D, F, ...), the output delays are applied to the falling edge of the capture clock.
+
+Input delays
+^^^^^^^^^^^^
+
+An SDR-SS-RT port gets a maximum and a minimum input delay against its launch clock, the clock the device forwards to the part.
+The clock goes out to the part, the part launches the data, and the data comes back:
+
+:Maximum: clock trace maximum delay + part clock to out maximum (``cko_max``) + data trace maximum delay
+:Minimum: clock trace minimum delay + part clock to out minimum (``cko_min``) + data trace minimum delay
+
+The data trace is the port's ``part_to_device`` trace.
+Like the output delays, the input delays use the clock port as their reference pin, so the delay from the target pin of the generator to the clock port is in the launch clock path.
+
+When the launch edges are falling edges (1, 3, 5, ...), the input delays are applied to the falling edge of the launch clock.
 
 Multicycle paths
 ^^^^^^^^^^^^^^^^
@@ -165,7 +185,7 @@ The hold requirement is the time of the capture hold edge minus the time of the 
 :Hold multicycle: (setup requirement - hold requirement) / step period - 1
 
 A setup multicycle of 1 and a hold multicycle of 0 are the timing tool's default and are not written.
-Each multicycle path applies from the launch clock to the port, so ports that share clocks can use different edges.
+Each multicycle path applies from the launch clock to an output port, or from an SDR-SS-RT port to its capture clock, so ports that share clocks can use different edges.
 
 For example, a 10 ns launch clock and a 40 ns capture clock, with ``setup_edge = 4`` to ``"C"`` and ``hold_edge = 4`` to ``"A"``:
 
@@ -213,6 +233,7 @@ The script is written for a reader, like the constraints file:
 * There is one section for each corner.
   Each section turns on its corner, turns off the other, and lists every port of the interface under its name.
 * A deferred port is listed as ``Deferred``, with no reports.
+* The reports of an output port are the paths to it (``-to``), and the reports of an SDR-SS-RT port are the paths from it (``-from``).
 * The first report of a port starts its file, so reports from an earlier run are not kept.
 * The script ends by restoring the Vivado default, both corners on.
 
@@ -277,7 +298,6 @@ Tcl reads a backslash as an escape, so ``"Z:\projects"`` loses its separators:
 Not supported yet
 ^^^^^^^^^^^^^^^^^
 
-* Input ports: the script reports paths to output ports only.
 * Buses: each port is reported as one path.
 
 Errors
@@ -285,13 +305,13 @@ Errors
 
 ``stacv generate`` stops with an error, and writes no constraints, when an analyzed port:
 
-* has a capture clock without a ``generator`` (generate_001).
+* forwards a clock without a ``generator`` (generate_001).
 * has a setup or hold requirement that is not a whole number of step periods (generate_002, generate_003).
   The capture edge does not line up with a launch edge, and the hardware cannot produce that clock.
 * has a setup multicycle less than 1 (generate_004).
 * has a hold multicycle less than 0 (generate_005).
-* has no trace from the device to the part (generate_007).
-* has a trace that ends at a pin the part does not have (generate_008).
+* has no trace from the device to the part, or from the part to the device for an SDR-SS-RT port (generate_007).
+* has a trace to a pin the part does not have (generate_008).
 * has no clock trace from its clock port to the clock pin of the part pin (generate_009).
 
 ``stacv generate report_tcl`` stops with an error when an analyzed port lists more than one timing report (generate_010).

@@ -4,6 +4,11 @@ def get_data_trace(oPortProfile):
     return oPortProfile.traces.get_device_to_part_trace_starting_with_name(sPortName)
 
 
+def get_input_data_trace(oPortProfile):
+    sPortName = oPortProfile.port.name
+    return oPortProfile.traces.get_part_to_device_trace_ending_with_name(sPortName)
+
+
 def get_part_data_pin(oPortProfile):
     oDataTrace = get_data_trace(oPortProfile)
     return get_part_pin_at_end_of_trace(oPortProfile, oDataTrace)
@@ -15,5 +20,5 @@ def get_part_pin_at_end_of_trace(oPortProfile, oDataTrace):
 
 def get_clock_trace(oPortProfile, oPartPin):
     sPartClockName = oPartPin.clock.pin
-    sDeviceClockName = oPortProfile.port.capture_clock.port
+    sDeviceClockName = oPortProfile.port.forwarded_clock.port
     return oPortProfile.traces.get_device_to_part_trace_between(sDeviceClockName, sPartClockName)

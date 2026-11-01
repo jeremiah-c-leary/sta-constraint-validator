@@ -130,8 +130,9 @@ Interface file
        Not reported when interface_config_018 is.
      - Drawn
    * - interface_config_021
-     - ``key "capture_clock"<location> names clock <name>, which has no key "port"; the capture clock leaves the device on a port``
+     - ``key "<clock key>"<location> names clock <name>, which has no key "port"; the <clock> leaves the device on a port``
      - Add the ``port`` the clock leaves the device on.
+       The clock is the one the device forwards to the part: the capture clock of an SDR-SS-O or SDR-SS-O-FLC port, and the launch clock of an SDR-SS-RT port.
      - \-
    * - interface_config_022
      - ``port <name> is a bus, which stacv does not support yet; give each bit its own [[port]], or defer it``
@@ -236,8 +237,8 @@ The message starts with the port: ``ERROR: [<identifier>] port <name> <message>`
      - Message
      - Correction
    * - generate_001
-     - ``capture clock <name> has no generator``
-     - Add the ``generator`` of the capture clock.
+     - ``capture clock <name> has no generator``, or ``launch clock <name> has no generator`` for an SDR-SS-RT port
+     - Add the ``generator`` of the clock the device forwards to the part.
    * - generate_002
      - ``setup requirement <time>ns is not a whole number of <time>ns step periods``
      - Choose edges whose setup requirement is a whole number of launch periods.
@@ -254,10 +255,10 @@ The message starts with the port: ``ERROR: [<identifier>] port <name> <message>`
      - Moved to interface_config_018.
      - The identifier is not used again.
    * - generate_007
-     - ``has no trace from the device to the part``
-     - Add the port's trace, with ``device_to_part``.
+     - ``has no trace from the device to the part``, or ``has no trace from the part to the device`` for an SDR-SS-RT port
+     - Add the port's trace, with ``device_to_part`` for an output and ``part_to_device`` for an SDR-SS-RT port.
    * - generate_008
-     - ``trace <name> ends at pin <pin>, which the part does not have``
+     - ``trace <name> ends at pin <pin>, which the part does not have``, or ``starts at pin`` for an SDR-SS-RT port
      - Correct the trace's ``part_pin``, or add the pin to the part.
    * - generate_009
      - ``has no clock trace from <port> to part pin <pin>``

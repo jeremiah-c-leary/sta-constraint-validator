@@ -30,11 +30,11 @@ def draw_block_diagram(oInterface, oTraceList, oPart):
 
 
 def find_clock_ports(oInterface):
-    # Each capture clock's port gets one row, in the order the ports first use it.
+    # Each forwarded clock's port gets one row, in the order the ports first use it.
     lClockPorts = []
     for oPort in oInterface.get_analyzed_ports():
-        if oPort.capture_clock.port not in lClockPorts:
-            lClockPorts.append(oPort.capture_clock.port)
+        if oPort.forwarded_clock.port not in lClockPorts:
+            lClockPorts.append(oPort.forwarded_clock.port)
     return lClockPorts
 
 

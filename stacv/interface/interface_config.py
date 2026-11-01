@@ -12,6 +12,7 @@ from stacv.interface import interface
 from stacv.interface import port
 from stacv.interface import interface_location
 from stacv.interface import interface_config_error
+from stacv.methodology import methodology
 from stacv.methodology import methodology_factory
 from stacv.rules import edge_times
 from stacv.interface import clock
@@ -34,18 +35,19 @@ PORT_CLOCK_KEYS = ['name', 'setup_edge', 'hold_edge']
 def read_interface_config(sInterfaceFile):
     oInterface = read_interface_config_for_drawing(sInterfaceFile)
     raise_first_edge_error(oInterface)
-    check_capture_clocks_have_ports(oInterface, sInterfaceFile)
+    check_forwarded_clocks_have_ports(oInterface, sInterfaceFile)
     resolve_part_and_traces(oInterface, sInterfaceFile)
     return oInterface
 
 
-def check_capture_clocks_have_ports(oInterface, sInterfaceFile):
+def check_forwarded_clocks_have_ports(oInterface, sInterfaceFile):
     # The drawing does not need the port, so only the commands that write or check constraints do.
     oLocation = interface_location.InterfaceLocation(sInterfaceFile)
     for oPort in oInterface.get_analyzed_ports():
         oLocation.set_port_name(oPort.name)
-        if oPort.capture_clock.port is None:
-            READER.raise_error(21, oLocation.filename, f'key "capture_clock"{oLocation.location} names clock {oPort.capture_clock.name}, which has no key "port"; the capture clock leaves the device on a port')
+        if oPort.forwarded_clock.port is None:
+            sClockRole = methodology.describe_clock_key(oPort.forwarded_clock_key)
+            READER.raise_error(21, oLocation.filename, f'key "{oPort.forwarded_clock_key}"{oLocation.location} names clock {oPort.forwarded_clock.name}, which has no key "port"; the {sClockRole} leaves the device on a port')
 
 
 def resolve_part_and_traces(oInterface, sInterfaceFile):
@@ -78,8 +80,16 @@ def resolve_timing_reports(oInterface, sInterfaceFile):
     # Only check reads the timing reports, so their environment variables are expanded here and not when the interface is read.
     oLocation = interface_location.InterfaceLocation(sInterfaceFile)
     for oPort in oInterface.ports:
-        oLocation.set_port_name(oPort.name)
-        oPort.timing_reports = resolve_files(oPort.timing_reports_as_written, 'timing_reports', oLocation)
+        if is_checked(oPort):
+            oLocation.set_port_name(oPort.name)
+            oPort.timing_reports = resolve_files(oPort.timing_reports_as_written, 'timing_reports', oLocation)
+
+
+def is_checked(oPort):
+    # A port whose methodology has no rules yet is deferred by check, so its timing reports may not exist yet.
+    if oPort.status == port.DEFER:
+        return False
+    return methodology_factory.create_methodology(oPort.methodology).has_rules()
 
 
 def resolve_files(lFilenames, sKey, oLocation):
@@ -223,8 +233,17 @@ def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     oPort.capture_clock = build_referenced_clock(dPort, 'capture_clock', oPort.name, oInterface, oLocation)
     check_capture_clock_stops_if_needed(oPort, oLocation)
     oPort.launch_clock = build_referenced_clock(dPort, 'launch_clock', oPort.name, oInterface, oLocation)
+    set_forwarded_clock(oPort)
     oPort.edge_errors = find_edge_errors(oPort, oLocation)
     oPort.timing_reports_as_written = READER.get_required_list_of_strings(dPort, 'timing_reports', oLocation)
+
+
+def set_forwarded_clock(oPort):
+    oPort.forwarded_clock_key = methodology_factory.create_methodology(oPort.methodology).forwarded_clock_key
+    if oPort.forwarded_clock_key == methodology.LAUNCH_CLOCK:
+        oPort.forwarded_clock = oPort.launch_clock
+    else:
+        oPort.forwarded_clock = oPort.capture_clock
 
 
 def resolve_file(sFilename, sKey, oLocation):

@@ -7,6 +7,7 @@ import re
 
 from stacv import version
 from stacv.generate import generate_error
+from stacv.generate import xdc
 from stacv.interface import port
 
 BANNER = '#' * 79
@@ -157,8 +158,9 @@ def build_port_reports(sCorner, oPort, sInterfaceFile):
         return ['# Deferred']
     sPath = convert_to_tcl_path(oPort.timing_reports_as_written[0], sInterfaceFile)
     lLines = []
-    lLines.append(build_report_timing(oPort.name, '-setup', build_file_option(sCorner, sPath)))
-    lLines.append(build_report_timing(oPort.name, '-hold', f'-append -file "{sPath}"'))
+    sPortOption = build_port_option(oPort)
+    lLines.append(build_report_timing(sPortOption, '-setup', build_file_option(sCorner, sPath)))
+    lLines.append(build_report_timing(sPortOption, '-hold', f'-append -file "{sPath}"'))
     return lLines
 
 
@@ -169,8 +171,15 @@ def build_file_option(sCorner, sPath):
     return f'-append -file "{sPath}"'
 
 
-def build_report_timing(sPortName, sAnalysis, sFileOption):
-    return f'report_timing -column_style variable_width -to [get_ports {sPortName}] {sAnalysis} -path full_clock_expanded {sFileOption}'
+def build_port_option(oPort):
+    # The paths of an output port end at it, and the paths of an input port start at it.
+    if xdc.is_input(oPort):
+        return f'-from [get_ports {oPort.name}]'
+    return f'-to [get_ports {oPort.name}]'
+
+
+def build_report_timing(sPortOption, sAnalysis, sFileOption):
+    return f'report_timing -column_style variable_width {sPortOption} {sAnalysis} -path full_clock_expanded {sFileOption}'
 
 
 def convert_to_tcl_path(sPathAsWritten, sInterfaceFile):

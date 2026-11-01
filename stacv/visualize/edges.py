@@ -204,14 +204,15 @@ def calculate_end_time(oPort):
     lEdgeTimes.append(calculate_launch_edge_time(oPort.launch_clock, oPort.launch_clock.hold_edge))
     lEdgeTimes.append(calculate_capture_edge_time(oPort.capture_clock, oPort.capture_clock.setup_edge))
     lEdgeTimes.append(calculate_capture_edge_time(oPort.capture_clock, oPort.capture_clock.hold_edge))
-    return find_next_capture_edge_time(oPort.capture_clock, max(lEdgeTimes))
+    # The drawing ends on the edge of the forwarded clock after the last edge of the port.
+    return find_next_edge_time(oPort.forwarded_clock, max(lEdgeTimes))
 
 
-def find_next_capture_edge_time(oCaptureClock, fTime):
+def find_next_edge_time(oClock, fTime):
     iEdgeNumber = 0
-    while edge_times.calculate_edge_time(oCaptureClock.period, iEdgeNumber) <= fTime:
+    while edge_times.calculate_edge_time(oClock.period, iEdgeNumber) <= fTime:
         iEdgeNumber += 1
-    return edge_times.calculate_edge_time(oCaptureClock.period, iEdgeNumber)
+    return edge_times.calculate_edge_time(oClock.period, iEdgeNumber)
 
 
 def calculate_launch_edge_time(oLaunchClock, iEdgeNumber):
