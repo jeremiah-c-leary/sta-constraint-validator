@@ -207,7 +207,8 @@ Run it after the design is implemented and the constraints are applied:
 
 The script is written for a reader, like the constraints file:
 
-* The header names the stacv version and the command that generated the script.
+* The header names the stacv version and the command that generated the script, and under ``Requires`` the environment variables the report paths use.
+* Before any corner is changed, the script checks its paths (see below).
 * There is one section for each corner.
   Each section turns on its corner, turns off the other, and lists every port of the interface under its name.
 * A deferred port is listed as ``Deferred``, with no reports.
@@ -237,6 +238,40 @@ Every path is quoted, so paths with spaces work.
 
 ``stacv check`` accepts any number of timing reports for a port, so reports from other scripts can be used.
 The report script writes one file for each port.
+
+Path checks
+^^^^^^^^^^^
+
+Vivado does not create directories, and an environment variable that is not set, or set to the wrong directory, only shows up as an error partway through the reports.
+So the script checks its paths first, and stops with an error before it changes the corners:
+
+* **Verify Environment Variables Exist**: one check for each variable the report paths use, in the order they first appear.
+  The section is left out when no path uses a variable.
+* **Verify Report Directories Exist**: one check for each analyzed port, that the directory of its report exists.
+
+.. code-block:: tcl
+
+   ###############################################################################
+   # Verify Environment Variables Exist
+   ###############################################################################
+   if {![info exists env(PROJ_DIR)]} {
+       error "stacv: environment variable PROJ_DIR is not set"
+   }
+
+   ###############################################################################
+   # Verify Report Directories Exist
+   ###############################################################################
+   # O_DAC_DATA
+   if {![file isdirectory "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"]} {
+       error "stacv: O_DAC_DATA report directory does not exist: $env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
+   }
+
+When the timing tool runs on another computer than stacv, such as Vivado on Windows, set the variables in its Tcl console with forward slashes.
+Tcl reads a backslash as an escape, so ``"Z:\projects"`` loses its separators:
+
+.. code-block:: tcl
+
+   set env(PROJ_DIR) "Z:/home/user/projects/sta-constraint-validator"
 
 Not supported yet
 ^^^^^^^^^^^^^^^^^
