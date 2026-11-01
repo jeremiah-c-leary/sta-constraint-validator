@@ -1,0 +1,41 @@
+# stacv interface file.  Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/interface.rst
+#
+# Paths are relative to this file.
+#
+# All periods are in nanoseconds.
+
+description = "This interface drives data to the external DAC."
+name = "DAC_DATA_SPI"
+part = "ad7399.toml"
+traces = "dac_spi_traces.toml"
+
+[[clock]]
+name = "clk_100mhz"
+period = 10.000
+
+[[clock]]
+name = "clk_10mhz"
+period = 100.000
+port = "O_DAC_SCLK"
+generator = {source = "q_spi_output_clock_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_100mhz"}
+
+[[port]]
+status = "analyze"
+name = "O_DAC_DATA"
+methodology = "SDR-SS-O"
+launch_clock = {name = "clk_100mhz", setup_edge = 10, hold_edge = 10}
+capture_clock = {name = "clk_10mhz", setup_edge = "C", hold_edge = "A"}
+timing_reports = [
+    "$PROJ_DIR/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt",
+]
+
+[[port]]
+status = "defer"
+name = "O_DAC_SDEN_F"
+methodology = "SDR-SS-O"
+launch_clock = {name = "clk_100mhz", setup_edge = 10, hold_edge = 10}
+capture_clock = {name = "clk_10mhz", setup_edge = "C", hold_edge = "A"}
+timing_reports = [
+    "$PROJ_DIR/example/analog_devices/ad7339/O_CS_timing.rpt",
+]

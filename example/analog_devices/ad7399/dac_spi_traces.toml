@@ -1,0 +1,28 @@
+# stacv traces file.  Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/traces.rst
+#
+# Delays are in nanoseconds.
+
+# Optional.  Used by any direction written as {}.
+default_delay = {max_delay = 1.00, min_delay = 0.00}
+
+# A device data output:  The device writes, the part reads.
+[[trace]]
+name = "data_output"
+device_pin = "O_DAC_DATA"
+part_pin = "SDI"
+device_to_part = {}
+
+# A device output clock:  The device generates, the part consumes.
+[[trace]]
+name = "clock"
+device_pin = "O_DAC_SCLK"
+part_pin = "CLK"
+device_to_part = {max_delay = 3.00, min_delay = 1.00}
+
+# A trace that uses the default_delay.
+[[trace]]
+name = "chip_select"
+device_pin = "O_DAC_SDEN_F"
+part_pin = "CSF"
+device_to_part = {max_delay = 1.50, min_delay = 1.50}

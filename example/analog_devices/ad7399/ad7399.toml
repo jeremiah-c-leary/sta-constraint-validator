@@ -1,0 +1,33 @@
+# stacv part file.  Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/part.rst
+#
+# All delays are in nanoseconds.
+# All frequencies are in MHz.
+
+[properties]
+manufacturer = "Analog Devices"
+part_number = "AD3799"
+
+[datasheet]
+name = "Quad, Serial-Input 12-Bit/10-Bit DACs"
+url = "https://www.analog.com/media/en/technical-documentation/data-sheets/AD7398_7399.pdf"
+version = "Rev. C"
+
+[[interface]]
+name = "Serial Data Interface"
+
+[[interface.pin]]
+name = "SDI"
+methodology = "SDR-SS-I"
+clock = {pin = "CLK", max_frequency = 11}
+capture_edge = "Rising"
+setup = {value = 15, symbol = "tDS", source = "Table 2"}
+hold = {value = 10, symbol = "tDH", source = "Table 2"}
+
+[[interface.pin]]
+name = "CSF"
+methodology = "SDR-SS-I"
+clock = {pin = "CLK", max_frequency = 11}
+capture_edge = "Rising"
+setup = {value = 10, symbol = "tCSS", source = "Table 2"}
+hold = {value = 20, symbol = "tCSH", source = "Table 2"}

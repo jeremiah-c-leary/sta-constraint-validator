@@ -1,0 +1,218 @@
+Decided to look for DACs instead of ADCs.
+
+Looked in https://www.analog.com/media/en/news-marketing-collateral/product-selection-guide/precision-dacs-product-selection-guide.pdf
+
+Found device AD7399
+
+Datasheet is https://www.analog.com/media/en/technical-documentation/data-sheets/AD7398_7399.pdf
+
+It has a SPI interface with only MOSI.  This should work.
+
+Thought:  People are not going to be creating templates a lot so they will forget the commands.
+
+Issued:  ../../../bin/stacv create template part --output ad7399.toml
+
+The chip select is active low, and the pin and the bar over it's name.  I used CSF to indicate active low.
+
+I filled out the manufacturer, part_number by hand.
+
+I filled out the name, url by copy pasting from the datasheet
+
+I filled out the version by hand
+
+I found the name of the interface in the table of contents.
+
+I went to the timing diagram and filled out the following keys for SDI and CSF:
+
+name, methodology, clock.pin, capture_edge, setup.symbol, hold.symbol.  I will need to find the table to fill out the rest.
+
+oh, there is an LDACF signal I need to add.  Hmm...LDAC is timed relative to CSF.  I will ignore it for now.
+
+It is 5:27 pm...taking a break for dinner.  I will record when I get back.
+
+It is 7:52 pm...I am back
+
+I found the timing information in table 2
+
+It is 7:54 and I am done with ad7399.toml
+
+I am going to work on the interface.toml file.
+
+I issued:  ../../../bin/stacv create template interface --output if_dac_spi.toml
+
+Observation:  I had the previous create template command in the terminal so it made it easy to know the command to issue
+
+I am going to use the same generated clock because creating a new design is not part of this exercise.
+However, it would take some time to figure out where that clock is generated.
+I will look at the schematic in Visio to find the values though.
+
+I will also have to match the port names in the existing design.
+
+source is not very descriptive in the generator keys.
+
+I removed I_DATA because the DAC interface is write only.
+
+I realize I have no idea what edges I want.  My plan is to use the stacv visualize edges command to see the waveforms.
+So I am just going to go with the defaults because they will be easy to change.
+
+I am going to keep O_DAC_SDEN_F as deferred for now and just work on O_DAC_DATA
+
+It is 8:08 pm...and I am going to create the traces file.
+I issued this command:  ../../../bin/stacv create template traces --output dac_spi_traces.toml
+
+Obeservation:  again I have the previous command on a previous command line so I knew what to type.
+
+Observation:  I need to bring up all three files to fill out the traces file.
+
+When setting up the trace for the clock...I need to look at the [[clock]] table to find the port name.  Seems a little jarring.
+
+I used a split screen in VIM with three buffers.  The device on the left, the traces in the middle, and the part on the right.
+
+It is 8:15 pm...I am done with the traces file.
+
+I am going to work on the edges.
+
+I issued the following command:  
+./../../bin/stacv visualize edges if_dac_spi.toml
+ERROR: [interface_config_005] if_dac_spi.toml key "part" names a file that does not exist: ad7339.toml
+
+had a typo.  File should have been ad7399.toml
+
+./../../bin/stacv visualize edges if_dac_spi.toml
+ERROR: [interface_config_004] if_dac_spi.toml key "timing_reports" in port O_DAC_DATA uses environment variables that are not set: PROJ_DIR
+
+Now I need to set the environment variable...eventhough I don't care because I am not looking at the timing reports.
+
+gave this command:  export PROJ_DIR=/home/jcleary/projects/sta-constraint-validator
+
+that worked.
+
+The division is by 10, so the waveform wraps and I can't figure out the edges.  I think I will send the output to a file.
+
+That worked
+
+Interesting that the hold requirement is after the launch edge.  Not sure it is a big deal because it needs to change.
+
+Now the edges are correct.  The part captures on the rising edge so I made my launch edge 10.  setup capture edge is C, hold capture edge is A.
+I can see the setup and hold requirement, and they are matching the diagram.
+
+It is now 8:24.  I am "done" with the inputs so I will generate the timing constraints.
+
+Issued this command because I can't remember what the command is:
+../../../bin/stacv
+
+Issued this command because I can't remember what the command is:
+../../../bin/stacv generate
+
+Issued this command because I don't remember the arguments:
+../../../bin/stacv generate xdc
+
+Issued this command:
+ ../../../bin/stacv generate xdc if_dac_spi.toml --output if_dac_spi.xdc
+ERROR: [generate_009] port O_DAC_DATA has no clock trace from O_DAC_SCLK to part pin CLK
+
+had a typo in the clock name on the device.  I had O_DAC_CLK instead of O_DAC_SCLK.
+
+constraints have generated.
+
+I have created the report tcl file using this command:
+
+./../../bin/stacv generate report_tcl if_dac_spi.toml --output if_dac_spi_stacv_report.tcl
+Creating report script if_dac_spi_stacv_report.tcl
+
+It is now 8:30 pm
+
+I have vivado already open and will bring in the new constraint file.
+
+I need to figure out how to set an environment variable in windows.
+
+I need to pause.  It is 8:32 pm.
+
+it is 8:37...I'm back trying to figure out how to set an environment variable in windows.
+I am going to google it.
+interesting...you can set environment variables in the vivado tcl console using set env().
+I will do that by copying PROJ_DIR...actually I will need to change it because vivado is running on windows and PROJ_DIR in linux will not work.
+Although this is why keeping PROJ_DIR a variable helps.
+
+This command didn't work:
+set env(PROJ_DIR) "Z:\home\jcleary\projects\sta-constraint-validator\example\analog_devices\ad7399"
+Z:homejclearyprojectssta-constraint-validatorexamplenalog_devicesd7399
+
+This might have worked:
+set env(PROJ_DIR) "Z:/home/jcleary/projects/sta-constraint-validator/example/analog_devices/ad7399"
+Z:/home/jcleary/projects/sta-constraint-validator/example/analog_devices/ad7399
+
+The time is 8:43...I am going to add the timing constraint file to Vivado
+
+This was the Vivado TCL console command:
+add_files -fileset constrs_1 -norecurse Z:/home/jcleary/projects/sta-constraint-validator/example/analog_devices/ad7399/if_dac_spi.xdc
+
+The time is 8:45...I am going to build the design.
+
+
+The time is 8:48...Implementation is done.  I do not see any problem in the TCL file.
+
+I need to pause.  It is 8:49
+
+It is 8:51...I am back.
+
+I will source the report tcl file.
+
+source Z:/home/jcleary/projects/sta-constraint-validator/example/analog_devices/ad7399/if_dac_spi_stacv_report.tcl
+# config_timing_corners -corner Slow -delay_type min_max
+# config_timing_corners -corner Fast -delay_type none
+# report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2I, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -to_pins  -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
+ERROR: [Common 17-37] Directory in which file O_DAC_DATA_timing.rpt is to be written does not exist [Z:/home/jcleary/projects/sta-constraint-validator/example/analog_devices/ad7399/example/analog_devices/ad7399]
+
+I messed something up
+
+I redid the PROJ_DIR:
+set env(PROJ_DIR) "Z:/home/jcleary/projects/sta-constraint-validator"
+Z:/home/jcleary/projects/sta-constraint-validator
+
+I up arrowed three times and the script ran:
+
+source Z:/home/jcleary/projects/sta-constraint-validator/example/analog_devices/ad7399/if_dac_spi_stacv_report.tcl
+# config_timing_corners -corner Slow -delay_type min_max
+# config_timing_corners -corner Fast -delay_type none
+# report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2I, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -to_pins  -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
+# report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2I, Delay Type: min.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -to_pins  -max_paths 1 -nworst 1 -delay_type min -sort_by slack.
+# config_timing_corners -corner Fast -delay_type min_max
+# config_timing_corners -corner Slow -delay_type none
+# report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2I, Delay Type: max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -to_pins  -max_paths 1 -nworst 1 -delay_type max -sort_by slack.
+# report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -2I, Delay Type: min.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+INFO: [Timing 38-78] ReportTimingParams: -to_pins  -max_paths 1 -nworst 1 -delay_type min -sort_by slack.
+# config_timing_corners -corner Slow -delay_type min_max
+# config_timing_corners -corner Fast -delay_type min_max
+
+I checked the files in the directory and the reports are there:
+jcleary@DESKTOP-HV9NHA3:~/projects/sta-constraint-validator/example/analog_devices/ad7399$ l
+O_DAC_DATA_timing.rpt  ad7399.toml  dac_spi_traces.toml  deleteme.txt  if_dac_spi.toml  if_dac_spi.xdc  if_dac_spi_stacv_report.tcl  notes.txt
+
+I am going to run the check now:
+Issueing ../../../bin/stacv check if_dac_spi.toml
+
+jcleary@DESKTOP-HV9NHA3:~/projects/sta-constraint-validator/example/analog_devices/ad7399$ ../../../bin/stacv check if_dac_spi.toml
+Reading interface file if_dac_spi.toml
+Reading timing report file /home/jcleary/projects/sta-constraint-validator/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt
+Check Passed
+
+Time is 8:56...
+
+
+
+
