@@ -186,7 +186,7 @@ class TestExecute(unittest.TestCase):
 
     def test_execute_raises_error_if_timing_report_does_not_exist(self):
         sMissingReport = os.path.join(self.oTempDir.name, 'missing_timing.rpt')
-        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, 'interface_config_005'):
+        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, 'interface_config_006'):
             self.execute_with_reports([sMissingReport])
 
     def test_execute_returns_zero_when_every_rule_passes(self):

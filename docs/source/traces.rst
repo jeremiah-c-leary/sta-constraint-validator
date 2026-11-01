@@ -77,6 +77,6 @@ Each direction is one of:
 
 * ``{max_delay = ..., min_delay = ...}``: the maximum and minimum delays of the trace.
 * ``{}``: use ``default_delay``.
-  It is an error if there is no ``default_delay`` (traces_config_001).
+  It is an error if there is no ``default_delay`` (traces_config_005).
 
-Giving only one of ``max_delay`` and ``min_delay`` is an error (traces_config_002).
+Giving only one of ``max_delay`` and ``min_delay`` is an error (traces_config_006).

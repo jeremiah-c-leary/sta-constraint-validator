@@ -346,7 +346,7 @@ class TestVisualizeBlockDiagramErrors(BlockDiagramTestCase):
         lTraces.append(output_trace('data_output', 'O_DAC_DATA', 'SDIN').replace('{max_delay = 3.00, min_delay = 1.00}', '{}'))
         lTraces.append(output_trace('clock', 'O_DAC_SCLK', 'SCLK'))
         self.assertEqual(2, self.run_visualize_block_diagram(lTraces))
-        self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[traces_config_001\] ')
+        self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[traces_config_005\] ')
 
 
 class TestVisualizeBlockDiagramDeferredPorts(BlockDiagramTestCase):

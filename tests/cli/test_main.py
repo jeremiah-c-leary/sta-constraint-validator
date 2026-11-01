@@ -222,14 +222,14 @@ class TestMainConsoleOutput(unittest.TestCase):
         sTracesWithoutDefault = '[[trace]]\nname = "PORT_1"\ndevice_pin = "PORT_1"\npart_pin = "SDIN"\ndevice_to_part = {}\n'
         with mock.patch(f'{__name__}.build_traces_text', return_value=sTracesWithoutDefault):
             self.run_main_with_reports([sPassingReport])
-        self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[traces_config_001\] ')
+        self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[traces_config_005\] ')
 
     def test_config_error_is_written_to_stderr(self):
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_VARIABLE', None)
             self.run_main_with_reports(['$STACV_UNSET_VARIABLE/report.rpt'])
         lExpected = []
-        lExpected.append('ERROR: [interface_config_004] ')
+        lExpected.append('ERROR: [interface_config_005] ')
         lExpected.append(self.sInterfaceFile)
         lExpected.append(' key "timing_reports" in port PORT_1')
         lExpected.append(' uses environment variables that are not set: STACV_UNSET_VARIABLE\n')

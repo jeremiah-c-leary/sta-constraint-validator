@@ -59,7 +59,7 @@ class TestReportPathVariables(unittest.TestCase):
 
     def test_check_needs_proj_dir(self):
         iExitCode = self.run_stacv(['check', sInterfaceFile])
-        sExpected = f'ERROR: [interface_config_004] {sInterfaceFile} key "timing_reports" in port O_DAC_DATA uses environment variables that are not set: PROJ_DIR\n'
+        sExpected = f'ERROR: [interface_config_005] {sInterfaceFile} key "timing_reports" in port O_DAC_DATA uses environment variables that are not set: PROJ_DIR\n'
         self.assertEqual(2, iExitCode)
         self.assertEqual(sExpected, self.oStderr.getvalue())
 
@@ -72,6 +72,6 @@ class TestReportPathVariables(unittest.TestCase):
                 oFile.write('part = "$PROJ_DIR/part.toml"\n')
                 oFile.write('traces = "traces.toml"\n')
             iExitCode = self.run_stacv(['visualize', 'edges', sFile])
-        sExpected = f'ERROR: [interface_config_004] {sFile} key "part" uses environment variables that are not set: PROJ_DIR\n'
+        sExpected = f'ERROR: [interface_config_005] {sFile} key "part" uses environment variables that are not set: PROJ_DIR\n'
         self.assertEqual(2, iExitCode)
         self.assertEqual(sExpected, self.oStderr.getvalue())

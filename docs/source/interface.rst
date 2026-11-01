@@ -10,7 +10,7 @@ It is the file every stacv command reads.
 
 Periods are in nanoseconds.
 Paths are relative to the interface file, and can use environment variables such as ``$PROJ_DIR``.
-An environment variable that is not set is an error (interface_config_004).
+An environment variable that is not set is an error (interface_config_005).
 The variables in ``timing_reports`` are needed only by ``stacv check``, which reads the reports.
 The other commands run without them.
 
@@ -45,7 +45,7 @@ Top level
      - Yes
      - The path of the :doc:`traces file <traces>` that describes the connections between the device and the part.
 
-A missing key is an error (interface_config_002), and so is a path to a file that does not exist (interface_config_005).
+A missing key is an error (interface_config_002), and so is a path to a file that does not exist (interface_config_006).
 
 Clocks
 ------
@@ -76,7 +76,7 @@ Ports refer to clocks by name.
    * - ``name``
      - Yes
      - The name of the clock in the timing reports.
-       Each clock name is defined once (interface_config_008).
+       Each clock name is defined once (interface_config_009).
    * - ``period``
      - Yes
      - The period of the clock in nanoseconds.
@@ -86,9 +86,9 @@ Ports refer to clocks by name.
        Not used for a clock that stays inside the device.
    * - ``idle``
      - No
-     - The level of a clock that stops between transfers, such as an SPI clock: ``"low"`` or ``"high"`` (interface_config_011).
+     - The level of a clock that stops between transfers, such as an SPI clock: ``"low"`` or ``"high"`` (interface_config_012).
        Not used for a clock that runs all the time.
-       An ``SDR-SS-O-FLC`` port needs it on its capture clock (interface_config_012).
+       An ``SDR-SS-O-FLC`` port needs it on its capture clock (interface_config_013).
    * - ``generator``
      - No
      - The element in the device that generates the clock.
@@ -111,7 +111,7 @@ The ``generator`` table has these keys, all required:
      - The pin of the element the generated clock leaves from.
    * - ``master_clock``
      - The clock at the master pin.
-       It must be defined in a ``[[clock]]`` table (interface_config_007).
+       It must be defined in a ``[[clock]]`` table (interface_config_008).
 
 Ports
 -----
@@ -149,14 +149,14 @@ Each port of the interface has a ``[[port]]`` table.
        ``"defer"``: the port is left for later.
        A deferred port needs only ``name`` and ``status``; any other keys are not read, except ``methodology``.
 
-       Any other value is an error (interface_config_009).
+       Any other value is an error (interface_config_010).
    * - ``name``
      - Yes
      - The name of the port in the timing reports.
    * - ``methodology``
      - Yes
      - The :doc:`methodology <methodology>` of the port.
-       An analyzed port must be ``SDR-SS-O`` or ``SDR-SS-O-FLC``; a port with another methodology is deferred until stacv supports it (interface_config_010).
+       An analyzed port must be ``SDR-SS-O`` or ``SDR-SS-O-FLC``; a port with another methodology is deferred until stacv supports it (interface_config_011).
    * - ``launch_clock``
      - Yes
      - The clock that launches the data, and its edges.
@@ -177,7 +177,7 @@ Each port of the interface has a ``[[port]]`` table.
    * - Key
      - Description
    * - ``name``
-     - The name of a clock defined in a ``[[clock]]`` table (interface_config_007).
+     - The name of a clock defined in a ``[[clock]]`` table (interface_config_008).
    * - ``setup_edge``
      - The edge of the setup check.
    * - ``hold_edge``

@@ -53,12 +53,12 @@ class TestDefaultDelay(unittest.TestCase):
         self.assertFalse(oTrace.device_to_part.is_default)
 
     def test_raises_error_if_empty_delays_have_no_default(self):
-        sError = self.build_error_pattern('traces_config_001', 'trace chip_select has no delays in key "device_to_part" and no default_delay is defined')
+        sError = self.build_error_pattern('traces_config_005', 'trace chip_select has no delays in key "device_to_part" and no default_delay is defined')
         with self.assertRaisesRegex(traces_config_error.TracesConfigError, sError):
             self.read_traces(self.build_trace('{}'))
 
     def test_raises_error_if_only_one_delay_is_given(self):
         lLines = ['default_delay = {max_delay = 1.0, min_delay = 0.0}'] + self.build_trace('{max_delay = 3.0}')
-        sError = self.build_error_pattern('traces_config_002', 'trace chip_select key "device_to_part" must give both max_delay and min_delay, or neither')
+        sError = self.build_error_pattern('traces_config_006', 'trace chip_select key "device_to_part" must give both max_delay and min_delay, or neither')
         with self.assertRaisesRegex(traces_config_error.TracesConfigError, sError):
             self.read_traces(lLines)

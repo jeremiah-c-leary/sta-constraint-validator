@@ -155,14 +155,14 @@ class TestFirstLastClock(unittest.TestCase):
     def test_first_last_clock_port_needs_an_idle_capture_clock(self):
         self.write_interface(None, 'SDR-SS-O-FLC', [8, 8], ['D', 'B'])
         iExitCode = self.run_stacv(['visualize', 'edges', self.sInterfaceFile])
-        sExpected = f'ERROR: [interface_config_012] {self.sInterfaceFile} key "capture_clock" in port O_DAC_DATA names clock dac_sclk, which has no key "idle"; SDR-SS-O-FLC is timed to the first and last edges of a clock that stops\n'
+        sExpected = f'ERROR: [interface_config_013] {self.sInterfaceFile} key "capture_clock" in port O_DAC_DATA names clock dac_sclk, which has no key "idle"; SDR-SS-O-FLC is timed to the first and last edges of a clock that stops\n'
         self.assertEqual(2, iExitCode)
         self.assertEqual(sExpected, self.oStderr.getvalue())
 
     def test_idle_must_be_low_or_high(self):
         self.write_interface('Low', 'SDR-SS-O', [8, 8], ['D', 'B'])
         iExitCode = self.run_stacv(['visualize', 'edges', self.sInterfaceFile])
-        sExpected = f'ERROR: [interface_config_011] {self.sInterfaceFile} key "idle" of clock dac_sclk must be "low" or "high"\n'
+        sExpected = f'ERROR: [interface_config_012] {self.sInterfaceFile} key "idle" of clock dac_sclk must be "low" or "high"\n'
         self.assertEqual(2, iExitCode)
         self.assertEqual(sExpected, self.oStderr.getvalue())
 

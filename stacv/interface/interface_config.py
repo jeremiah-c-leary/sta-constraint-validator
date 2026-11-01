@@ -30,7 +30,7 @@ def read_file(sInterfaceFile):
     try:
         return read_toml_file(sInterfaceFile)
     except FileNotFoundError:
-        raise interface_config_error.InterfaceConfigError('interface_config_006', sInterfaceFile, f'does not exist')
+        raise interface_config_error.InterfaceConfigError('interface_config_007', sInterfaceFile, f'does not exist')
 
 
 def read_toml_file(sInterfaceFile):
@@ -81,12 +81,12 @@ def create_clocks(dConfig, oInterface, oLocation):
 def check_master_clocks_are_defined(oInterface, oLocation):
     for oClock in oInterface.clocks:
         if oClock.generator is not None and oInterface.get_clock_named(oClock.generator.master_clock) is None:
-            raise interface_config_error.InterfaceConfigError('interface_config_007', oLocation.filename, f'key "generator" of clock {oClock.name} names clock {oClock.generator.master_clock}, which no [[clock]] table defines')
+            raise interface_config_error.InterfaceConfigError('interface_config_008', oLocation.filename, f'key "generator" of clock {oClock.name} names clock {oClock.generator.master_clock}, which no [[clock]] table defines')
 
 
 def check_clock_is_not_defined(oInterface, sName, oLocation):
     if oInterface.get_clock_named(sName) is not None:
-        raise interface_config_error.InterfaceConfigError('interface_config_008', oLocation.filename, f'clock {sName} is defined by more than one [[clock]] table')
+        raise interface_config_error.InterfaceConfigError('interface_config_009', oLocation.filename, f'clock {sName} is defined by more than one [[clock]] table')
 
 
 def build_clock(dClock, oLocation):
@@ -104,7 +104,7 @@ def build_clock(dClock, oLocation):
 
 def read_idle(sIdle, sClockName, oLocation):
     if sIdle not in IDLE_LEVELS:
-        raise interface_config_error.InterfaceConfigError('interface_config_011', oLocation.filename, f'key "idle" of clock {sClockName} must be "{IDLE_LEVELS[0]}" or "{IDLE_LEVELS[1]}"')
+        raise interface_config_error.InterfaceConfigError('interface_config_012', oLocation.filename, f'key "idle" of clock {sClockName} must be "{IDLE_LEVELS[0]}" or "{IDLE_LEVELS[1]}"')
     return sIdle
 
 
@@ -126,7 +126,7 @@ def create_ports(dConfig, oLocation, oInterface):
 
 def check_methodology_is_supported(sMethodology, oLocation):
     if not methodology_factory.is_supported(sMethodology):
-        raise interface_config_error.InterfaceConfigError('interface_config_010', oLocation.filename, f'key "methodology"{oLocation.location} names {sMethodology}, which stacv does not support; correct it, or defer the port with status = "{port.DEFER}"')
+        raise interface_config_error.InterfaceConfigError('interface_config_011', oLocation.filename, f'key "methodology"{oLocation.location} names {sMethodology}, which stacv does not support; correct it, or defer the port with status = "{port.DEFER}"')
 
 
 def get_status(dPort, oLocation):
@@ -134,7 +134,7 @@ def get_status(dPort, oLocation):
         return port.ANALYZE
     sStatus = get_required_string(dPort, 'status', oLocation)
     if sStatus not in [port.ANALYZE, port.DEFER]:
-        raise interface_config_error.InterfaceConfigError('interface_config_009', oLocation.filename, f'key "status"{oLocation.location} must be "{port.ANALYZE}" or "{port.DEFER}"')
+        raise interface_config_error.InterfaceConfigError('interface_config_010', oLocation.filename, f'key "status"{oLocation.location} must be "{port.ANALYZE}" or "{port.DEFER}"')
     return sStatus
 
 
@@ -236,20 +236,20 @@ def check_capture_clock_stops_if_needed(oPort, oLocation):
     if oMethodology.edge_diagram_type != edges.FIRST_LAST_CLOCK:
         return
     if oPort.capture_clock.idle is None:
-        raise interface_config_error.InterfaceConfigError('interface_config_012', oLocation.filename, f'key "capture_clock"{oLocation.location} names clock {oPort.capture_clock.name}, which has no key "idle"; {oPort.methodology} is timed to the first and last edges of a clock that stops')
+        raise interface_config_error.InterfaceConfigError('interface_config_013', oLocation.filename, f'key "capture_clock"{oLocation.location} names clock {oPort.capture_clock.name}, which has no key "idle"; {oPort.methodology} is timed to the first and last edges of a clock that stops')
 
 
 def find_defined_clock(oInterface, sName, sKey, oLocation):
     oClock = oInterface.get_clock_named(sName)
     if oClock is None:
-        raise interface_config_error.InterfaceConfigError('interface_config_007', oLocation.filename, f'key "{sKey}"{oLocation.location} names clock {sName}, which no [[clock]] table defines')
+        raise interface_config_error.InterfaceConfigError('interface_config_008', oLocation.filename, f'key "{sKey}"{oLocation.location} names clock {sName}, which no [[clock]] table defines')
     return oClock
 
 
 def check_for_unset_environment_variables(sString, sKey, oLocation):
     lUnsetVars = extract_unset_environment_variables(sString)
     if unset_variables_exist(lUnsetVars):
-        raise interface_config_error.InterfaceConfigError('interface_config_004', oLocation.filename, f'key "{sKey}"{oLocation.location} uses environment variables that are not set: {", ".join(lUnsetVars)}')
+        raise interface_config_error.InterfaceConfigError('interface_config_005', oLocation.filename, f'key "{sKey}"{oLocation.location} uses environment variables that are not set: {", ".join(lUnsetVars)}')
 
 
 def resolve_relative_path(sFilename, oLocation):
@@ -274,4 +274,4 @@ def unset_variables_exist(lList):
 
 def check_if_file_exists(sFilename, sKey, oLocation):
     if not pathlib.Path(sFilename).is_file():
-        raise interface_config_error.InterfaceConfigError('interface_config_005', oLocation.filename, f'key "{sKey}"{oLocation.location} names a file that does not exist: {sFilename}')
+        raise interface_config_error.InterfaceConfigError('interface_config_006', oLocation.filename, f'key "{sKey}"{oLocation.location} names a file that does not exist: {sFilename}')

@@ -68,11 +68,11 @@ def has_no_delays(dDelays):
 
 def build_default_trace_delay(dTrace, sKey, dDefaultDelay, sFilename):
     if dDefaultDelay is None:
-        raise traces_config_error.TracesConfigError('traces_config_001', sFilename, f'trace {dTrace["name"]} has no delays in key "{sKey}" and no default_delay is defined')
+        raise traces_config_error.TracesConfigError('traces_config_005', sFilename, f'trace {dTrace["name"]} has no delays in key "{sKey}" and no default_delay is defined')
     return trace_delay.TraceDelay(dDefaultDelay['max_delay'], dDefaultDelay['min_delay'], True)
 
 
 def check_both_delays_are_given(dTrace, sKey, sFilename):
     dDelays = dTrace[sKey]
     if 'max_delay' not in dDelays or 'min_delay' not in dDelays:
-        raise traces_config_error.TracesConfigError('traces_config_002', sFilename, f'trace {dTrace["name"]} key "{sKey}" must give both max_delay and min_delay, or neither')
+        raise traces_config_error.TracesConfigError('traces_config_006', sFilename, f'trace {dTrace["name"]} key "{sKey}" must give both max_delay and min_delay, or neither')

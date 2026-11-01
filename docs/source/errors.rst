@@ -61,41 +61,41 @@ Interface file
      - Correct the key name.
        A misspelled optional key, such as ``idel``, would otherwise be ignored.
      - Stops
-   * - interface_config_005 (was 004)
+   * - interface_config_005
      - ``key "<key>"<location> uses environment variables that are not set: <names>``
      - Set the environment variables.
        For ``timing_reports``, only ``stacv check`` needs them.
      - \-
-   * - interface_config_006 (was 005)
+   * - interface_config_006
      - ``key "<key>"<location> names a file that does not exist: <path>``
      - Correct the path, or create the file.
        Paths are relative to the interface file.
      - \-
-   * - interface_config_007 (was 006)
+   * - interface_config_007
      - ``does not exist``
      - Correct the interface file name.
      - Stops
-   * - interface_config_008 (was 007)
+   * - interface_config_008
      - ``key "<key>"<location> names clock <name>, which no [[clock]] table defines``
      - Correct the clock name, or add its ``[[clock]]`` table.
      - Stops
-   * - interface_config_009 (was 008)
+   * - interface_config_009
      - ``clock <name> is defined by more than one [[clock]] table``
      - Remove or rename one of the tables.
      - Stops
-   * - interface_config_010 (was 009)
+   * - interface_config_010
      - ``key "status"<location> must be "analyze" or "defer"``
      - Correct the status.
      - Stops
-   * - interface_config_011 (was 010)
+   * - interface_config_011
      - ``key "methodology"<location> names <methodology>, which stacv does not support; correct it, or defer the port with status = "defer"``
      - Correct the methodology, or defer the port.
      - Stops
-   * - interface_config_012 (was 011)
+   * - interface_config_012
      - ``key "idle" of clock <name> must be "low" or "high"``
      - Correct the idle level.
      - Stops
-   * - interface_config_013 (was 012)
+   * - interface_config_013
      - ``key "capture_clock"<location> names clock <name>, which has no key "idle"; <methodology> is timed to the first and last edges of a clock that stops``
      - Add ``idle`` to the capture clock.
      - Stops
@@ -163,10 +163,10 @@ Traces file
    * - traces_config_004 (new)
      - ``key "<key>"<location> is not a key stacv reads; the keys are <keys>``
      - Correct the key name.
-   * - traces_config_005 (was 001)
+   * - traces_config_005
      - ``trace <name> has no delays in key "<key>" and no default_delay is defined``
      - Give the delays, or add ``default_delay``.
-   * - traces_config_006 (was 002)
+   * - traces_config_006
      - ``trace <name> key "<key>" must give both max_delay and min_delay, or neither``
      - Give both delays, or write ``{}`` to use ``default_delay``.
    * - traces_config_007 (new)

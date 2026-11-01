@@ -378,7 +378,7 @@ class TestGenerateXdcInputErrors(GenerateTestCase):
         self.write_file('traces.toml', '[[trace]]\nname = "O_DATA_trace"\ndevice_pin = "O_DATA"\npart_pin = "SDIN"\ndevice_to_part = {}\n')
         sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
         self.assertEqual(2, self.run_generate_xdc([sPort]))
-        self.assert_error_written('traces_config_001')
+        self.assert_error_written('traces_config_005')
 
 
 class TestGenerateXdcDeferredPorts(GenerateTestCase):

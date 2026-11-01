@@ -303,7 +303,7 @@ class Test(unittest.TestCase):
         lText.append('timing_reports = ["$STACV_UNSET_TEST_VARIABLE/O_DAC_CSF_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_004', 'key "timing_reports" in port O_DAC_CSF uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
+        sError = self.build_error_pattern('interface_config_005', 'key "timing_reports" in port O_DAC_CSF uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_TEST_VARIABLE', None)
             oInterface = interface_config.read_interface_config(self.sInterfaceFile)
@@ -325,7 +325,7 @@ class Test(unittest.TestCase):
         lText.append('timing_reports = ["$STACV_UNSET_A/$STACV_UNSET_B/O_DAC_CSF_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_004', 'key "timing_reports" in port O_DAC_CSF uses environment variables that are not set: STACV_UNSET_A, STACV_UNSET_B$')
+        sError = self.build_error_pattern('interface_config_005', 'key "timing_reports" in port O_DAC_CSF uses environment variables that are not set: STACV_UNSET_A, STACV_UNSET_B$')
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_A', None)
             os.environ.pop('STACV_UNSET_B', None)
@@ -348,7 +348,7 @@ class Test(unittest.TestCase):
         lText.append('timing_reports = ["${STACV_UNSET_TEST_VARIABLE}/O_DAC_CSF_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_004', 'key "timing_reports" in port O_DAC_CSF uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
+        sError = self.build_error_pattern('interface_config_005', 'key "timing_reports" in port O_DAC_CSF uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_TEST_VARIABLE', None)
             oInterface = interface_config.read_interface_config(self.sInterfaceFile)
@@ -373,7 +373,7 @@ class Test(unittest.TestCase):
 
         oInterface = interface_config.read_interface_config(self.sInterfaceFile)
 
-        sError = self.build_error_pattern('interface_config_005', 'key "timing_reports" in port O_DAC_CSF names a file that does not exist: ' + re.escape(sMissingFile) + '$')
+        sError = self.build_error_pattern('interface_config_006', 'key "timing_reports" in port O_DAC_CSF names a file that does not exist: ' + re.escape(sMissingFile) + '$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.resolve_timing_reports(oInterface, self.sInterfaceFile)
 
@@ -393,7 +393,7 @@ class Test(unittest.TestCase):
         self.write_interface_file('\n'.join(lText) + '\n')
 
         sMissingFile = os.path.join(self.sDirectory, 'O_DAC_CSF_timing.rpt')
-        sError = self.build_error_pattern('interface_config_005', 'key "timing_reports" in port O_DAC_CSF names a file that does not exist: ' + re.escape(sMissingFile) + '$')
+        sError = self.build_error_pattern('interface_config_006', 'key "timing_reports" in port O_DAC_CSF names a file that does not exist: ' + re.escape(sMissingFile) + '$')
         with mock.patch.dict(os.environ, {'STACV_TEST_REPORT_DIRECTORY': self.sDirectory}):
             oInterface = interface_config.read_interface_config(self.sInterfaceFile)
             with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
@@ -440,7 +440,7 @@ class Test(unittest.TestCase):
         self.assertEqual([sExpectedFile], oConfig.ports[0].timing_reports)
 
     def test_read_interface_config_raises_error_if_interface_file_does_not_exist(self):
-        sError = self.build_error_pattern('interface_config_006', 'does not exist$')
+        sError = self.build_error_pattern('interface_config_007', 'does not exist$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
@@ -456,7 +456,7 @@ class Test(unittest.TestCase):
         lText.append(self.build_port('O_DAC_DATA', 'SDR-SS-O'))
         self.write_interface_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_008', 'duplicate port "O_DAC_DATA" with methodology "SDR-SS-O" in port number 3, first used in port number 1$')
+        sError = self.build_error_pattern('interface_config_009', 'duplicate port "O_DAC_DATA" with methodology "SDR-SS-O" in port number 3, first used in port number 1$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
@@ -503,7 +503,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_variable_if_part_uses_environment_variable_that_is_not_set(self):
         self.build_config_with_part_and_traces('$STACV_UNSET_TEST_VARIABLE/part.toml', 'traces.toml')
 
-        sError = self.build_error_pattern('interface_config_004', 'key "part" uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
+        sError = self.build_error_pattern('interface_config_005', 'key "part" uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_TEST_VARIABLE', None)
             with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
@@ -512,7 +512,7 @@ class Test(unittest.TestCase):
     def test_read_interface_config_raises_error_naming_variable_if_traces_uses_environment_variable_that_is_not_set(self):
         self.build_config_with_part_and_traces('part.toml', '$STACV_UNSET_TEST_VARIABLE/traces.toml')
 
-        sError = self.build_error_pattern('interface_config_004', 'key "traces" uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
+        sError = self.build_error_pattern('interface_config_005', 'key "traces" uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_TEST_VARIABLE', None)
             with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
@@ -522,7 +522,7 @@ class Test(unittest.TestCase):
         self.build_config_with_part_and_traces('missing_part.toml', 'traces.toml')
 
         sMissingFile = os.path.join(self.sDirectory, 'missing_part.toml')
-        sError = self.build_error_pattern('interface_config_005', 'key "part" names a file that does not exist: ' + re.escape(sMissingFile) + '$')
+        sError = self.build_error_pattern('interface_config_006', 'key "part" names a file that does not exist: ' + re.escape(sMissingFile) + '$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
@@ -530,7 +530,7 @@ class Test(unittest.TestCase):
         self.build_config_with_part_and_traces('part.toml', 'missing_traces.toml')
 
         sMissingFile = os.path.join(self.sDirectory, 'missing_traces.toml')
-        sError = self.build_error_pattern('interface_config_005', 'key "traces" names a file that does not exist: ' + re.escape(sMissingFile) + '$')
+        sError = self.build_error_pattern('interface_config_006', 'key "traces" names a file that does not exist: ' + re.escape(sMissingFile) + '$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
@@ -570,19 +570,19 @@ class TestClockErrors(unittest.TestCase):
 
     def test_raises_error_if_a_launch_clock_is_not_defined(self):
         self.write_interface_file(['dac_sclk'], 'clk_100mhz', 'dac_sclk')
-        sError = self.build_error_pattern('interface_config_007', 'key "launch_clock" in port O_DAC_DATA names clock clk_100mhz, which no [[clock]] table defines')
+        sError = self.build_error_pattern('interface_config_008', 'key "launch_clock" in port O_DAC_DATA names clock clk_100mhz, which no [[clock]] table defines')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
     def test_raises_error_if_a_capture_clock_is_not_defined(self):
         self.write_interface_file(['clk_100mhz'], 'clk_100mhz', 'dac_sclk')
-        sError = self.build_error_pattern('interface_config_007', 'key "capture_clock" in port O_DAC_DATA names clock dac_sclk, which no [[clock]] table defines')
+        sError = self.build_error_pattern('interface_config_008', 'key "capture_clock" in port O_DAC_DATA names clock dac_sclk, which no [[clock]] table defines')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
     def test_raises_error_if_two_clocks_share_a_name(self):
         self.write_interface_file(['clk_100mhz', 'dac_sclk', 'clk_100mhz'], 'clk_100mhz', 'dac_sclk')
-        sError = self.build_error_pattern('interface_config_008', 'clock clk_100mhz is defined by more than one [[clock]] table')
+        sError = self.build_error_pattern('interface_config_009', 'clock clk_100mhz is defined by more than one [[clock]] table')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
@@ -599,7 +599,7 @@ class TestClockErrors(unittest.TestCase):
         lText.append('generator = {source = "q_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_100mhz"}')
         with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write('\n'.join(lText) + '\n')
-        sError = self.build_error_pattern('interface_config_007', 'key "generator" of clock dac_sclk names clock clk_100mhz, which no [[clock]] table defines')
+        sError = self.build_error_pattern('interface_config_008', 'key "generator" of clock dac_sclk names clock clk_100mhz, which no [[clock]] table defines')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
@@ -617,7 +617,7 @@ class TestClockErrors(unittest.TestCase):
         lText.append('timing_reports = ["O_DAC_DATA_timing.rpt"]')
         with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write('\n'.join(lText) + '\n')
-        sError = self.build_error_pattern('interface_config_007', 'key "capture_clock" in port O_DAC_DATA names clock dac_sclk, which no [[clock]] table defines')
+        sError = self.build_error_pattern('interface_config_008', 'key "capture_clock" in port O_DAC_DATA names clock dac_sclk, which no [[clock]] table defines')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
@@ -653,7 +653,7 @@ class TestPortStatus(unittest.TestCase):
         self.assertEqual('defer', oInterface.ports[0].status)
 
     def test_raises_error_if_status_is_not_analyze_or_defer(self):
-        sError = self.build_error_pattern('interface_config_009', 'key "status" in port O_DAC_CSF must be "analyze" or "defer"')
+        sError = self.build_error_pattern('interface_config_010', 'key "status" in port O_DAC_CSF must be "analyze" or "defer"')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             self.read_interface_with_port(['name = "O_DAC_CSF"', 'status = "deferred"'])
 
@@ -679,12 +679,12 @@ class TestPortStatus(unittest.TestCase):
         return lLines
 
     def test_raises_error_if_an_analyzed_port_names_a_methodology_stacv_does_not_support(self):
-        sError = self.build_error_pattern('interface_config_010', 'key "methodology" in port I_DAC_DATA names SDR-SS-I, which stacv does not support; correct it, or defer the port with status = "defer"')
+        sError = self.build_error_pattern('interface_config_011', 'key "methodology" in port I_DAC_DATA names SDR-SS-I, which stacv does not support; correct it, or defer the port with status = "defer"')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             self.read_interface_with_port(self.build_analyzed_port('SDR-SS-I'))
 
     def test_raises_error_if_an_analyzed_port_names_a_misspelled_methodology(self):
-        sError = self.build_error_pattern('interface_config_010', 'key "methodology" in port I_DAC_DATA names SDR-SS-0, which stacv does not support; correct it, or defer the port with status = "defer"')
+        sError = self.build_error_pattern('interface_config_011', 'key "methodology" in port I_DAC_DATA names SDR-SS-0, which stacv does not support; correct it, or defer the port with status = "defer"')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             self.read_interface_with_port(self.build_analyzed_port('SDR-SS-0'))
 
