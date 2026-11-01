@@ -20,6 +20,9 @@ from stacv.interface import clock_generator
 from stacv.visualize import edges
 
 IDLE_LEVELS = ['low', 'high']
+SDR_SS_O = 'SDR-SS-O'
+# The previous edge of the same type is one clock period, two edges, earlier.
+EDGES_PER_PERIOD = 2
 READER = config_reader.ConfigReader('interface_config', interface_config_error.InterfaceConfigError)
 TOP_LEVEL_KEYS = ['description', 'name', 'part', 'traces', 'clock', 'port']
 CLOCK_KEYS = ['name', 'period', 'port', 'idle', 'generator']
@@ -310,7 +313,30 @@ def find_edge_errors(oPort, oLocation):
     lErrors = []
     if not capture_edges_are_the_same_type(oPort.capture_clock):
         lErrors.append(READER.create_error(18, oLocation.filename, f'key "capture_clock"{oLocation.location} has setup_edge {oPort.capture_clock.setup_edge} and hold_edge {oPort.capture_clock.hold_edge}, which are not the same edge type'))
+    elif oPort.methodology == SDR_SS_O:
+        lErrors.extend(find_sdr_source_synchronous_output_edge_errors(oPort, oLocation))
     return lErrors
+
+
+def find_sdr_source_synchronous_output_edge_errors(oPort, oLocation):
+    # An SDR-SS-O port launches each bit on one edge, and holds it until the capture edge after the one it is set up to.
+    lErrors = []
+    oLaunchClock = oPort.launch_clock
+    if oLaunchClock.setup_edge != oLaunchClock.hold_edge:
+        lErrors.append(READER.create_error(19, oLocation.filename, f'key "launch_clock"{oLocation.location} has setup_edge {oLaunchClock.setup_edge} and hold_edge {oLaunchClock.hold_edge}; an SDR-SS-O port launches each bit once, so both must be the same edge (a signal timed to the first and last clock edges is SDR-SS-O-FLC)'))
+    oCaptureClock = oPort.capture_clock
+    iSetupEdge = edge_times.convert_edge_letter_to_number(oCaptureClock.setup_edge)
+    iHoldEdge = edge_times.convert_edge_letter_to_number(oCaptureClock.hold_edge)
+    if iHoldEdge != iSetupEdge - EDGES_PER_PERIOD:
+        lErrors.append(READER.create_error(20, oLocation.filename, f'key "capture_clock"{oLocation.location} has setup_edge {oCaptureClock.setup_edge} and hold_edge {oCaptureClock.hold_edge}; {describe_expected_capture_hold_edge(iSetupEdge)}'))
+    return lErrors
+
+
+def describe_expected_capture_hold_edge(iSetupEdge):
+    sRule = 'the hold edge of an SDR-SS-O port is the previous capture edge of the same type'
+    if iSetupEdge < EDGES_PER_PERIOD:
+        return f'{sRule}, so setup_edge must be C or later'
+    return f'{sRule}, {edge_times.convert_edge_number_to_letter(iSetupEdge - EDGES_PER_PERIOD)}'
 
 
 def capture_edges_are_the_same_type(oCaptureClock):

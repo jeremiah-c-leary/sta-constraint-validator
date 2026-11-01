@@ -198,6 +198,13 @@ Edges are counted from the first rising edge of each clock, at time 0:
 A launch edge written as a letter, or a capture edge written as a number, is an error (interface_config_014, interface_config_015).
 The setup and hold capture edges must be the same type, both rising or both falling, because the part captures on one edge type (interface_config_018).
 
+An SDR-SS-O port has two more rules:
+
+* The launch setup and hold edges are the same edge, because each bit is launched once (interface_config_019).
+* The capture hold edge is the capture edge of the same type before the setup edge, one capture clock period earlier, such as ``"B"`` for ``"D"`` (interface_config_020).
+
+The edges of an SDR-SS-O-FLC port are independent, so these two rules do not apply to it (see :doc:`methodology`).
+
 ``stacv visualize edges`` still draws a port whose edges break these rules, and prints the error under the port's requirements, so the drawing can be used to correct them.
 Every other command stops on the error.
 

@@ -403,6 +403,7 @@ Moving only the setup launch edge two launch periods earlier gave a 40 ns setup 
    capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
 
 For an SDR-SS-O data port, the same change would also have moved the hold requirement to 0 ns and failed hold.
+stacv reports different launch setup and hold edges on an SDR-SS-O port as an error (interface_config_019).
 
 Edges diagram
 ^^^^^^^^^^^^^
