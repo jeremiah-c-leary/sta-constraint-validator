@@ -19,6 +19,7 @@ Welcome to sta-constraint-validator's documentation!
    checks
    trc
    generate
+   errors
    
 
 Indices and tables
