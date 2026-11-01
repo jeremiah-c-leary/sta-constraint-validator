@@ -57,7 +57,7 @@ def build_pin(lReplacements=(), sName='DATA_IN'):
     return '\n'.join(lText)
 
 
-class TestPartErrors(unittest.TestCase):
+class PartTestCase(unittest.TestCase):
     '''
     The part file is read through stacv visualize block_diagram, after a valid traces file.
     '''
@@ -91,6 +91,9 @@ class TestPartErrors(unittest.TestCase):
         self.assertEqual(f'ERROR: [{sIdentifier}] {self.sPartFile} {sMessage}\n', self.oStderr.getvalue())
         self.assertEqual('', self.oStdout.getvalue())
         self.assertEqual(2, iExitCode)
+
+
+class TestPartErrors(PartTestCase):
 
     def test_invalid_toml_is_an_error(self):
         iExitCode = self.run_block_diagram(['[properties'])

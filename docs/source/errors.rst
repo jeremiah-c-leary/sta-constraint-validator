@@ -219,13 +219,13 @@ Part file
    * - part_config_005
      - ``key "methodology"<location> names <methodology>; a part pin is SDR-SS-I, SDR-SS-O or SDR-SS-RT``
      - Correct the methodology.
-   * - part_config_006 (new)
+   * - part_config_006
      - ``key "<key>"<location> must be "Rising" or "Falling"``
      - Correct the edge of ``capture_edge`` or ``launch_edge``.
-   * - part_config_007 (new)
+   * - part_config_007
      - ``pin <name> is defined by more than one [[interface.pin]] table``
      - Remove or rename one of the tables.
-   * - part_config_008 (new)
+   * - part_config_008
      - ``key "max_frequency"<location> must be greater than 0``
      - Correct the frequency, in MHz.
 

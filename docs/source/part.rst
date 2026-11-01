@@ -110,6 +110,7 @@ Pins are described from the part's point of view.
      - Description
    * - ``name``
      - The name of the pin.
+       Each pin name is used once in the part, in every interface, since traces name a pin without its interface (part_config_007).
    * - ``methodology``
      - The :doc:`methodology <methodology>` of the pin.
        It decides the timing keys the pin has:
@@ -120,11 +121,11 @@ Pins are described from the part's point of view.
      - The clock pin of the part the data is captured or launched on:
 
        * ``pin``: the name of the clock pin.
-       * ``max_frequency``: the maximum frequency of the clock for this pin, in MHz.
+       * ``max_frequency``: the maximum frequency of the clock for this pin, in MHz, greater than 0 (part_config_008).
    * - ``capture_edge``
-     - The clock edge the part captures the data on: ``"Rising"`` or ``"Falling"``.
+     - The clock edge the part captures the data on: ``"Rising"`` or ``"Falling"`` (part_config_006).
    * - ``launch_edge``
-     - The clock edge the part launches the data on: ``"Rising"`` or ``"Falling"``.
+     - The clock edge the part launches the data on: ``"Rising"`` or ``"Falling"`` (part_config_006).
    * - ``setup``
      - The setup requirement of the pin.
    * - ``hold``

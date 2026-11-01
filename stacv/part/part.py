@@ -20,6 +20,7 @@ INTERFACE_KEYS = ['name', 'pin']
 PIN_KEYS = ['name', 'methodology', 'clock']
 CLOCK_KEYS = ['pin', 'max_frequency']
 CONSTRAINT_KEYS = ['value', 'symbol', 'source']
+EDGES = ['Rising', 'Falling']
 
 
 class Part():
@@ -80,7 +81,18 @@ def build_interface_list(lInterfaces, sFilename):
     oInterfaceList.interfaces = []
     for iInterface, dInterface in enumerate(lInterfaces, start=1):
         oInterfaceList.interfaces.append(build_interface(dInterface, iInterface, sFilename))
+    check_pins_are_defined_once(oInterfaceList, sFilename)
     return oInterfaceList
+
+
+def check_pins_are_defined_once(oInterfaceList, sFilename):
+    # Traces name a part pin without its interface, so a pin name is used once in the part.
+    lNames = []
+    for oInterface in oInterfaceList.interfaces:
+        for oPin in oInterface.pins.pins:
+            if oPin.name in lNames:
+                READER.raise_error(7, sFilename, f'pin {oPin.name} is defined by more than one [[interface.pin]] table')
+            lNames.append(oPin.name)
 
 
 def build_interface(dInterface, iInterface, sFilename):
@@ -155,6 +167,8 @@ def build_clock_pin(dPin, sPinName, sInterfaceName, oPinLocation):
     oClockPin = clock_pin.ClockPin()
     oClockPin.pin = READER.get_required_string(dClock, 'pin', oLocation)
     oClockPin.max_frequency = READER.get_required_number(dClock, 'max_frequency', oLocation)
+    if oClockPin.max_frequency <= 0:
+        READER.raise_error(8, oLocation.filename, f'key "max_frequency"{oLocation.location} must be greater than 0')
     return oClockPin
 
 
@@ -168,14 +182,21 @@ def build_constraint(dPin, sTable, sPinName, sInterfaceName, oPinLocation):
     return oConstraint
 
 
+def read_edge(dPin, sKey, oLocation):
+    sEdge = READER.get_required_string(dPin, sKey, oLocation)
+    if sEdge not in EDGES:
+        READER.raise_error(6, oLocation.filename, f'key "{sKey}"{oLocation.location} must be "{EDGES[0]}" or "{EDGES[1]}"')
+    return sEdge
+
+
 def build_input_pin(oPin, dPin, sInterfaceName, oLocation):
-    oPin.capture_edge = READER.get_required_string(dPin, 'capture_edge', oLocation)
+    oPin.capture_edge = read_edge(dPin, 'capture_edge', oLocation)
     oPin.setup = build_constraint(dPin, 'setup', oPin.name, sInterfaceName, oLocation)
     oPin.hold = build_constraint(dPin, 'hold', oPin.name, sInterfaceName, oLocation)
 
 
 def build_output_pin(oPin, dPin, sInterfaceName, oLocation):
-    oPin.launch_edge = READER.get_required_string(dPin, 'launch_edge', oLocation)
+    oPin.launch_edge = read_edge(dPin, 'launch_edge', oLocation)
     oPin.cko_max = build_constraint(dPin, 'cko_max', oPin.name, sInterfaceName, oLocation)
     oPin.cko_min = build_constraint(dPin, 'cko_min', oPin.name, sInterfaceName, oLocation)
 
