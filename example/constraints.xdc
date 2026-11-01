@@ -25,7 +25,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ----------------------------------------------
-# 0d47a04bd4c291e68c87b9dba452ee2c  example/texas_instruments/DAC81404/interface.toml
+# 5ff9fe787791f6f3356212cf61800c0a  example/texas_instruments/DAC81404/interface.toml
 # 0117e857e03a4af4824d81689ba503e6  example/texas_instruments/DAC81404/part.toml
 # 258b2a541bb317ac41ff5ecd3df5e6cc  example/texas_instruments/DAC81404/traces.toml
 #

@@ -37,5 +37,5 @@ methodology = "SDR-SS-O"
 launch_clock = {name = "clk_100mhz", setup_edge = 10, hold_edge = 10}
 capture_clock = {name = "clk_10mhz", setup_edge = "C", hold_edge = "A"}
 timing_reports = [
-    "$PROJ_DIR/example/analog_devices/ad7339/O_CS_timing.rpt",
+    "$PROJ_DIR/example/analog_devices/ad7399/O_CS_timing.rpt",
 ]

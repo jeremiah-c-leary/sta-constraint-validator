@@ -6,7 +6,7 @@
 
 [properties]
 manufacturer = "Analog Devices"
-part_number = "AD3799"
+part_number = "AD7399"
 
 [datasheet]
 name = "Quad, Serial-Input 12-Bit/10-Bit DACs"

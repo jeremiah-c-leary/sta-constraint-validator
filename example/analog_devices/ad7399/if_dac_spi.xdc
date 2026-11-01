@@ -24,11 +24,11 @@
 #
 # md5sum                            Filename
 # --------------------------------  -------------------
-# 803ad19baf68379f0627bf6cad01d6bc  if_dac_spi.toml
-# d2651ed56123d252feb1f36c9b7bec13  ad7399.toml
+# ce73276d013b5066b2f90136c444cdf6  if_dac_spi.toml
+# 0323617f7f710e853f8de6e4ae7a03be  ad7399.toml
 # 94a5942882184e7266286ad29d23cce5  dac_spi_traces.toml
 #
-# Part:       Analog Devices AD3799
+# Part:       Analog Devices AD7399
 # Datasheet:  Quad, Serial-Input 12-Bit/10-Bit DACs
 # Revision:   Rev. C
 # URL:        https://www.analog.com/media/en/technical-documentation/data-sheets/AD7398_7399.pdf
@@ -38,7 +38,7 @@
 ###############################################################################
 #
 # ----------------+                       +----------
-#   Device        |                       |  AD3799
+#   Device        |                       |  AD7399
 #                 |                       |
 #   O_DAC_DATA   [X] --- data_output --> [X] SDI
 #                 |                       |
