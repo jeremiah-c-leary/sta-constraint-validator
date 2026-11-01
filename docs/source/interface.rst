@@ -194,6 +194,10 @@ Edges are counted from the first rising edge of each clock, at time 0:
 * Capture edges are letters: A, C, E, ... are rising edges and B, D, F, ... are falling edges.
 
 A launch edge written as a letter, or a capture edge written as a number, is an error (interface_config_014, interface_config_015).
+The setup and hold capture edges must be the same type, both rising or both falling, because the part captures on one edge type (interface_config_018).
+
+``stacv visualize edges`` still draws a port whose edges break these rules, and prints the error under the port's requirements, so the drawing can be used to correct them.
+Every other command stops on the error.
 
 Edge *n* of a clock is at (period / 2) × *n*, so the setup requirement is the time of the capture setup edge minus the time of the launch setup edge, and the hold requirement is the time of the capture hold edge minus the time of the launch hold edge.
 Check the edges with ``stacv visualize edges`` before generating the constraints.

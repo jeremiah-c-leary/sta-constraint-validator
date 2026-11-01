@@ -290,7 +290,6 @@ Errors
   The capture edge does not line up with a launch edge, and the hardware cannot produce that clock.
 * has a setup multicycle less than 1 (generate_004).
 * has a hold multicycle less than 0 (generate_005).
-* has setup and hold capture edges that are not the same type, one rising and one falling (generate_006).
 * has no trace from the device to the part (generate_007).
 * has a trace that ends at a pin the part does not have (generate_008).
 * has no clock trace from its clock port to the clock pin of the part pin (generate_009).

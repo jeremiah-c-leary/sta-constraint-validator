@@ -12,3 +12,5 @@ class Port():
         self.timing_reports = []
         # As written in the interface file, before environment variables are expanded.
         self.timing_reports_as_written = []
+        # Errors in the edges, which stacv visualize edges draws and every other command stops on.
+        self.edge_errors = []

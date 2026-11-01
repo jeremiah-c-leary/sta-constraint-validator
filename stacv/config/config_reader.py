@@ -15,7 +15,10 @@ class ConfigReader():
         self.error = cError
 
     def raise_error(self, iNumber, sFilename, sMessage):
-        raise self.error(f'{self.family}_{iNumber:03d}', sFilename, sMessage)
+        raise self.create_error(iNumber, sFilename, sMessage)
+
+    def create_error(self, iNumber, sFilename, sMessage):
+        return self.error(f'{self.family}_{iNumber:03d}', sFilename, sMessage)
 
     def read_toml_file(self, sFilename):
         with open(sFilename, 'rb') as oFile:

@@ -117,7 +117,7 @@ Interface file
      - Remove or rename one of the tables.
        A port can appear once for each methodology, such as a bidirectional port timed as an output and as a round trip.
      - Stops
-   * - interface_config_018 (new)
+   * - interface_config_018
      - ``key "capture_clock"<location> has setup_edge <edge> and hold_edge <edge>, which are not the same edge type``
      - The part captures on one edge type: make both edges rising or both falling.
        Was generate_006.

@@ -81,13 +81,6 @@ def is_falling_edge(sEdgeLetter):
     return edge_times.convert_edge_letter_to_number(sEdgeLetter) % 2 == 1
 
 
-def check_capture_edge_types_match(oPort):
-    bSetupIsFalling = is_falling_edge(oPort.capture_clock.setup_edge)
-    bHoldIsFalling = is_falling_edge(oPort.capture_clock.hold_edge)
-    if bSetupIsFalling != bHoldIsFalling:
-        raise generate_error.GenerateError('generate_006', oPort.name, f'setup capture edge {oPort.capture_clock.setup_edge} and hold capture edge {oPort.capture_clock.hold_edge} are not the same edge type')
-
-
 def calculate_setup_multicycle(oPort):
     return count_setup_step_periods(oPort)
 

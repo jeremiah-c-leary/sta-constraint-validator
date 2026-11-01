@@ -13,6 +13,7 @@ from stacv.interface import port
 from stacv.interface import interface_location
 from stacv.interface import interface_config_error
 from stacv.methodology import methodology_factory
+from stacv.rules import edge_times
 from stacv.interface import clock
 from stacv.interface import clock_pin
 from stacv.interface import clock_generator
@@ -28,8 +29,21 @@ PORT_CLOCK_KEYS = ['name', 'setup_edge', 'hold_edge']
 
 
 def read_interface_config(sInterfaceFile):
+    oInterface = read_interface_config_for_drawing(sInterfaceFile)
+    raise_first_edge_error(oInterface)
+    return oInterface
+
+
+def read_interface_config_for_drawing(sInterfaceFile):
+    # Errors in the edges can still be drawn, so they are kept on each port instead of raised.
     dConfig = read_file(sInterfaceFile)
     return create_interface_config(dConfig, sInterfaceFile)
+
+
+def raise_first_edge_error(oInterface):
+    for oPort in oInterface.ports:
+        for oError in oPort.edge_errors:
+            raise oError
 
 
 def read_file(sInterfaceFile):
@@ -182,6 +196,7 @@ def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     oPort.capture_clock = build_referenced_clock(dPort, 'capture_clock', oPort.name, oInterface, oLocation)
     check_capture_clock_stops_if_needed(oPort, oLocation)
     oPort.launch_clock = build_referenced_clock(dPort, 'launch_clock', oPort.name, oInterface, oLocation)
+    oPort.edge_errors = find_edge_errors(oPort, oLocation)
     oPort.timing_reports_as_written = READER.get_required_list_of_strings(dPort, 'timing_reports', oLocation)
 
 
@@ -270,6 +285,19 @@ def format_edge(edge):
     if isinstance(edge, str):
         return f'"{edge}"'
     return str(edge)
+
+
+def find_edge_errors(oPort, oLocation):
+    lErrors = []
+    if not capture_edges_are_the_same_type(oPort.capture_clock):
+        lErrors.append(READER.create_error(18, oLocation.filename, f'key "capture_clock"{oLocation.location} has setup_edge {oPort.capture_clock.setup_edge} and hold_edge {oPort.capture_clock.hold_edge}, which are not the same edge type'))
+    return lErrors
+
+
+def capture_edges_are_the_same_type(oCaptureClock):
+    iSetupEdge = edge_times.convert_edge_letter_to_number(oCaptureClock.setup_edge)
+    iHoldEdge = edge_times.convert_edge_letter_to_number(oCaptureClock.hold_edge)
+    return iSetupEdge % 2 == iHoldEdge % 2
 
 
 def check_capture_clock_stops_if_needed(oPort, oLocation):

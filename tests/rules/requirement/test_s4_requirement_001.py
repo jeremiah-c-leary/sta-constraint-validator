@@ -99,8 +99,8 @@ class Test(rule_test_case.RuleTestCase):
         self.assertEqual(1, iExitCode)
 
     def test_fails_when_capture_setup_edge_differs(self):
-        # (50.000 / 2) * 3 - (10.000 / 2) * 8 = 75.000 - 40.000 = 35.000
-        self.execute_with_setup_edges(iPassingLaunchSetupEdge, 'D')
+        # (50.000 / 2) * 4 - (10.000 / 2) * 8 = 100.000 - 40.000 = 60.000
+        self.execute_with_setup_edges(iPassingLaunchSetupEdge, 'E')
 
         self.assert_rule_failed(sRuleId)
 
@@ -145,11 +145,11 @@ class Test(rule_test_case.RuleTestCase):
         self.assert_rule_passed(sRuleId)
 
     def test_failure_lists_each_setup_timing_report_with_a_different_requirement(self):
-        self.execute_with_setup_edges(iPassingLaunchSetupEdge, 'D')
+        self.execute_with_setup_edges(iPassingLaunchSetupEdge, 'E')
 
         lExpected = []
         for iLineNumber in lSetupRequirementLines:
-            lExpected.append(f'{sTimingReport}:{iLineNumber}  setup requirement 10.000ns, configured setup requirement 35.000ns')
+            lExpected.append(f'{sTimingReport}:{iLineNumber}  setup requirement 10.000ns, configured setup requirement 60.000ns')
         oFailure = self.find_testcase(sRuleId).find('failure')
         self.assertEqual('\n'.join(lExpected), oFailure.text)
 

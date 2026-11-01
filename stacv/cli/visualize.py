@@ -9,13 +9,20 @@ DIVIDER = '=' * 80
 
 
 def execute(oCmdLine):
-    oInterface = interface_config.read_interface_config(oCmdLine.interface_file)
     if oCmdLine.visualization == 'block_diagram':
-        print_block_diagram(oInterface)
+        print_block_diagram(interface_config.read_interface_config(oCmdLine.interface_file))
         return 0
+    return print_interface_edges(interface_config.read_interface_config_for_drawing(oCmdLine.interface_file))
+
+
+def print_interface_edges(oInterface):
+    # The edges are drawn even when they are wrong, so the drawing can be used to correct them.
+    iExitCode = 0
     for oPort in oInterface.get_analyzed_ports():
         print_port_edges(oPort)
-    return 0
+        if len(oPort.edge_errors) > 0:
+            iExitCode = 2
+    return iExitCode
 
 
 def print_block_diagram(oInterface):
@@ -33,4 +40,13 @@ def print_port_edges(oPort):
     oMethodology = methodology_factory.create_methodology(oPort.methodology)
     for sLine in edges.draw_edges(oPort, oMethodology.edge_diagram_type):
         print(sLine)
+    print_edge_errors(oPort)
     print('')
+
+
+def print_edge_errors(oPort):
+    if len(oPort.edge_errors) == 0:
+        return
+    print('')
+    for oError in oPort.edge_errors:
+        print(str(oError))

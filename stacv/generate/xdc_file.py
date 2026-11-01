@@ -236,7 +236,6 @@ def build_edge_windows(oPort):
 
 
 def build_multicycle_blocks(oPort):
-    xdc.check_capture_edge_types_match(oPort)
     iSetupMulticycle = xdc.calculate_setup_multicycle(oPort)
     xdc.check_setup_multicycle(oPort, iSetupMulticycle)
     iHoldMulticycle = xdc.calculate_hold_multicycle(oPort)

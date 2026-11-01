@@ -338,7 +338,7 @@ class TestGenerateXdcErrors(GenerateTestCase):
     def test_reports_setup_and_hold_capture_edges_of_different_types(self):
         sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [2, 'B'])
         self.run_generate_xdc([sPort])
-        self.assert_error_written('generate_006')
+        self.assert_error_written('interface_config_018')
 
 
 class TestGenerateXdcInputErrors(GenerateTestCase):

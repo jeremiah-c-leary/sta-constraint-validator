@@ -108,26 +108,26 @@ class Test(rule_test_case.RuleTestCase):
         self.assertEqual(1, iExitCode)
 
     def test_fails_when_capture_hold_edge_differs(self):
-        # (50.000 / 2) * 1 - (10.000 / 2) * 0 = 25.000 - 0.000 = 25.000
-        self.execute_with_hold_edges(iPassingLaunchHoldEdge, 'B')
+        # (50.000 / 2) * 2 - (10.000 / 2) * 0 = 50.000 - 0.000 = 50.000
+        self.execute_with_hold_edges(iPassingLaunchHoldEdge, 'C')
 
         self.assert_rule_failed(sRuleId)
 
     def test_fails_when_configured_hold_requirement_is_negative(self):
-        # (50.000 / 2) * 1 - (10.000 / 2) * 8 = 25.000 - 40.000 = -15.000
-        self.execute_with_hold_edges(8, 'B')
+        # (50.000 / 2) * 0 - (10.000 / 2) * 8 = 0.000 - 40.000 = -40.000
+        self.execute_with_hold_edges(8, 'A')
 
         self.assert_rule_failed(sRuleId)
 
     def test_passes_when_negative_hold_requirement_matches_configured_hold_edges(self):
-        # (50.000 / 2) * 1 - (10.000 / 2) * 8 = 25.000 - 40.000 = -15.000
-        self.execute_with_hold_edges_and_requirement_lines_changed(8, 'B', lHoldRequirementLines, 'Requirement:            0.000ns', 'Requirement:            -15.000ns')
+        # (50.000 / 2) * 0 - (10.000 / 2) * 8 = 0.000 - 40.000 = -40.000
+        self.execute_with_hold_edges_and_requirement_lines_changed(8, 'A', lHoldRequirementLines, 'Requirement:            0.000ns', 'Requirement:            -40.000ns')
 
         self.assert_rule_passed(sRuleId)
 
     def test_passes_when_a_later_pair_of_edges_has_the_same_hold_requirement(self):
-        # (50.000 / 2) * 1 - (10.000 / 2) * 5 = 25.000 - 25.000 = 0.000
-        self.execute_with_hold_edges(5, 'B')
+        # (50.000 / 2) * 2 - (10.000 / 2) * 10 = 50.000 - 50.000 = 0.000
+        self.execute_with_hold_edges(10, 'C')
 
         self.assert_rule_passed(sRuleId)
 
@@ -166,11 +166,11 @@ class Test(rule_test_case.RuleTestCase):
         self.assert_rule_passed(sRuleId)
 
     def test_failure_lists_each_hold_timing_report_with_a_different_requirement(self):
-        self.execute_with_hold_edges(8, 'B')
+        self.execute_with_hold_edges(8, 'A')
 
         lExpected = []
         for iLineNumber in lHoldRequirementLines:
-            lExpected.append(f'{sTimingReport}:{iLineNumber}  hold requirement 0.000ns, configured hold requirement -15.000ns')
+            lExpected.append(f'{sTimingReport}:{iLineNumber}  hold requirement 0.000ns, configured hold requirement -40.000ns')
         oFailure = self.find_testcase(sRuleId).find('failure')
         self.assertEqual('\n'.join(lExpected), oFailure.text)
 
