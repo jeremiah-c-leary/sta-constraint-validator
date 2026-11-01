@@ -66,3 +66,15 @@ The documentation is in ``docs/source``:
 * ``generate.rst``: the constraints file and the report script
 * ``trc.rst``: the rules ``check`` runs
 * ``errors.rst``: every error message, and how to correct it
+
+Development
+-----------
+
+Every commit must pass ``bin/gate``: the unit tests, and the documentation build with no warnings.
+The build runs Sphinx from a virtual environment in ``.venv``:
+
+.. code-block:: text
+
+   python3.11 -m venv .venv
+   .venv/bin/pip install sphinx
+   bin/gate

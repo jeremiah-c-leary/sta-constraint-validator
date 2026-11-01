@@ -287,7 +287,7 @@ Each one gets a full entry above, with a unique number, before it is coded.
 
 Multiple Reports
 
-clock_004
+clock_002
 ^^^^^^^^^
 
 This rule checks the starting clock point of the  is the same between all timing reports.

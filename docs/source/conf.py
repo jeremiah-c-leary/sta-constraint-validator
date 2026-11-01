@@ -42,6 +42,9 @@ extensions = [
     'sphinx.ext.mathjax', 'sphinx.ext.autodoc', 'sphinx.ext.autosectionlabel'
 ]
 
+# Section labels start with their page, so the same heading can be used on several pages.
+autosectionlabel_prefix_document = True
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
