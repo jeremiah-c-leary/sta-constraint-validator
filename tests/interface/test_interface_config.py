@@ -33,6 +33,8 @@ class Test(unittest.TestCase):
         self.assertEqual('SDR-SS-O', oPort.methodology)
 
     def test_port_timing_report_paths_have_environment_variables_expanded(self):
+        with mock.patch.dict(os.environ, {'PROJ_DIR': sProjectDir}):
+            interface_config.resolve_timing_reports(self.oConfig, sInterfaceFile)
         oPort = self.oConfig.ports[1]
 
         lExpected = []

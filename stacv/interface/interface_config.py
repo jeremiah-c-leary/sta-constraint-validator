@@ -38,12 +38,19 @@ def read_toml_file(sInterfaceFile):
             raise interface_config_error.InterfaceConfigError('interface_config_001', sInterfaceFile, f'is not valid TOML: {oError}') from oError
 
 
-def check_timing_reports_exist(oInterface, sInterfaceFile):
+def resolve_timing_reports(oInterface, sInterfaceFile):
+    # Only check reads the timing reports, so their environment variables are expanded here and not when the interface is read.
     oLocation = interface_location.InterfaceLocation(sInterfaceFile)
     for oPort in oInterface.ports:
         oLocation.set_port_name(oPort.name)
-        for sTimingReport in oPort.timing_reports:
-            check_if_file_exists(sTimingReport, 'timing_reports', oLocation)
+        oPort.timing_reports = resolve_files(oPort.timing_reports_as_written, 'timing_reports', oLocation)
+
+
+def resolve_files(lFilenames, sKey, oLocation):
+    lFiles = []
+    for sFilename in lFilenames:
+        lFiles.append(resolve_file(sFilename, sKey, oLocation))
+    return lFiles
 
 
 def create_interface_config(dConfig, sInterfaceFile):
@@ -132,8 +139,7 @@ def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     check_methodology_is_supported(oPort.methodology, oLocation)
     oPort.capture_clock = build_capture_clock(dPort['capture_clock'], oInterface, oLocation)
     oPort.launch_clock = build_launch_clock(dPort['launch_clock'], oInterface, oLocation)
-    oPort.timing_reports = get_required_list_of_paths(dPort, 'timing_reports', oLocation)
-    oPort.timing_reports_as_written = dPort['timing_reports']
+    oPort.timing_reports_as_written = get_required_list_of_strings(dPort, 'timing_reports', oLocation)
 
 
 def get_required_array_of_tables(dDict, sKey, oLocation):
@@ -146,14 +152,6 @@ def get_required_key_value(dDict, sKey, oLocation):
     if sKey not in dDict:
         raise interface_config_error.InterfaceConfigError('interface_config_002', oLocation.filename, f'missing required key "{sKey}"{oLocation.location}')
     return dDict[sKey]
-
-
-def get_required_list_of_paths(dDict, sKey, oLocation):
-    lPaths = []
-    for sFilename in get_required_list_of_strings(dDict, sKey, oLocation):
-        sPath = resolve_path(sFilename, sKey, oLocation)
-        lPaths.append(sPath)
-    return lPaths
 
 
 def get_required_file(dDict, sKey, oLocation):

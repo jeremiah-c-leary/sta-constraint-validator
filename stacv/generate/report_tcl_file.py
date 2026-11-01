@@ -104,10 +104,18 @@ def build_report_timing(sPortName, sAnalysis, sFileOption):
 
 def convert_to_tcl_path(sPathAsWritten, sInterfaceFile):
     # Paths are resolved the same way check resolves them, leaving the environment variables for Tcl to read.
+    # The variables do not need to be set where stacv runs, so a path that starts with one is left for Tcl to resolve.
     sTclPath = ENVIRONMENT_VARIABLE.sub(convert_to_tcl_variable, sPathAsWritten)
-    if os.path.isabs(os.path.expandvars(sPathAsWritten)):
+    if starts_with_environment_variable(sPathAsWritten):
+        return sTclPath
+    if os.path.isabs(sPathAsWritten):
         return sTclPath
     return os.path.normpath(os.path.join(os.path.dirname(sInterfaceFile), sTclPath))
+
+
+def starts_with_environment_variable(sPath):
+    oMatch = ENVIRONMENT_VARIABLE.match(sPath)
+    return oMatch is not None
 
 
 def convert_to_tcl_variable(oMatch):

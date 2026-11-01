@@ -1,4 +1,5 @@
 import os
+import pathlib
 import re
 import tempfile
 import unittest
@@ -305,8 +306,9 @@ class Test(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_004', 'key "timing_reports" in port O_DAC_CSF uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_TEST_VARIABLE', None)
+            oInterface = interface_config.read_interface_config(self.sInterfaceFile)
             with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
-                interface_config.read_interface_config(self.sInterfaceFile)
+                interface_config.resolve_timing_reports(oInterface, self.sInterfaceFile)
 
     def test_read_interface_config_raises_error_naming_all_variables_if_two_environment_variables_are_not_set(self):
         lText = []
@@ -327,8 +329,9 @@ class Test(unittest.TestCase):
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_A', None)
             os.environ.pop('STACV_UNSET_B', None)
+            oInterface = interface_config.read_interface_config(self.sInterfaceFile)
             with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
-                interface_config.read_interface_config(self.sInterfaceFile)
+                interface_config.resolve_timing_reports(oInterface, self.sInterfaceFile)
 
     def test_read_interface_config_raises_error_naming_variable_if_braced_environment_variable_is_not_set(self):
         lText = []
@@ -348,8 +351,9 @@ class Test(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_004', 'key "timing_reports" in port O_DAC_CSF uses environment variables that are not set: STACV_UNSET_TEST_VARIABLE$')
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_TEST_VARIABLE', None)
+            oInterface = interface_config.read_interface_config(self.sInterfaceFile)
             with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
-                interface_config.read_interface_config(self.sInterfaceFile)
+                interface_config.resolve_timing_reports(oInterface, self.sInterfaceFile)
 
     def test_read_interface_config_raises_error_naming_port_and_file_if_timing_report_does_not_exist(self):
         sMissingFile = os.path.join(self.sDirectory, 'O_DAC_CSF_timing.rpt')
@@ -371,7 +375,7 @@ class Test(unittest.TestCase):
 
         sError = self.build_error_pattern('interface_config_005', 'key "timing_reports" in port O_DAC_CSF names a file that does not exist: ' + re.escape(sMissingFile) + '$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
-            interface_config.check_timing_reports_exist(oInterface, self.sInterfaceFile)
+            interface_config.resolve_timing_reports(oInterface, self.sInterfaceFile)
 
     def test_read_interface_config_raises_error_naming_expanded_path_if_timing_report_does_not_exist(self):
         lText = []
@@ -392,8 +396,8 @@ class Test(unittest.TestCase):
         sError = self.build_error_pattern('interface_config_005', 'key "timing_reports" in port O_DAC_CSF names a file that does not exist: ' + re.escape(sMissingFile) + '$')
         with mock.patch.dict(os.environ, {'STACV_TEST_REPORT_DIRECTORY': self.sDirectory}):
             oInterface = interface_config.read_interface_config(self.sInterfaceFile)
-        with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
-            interface_config.check_timing_reports_exist(oInterface, self.sInterfaceFile)
+            with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
+                interface_config.resolve_timing_reports(oInterface, self.sInterfaceFile)
 
     def test_read_interface_config_accepts_timing_report_that_does_not_exist(self):
         sMissingFile = os.path.join(self.sDirectory, 'O_DAC_CSF_timing.rpt')
@@ -412,7 +416,7 @@ class Test(unittest.TestCase):
 
         oInterface = interface_config.read_interface_config(self.sInterfaceFile)
 
-        self.assertEqual([sMissingFile], oInterface.ports[0].timing_reports)
+        self.assertEqual([sMissingFile], oInterface.ports[0].timing_reports_as_written)
 
     def test_read_interface_config_resolves_relative_timing_report_against_interface_file_directory(self):
         lText = []
@@ -428,9 +432,11 @@ class Test(unittest.TestCase):
         lText.append('timing_reports = ["O_DAC_DATA_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
-        oConfig = interface_config.read_interface_config(self.sInterfaceFile)
-
         sExpectedFile = os.path.join(self.sDirectory, 'O_DAC_DATA_timing.rpt')
+        pathlib.Path(sExpectedFile).touch()
+        oConfig = interface_config.read_interface_config(self.sInterfaceFile)
+        interface_config.resolve_timing_reports(oConfig, self.sInterfaceFile)
+
         self.assertEqual([sExpectedFile], oConfig.ports[0].timing_reports)
 
     def test_read_interface_config_raises_error_if_interface_file_does_not_exist(self):

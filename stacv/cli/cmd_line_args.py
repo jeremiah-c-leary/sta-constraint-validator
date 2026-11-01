@@ -20,8 +20,20 @@ def parse_command_line_arguments():
     return args
 
 
+class HelpfulArgumentParser(argparse.ArgumentParser):
+    '''
+    Prints the help of the command before a usage error, so the user can see
+    which words and arguments the command takes.  Subcommands use the same class.
+    '''
+
+    def error(self, message):
+        self.print_help(sys.stderr)
+        sys.stderr.write('\n')
+        self.exit(2, f'{self.prog}: error: {message}\n')
+
+
 def create_top_parser():
-    top_parser = argparse.ArgumentParser(
+    top_parser = HelpfulArgumentParser(
         prog=PROGRAM,
         description='''Validates timing constraints.'''
         )
