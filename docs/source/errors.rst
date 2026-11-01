@@ -14,7 +14,7 @@ Every error is printed on one line to standard error, and stacv exits with code 
 * The file is the input file the error is in, as it was given or named.
 * The message names the key and where it is, such as ``in port O_DATA`` or ``of clock clk_25mhz``, and, after a semicolon, how to correct it when that is not plain.
 
-.. Review note: rows marked (new) are proposed; the others exist today.
+Rows marked *(not built yet)* are agreed errors that stacv does not report yet.
 
 stacv visualize edges
 ---------------------
@@ -122,11 +122,11 @@ Interface file
      - The part captures on one edge type: make both edges rising or both falling.
        Was generate_006.
      - Drawn
-   * - interface_config_019 (new)
+   * - interface_config_019 *(not built yet)*
      - ``key "launch_clock"<location> has setup_edge <edge> and hold_edge <edge>; an SDR-SS-O port launches each bit once, so both must be the same edge (a signal timed to the first and last clock edges is SDR-SS-O-FLC)``
      - Use the same launch edge, or use SDR-SS-O-FLC for a chip select.
      - Drawn
-   * - interface_config_020 (new)
+   * - interface_config_020 *(not built yet)*
      - ``key "capture_clock"<location> has setup_edge <edge> and hold_edge <edge>; the hold edge of an SDR-SS-O port is the previous capture edge of the same type, <edge>``
      - Use the edge given.
      - Drawn
@@ -182,11 +182,11 @@ Traces file
    * - traces_config_009
      - ``trace <name> is defined by more than one [[trace]] table``
      - Remove or rename one of the tables.
-   * - traces_config_010 (new)
+   * - traces_config_010 *(not built yet)*
      - ``trace <name> key "device_pin" names <pin>, which is not a port or clock port of the interface``
      - Correct the device pin.
        For a clock, the device pin is the ``port`` of its ``[[clock]]`` table.
-   * - traces_config_011 (new)
+   * - traces_config_011 *(not built yet)*
      - ``trace <name> key "part_pin" names <pin>, which is not a pin or clock pin of the part``
      - Correct the part pin.
 
