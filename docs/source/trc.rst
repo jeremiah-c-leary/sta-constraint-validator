@@ -54,7 +54,7 @@ This stage provides rules to ensure the setup and hold timing reports across all
 Board and Part
 ^^^^^^^^^^^^^^
 
-This stage checks the board data and the part against the timing reports.
+This stage checks the traces and the part against the timing reports.
 It checks that the output and input delays in the timing reports match the delays calculated from the trace delays and the part.
 
 Intent
@@ -72,32 +72,41 @@ It runs last, so the slack is known to come from the intended timing.
 Methodology coverage
 ^^^^^^^^^^^^^^^^^^^^
 
-=======================  ========  =========  ========
-Rule                     SDR-SS-O  SDR-SS-RT  SDR-SS-I
-=======================  ========  =========  ========
-s0_data_path_001         X
-s0_clock_path_001        X
-s3_trace_001             X         X          X
-s3_part_001              X         X          X
-s3_part_002              X         X          X
-s3_output_delay_001      X
-s3_input_delay_001                 X          X
-s4_process_corner_001    X         X          X
-s4_process_corner_002    X         X          X
-s4_data_path_002                   X
-s4_data_path_003                              X
-s4_clock_path_002                             X
-s4_launch_clock_001      X         X          X
-s4_launch_clock_002      X         X          X
-s4_capture_clock_001     X         X          X
-s4_capture_clock_002     X         X          X
-s4_requirement_001       X         X          X
-s4_requirement_002       X         X          X
-s4_part_001              X
-s5_slack_001             X         X          X
-s5_slack_002             X         X          X
-=======================  ========  =========  ========
+=======================  ========  ============  =========  ========
+Rule                     SDR-SS-O  SDR-SS-O-FLC  SDR-SS-RT  SDR-SS-I
+=======================  ========  ============  =========  ========
+s0_timing_report_001     X         X             P          P
+s0_timing_report_002     X         X             P          P
+s0_trace_001             X         X             P          P
+s0_data_path_001         X         X
+s0_clock_path_001        X         X
+s1_clock_001             X         X             P          P
+s2_clock_001             X         X             P          P
+s2_clock_002             X         X             P          P
+s2_data_path_001         X         X             P          P
+s2_output_delay_001      X         X
+s2_output_delay_002      X         X
+s3_output_delay_001      X         X
+s3_output_delay_002      X         X
+s3_input_delay_001                               P          P
+s4_process_corner_001    P         P             P          P
+s4_process_corner_002    P         P             P          P
+s4_data_path_002                                 P
+s4_data_path_003                                            P
+s4_clock_path_002                                           P
+s4_launch_clock_001      X         X             P          P
+s4_launch_clock_002      X         X             P          P
+s4_capture_clock_001     X         X             P          P
+s4_capture_clock_002     X         X             P          P
+s4_requirement_001       X         X             P          P
+s4_requirement_002       X         X             P          P
+s4_part_001              X         X
+s5_slack_001             X         X             P          P
+s5_slack_002             X         X             P          P
+=======================  ========  ============  =========  ========
 
+``X`` marks a rule stacv checks, and ``P`` a rule that is planned for the methodology.
+SDR-SS-O-FLC runs the SDR-SS-O rules unchanged.
 The columns are the methodologies described in :doc:`methodology`.
 The DDR methodologies are added once their rules are defined.
 
@@ -184,12 +193,16 @@ Stage 4: Intent
 s4_process_corner_001: A setup and hold timing report exists at each process corner
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+*Planned: stacv does not check this rule yet.*
+
 Each data port must have at least one setup and one hold timing report at each process corner listed in the device definition.
 A missing timing report means the data port is not timed at that corner.
 This rule waits for a second timing tool: the Vivado parser accepts only the Slow and Fast process corners, and stage 0 requires both.
 
 s4_process_corner_002: Every timing report is at a process corner listed in the device definition
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Planned: stacv does not check this rule yet.*
 
 A timing report at any other process corner is a failure.
 It usually means the timing reports were generated for a different device, or with different settings than intended.
@@ -198,15 +211,21 @@ This rule waits for a second timing tool: the Vivado parser accepts only the Slo
 s4_data_path_002: Data path includes clock output pin and data input pin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+*Planned: stacv does not check this rule yet.*
+
 The data path must include the clock output port and a data input port.
 
 s4_data_path_003: Data path starts at an input port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+*Planned: stacv does not check this rule yet.*
+
 The data path in the timing report must start at an input port.
 
 s4_clock_path_002: Capture clock path starts at the interface clock input port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Planned: stacv does not check this rule yet.*
 
 The capture clock path in the timing report must start at a port.
 

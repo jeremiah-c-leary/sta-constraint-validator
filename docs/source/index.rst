@@ -16,7 +16,6 @@ Welcome to sta-constraint-validator's documentation!
    interface
    traces
    part
-   checks
    trc
    generate
    errors
