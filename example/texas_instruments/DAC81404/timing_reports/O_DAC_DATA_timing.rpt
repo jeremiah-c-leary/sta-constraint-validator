@@ -1,17 +1,17 @@
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Sat Oct 31 10:04:54 2026
+| Date         : Sun Nov  1 08:43:35 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
-| Command      : report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt
+| Command      : report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -file Z:/home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt
 | Design       : dac81404_spi
 | Device       : xa7a12t-cpg238
 | Speed File   : -2I  PRODUCTION 1.16 2018-06-13
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Timing Report
 
-Slack (MET) :             7.487ns  (required time - arrival time)
+Slack (MET) :             7.573ns  (required time - arrival time)
   Source:                 q_spi_output_data_reg/C
                             (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_DAC_DATA
@@ -19,11 +19,11 @@ Slack (MET) :             7.487ns  (required time - arrival time)
   Path Group:             dac_sclk
   Path Type:              Max at Slow Process Corner
   Requirement:            20.000ns  (dac_sclk fall@20.000ns - clk_100mhz rise@0.000ns)
-  Data Path Delay:        4.088ns  (logic 2.706ns (66.198%)  route 1.382ns (33.802%))
+  Data Path Delay:        4.085ns  (logic 2.706ns (66.247%)  route 1.379ns (33.753%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           12.000ns
-  Clock Path Skew:        3.611ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    7.451ns = ( 27.451 - 20.000 ) 
+  Clock Path Skew:        3.694ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    7.534ns = ( 27.534 - 20.000 ) 
     Source Clock Delay      (SCD):    4.062ns = ( 14.062 - 10.000 ) 
     Clock Pessimism Removal (CPR):    0.222ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -42,12 +42,12 @@ Slack (MET) :             7.487ns  (required time - arrival time)
                          net (fo=1, routed)           1.687     2.550    I_CLK_IBUF
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.081     2.631 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=13, routed)          1.432     4.062    I_CLK_IBUF_BUFG
-    SLICE_X0Y3           FDCE                                         r  q_spi_output_data_reg/C
+    SLICE_X1Y4           FDCE                                         r  q_spi_output_data_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X0Y3           FDCE (Prop_fdce_C_Q)         0.379     4.441 r  q_spi_output_data_reg/Q
-                         net (fo=1, routed)           1.382     5.823    O_DAC_DATA_OBUF
-    U16                  OBUF (Prop_obuf_I_O)         2.327     8.151 r  O_DAC_DATA_OBUF_inst/O
-                         net (fo=0)                   0.000     8.151    O_DAC_DATA
+    SLICE_X1Y4           FDCE (Prop_fdce_C_Q)         0.379     4.441 r  q_spi_output_data_reg/Q
+                         net (fo=1, routed)           1.379     5.820    O_DAC_DATA_OBUF
+    U16                  OBUF (Prop_obuf_I_O)         2.327     8.148 r  O_DAC_DATA_OBUF_inst/O
+                         net (fo=0)                   0.000     8.148    O_DAC_DATA
     U16                                                               r  O_DAC_DATA (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -58,19 +58,19 @@ Slack (MET) :             7.487ns  (required time - arrival time)
                          net (fo=1, routed)           1.599    22.331    I_CLK_IBUF
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.077    22.408 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=13, routed)          1.322    23.730    I_CLK_IBUF_BUFG
-    SLICE_X0Y5           FDCE (Prop_fdce_C_Q)         0.304    24.034 f  q_spi_output_clock_reg/Q
-                         net (fo=1, routed)           1.253    25.288    O_DAC_SCLK_OBUF
-    U15                  OBUF (Prop_obuf_I_O)         2.163    27.451 f  O_DAC_SCLK_OBUF_inst/O
-                         net (fo=0)                   0.000    27.451    O_DAC_SCLK
+    SLICE_X0Y4           FDCE (Prop_fdce_C_Q)         0.279    24.009 f  q_spi_output_clock_reg/Q
+                         net (fo=1, routed)           1.251    25.260    O_DAC_SCLK_OBUF
+    U15                  OBUF (Prop_obuf_I_O)         2.273    27.534 f  O_DAC_SCLK_OBUF_inst/O
+                         net (fo=0)                   0.000    27.534    O_DAC_SCLK
     U15                                                               f  O_DAC_SCLK (OUT)
-                         clock pessimism              0.222    27.673    
-                         clock uncertainty           -0.035    27.638    
-                         output delay               -12.000    15.638    
+                         clock pessimism              0.222    27.756    
+                         clock uncertainty           -0.035    27.721    
+                         output delay               -12.000    15.721    
   -------------------------------------------------------------------
-                         required time                         15.638    
-                         arrival time                          -8.151    
+                         required time                         15.721    
+                         arrival time                          -8.148    
   -------------------------------------------------------------------
-                         slack                                  7.487    
+                         slack                                  7.573    
 
 
 
@@ -78,7 +78,7 @@ Slack (MET) :             7.487ns  (required time - arrival time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Sat Oct 31 10:04:54 2026
+| Date         : Sun Nov  1 08:43:35 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt
 | Design       : dac81404_spi
@@ -88,7 +88,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             7.478ns  (arrival time - required time)
+Slack (MET) :             7.371ns  (arrival time - required time)
   Source:                 q_spi_output_data_reg/C
                             (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_DAC_DATA
@@ -96,11 +96,11 @@ Slack (MET) :             7.478ns  (arrival time - required time)
   Path Group:             dac_sclk
   Path Type:              Min at Slow Process Corner
   Requirement:            -20.000ns  (dac_sclk fall@20.000ns - clk_100mhz rise@40.000ns)
-  Data Path Delay:        3.715ns  (logic 2.464ns (66.328%)  route 1.251ns (33.672%))
+  Data Path Delay:        3.714ns  (logic 2.464ns (66.347%)  route 1.250ns (33.653%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -12.000ns
-  Clock Path Skew:        4.202ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    8.154ns = ( 28.154 - 20.000 ) 
+  Clock Path Skew:        4.308ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    8.260ns = ( 28.260 - 20.000 ) 
     Source Clock Delay      (SCD):    3.730ns = ( 23.730 - 20.000 ) 
     Clock Pessimism Removal (CPR):    0.222ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -119,12 +119,12 @@ Slack (MET) :             7.478ns  (arrival time - required time)
                          net (fo=1, routed)           1.599    42.331    I_CLK_IBUF
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.077    42.408 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=13, routed)          1.322    43.730    I_CLK_IBUF_BUFG
-    SLICE_X0Y3           FDCE                                         r  q_spi_output_data_reg/C
+    SLICE_X1Y4           FDCE                                         r  q_spi_output_data_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X0Y3           FDCE (Prop_fdce_C_Q)         0.304    44.034 r  q_spi_output_data_reg/Q
-                         net (fo=1, routed)           1.251    45.285    O_DAC_DATA_OBUF
-    U16                  OBUF (Prop_obuf_I_O)         2.160    47.445 r  O_DAC_DATA_OBUF_inst/O
-                         net (fo=0)                   0.000    47.445    O_DAC_DATA
+    SLICE_X1Y4           FDCE (Prop_fdce_C_Q)         0.304    44.034 r  q_spi_output_data_reg/Q
+                         net (fo=1, routed)           1.250    45.284    O_DAC_DATA_OBUF
+    U16                  OBUF (Prop_obuf_I_O)         2.160    47.444 r  O_DAC_DATA_OBUF_inst/O
+                         net (fo=0)                   0.000    47.444    O_DAC_DATA
     U16                                                               r  O_DAC_DATA (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -135,19 +135,19 @@ Slack (MET) :             7.478ns  (arrival time - required time)
                          net (fo=1, routed)           1.687    22.550    I_CLK_IBUF
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.081    22.631 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=13, routed)          1.432    24.062    I_CLK_IBUF_BUFG
-    SLICE_X0Y5           FDCE (Prop_fdce_C_Q)         0.379    24.441 f  q_spi_output_clock_reg/Q
-                         net (fo=1, routed)           1.382    25.824    O_DAC_SCLK_OBUF
-    U15                  OBUF (Prop_obuf_I_O)         2.331    28.154 f  O_DAC_SCLK_OBUF_inst/O
-                         net (fo=0)                   0.000    28.154    O_DAC_SCLK
+    SLICE_X0Y4           FDCE (Prop_fdce_C_Q)         0.348    24.410 f  q_spi_output_clock_reg/Q
+                         net (fo=1, routed)           1.382    25.793    O_DAC_SCLK_OBUF
+    U15                  OBUF (Prop_obuf_I_O)         2.468    28.260 f  O_DAC_SCLK_OBUF_inst/O
+                         net (fo=0)                   0.000    28.260    O_DAC_SCLK
     U15                                                               f  O_DAC_SCLK (OUT)
-                         clock pessimism             -0.222    27.932    
-                         clock uncertainty            0.035    27.967    
-                         output delay                12.000    39.967    
+                         clock pessimism             -0.222    28.038    
+                         clock uncertainty            0.035    28.073    
+                         output delay                12.000    40.073    
   -------------------------------------------------------------------
-                         required time                        -39.967    
-                         arrival time                          47.445    
+                         required time                        -40.073    
+                         arrival time                          47.444    
   -------------------------------------------------------------------
-                         slack                                  7.478    
+                         slack                                  7.371    
 
 
 
@@ -155,7 +155,7 @@ Slack (MET) :             7.478ns  (arrival time - required time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Sat Oct 31 10:04:54 2026
+| Date         : Sun Nov  1 08:43:35 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt
 | Design       : dac81404_spi
@@ -165,7 +165,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             7.192ns  (required time - arrival time)
+Slack (MET) :             7.286ns  (required time - arrival time)
   Source:                 q_spi_output_data_reg/C
                             (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_DAC_DATA
@@ -173,11 +173,11 @@ Slack (MET) :             7.192ns  (required time - arrival time)
   Path Group:             dac_sclk
   Path Type:              Max at Fast Process Corner
   Requirement:            20.000ns  (dac_sclk fall@20.000ns - clk_100mhz rise@0.000ns)
-  Data Path Delay:        2.060ns  (logic 1.460ns (70.873%)  route 0.600ns (29.127%))
+  Data Path Delay:        2.029ns  (logic 1.460ns (71.958%)  route 0.569ns (28.042%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           12.000ns
-  Clock Path Skew:        1.288ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    2.966ns = ( 22.966 - 20.000 ) 
+  Clock Path Skew:        1.350ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    3.029ns = ( 23.029 - 20.000 ) 
     Source Clock Delay      (SCD):    1.924ns = ( 11.924 - 10.000 ) 
     Clock Pessimism Removal (CPR):    0.245ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -196,12 +196,12 @@ Slack (MET) :             7.192ns  (required time - arrival time)
                          net (fo=1, routed)           0.685     1.033    I_CLK_IBUF
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.029     1.062 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=13, routed)          0.862     1.924    I_CLK_IBUF_BUFG
-    SLICE_X0Y3           FDCE                                         r  q_spi_output_data_reg/C
+    SLICE_X1Y4           FDCE                                         r  q_spi_output_data_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X0Y3           FDCE (Prop_fdce_C_Q)         0.175     2.099 r  q_spi_output_data_reg/Q
-                         net (fo=1, routed)           0.600     2.699    O_DAC_DATA_OBUF
-    U16                  OBUF (Prop_obuf_I_O)         1.285     3.984 r  O_DAC_DATA_OBUF_inst/O
-                         net (fo=0)                   0.000     3.984    O_DAC_DATA
+    SLICE_X1Y4           FDCE (Prop_fdce_C_Q)         0.175     2.099 r  q_spi_output_data_reg/Q
+                         net (fo=1, routed)           0.569     2.668    O_DAC_DATA_OBUF
+    U16                  OBUF (Prop_obuf_I_O)         1.285     3.953 r  O_DAC_DATA_OBUF_inst/O
+                         net (fo=0)                   0.000     3.953    O_DAC_DATA
     U16                                                               r  O_DAC_DATA (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -212,19 +212,19 @@ Slack (MET) :             7.192ns  (required time - arrival time)
                          net (fo=1, routed)           0.631    20.791    I_CLK_IBUF
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.026    20.817 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=13, routed)          0.591    21.408    I_CLK_IBUF_BUFG
-    SLICE_X0Y5           FDCE (Prop_fdce_C_Q)         0.141    21.549 f  q_spi_output_clock_reg/Q
-                         net (fo=1, routed)           0.316    21.865    O_DAC_SCLK_OBUF
-    U15                  OBUF (Prop_obuf_I_O)         1.101    22.966 f  O_DAC_SCLK_OBUF_inst/O
-                         net (fo=0)                   0.000    22.966    O_DAC_SCLK
+    SLICE_X0Y4           FDCE (Prop_fdce_C_Q)         0.128    21.536 f  q_spi_output_clock_reg/Q
+                         net (fo=1, routed)           0.339    21.875    O_DAC_SCLK_OBUF
+    U15                  OBUF (Prop_obuf_I_O)         1.154    23.029 f  O_DAC_SCLK_OBUF_inst/O
+                         net (fo=0)                   0.000    23.029    O_DAC_SCLK
     U15                                                               f  O_DAC_SCLK (OUT)
-                         clock pessimism              0.245    23.211    
-                         clock uncertainty           -0.035    23.176    
-                         output delay               -12.000    11.176    
+                         clock pessimism              0.245    23.274    
+                         clock uncertainty           -0.035    23.239    
+                         output delay               -12.000    11.239    
   -------------------------------------------------------------------
-                         required time                         11.176    
-                         arrival time                          -3.984    
+                         required time                         11.239    
+                         arrival time                          -3.953    
   -------------------------------------------------------------------
-                         slack                                  7.192    
+                         slack                                  7.286    
 
 
 
@@ -232,7 +232,7 @@ Slack (MET) :             7.192ns  (required time - arrival time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Sat Oct 31 10:04:54 2026
+| Date         : Sun Nov  1 08:43:35 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt
 | Design       : dac81404_spi
@@ -242,7 +242,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             7.236ns  (arrival time - required time)
+Slack (MET) :             7.130ns  (arrival time - required time)
   Source:                 q_spi_output_data_reg/C
                             (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_DAC_DATA
@@ -250,11 +250,11 @@ Slack (MET) :             7.236ns  (arrival time - required time)
   Path Group:             dac_sclk
   Path Type:              Min at Fast Process Corner
   Requirement:            -20.000ns  (dac_sclk fall@20.000ns - clk_100mhz rise@40.000ns)
-  Data Path Delay:        1.578ns  (logic 1.239ns (78.520%)  route 0.339ns (21.480%))
+  Data Path Delay:        1.552ns  (logic 1.239ns (79.838%)  route 0.313ns (20.162%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -12.000ns
-  Clock Path Skew:        2.306ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    3.959ns = ( 23.959 - 20.000 ) 
+  Clock Path Skew:        2.386ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.039ns = ( 24.039 - 20.000 ) 
     Source Clock Delay      (SCD):    1.408ns = ( 21.408 - 20.000 ) 
     Clock Pessimism Removal (CPR):    0.245ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -273,12 +273,12 @@ Slack (MET) :             7.236ns  (arrival time - required time)
                          net (fo=1, routed)           0.631    40.791    I_CLK_IBUF
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.026    40.817 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=13, routed)          0.591    41.408    I_CLK_IBUF_BUFG
-    SLICE_X0Y3           FDCE                                         r  q_spi_output_data_reg/C
+    SLICE_X1Y4           FDCE                                         r  q_spi_output_data_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X0Y3           FDCE (Prop_fdce_C_Q)         0.141    41.549 r  q_spi_output_data_reg/Q
-                         net (fo=1, routed)           0.339    41.888    O_DAC_DATA_OBUF
-    U16                  OBUF (Prop_obuf_I_O)         1.098    42.986 r  O_DAC_DATA_OBUF_inst/O
-                         net (fo=0)                   0.000    42.986    O_DAC_DATA
+    SLICE_X1Y4           FDCE (Prop_fdce_C_Q)         0.141    41.549 r  q_spi_output_data_reg/Q
+                         net (fo=1, routed)           0.313    41.862    O_DAC_DATA_OBUF
+    U16                  OBUF (Prop_obuf_I_O)         1.098    42.960 r  O_DAC_DATA_OBUF_inst/O
+                         net (fo=0)                   0.000    42.960    O_DAC_DATA
     U16                                                               r  O_DAC_DATA (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -289,19 +289,19 @@ Slack (MET) :             7.236ns  (arrival time - required time)
                          net (fo=1, routed)           0.685    21.033    I_CLK_IBUF
     BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.029    21.062 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=13, routed)          0.862    21.924    I_CLK_IBUF_BUFG
-    SLICE_X0Y5           FDCE (Prop_fdce_C_Q)         0.175    22.099 f  q_spi_output_clock_reg/Q
-                         net (fo=1, routed)           0.572    22.671    O_DAC_SCLK_OBUF
-    U15                  OBUF (Prop_obuf_I_O)         1.288    23.959 f  O_DAC_SCLK_OBUF_inst/O
-                         net (fo=0)                   0.000    23.959    O_DAC_SCLK
+    SLICE_X0Y4           FDCE (Prop_fdce_C_Q)         0.160    22.084 f  q_spi_output_clock_reg/Q
+                         net (fo=1, routed)           0.600    22.684    O_DAC_SCLK_OBUF
+    U15                  OBUF (Prop_obuf_I_O)         1.355    24.039 f  O_DAC_SCLK_OBUF_inst/O
+                         net (fo=0)                   0.000    24.039    O_DAC_SCLK
     U15                                                               f  O_DAC_SCLK (OUT)
-                         clock pessimism             -0.245    23.714    
-                         clock uncertainty            0.035    23.749    
-                         output delay                12.000    35.749    
+                         clock pessimism             -0.245    23.794    
+                         clock uncertainty            0.035    23.829    
+                         output delay                12.000    35.829    
   -------------------------------------------------------------------
-                         required time                        -35.749    
-                         arrival time                          42.986    
+                         required time                        -35.829    
+                         arrival time                          42.960    
   -------------------------------------------------------------------
-                         slack                                  7.236    
+                         slack                                  7.130    
 
 
 

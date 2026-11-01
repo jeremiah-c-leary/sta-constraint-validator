@@ -35,12 +35,12 @@ timing_reports = [
 
 [[port]]
 status = "analyze"
-name = "O_DAC_CSF"
+name = "O_DAC_SDEN_F"
 methodology = "SDR-SS-O-FLC"
-launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
+launch_clock = {name = "clk_100mhz", setup_edge = 4, hold_edge = 8}
 capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
 timing_reports = [
-    "$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt",
+    "$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt",
 ]
 
 [[port]]

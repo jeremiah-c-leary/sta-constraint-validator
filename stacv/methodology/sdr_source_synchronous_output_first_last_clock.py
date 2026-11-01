@@ -5,8 +5,9 @@ from stacv.visualize import edges
 class SdrSourceSynchronousOutputFirstLastClock(sdr_source_synchronous_output.SdrSourceSynchronousOutput):
     '''
     Times a port to the first and last edges of a clock that stops, such as a chip select.
-    The timing tool assumes every clock runs, so the checks are the SDR-SS-O checks;
-    only the edge drawing differs.
+    The timing tool assumes every clock runs, so the checks are the SDR-SS-O checks.
+    The signal changes twice, so its setup and hold launch edges are independent,
+    and its edges are drawn in two windows.
     '''
 
     def __init__(self):

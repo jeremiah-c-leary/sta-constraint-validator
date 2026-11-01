@@ -16,7 +16,7 @@
 #    Section 4.1:  dac_sclk Generated Clock
 #    Section 5:  Ports
 #    Section 5.1:  O_DAC_DATA
-#    Section 5.2:  O_DAC_CSF
+#    Section 5.2:  O_DAC_SDEN_F
 #    Section 5.3:  I_DAC_DATA
 #
 ###############################################################################
@@ -25,9 +25,9 @@
 #
 # md5sum                            Filename
 # --------------------------------  ----------------------------------------------
-# e83149677f1d82ba6eaf6ad63935ba2a  example/texas_instruments/DAC81404/interface.toml
+# 0d47a04bd4c291e68c87b9dba452ee2c  example/texas_instruments/DAC81404/interface.toml
 # 0117e857e03a4af4824d81689ba503e6  example/texas_instruments/DAC81404/part.toml
-# 9cdbb0a77550a0f3869e6b48dd35c474  example/texas_instruments/DAC81404/traces.toml
+# 258b2a541bb317ac41ff5ecd3df5e6cc  example/texas_instruments/DAC81404/traces.toml
 #
 # Part:       Texas Instruments DAC81404
 # Datasheet:  DACx1401 Quad, 16-Bit and 12-Bit, High-Voltage-Output DACs With Internal Reference
@@ -38,29 +38,29 @@
 #  Section 2:  Block Diagram
 ###############################################################################
 #
-# --------------+                       +------------
-#   Device      |                       |  DAC81404
-#               |                       |
-#   O_DAC_DATA [X] --- data_output --> [X] SDIN
-#               |                       |
-#   O_DAC_CSF  [X] --- chip_select --> [X] CSF
-#               |                       |
-#   I_DAC_DATA [X] <-- data_input ---- [X] SDO
-#               |                       |
-#   O_DAC_SCLK [X] --- clock --------> [X] SCLK
-#               |                       |
-# --------------+                       +------------
+# ----------------+                       +------------
+#   Device        |                       |  DAC81404
+#                 |                       |
+#   O_DAC_DATA   [X] --- data_output --> [X] SDIN
+#                 |                       |
+#   O_DAC_SDEN_F [X] --- chip_select --> [X] CSF
+#                 |                       |
+#   I_DAC_DATA   [X] <-- data_input ---- [X] SDO
+#                 |                       |
+#   O_DAC_SCLK   [X] --- clock --------> [X] SCLK
+#                 |                       |
+# ----------------+                       +------------
 #
 ###############################################################################
 #  Section 3.1:  Trace Delays
 ###############################################################################
 #
-# Trace        From        To          Maximum (ns)  Minimum (ns)  Default
-# -----------  ----------  ----------  ------------  ------------  -------
-# data_output  O_DAC_DATA  SDIN        3             1             No
-# chip_select  O_DAC_CSF   CSF         1             0             Yes
-# data_input   SDO         I_DAC_DATA  1             0             Yes
-# clock        O_DAC_SCLK  SCLK        3             1             No
+# Trace        From          To          Maximum (ns)  Minimum (ns)  Default
+# -----------  ------------  ----------  ------------  ------------  -------
+# data_output  O_DAC_DATA    SDIN        3             1             No
+# chip_select  O_DAC_SDEN_F  CSF         1             0             Yes
+# data_input   SDO           I_DAC_DATA  1             0             Yes
+# clock        O_DAC_SCLK    SCLK        3             1             No
 #
 ###############################################################################
 #  Section 3.2:  Part Timing
@@ -156,21 +156,21 @@ set_multicycle_path 2 -setup -start -from [get_clocks clk_100mhz] -to [get_ports
 set_multicycle_path 3 -hold -start -from [get_clocks clk_100mhz] -to [get_ports O_DAC_DATA]
 
 ###############################################################################
-#  Section 5.2:  O_DAC_CSF
+#  Section 5.2:  O_DAC_SDEN_F
 ###############################################################################
 #
 #                                                                              1     1     1
 #                  0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2
 # clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
 # (100 MHz)
-#                                                                  |---setup requirement-->|
+#                                          |---------------setup requirement-------------->|
 #                                            first clock edge ---->|
 #
 #                                                                  C_______________________D
 # dac_sclk       __________________________________________________|                       |
 # (25 MHz)
 #
-# setup requirement:  20 ns (launch edge 8 at 40 ns -> capture edge D at 60 ns)
+# setup requirement:  40 ns (launch edge 4 at 20 ns -> capture edge D at 60 ns)
 #
 #                                                                              1     1     1
 #                  0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2
@@ -199,7 +199,7 @@ set_multicycle_path 3 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 # objects:               which data port the output delay applies to
 #
 
-set_output_delay -clock [get_clocks dac_sclk] -clock_fall -reference_pin [get_ports O_DAC_SCLK] -max 30.000 [get_ports O_DAC_CSF]
+set_output_delay -clock [get_clocks dac_sclk] -clock_fall -reference_pin [get_ports O_DAC_SCLK] -max 30.000 [get_ports O_DAC_SDEN_F]
 
 #
 # -min:                  this is a hold check
@@ -208,28 +208,28 @@ set_output_delay -clock [get_clocks dac_sclk] -clock_fall -reference_pin [get_po
 #                        -13 ns
 #
 
-set_output_delay -clock [get_clocks dac_sclk] -clock_fall -reference_pin [get_ports O_DAC_SCLK] -min -13.000 [get_ports O_DAC_CSF]
+set_output_delay -clock [get_clocks dac_sclk] -clock_fall -reference_pin [get_ports O_DAC_SCLK] -min -13.000 [get_ports O_DAC_SDEN_F]
 
 #
 # multiplier:  setup requirement / launch period
-#              20 ns / 10 ns
-#              2
+#              40 ns / 10 ns
+#              4
 # -setup:      this is the setup multicycle
 # -start:      multiplier is relative to the launching clock
 # -from:       paths in the design that drive the output port
 # -to:         the output data port
 #
 
-set_multicycle_path 2 -setup -start -from [get_clocks clk_100mhz] -to [get_ports O_DAC_CSF]
+set_multicycle_path 4 -setup -start -from [get_clocks clk_100mhz] -to [get_ports O_DAC_SDEN_F]
 
 #
 # multiplier:  (setup requirement - hold requirement) / launch period - 1
-#              (20 ns - -20 ns) / 10 ns - 1
-#              3
+#              (40 ns - -20 ns) / 10 ns - 1
+#              5
 # -hold:       this is the hold multicycle
 #
 
-set_multicycle_path 3 -hold -start -from [get_clocks clk_100mhz] -to [get_ports O_DAC_CSF]
+set_multicycle_path 5 -hold -start -from [get_clocks clk_100mhz] -to [get_ports O_DAC_SDEN_F]
 
 ###############################################################################
 #  Section 5.3:  I_DAC_DATA

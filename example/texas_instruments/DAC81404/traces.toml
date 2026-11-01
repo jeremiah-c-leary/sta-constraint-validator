@@ -17,7 +17,7 @@ part_to_device = {}
 [[trace]]
 name = "chip_select"
 part_pin = "CSF"
-device_pin = "O_DAC_CSF"
+device_pin = "O_DAC_SDEN_F"
 device_to_part = {}
 
 [[trace]]

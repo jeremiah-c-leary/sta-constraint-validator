@@ -30,9 +30,9 @@ if {![info exists env(PROJ_DIR)]} {
 if {![file isdirectory "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"]} {
     error "stacv: O_DAC_DATA report directory does not exist: $env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
 }
-# O_DAC_CSF
+# O_DAC_SDEN_F
 if {![file isdirectory "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"]} {
-    error "stacv: O_DAC_CSF report directory does not exist: $env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
+    error "stacv: O_DAC_SDEN_F report directory does not exist: $env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
 }
 
 ###############################################################################
@@ -45,9 +45,9 @@ config_timing_corners -corner Fast -delay_type none
 report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 
-# O_DAC_CSF
-report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
-report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
+# O_DAC_SDEN_F
+report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
 
 # I_DAC_DATA
 # Deferred
@@ -62,9 +62,9 @@ config_timing_corners -corner Slow -delay_type none
 report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 
-# O_DAC_CSF
-report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
-report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
+# O_DAC_SDEN_F
+report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
 
 # I_DAC_DATA
 # Deferred
