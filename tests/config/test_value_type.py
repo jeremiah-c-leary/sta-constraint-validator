@@ -1,6 +1,6 @@
 import unittest
 
-from stacv.interface import value_type
+from stacv.config import value_type
 
 
 class TestArrayOfTablesType(unittest.TestCase):

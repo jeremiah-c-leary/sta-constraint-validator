@@ -1,10 +1,9 @@
 '''
-Provides error reporting for configuration issues.
+Provides error reporting for interface file issues.
 '''
 
-class InterfaceConfigError(ValueError):
+from stacv.config import config_error
 
-    def __init__(self, sIdentifier, sInterfaceFile, sMessage):
-        self.identifier = sIdentifier
-        self.message = sMessage
-        ValueError.__init__(self, f'ERROR: [{sIdentifier}] {sInterfaceFile} {sMessage}')
+
+class InterfaceConfigError(config_error.ConfigError):
+    pass

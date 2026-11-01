@@ -5,13 +5,12 @@ Provides functions to read configuration files.
 import os
 import pathlib
 import re
-import tomllib
 
+from stacv.config import config_reader
 from stacv.interface import interface
 from stacv.interface import port
 from stacv.interface import interface_location
 from stacv.interface import interface_config_error
-from stacv.interface import value_type
 from stacv.methodology import methodology_factory
 from stacv.interface import clock
 from stacv.interface import clock_pin
@@ -19,6 +18,7 @@ from stacv.interface import clock_generator
 from stacv.visualize import edges
 
 IDLE_LEVELS = ['low', 'high']
+READER = config_reader.ConfigReader('interface_config', interface_config_error.InterfaceConfigError)
 
 
 def read_interface_config(sInterfaceFile):
@@ -28,17 +28,9 @@ def read_interface_config(sInterfaceFile):
 
 def read_file(sInterfaceFile):
     try:
-        return read_toml_file(sInterfaceFile)
+        return READER.read_toml_file(sInterfaceFile)
     except FileNotFoundError:
         raise interface_config_error.InterfaceConfigError('interface_config_007', sInterfaceFile, f'does not exist')
-
-
-def read_toml_file(sInterfaceFile):
-    with open(sInterfaceFile, 'rb') as oFile:
-        try:
-            return tomllib.load(oFile)
-        except tomllib.TOMLDecodeError as oError:
-            raise interface_config_error.InterfaceConfigError('interface_config_001', sInterfaceFile, f'is not valid TOML: {oError}') from oError
 
 
 def resolve_timing_reports(oInterface, sInterfaceFile):
@@ -59,8 +51,8 @@ def resolve_files(lFilenames, sKey, oLocation):
 def create_interface_config(dConfig, sInterfaceFile):
     oInterface = interface.Interface()
     oLocation = interface_location.InterfaceLocation(sInterfaceFile)
-    oInterface.description = get_required_string(dConfig, 'description', oLocation)
-    oInterface.interface_name = get_required_string(dConfig, 'name', oLocation)
+    oInterface.description = READER.get_required_string(dConfig, 'description', oLocation)
+    oInterface.interface_name = READER.get_required_string(dConfig, 'name', oLocation)
     oInterface.part = get_required_file(dConfig, 'part', oLocation)
     oInterface.traces = get_required_file(dConfig, 'traces', oLocation)
     create_clocks(dConfig, oInterface, oLocation)
@@ -110,10 +102,10 @@ def read_idle(sIdle, sClockName, oLocation):
 
 def create_ports(dConfig, oLocation, oInterface):
     lPorts = []
-    for iPort, dPort in enumerate(get_required_array_of_tables(dConfig, 'port', oLocation), start=1):
+    for iPort, dPort in enumerate(READER.get_required_array_of_tables(dConfig, 'port', oLocation), start=1):
         oPort = port.Port()
         oLocation.set_port_number(iPort)
-        oPort.name = get_required_string(dPort, 'name', oLocation)
+        oPort.name = READER.get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
         oPort.status = get_status(dPort, oLocation)
         if oPort.status == port.ANALYZE:
@@ -132,7 +124,7 @@ def check_methodology_is_supported(sMethodology, oLocation):
 def get_status(dPort, oLocation):
     if 'status' not in dPort:
         return port.ANALYZE
-    sStatus = get_required_string(dPort, 'status', oLocation)
+    sStatus = READER.get_required_string(dPort, 'status', oLocation)
     if sStatus not in [port.ANALYZE, port.DEFER]:
         raise interface_config_error.InterfaceConfigError('interface_config_010', oLocation.filename, f'key "status"{oLocation.location} must be "{port.ANALYZE}" or "{port.DEFER}"')
     return sStatus
@@ -141,33 +133,21 @@ def get_status(dPort, oLocation):
 def read_deferred_port(dPort, oPort, oLocation):
     # A deferred port may name a methodology stacv does not support yet.
     if 'methodology' in dPort:
-        oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
+        oPort.methodology = READER.get_required_string(dPort, 'methodology', oLocation)
 
 
 def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     # A deferred port needs only its name and status, so only analyzed ports read the rest.
-    oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
+    oPort.methodology = READER.get_required_string(dPort, 'methodology', oLocation)
     check_methodology_is_supported(oPort.methodology, oLocation)
     oPort.capture_clock = build_capture_clock(dPort['capture_clock'], oInterface, oLocation)
     check_capture_clock_stops_if_needed(oPort, oLocation)
     oPort.launch_clock = build_launch_clock(dPort['launch_clock'], oInterface, oLocation)
-    oPort.timing_reports_as_written = get_required_list_of_strings(dPort, 'timing_reports', oLocation)
-
-
-def get_required_array_of_tables(dDict, sKey, oLocation):
-    value = get_required_key_value(dDict, sKey, oLocation)
-    check_schema(value_type.ARRAY_OF_TABLES, value, sKey, oLocation)
-    return value
-
-
-def get_required_key_value(dDict, sKey, oLocation):
-    if sKey not in dDict:
-        raise interface_config_error.InterfaceConfigError('interface_config_002', oLocation.filename, f'missing required key "{sKey}"{oLocation.location}')
-    return dDict[sKey]
+    oPort.timing_reports_as_written = READER.get_required_list_of_strings(dPort, 'timing_reports', oLocation)
 
 
 def get_required_file(dDict, sKey, oLocation):
-    sFilename = get_required_string(dDict, sKey, oLocation)
+    sFilename = READER.get_required_string(dDict, sKey, oLocation)
     return resolve_file(sFilename, sKey, oLocation)
 
 
@@ -181,23 +161,6 @@ def resolve_path(sFilename, sKey, oLocation):
     check_for_unset_environment_variables(sFilename, sKey, oLocation)
     sPath = os.path.expandvars(sFilename)
     return resolve_relative_path(sPath, oLocation)
-
-
-def get_required_list_of_strings(dDict, sKey, oLocation):
-    value = get_required_key_value(dDict, sKey, oLocation)
-    check_schema(value_type.LIST_OF_STRINGS, value, sKey, oLocation)
-    return value
-
-
-def get_required_string(dDict, sKey, oLocation):
-    value = get_required_key_value(dDict, sKey, oLocation)
-    check_schema(value_type.STRING, value, sKey, oLocation)
-    return value
-
-
-def check_schema(oExpectedType, value, sKey, oLocation):
-    if not oExpectedType.is_valid(value):
-        raise interface_config_error.InterfaceConfigError('interface_config_003', oLocation.filename, f'key "{sKey}"{oLocation.location} must be {oExpectedType.description}')
 
 
 def build_capture_clock(dClock, oInterface, oLocation):

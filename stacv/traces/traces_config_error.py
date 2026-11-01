@@ -2,9 +2,8 @@
 Provides error reporting for traces file issues.
 '''
 
-class TracesConfigError(ValueError):
+from stacv.config import config_error
 
-    def __init__(self, sIdentifier, sTracesFile, sMessage):
-        self.identifier = sIdentifier
-        self.message = sMessage
-        ValueError.__init__(self, f'ERROR: [{sIdentifier}] {sTracesFile} {sMessage}')
+
+class TracesConfigError(config_error.ConfigError):
+    pass

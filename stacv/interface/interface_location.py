@@ -1,8 +1,7 @@
-class InterfaceLocation():
+from stacv.config import config_location
 
-    def __init__(self, sFilename):
-        self.filename = sFilename
-        self.location = ''
+
+class InterfaceLocation(config_location.ConfigLocation):
 
     def set_port_number(self, iNumber):
         self.location = f' in port number {iNumber}'
