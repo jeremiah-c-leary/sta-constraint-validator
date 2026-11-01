@@ -9,6 +9,7 @@ The interface file names it with its ``traces`` key.
    stacv create template traces --output traces.toml
 
 Delays are in nanoseconds.
+A key stacv does not read is an error (traces_config_004); see :doc:`errors` for every error.
 
 Default delay
 -------------

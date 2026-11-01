@@ -213,7 +213,8 @@ class Test(unittest.TestCase):
         lText.append(self.sValidPort)
         self.write_interface_file('\n'.join(lText) + '\n')
 
-        sError = self.build_error_pattern('interface_config_002', 'missing required key "name"$')
+        # The old key is reported as unknown before the missing name, which tells the user more.
+        sError = self.build_error_pattern('interface_config_004', 'key "interface" is not a key stacv reads; the keys are description, name, part, traces, clock, port$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
@@ -617,7 +618,8 @@ class TestClockErrors(unittest.TestCase):
         lText.append('timing_reports = ["O_DAC_DATA_timing.rpt"]')
         with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write('\n'.join(lText) + '\n')
-        sError = self.build_error_pattern('interface_config_008', 'key "capture_clock" in port O_DAC_DATA names clock dac_sclk, which no [[clock]] table defines')
+        # The clock keys written in the port are reported as unknown, which points at the old way.
+        sError = self.build_error_pattern('interface_config_004', 'key "port" in capture_clock of port O_DAC_DATA is not a key stacv reads; the keys are name, setup_edge, hold_edge')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 

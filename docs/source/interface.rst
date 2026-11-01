@@ -11,6 +11,7 @@ It is the file every stacv command reads.
 Periods are in nanoseconds.
 Paths are relative to the interface file, and can use environment variables such as ``$PROJ_DIR``.
 An environment variable that is not set is an error (interface_config_005).
+A key stacv does not read, such as a misspelled ``idel``, is an error (interface_config_004), except in a deferred port (see :doc:`errors`).
 The variables in ``timing_reports`` are needed only by ``stacv check``, which reads the reports.
 The other commands run without them.
 

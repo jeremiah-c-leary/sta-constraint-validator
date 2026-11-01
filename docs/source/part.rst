@@ -10,7 +10,7 @@ The interface file names it with its ``part`` key.
    stacv create template part --output part.toml
 
 Delays are in nanoseconds and frequencies are in MHz.
-Every key in the part file is required.
+Every key in the part file is required, and a key stacv does not read is an error (part_config_004); see :doc:`errors` for every error.
 
 Properties
 ----------

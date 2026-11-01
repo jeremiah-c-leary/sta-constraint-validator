@@ -7,6 +7,7 @@ import pathlib
 import re
 
 from stacv.config import config_reader
+from stacv.config import value_type
 from stacv.interface import interface
 from stacv.interface import port
 from stacv.interface import interface_location
@@ -19,6 +20,11 @@ from stacv.visualize import edges
 
 IDLE_LEVELS = ['low', 'high']
 READER = config_reader.ConfigReader('interface_config', interface_config_error.InterfaceConfigError)
+TOP_LEVEL_KEYS = ['description', 'name', 'part', 'traces', 'clock', 'port']
+CLOCK_KEYS = ['name', 'period', 'port', 'idle', 'generator']
+GENERATOR_KEYS = ['source', 'master_pin', 'target_pin', 'master_clock']
+PORT_KEYS = ['status', 'name', 'methodology', 'launch_clock', 'capture_clock', 'timing_reports']
+PORT_CLOCK_KEYS = ['name', 'setup_edge', 'hold_edge']
 
 
 def read_interface_config(sInterfaceFile):
@@ -51,6 +57,7 @@ def resolve_files(lFilenames, sKey, oLocation):
 def create_interface_config(dConfig, sInterfaceFile):
     oInterface = interface.Interface()
     oLocation = interface_location.InterfaceLocation(sInterfaceFile)
+    READER.check_keys(dConfig, TOP_LEVEL_KEYS, oLocation)
     oInterface.description = READER.get_required_string(dConfig, 'description', oLocation)
     oInterface.interface_name = READER.get_required_string(dConfig, 'name', oLocation)
     oInterface.part = get_required_file(dConfig, 'part', oLocation)
@@ -63,8 +70,8 @@ def create_interface_config(dConfig, sInterfaceFile):
 def create_clocks(dConfig, oInterface, oLocation):
     if 'clock' not in dConfig:
         return
-    for dClock in dConfig['clock']:
-        oClock = build_clock(dClock, oLocation)
+    for iClock, dClock in enumerate(READER.get_required_array_of_tables(dConfig, 'clock', oLocation), start=1):
+        oClock = build_clock(dClock, iClock, oLocation.filename)
         check_clock_is_not_defined(oInterface, oClock.name, oLocation)
         oInterface.clocks.append(oClock)
     check_master_clocks_are_defined(oInterface, oLocation)
@@ -81,20 +88,31 @@ def check_clock_is_not_defined(oInterface, sName, oLocation):
         raise interface_config_error.InterfaceConfigError('interface_config_009', oLocation.filename, f'clock {sName} is defined by more than one [[clock]] table')
 
 
-def build_clock(dClock, oLocation):
+def build_clock(dClock, iClock, sFilename):
+    oLocation = interface_location.InterfaceLocation(sFilename)
+    oLocation.set_clock_number(iClock)
+    if has_valid_name(dClock):
+        oLocation.set_clock_name(dClock['name'])
+    READER.check_keys(dClock, CLOCK_KEYS, oLocation)
     oClock = clock.Clock()
-    oClock.name = dClock['name']
-    oClock.period = dClock['period']
+    oClock.name = READER.get_required_string(dClock, 'name', oLocation)
+    oClock.period = READER.get_required_number(dClock, 'period', oLocation)
     if 'port' in dClock:
-        oClock.port = dClock['port']
+        oClock.port = READER.get_required_string(dClock, 'port', oLocation)
     if 'idle' in dClock:
-        oClock.idle = read_idle(dClock['idle'], oClock.name, oLocation)
+        oClock.idle = read_idle(dClock, oClock.name, oLocation)
     if 'generator' in dClock:
-        oClock.generator = build_clock_generator(dClock['generator'])
+        oClock.generator = build_clock_generator(READER.get_required_table(dClock, 'generator', oLocation), oClock.name, sFilename)
     return oClock
 
 
-def read_idle(sIdle, sClockName, oLocation):
+def has_valid_name(dTable):
+    # A table is named by its name only once the name is valid; until then it is named by its number.
+    return 'name' in dTable and value_type.STRING.is_valid(dTable['name'])
+
+
+def read_idle(dClock, sClockName, oLocation):
+    sIdle = READER.get_required_string(dClock, 'idle', oLocation)
     if sIdle not in IDLE_LEVELS:
         raise interface_config_error.InterfaceConfigError('interface_config_012', oLocation.filename, f'key "idle" of clock {sClockName} must be "{IDLE_LEVELS[0]}" or "{IDLE_LEVELS[1]}"')
     return sIdle
@@ -105,9 +123,14 @@ def create_ports(dConfig, oLocation, oInterface):
     for iPort, dPort in enumerate(READER.get_required_array_of_tables(dConfig, 'port', oLocation), start=1):
         oPort = port.Port()
         oLocation.set_port_number(iPort)
+        if has_valid_name(dPort):
+            oLocation.set_port_name(dPort['name'])
+        oPort.status = get_status(dPort, oLocation)
+        # A deferred port can be ignored, so only an analyzed port has its keys checked.
+        if oPort.status == port.ANALYZE:
+            READER.check_keys(dPort, PORT_KEYS, oLocation)
         oPort.name = READER.get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
-        oPort.status = get_status(dPort, oLocation)
         if oPort.status == port.ANALYZE:
             read_analyzed_port(dPort, oPort, oInterface, oLocation)
         else:
@@ -140,9 +163,9 @@ def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     # A deferred port needs only its name and status, so only analyzed ports read the rest.
     oPort.methodology = READER.get_required_string(dPort, 'methodology', oLocation)
     check_methodology_is_supported(oPort.methodology, oLocation)
-    oPort.capture_clock = build_capture_clock(dPort['capture_clock'], oInterface, oLocation)
+    oPort.capture_clock = build_referenced_clock(dPort, 'capture_clock', oPort.name, oInterface, oLocation)
     check_capture_clock_stops_if_needed(oPort, oLocation)
-    oPort.launch_clock = build_launch_clock(dPort['launch_clock'], oInterface, oLocation)
+    oPort.launch_clock = build_referenced_clock(dPort, 'launch_clock', oPort.name, oInterface, oLocation)
     oPort.timing_reports_as_written = READER.get_required_list_of_strings(dPort, 'timing_reports', oLocation)
 
 
@@ -163,33 +186,33 @@ def resolve_path(sFilename, sKey, oLocation):
     return resolve_relative_path(sPath, oLocation)
 
 
-def build_capture_clock(dClock, oInterface, oLocation):
-    return build_referenced_clock(dClock, oInterface, 'capture_clock', oLocation)
-
-
-def build_clock_generator(dGenerator):
+def build_clock_generator(dGenerator, sClockName, sFilename):
+    oLocation = interface_location.InterfaceLocation(sFilename)
+    oLocation.set_generator(sClockName)
+    READER.check_keys(dGenerator, GENERATOR_KEYS, oLocation)
     oClockGenerator = clock_generator.ClockGenerator()
-    oClockGenerator.source = dGenerator['source']
-    oClockGenerator.master_pin = dGenerator['master_pin']
-    oClockGenerator.target_pin = dGenerator['target_pin']
-    oClockGenerator.master_clock = dGenerator['master_clock']
+    oClockGenerator.source = READER.get_required_string(dGenerator, 'source', oLocation)
+    oClockGenerator.master_pin = READER.get_required_string(dGenerator, 'master_pin', oLocation)
+    oClockGenerator.target_pin = READER.get_required_string(dGenerator, 'target_pin', oLocation)
+    oClockGenerator.master_clock = READER.get_required_string(dGenerator, 'master_clock', oLocation)
     return oClockGenerator
 
 
-def build_launch_clock(dClock, oInterface, oLocation):
-    return build_referenced_clock(dClock, oInterface, 'launch_clock', oLocation)
-
-
-def build_referenced_clock(dClock, oInterface, sKey, oLocation):
-    oClock = find_defined_clock(oInterface, dClock['name'], sKey, oLocation)
+def build_referenced_clock(dPort, sKey, sPortName, oInterface, oLocation):
+    dClock = READER.get_required_table(dPort, sKey, oLocation)
+    oTableLocation = interface_location.InterfaceLocation(oLocation.filename)
+    oTableLocation.set_port_table(sKey, sPortName)
+    READER.check_keys(dClock, PORT_CLOCK_KEYS, oTableLocation)
+    sName = READER.get_required_string(dClock, 'name', oTableLocation)
+    oClock = find_defined_clock(oInterface, sName, sKey, oLocation)
     oClockPin = clock_pin.ClockPin()
     oClockPin.name = oClock.name
     oClockPin.period = oClock.period
     oClockPin.port = oClock.port
     oClockPin.generator = oClock.generator
     oClockPin.idle = oClock.idle
-    oClockPin.setup_edge = dClock['setup_edge']
-    oClockPin.hold_edge = dClock['hold_edge']
+    oClockPin.setup_edge = READER.get_required_key_value(dClock, 'setup_edge', oTableLocation)
+    oClockPin.hold_edge = READER.get_required_key_value(dClock, 'hold_edge', oTableLocation)
     return oClockPin
 
 

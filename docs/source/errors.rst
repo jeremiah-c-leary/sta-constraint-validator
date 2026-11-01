@@ -49,14 +49,14 @@ Interface file
    * - interface_config_002
      - ``missing required key "<key>"<location>``
      - Add the key.
-       Also used for the keys of each ``[[clock]]``, ``generator``, ``launch_clock`` and ``capture_clock`` table (new).
+       Also used for the keys of each ``[[clock]]``, ``generator``, ``launch_clock`` and ``capture_clock`` table.
      - Stops
    * - interface_config_003
      - ``key "<key>"<location> must be <type>``
      - Write the value as the type given, such as ``a non-empty string`` or ``a number``.
-       Also used for every key of every table (new).
+       Also used for every key of every table.
      - Stops
-   * - interface_config_004 (new)
+   * - interface_config_004
      - ``key "<key>"<location> is not a key stacv reads; the keys are <keys>``
      - Correct the key name.
        A misspelled optional key, such as ``idel``, would otherwise be ignored.
@@ -138,7 +138,9 @@ Interface file
        Only an analyzed port is checked.
      - Stops
 
-Locations are ``in port <name>`` for a ``[[port]]`` table, or ``in port number <n>`` when the port has no name, and ``of clock <name>`` for a ``[[clock]]`` table.
+Locations are ``in port <name>`` for a ``[[port]]`` table, or ``in port number <n>`` when the port has no name, ``of clock <name>`` or ``of clock number <n>`` for a ``[[clock]]`` table, ``in generator of clock <name>``, and ``in launch_clock of port <name>`` or ``in capture_clock of port <name>``.
+Unknown keys are reported before missing keys, so a misspelled key is named as such.
+The keys of a deferred port are not checked.
 
 Traces file
 -----------
