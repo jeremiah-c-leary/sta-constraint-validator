@@ -1,9 +1,8 @@
 from tests.rules import rule_test_case
 
 
-# The hold timing reports in this file give a slack of 0.272ns on line 14 and 0.513ns on line 158.
-# The setup timing reports in this file give a slack of 7.573ns on line 14 and 7.286ns on line 168.
-# The hold timing reports give a slack of 7.371ns on line 91 and 7.130ns on line 245.
+# The setup timing reports in this file give a slack of 7.524ns on line 14 and 7.260ns on line 168.
+# The hold timing reports give a slack of 7.438ns on line 91 and 7.167ns on line 245.
 sTimingReport = rule_test_case.sTimingReport
 lSetupSlackLines = rule_test_case.build_setup_lines(rule_test_case.iSlackLine)
 lHoldSlackLines = rule_test_case.build_hold_lines(rule_test_case.iSlackLine)

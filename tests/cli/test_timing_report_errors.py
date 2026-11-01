@@ -101,5 +101,5 @@ class TestTimingReportErrors(unittest.TestCase):
         self.assert_error('vivado_tr_parse_015', 21, '"Requirement:" must be in ns')
 
     def test_slack_that_is_not_a_number_of_ns(self):
-        self.change_line(14, '7.573ns', 'none')
+        self.change_line(14, '7.524ns', 'none')
         self.assert_error('vivado_tr_parse_016', 14, 'slack must be a number of ns')
