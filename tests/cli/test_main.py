@@ -246,7 +246,7 @@ class TestMainConsoleOutput(unittest.TestCase):
     def test_parse_error_is_written_to_stderr(self):
         sTimingReport = self.create_empty_timing_report()
         self.run_main_with_reports([sTimingReport])
-        sExpected = f'ERROR: [vivado_tr_parse_001] {sTimingReport}:1 No timing reports detected\n'
+        sExpected = f'ERROR: [vivado_tr_parse_001] {sTimingReport}:1 has no timing reports\n'
         self.assertEqual(sExpected, self.oStderr.getvalue())
 
 

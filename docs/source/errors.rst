@@ -344,10 +344,10 @@ The file is followed by the line the error is on: ``ERROR: [<identifier>] <file>
    * - vivado_tr_parse_014
      - ``"Clock Uncertainty:" has no value``
      - The file is incomplete or edited; write it again.
-   * - vivado_tr_parse_015 (new)
+   * - vivado_tr_parse_015
      - ``"<key>" must be in ns``
-     - Was reported as vivado_tr_parse_010 for every time value; now only the clock period uses 010.
-   * - vivado_tr_parse_016 (new)
+     - The file is incomplete or edited; write it again.
+       Used for every time except the clock period, which is vivado_tr_parse_010.
+   * - vivado_tr_parse_016
      - ``slack must be a number of ns``
      - The file is incomplete or edited; write it again.
-       Today an unreadable slack stops stacv with a traceback.

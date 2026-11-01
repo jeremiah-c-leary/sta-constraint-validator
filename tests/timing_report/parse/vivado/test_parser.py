@@ -350,7 +350,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', ['Slack (MET) :   1.000ns', '  -------', '    K18   IBUF (Prop_ibuf_I_O)   0.160   0.160 r  I_CLK_IBUF_inst/O', '  -------', '  slack   1.000'])
         oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
 
-        sError = r'ERROR: \[vivado_tr_parse_011\] test:1 expected 5 separator lines but found 2'
+        sError = r'ERROR: \[vivado_tr_parse_011\] test:1 timing report must have 5 separator lines, but has 2; write it with report_timing -column_style variable_width'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.check_number_of_separators(oTimingReportText)
 
@@ -363,7 +363,7 @@ class Test(unittest.TestCase):
         oTimingReportFile = timing_report_file.TimingReportFile('test', lFile)
         oTimingReportText = timing_report_file.TimingReportText(oTimingReportFile, oTimingReportFile.lines)
 
-        sError = r'ERROR: \[vivado_tr_parse_011\] test:1 expected 5 separator lines but found 6'
+        sError = r'ERROR: \[vivado_tr_parse_011\] test:1 timing report must have 5 separator lines, but has 6; write it with report_timing -column_style variable_width'
         with self.assertRaisesRegex(timing_report_parse_error.TimingReportParseError, sError):
             vivado.check_number_of_separators(oTimingReportText)
 
