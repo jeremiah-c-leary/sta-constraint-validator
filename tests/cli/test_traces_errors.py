@@ -16,6 +16,10 @@ def build_interface_text():
     lText.append('name = "DAC_SPI_1"')
     lText.append('part = "part.toml"')
     lText.append('traces = "traces.toml"')
+    lText.append('[[clock]]')
+    lText.append('name = "clk_capture"')
+    lText.append('period = 40.0')
+    lText.append('port = "O_CLK"')
     lText.append('[[port]]')
     lText.append('status = "defer"')
     lText.append('name = "O_DATA"')
@@ -54,7 +58,7 @@ def build_trace(sName='clock', sDevicePin='device_pin = "O_CLK"', sPartPin='part
     return '\n'.join(lText)
 
 
-class TestTracesErrors(unittest.TestCase):
+class TracesTestCase(unittest.TestCase):
     '''
     The traces file is read through stacv visualize block_diagram, which reads it before the part file.
     '''
@@ -88,6 +92,9 @@ class TestTracesErrors(unittest.TestCase):
         self.assertEqual(f'ERROR: [{sIdentifier}] {self.sTracesFile} {sMessage}\n', self.oStderr.getvalue())
         self.assertEqual('', self.oStdout.getvalue())
         self.assertEqual(2, iExitCode)
+
+
+class TestTracesErrors(TracesTestCase):
 
     def test_invalid_toml_is_an_error(self):
         iExitCode = self.run_block_diagram(['[[trace]', 'name = "clock"'])

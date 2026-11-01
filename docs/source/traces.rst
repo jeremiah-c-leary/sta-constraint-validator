@@ -80,4 +80,5 @@ Each direction is one of:
 * ``{}``: use ``default_delay``.
   It is an error if there is no ``default_delay`` (traces_config_005).
 
-Giving only one of ``max_delay`` and ``min_delay`` is an error (traces_config_006).
+Giving only one of ``max_delay`` and ``min_delay`` is an error (traces_config_006), and so is a ``max_delay`` less than its ``min_delay`` (traces_config_008).
+A trace with neither direction is an error (traces_config_007), and each trace name is used once (traces_config_009).

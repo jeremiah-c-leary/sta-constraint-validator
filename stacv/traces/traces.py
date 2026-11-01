@@ -34,20 +34,31 @@ def read_default_delay(dTraces, sFilename):
     dDelays = READER.get_required_table(dTraces, 'default_delay', oLocation)
     oLocation.set_default_delay()
     READER.check_keys(dDelays, DELAY_KEYS, oLocation)
-    return read_delays(dDelays, True, oLocation)
+    return read_delays(dDelays, True, 'default_delay', oLocation)
 
 
-def read_delays(dDelays, bIsDefault, oLocation):
+def read_delays(dDelays, bIsDefault, sDescription, oLocation):
     fMaxDelay = READER.get_required_number(dDelays, 'max_delay', oLocation)
     fMinDelay = READER.get_required_number(dDelays, 'min_delay', oLocation)
+    if fMaxDelay < fMinDelay:
+        READER.raise_error(8, oLocation.filename, f'{sDescription} has max_delay {fMaxDelay} less than min_delay {fMinDelay}')
     return trace_delay.TraceDelay(fMaxDelay, fMinDelay, bIsDefault)
 
 
 def build_traces(dTraces, oDefaultDelay, oLocation):
     lTraces = []
+    lNames = []
     for iTrace, dTrace in enumerate(READER.get_required_array_of_tables(dTraces, 'trace', oLocation), start=1):
-        lTraces.append(build_trace(dTrace, iTrace, oDefaultDelay, oLocation))
+        oTrace = build_trace(dTrace, iTrace, oDefaultDelay, oLocation)
+        check_trace_is_not_defined(lNames, oTrace.name, oLocation)
+        lTraces.append(oTrace)
     return lTraces
+
+
+def check_trace_is_not_defined(lNames, sName, oLocation):
+    if sName in lNames:
+        READER.raise_error(9, oLocation.filename, f'trace {sName} is defined by more than one [[trace]] table')
+    lNames.append(sName)
 
 
 def build_trace(dTrace, iTrace, oDefaultDelay, oLocation):
@@ -62,6 +73,8 @@ def build_trace(dTrace, iTrace, oDefaultDelay, oLocation):
         oTrace.device_to_part = build_trace_delay(dTrace, oTrace.name, 'device_to_part', oDefaultDelay, oLocation)
     if 'part_to_device' in dTrace:
         oTrace.part_to_device = build_trace_delay(dTrace, oTrace.name, 'part_to_device', oDefaultDelay, oLocation)
+    if oTrace.device_to_part is None and oTrace.part_to_device is None:
+        READER.raise_error(7, oLocation.filename, f'trace {oTrace.name} has neither device_to_part nor part_to_device')
     return oTrace
 
 
@@ -80,7 +93,7 @@ def build_trace_delay(dTrace, sTraceName, sDirection, oDefaultDelay, oLocation):
     if has_no_delays(dDelays):
         return build_default_trace_delay(sTraceName, sDirection, oDefaultDelay, oLocation)
     check_both_delays_are_given(dDelays, sTraceName, sDirection, oLocation)
-    return read_delays(dDelays, False, oDelayLocation)
+    return read_delays(dDelays, False, f'trace {sTraceName} key "{sDirection}"', oDelayLocation)
 
 
 def has_no_delays(dDelays):

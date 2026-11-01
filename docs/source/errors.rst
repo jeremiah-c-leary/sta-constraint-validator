@@ -173,13 +173,13 @@ Traces file
    * - traces_config_006
      - ``trace <name> key "<key>" must give both max_delay and min_delay, or neither``
      - Give both delays, or write ``{}`` to use ``default_delay``.
-   * - traces_config_007 (new)
+   * - traces_config_007
      - ``trace <name> has neither device_to_part nor part_to_device``
      - Give the direction the trace carries.
-   * - traces_config_008 (new)
-     - ``trace <name> key "<key>" has max_delay <value> less than min_delay <value>``
+   * - traces_config_008
+     - ``trace <name> key "<key>" has max_delay <value> less than min_delay <value>``, or ``default_delay has max_delay <value> less than min_delay <value>``
      - Correct the delays.
-   * - traces_config_009 (new)
+   * - traces_config_009
      - ``trace <name> is defined by more than one [[trace]] table``
      - Remove or rename one of the tables.
    * - traces_config_010 (new)

@@ -29,11 +29,12 @@ def create_trace(sName, sDevicePin, sPartPin, sDirection, fDelay):
 
 
 def create_data_trace(sDevicePin, sPartPin):
-    return create_trace('data_output', sDevicePin, sPartPin, 'device_to_part', fDataDelay)
+    # Each trace is named after its pins, as trace names are unique in a traces file.
+    return create_trace(f'data_{sDevicePin}_{sPartPin}', sDevicePin, sPartPin, 'device_to_part', fDataDelay)
 
 
 def create_clock_trace(sDevicePin, sPartPin):
-    return create_trace('clock', sDevicePin, sPartPin, 'device_to_part', fClockDelay)
+    return create_trace(f'clock_{sDevicePin}_{sPartPin}', sDevicePin, sPartPin, 'device_to_part', fClockDelay)
 
 
 def create_passing_data_trace():
