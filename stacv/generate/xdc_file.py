@@ -11,11 +11,13 @@ from stacv.methodology import methodology_factory
 from stacv.output import md5sum_table
 from stacv.output import number_format
 from stacv.output import text_table
+from stacv.part import part
 from stacv.rules import edge_times
 from stacv.rules import output_delays
 from stacv.rules import path_lookups
 from stacv.rules import requirements
 from stacv.visualize import block_diagram
+from stacv.visualize import edge_window
 from stacv.visualize import edges
 
 BANNER = '#' * 79
@@ -110,7 +112,7 @@ def find_part_pins(oInterface, oTraceList, oPart):
 
 
 def build_part_timing_rows(oPin):
-    if oPin.methodology == 'SDR-SS-I':
+    if part.is_input_pin(oPin):
         return [build_part_timing_row(oPin, 'setup', oPin.setup), build_part_timing_row(oPin, 'hold', oPin.hold)]
     return [build_part_timing_row(oPin, 'cko_max', oPin.cko_max), build_part_timing_row(oPin, 'cko_min', oPin.cko_min)]
 
@@ -223,16 +225,16 @@ def build_edge_windows(oPort):
     # Each window of the edge diagram is followed by the requirements it shows.
     oMethodology = methodology_factory.create_methodology(oPort.methodology)
     lSetupLine, lHoldLine = build_requirement_lines(oPort)
-    dRequirements = {edges.edge_window.SETUP: lSetupLine, edges.edge_window.HOLD: lHoldLine}
-    lLines = []
-    for iIndex, oWindow in enumerate(edges.draw_edge_diagram(oPort, oMethodology.edge_diagram_type)):
-        if iIndex > 0:
-            lLines.append('#')
-        lLines.extend(comment_lines(oWindow.lines))
-        lLines.append('#')
-        for sRequirement in oWindow.requirements:
-            lLines.append(dRequirements[sRequirement])
-    return lLines
+    dRequirements = {edge_window.SETUP: lSetupLine, edge_window.HOLD: lHoldLine}
+    lWindows = comment_windows(edges.draw_edge_diagram(oPort, oMethodology.edge_diagram_type))
+    return edge_window.join_windows(lWindows, dRequirements, '#')
+
+
+def comment_windows(lWindows):
+    lCommentedWindows = []
+    for oWindow in lWindows:
+        lCommentedWindows.append(edge_window.EdgeWindow(comment_lines(oWindow.lines), oWindow.requirements))
+    return lCommentedWindows
 
 
 def build_multicycle_blocks(oPort):

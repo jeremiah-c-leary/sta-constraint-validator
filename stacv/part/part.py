@@ -218,3 +218,7 @@ PIN_TYPES = {}
 PIN_TYPES['SDR-SS-I'] = INPUT_PIN
 PIN_TYPES['SDR-SS-O'] = OUTPUT_PIN
 PIN_TYPES['SDR-SS-RT'] = OUTPUT_PIN
+
+
+def is_input_pin(oPin):
+    return PIN_TYPES[oPin.methodology] is INPUT_PIN

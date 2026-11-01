@@ -39,15 +39,7 @@ def draw_continuous_clock_edges(oPort, oWindow):
 def draw_windowed_edges(oPort, lWindows):
     # Each window is followed by the requirement it shows.
     dRequirements = {edge_window.SETUP: format_setup_requirement(oPort), edge_window.HOLD: format_hold_requirement(oPort)}
-    lLines = []
-    for iIndex, oWindow in enumerate(lWindows):
-        if iIndex > 0:
-            lLines.append('')
-        lLines.extend(oWindow.lines)
-        lLines.append('')
-        for sRequirement in oWindow.requirements:
-            lLines.append(dRequirements[sRequirement])
-    return lLines
+    return edge_window.join_windows(lWindows, dRequirements, '')
 
 
 def draw_edge_diagram(oPort, sDiagramType):
@@ -76,8 +68,9 @@ def draw_first_last_clock_windows(oPort):
     # The setup window starts the capture clock at its first pulse, and the hold window stops it after its last pulse.
     fColumnsPerNanosecond = calculate_columns_per_nanosecond(oPort)
     oCaptureClock = oPort.capture_clock
-    iFirstPulseStart, iFirstPulseEnd = find_pulse(oCaptureClock.idle, convert_capture_edge(oCaptureClock.setup_edge))
-    iLastPulseStart, iLastPulseEnd = find_pulse(oCaptureClock.idle, convert_capture_edge(oCaptureClock.hold_edge))
+    iFirstPulseStart = find_pulse_start(oCaptureClock.idle, convert_capture_edge(oCaptureClock.setup_edge))
+    iFirstPulseEnd = iFirstPulseStart + 1
+    iLastPulseEnd = find_pulse_start(oCaptureClock.idle, convert_capture_edge(oCaptureClock.hold_edge)) + 1
     iEndColumn = calculate_column(calculate_first_last_clock_end_time(oPort, iFirstPulseEnd), fColumnsPerNanosecond)
     iLastEdgeInWindow = find_last_edge(oCaptureClock.period, fColumnsPerNanosecond, iEndColumn)
     lSetupLines = draw_launch_clock_with_frequency(oPort.launch_clock, fColumnsPerNanosecond, iEndColumn)
@@ -102,11 +95,12 @@ def convert_capture_edge(sEdgeLetter):
     return edge_times.convert_edge_letter_to_number(sEdgeLetter)
 
 
-def find_pulse(sIdle, iEdgeNumber):
+def find_pulse_start(sIdle, iEdgeNumber):
     # A clock that idles low pulses high, rising then falling; one that idles high pulses low.
+    # Each pulse is two edges, so it ends on the edge after its start.
     if starts_pulse(sIdle, iEdgeNumber):
-        return iEdgeNumber, iEdgeNumber + 1
-    return iEdgeNumber - 1, iEdgeNumber
+        return iEdgeNumber
+    return iEdgeNumber - 1
 
 
 def starts_pulse(sIdle, iEdgeNumber):
