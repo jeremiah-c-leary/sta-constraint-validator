@@ -31,8 +31,18 @@ PORT_CLOCK_KEYS = ['name', 'setup_edge', 'hold_edge']
 def read_interface_config(sInterfaceFile):
     oInterface = read_interface_config_for_drawing(sInterfaceFile)
     raise_first_edge_error(oInterface)
+    check_capture_clocks_have_ports(oInterface, sInterfaceFile)
     resolve_part_and_traces(oInterface, sInterfaceFile)
     return oInterface
+
+
+def check_capture_clocks_have_ports(oInterface, sInterfaceFile):
+    # The drawing does not need the port, so only the commands that write or check constraints do.
+    oLocation = interface_location.InterfaceLocation(sInterfaceFile)
+    for oPort in oInterface.get_analyzed_ports():
+        oLocation.set_port_name(oPort.name)
+        if oPort.capture_clock.port is None:
+            READER.raise_error(21, oLocation.filename, f'key "capture_clock"{oLocation.location} names clock {oPort.capture_clock.name}, which has no key "port"; the capture clock leaves the device on a port')
 
 
 def resolve_part_and_traces(oInterface, sInterfaceFile):
@@ -161,12 +171,18 @@ def create_ports(dConfig, oLocation, oInterface):
         oPort.name = READER.get_required_string(dPort, 'name', oLocation)
         oLocation.set_port_name(oPort.name)
         if oPort.status == port.ANALYZE:
+            check_port_is_not_a_bus(oPort.name, oLocation)
             read_analyzed_port(dPort, oPort, oInterface, oLocation)
             check_port_is_not_defined(lPortKeys, oPort, oLocation)
         else:
             read_deferred_port(dPort, oPort, oLocation)
         lPorts.append(oPort)
     return lPorts
+
+
+def check_port_is_not_a_bus(sName, oLocation):
+    if '[' in sName or '*' in sName:
+        READER.raise_error(22, oLocation.filename, f'port {sName} is a bus, which stacv does not support yet; give each bit its own [[port]], or defer it')
 
 
 def check_port_is_not_defined(lPortKeys, oPort, oLocation):

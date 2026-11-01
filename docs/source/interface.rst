@@ -85,6 +85,7 @@ Ports refer to clocks by name.
      - No
      - The device port the clock leaves the device on, to the part.
        Not used for a clock that stays inside the device.
+       The capture clock of an analyzed port needs it (interface_config_021).
    * - ``idle``
      - No
      - The level of a clock that stops between transfers, such as an SPI clock: ``"low"`` or ``"high"`` (interface_config_012).
@@ -155,6 +156,7 @@ A port can have more than one table, one for each methodology, such as a bidirec
    * - ``name``
      - Yes
      - The name of the port in the timing reports.
+       A bus, written with ``[`` or ``*``, is not supported yet: give each bit its own ``[[port]]`` (interface_config_022).
    * - ``methodology``
      - Yes
      - The :doc:`methodology <methodology>` of the port.

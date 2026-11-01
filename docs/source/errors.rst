@@ -130,11 +130,11 @@ Interface file
      - ``key "capture_clock"<location> has setup_edge <edge> and hold_edge <edge>; the hold edge of an SDR-SS-O port is the previous capture edge of the same type, <edge>``
      - Use the edge given.
      - Drawn
-   * - interface_config_021 (new)
+   * - interface_config_021
      - ``key "capture_clock"<location> names clock <name>, which has no key "port"; the capture clock leaves the device on a port``
      - Add the ``port`` the clock leaves the device on.
      - \-
-   * - interface_config_022 (new)
+   * - interface_config_022
      - ``port <name> is a bus, which stacv does not support yet; give each bit its own [[port]], or defer it``
      - A port name with ``[`` or ``*`` is a bus.
        Only an analyzed port is checked.
