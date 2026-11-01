@@ -133,6 +133,7 @@ That is the capture clock of an SDR-SS-O or SDR-SS-O-FLC port, and the launch cl
         Multiply by master clock period / clock period when the clock is faster.
 :Add: ``-add`` when a clock is already generated at the same ``source`` and ``target_pin``.
       Without it, the second clock would replace the first.
+      Vivado needs the master clock of a clock generated with ``-add``, so ``-master_clock`` names ``generator.master_clock``.
 
 The generated clock is defined where it is generated, not on the clock port.
 

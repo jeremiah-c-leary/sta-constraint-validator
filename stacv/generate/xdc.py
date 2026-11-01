@@ -23,13 +23,14 @@ def create_generated_clock(oPort, oInterface, bAdd):
     sTargetPin = format_pin(oGenerator.source, oGenerator.target_pin)
     oMasterClock = oInterface.get_clock_named(oGenerator.master_clock)
     sRatio = format_ratio(oMasterClock.period, oForwardedClock.period)
-    return f'create_generated_clock {format_add(bAdd)}-name {oForwardedClock.name} -source {sSourcePin} {sRatio} {sTargetPin}'
+    return f'create_generated_clock {format_add(bAdd, oGenerator)}-name {oForwardedClock.name} -source {sSourcePin} {sRatio} {sTargetPin}'
 
 
-def format_add(bAdd):
+def format_add(bAdd, oGenerator):
     # Without -add, a clock generated at a pin that already has one replaces it.
+    # Vivado needs the master clock of a clock generated with -add.
     if bAdd:
-        return '-add '
+        return f'-add -master_clock [get_clocks {oGenerator.master_clock}] '
     return ''
 
 
