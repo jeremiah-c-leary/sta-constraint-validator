@@ -6,7 +6,9 @@ from unittest import mock
 
 from stacv import __main__
 
-sFixtureDir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'fixtures', 'dac81404_failing')
+sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+sFixtureDir = os.path.join(sProjectDir, 'tests', 'cli', 'fixtures', 'dac81404_failing')
+sTimingReport = 'example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt'
 
 
 class TestFailingExample(unittest.TestCase):
@@ -16,6 +18,10 @@ class TestFailingExample(unittest.TestCase):
     '''
 
     def setUp(self):
+        # The console shows paths relative to where stacv runs.
+        sStartDirectory = os.getcwd()
+        os.chdir(sProjectDir)
+        self.addCleanup(os.chdir, sStartDirectory)
         sInterfaceFile = os.path.join(sFixtureDir, 'interface.toml')
         self.oStdout = io.StringIO()
         with mock.patch('sys.argv', ['stacv', 'check', sInterfaceFile]):
@@ -33,4 +39,15 @@ class TestFailingExample(unittest.TestCase):
         for sLine in self.oStdout.getvalue().split('\n'):
             if sLine.startswith('FAILED:'):
                 lFailedLines.append(sLine)
-        self.assertEqual(['FAILED: [s3_output_delay_001]', 'FAILED: [s3_output_delay_002]'], lFailedLines)
+        self.assertEqual(['FAILED: [s3_output_delay_001] O_DAC_DATA.SDR-SS-O', 'FAILED: [s3_output_delay_002] O_DAC_DATA.SDR-SS-O'], lFailedLines)
+
+    def test_console_shows_each_failing_rule_with_its_details(self):
+        lExpected = []
+        lExpected.append('Reading interface file tests/cli/fixtures/dac81404_failing/interface.toml')
+        lExpected.append(f'Reading timing report file {sTimingReport}')
+        lExpected.append('FAILED: [s3_output_delay_001] O_DAC_DATA.SDR-SS-O')
+        lExpected.append(f'    {sTimingReport}:24  Calculated maximum output delay is 13.000ns while actual output delay is 12.000ns')
+        lExpected.append('FAILED: [s3_output_delay_002] O_DAC_DATA.SDR-SS-O')
+        lExpected.append(f'    {sTimingReport}:101  Calculated minimum output delay is -11.000ns while actual output delay is -12.000ns')
+        lExpected.append('')
+        self.assertEqual('\n'.join(lExpected), self.oStdout.getvalue())

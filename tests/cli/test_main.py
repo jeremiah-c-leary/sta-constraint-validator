@@ -18,6 +18,21 @@ from tests.cli.test_check import sPassingReport
 from tests.cli.test_check import write_numbered_port_timing_reports
 
 
+def build_failed_lines(sPortName, sTimingReport):
+    # The failing fixture is a hold timing report where a setup timing report is expected.
+    lLines = []
+    lLines.append(f'FAILED: [s0_timing_report_002] {sPortName}.SDR-SS-O\n')
+    lLines.append(f'    {os.path.basename(sTimingReport)}:14  hold timing report, Fast process corner\n')
+    return lLines
+
+
+def change_to_directory(oTestCase, sDirectory):
+    # The console shows paths relative to where stacv runs.
+    sStartDirectory = os.getcwd()
+    os.chdir(sDirectory)
+    oTestCase.addCleanup(os.chdir, sStartDirectory)
+
+
 class TestMainCheckDispatch(unittest.TestCase):
 
     def setUp(self):
@@ -102,6 +117,7 @@ class TestMainConsoleOutput(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
+        change_to_directory(self, self.oTempDir.name)
         self.sInterfaceFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
@@ -137,9 +153,9 @@ class TestMainConsoleOutput(unittest.TestCase):
         self.run_main_with_reports([sFailingReport])
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         lExpected = []
-        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
-        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
-        lExpected.append('FAILED: [s0_timing_report_002]\n')
+        lExpected.append('Reading interface file interface.toml\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort1TimingReport)}\n')
+        lExpected.extend(build_failed_lines('PORT_1', sPort1TimingReport))
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_failing_port_does_not_stop_later_ports(self):
@@ -147,10 +163,11 @@ class TestMainConsoleOutput(unittest.TestCase):
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         sPort2TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_2', sPassingReport)
         lExpected = []
-        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
-        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
-        lExpected.append('FAILED: [s0_timing_report_002]\n')
-        lExpected.append(f'Reading timing report file {sPort2TimingReport}\n')
+        lExpected.append('Reading interface file interface.toml\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort1TimingReport)}\n')
+        lExpected.extend(build_failed_lines('PORT_1', sPort1TimingReport))
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort2TimingReport)}\n')
+        lExpected.append('PASSED: PORT_2.SDR-SS-O\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_every_failing_port_is_reported(self):
@@ -158,11 +175,11 @@ class TestMainConsoleOutput(unittest.TestCase):
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         sPort2TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_2', sFailingReport)
         lExpected = []
-        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
-        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
-        lExpected.append('FAILED: [s0_timing_report_002]\n')
-        lExpected.append(f'Reading timing report file {sPort2TimingReport}\n')
-        lExpected.append('FAILED: [s0_timing_report_002]\n')
+        lExpected.append('Reading interface file interface.toml\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort1TimingReport)}\n')
+        lExpected.extend(build_failed_lines('PORT_1', sPort1TimingReport))
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort2TimingReport)}\n')
+        lExpected.extend(build_failed_lines('PORT_2', sPort2TimingReport))
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_failing_later_port_reports_a_failure(self):
@@ -170,18 +187,20 @@ class TestMainConsoleOutput(unittest.TestCase):
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
         sPort2TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_2', sFailingReport)
         lExpected = []
-        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
-        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
-        lExpected.append(f'Reading timing report file {sPort2TimingReport}\n')
-        lExpected.append('FAILED: [s0_timing_report_002]\n')
+        lExpected.append('Reading interface file interface.toml\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort1TimingReport)}\n')
+        lExpected.append('PASSED: PORT_1.SDR-SS-O\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort2TimingReport)}\n')
+        lExpected.extend(build_failed_lines('PORT_2', sPort2TimingReport))
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_passing_run_ends_with_check_passed(self):
         self.run_main_with_reports([sPassingReport])
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
         lExpected = []
-        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
-        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
+        lExpected.append('Reading interface file interface.toml\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort1TimingReport)}\n')
+        lExpected.append('PASSED: PORT_1.SDR-SS-O\n')
         lExpected.append('Check Passed\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
@@ -190,9 +209,11 @@ class TestMainConsoleOutput(unittest.TestCase):
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
         sPort2TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_2', sPassingReport)
         lExpected = []
-        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
-        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
-        lExpected.append(f'Reading timing report file {sPort2TimingReport}\n')
+        lExpected.append('Reading interface file interface.toml\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort1TimingReport)}\n')
+        lExpected.append('PASSED: PORT_1.SDR-SS-O\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort2TimingReport)}\n')
+        lExpected.append('PASSED: PORT_2.SDR-SS-O\n')
         lExpected.append('Check Passed\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
@@ -208,7 +229,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         with mock.patch.dict(os.environ):
             os.environ.pop('STACV_UNSET_VARIABLE', None)
             self.run_main_with_reports(['$STACV_UNSET_VARIABLE/report.rpt'])
-        self.assertEqual(f'Reading interface file {self.sInterfaceFile}\n', self.oStdout.getvalue())
+        self.assertEqual('Reading interface file interface.toml\n', self.oStdout.getvalue())
 
     def test_deferred_port_is_skipped_and_the_check_still_passes(self):
         def add_deferred_port(lTimingReports, sTracesFile, sPartFile):
@@ -216,7 +237,7 @@ class TestMainConsoleOutput(unittest.TestCase):
         with mock.patch(f'{__name__}.build_config_text', side_effect=add_deferred_port):
             self.run_main_with_reports([sPassingReport])
         self.assertEqual(0, self.iExitCode)
-        self.assertTrue(self.oStdout.getvalue().endswith('Check Passed\n'))
+        self.assertTrue(self.oStdout.getvalue().endswith('PASSED: PORT_1.SDR-SS-O\nDEFERRED: PORT_2\nCheck Passed\n'))
 
     def test_traces_error_exits_with_two_and_is_written_to_stderr(self):
         sTracesWithoutDefault = '[[trace]]\nname = "PORT_1"\ndevice_pin = "PORT_1"\npart_pin = "SDIN"\ndevice_to_part = {}\n'
@@ -239,8 +260,8 @@ class TestMainConsoleOutput(unittest.TestCase):
         sTimingReport = self.create_empty_timing_report()
         self.run_main_with_reports([sTimingReport])
         lExpected = []
-        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
-        lExpected.append(f'Reading timing report file {sTimingReport}\n')
+        lExpected.append('Reading interface file interface.toml\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sTimingReport)}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
     def test_parse_error_is_written_to_stderr(self):
@@ -254,6 +275,7 @@ class TestMainReportFile(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
+        change_to_directory(self, self.oTempDir.name)
         self.sInterfaceFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
@@ -296,8 +318,9 @@ class TestMainReportFile(unittest.TestCase):
         self.run_main_with_report_option([sPassingReport])
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
         lExpected = []
-        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
-        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
+        lExpected.append('Reading interface file interface.toml\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort1TimingReport)}\n')
+        lExpected.append('PASSED: PORT_1.SDR-SS-O\n')
         lExpected.append(f'Creating report {self.sReportFile}\n')
         lExpected.append('Check Passed\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
@@ -306,9 +329,9 @@ class TestMainReportFile(unittest.TestCase):
         self.run_main_with_report_option([sFailingReport])
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         lExpected = []
-        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
-        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
-        lExpected.append('FAILED: [s0_timing_report_002]\n')
+        lExpected.append('Reading interface file interface.toml\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort1TimingReport)}\n')
+        lExpected.extend(build_failed_lines('PORT_1', sPort1TimingReport))
         lExpected.append(f'Creating report {self.sReportFile}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
 
@@ -330,6 +353,7 @@ class TestMainJunitFile(unittest.TestCase):
 
     def setUp(self):
         self.oTempDir = tempfile.TemporaryDirectory()
+        change_to_directory(self, self.oTempDir.name)
         self.sInterfaceFile = os.path.join(self.oTempDir.name, 'interface.toml')
         self.sTracesFile = os.path.join(self.oTempDir.name, 'traces.toml')
         self.sPartFile = os.path.join(self.oTempDir.name, 'part.toml')
@@ -378,8 +402,9 @@ class TestMainJunitFile(unittest.TestCase):
         self.run_main_with_junit_option([sPassingReport])
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sPassingReport)
         lExpected = []
-        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
-        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
+        lExpected.append('Reading interface file interface.toml\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort1TimingReport)}\n')
+        lExpected.append('PASSED: PORT_1.SDR-SS-O\n')
         lExpected.append(f'Creating JUnit file {self.sJunitFile}\n')
         lExpected.append('Check Passed\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())
@@ -388,8 +413,8 @@ class TestMainJunitFile(unittest.TestCase):
         self.run_main_with_junit_option([sFailingReport])
         sPort1TimingReport = build_port_timing_report_filename(self.oTempDir.name, 'PORT_1', sFailingReport)
         lExpected = []
-        lExpected.append(f'Reading interface file {self.sInterfaceFile}\n')
-        lExpected.append(f'Reading timing report file {sPort1TimingReport}\n')
-        lExpected.append('FAILED: [s0_timing_report_002]\n')
+        lExpected.append('Reading interface file interface.toml\n')
+        lExpected.append(f'Reading timing report file {os.path.basename(sPort1TimingReport)}\n')
+        lExpected.extend(build_failed_lines('PORT_1', sPort1TimingReport))
         lExpected.append(f'Creating JUnit file {self.sJunitFile}\n')
         self.assertEqual(''.join(lExpected), self.oStdout.getvalue())

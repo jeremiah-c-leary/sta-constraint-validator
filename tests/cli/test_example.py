@@ -48,6 +48,19 @@ class TestExample(unittest.TestCase):
         self.assertEqual(0, iExitCode)
         self.assertTrue(sOutput.endswith('Check Passed\n'))
 
+    def test_check_shows_a_result_for_every_port(self):
+        iExitCode, sOutput = self.run_stacv(['check', sInterfaceFile])
+        lExpected = []
+        lExpected.append(f'Reading interface file {sInterfaceFile}')
+        lExpected.append('Reading timing report file example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt')
+        lExpected.append('PASSED: O_DAC_DATA.SDR-SS-O')
+        lExpected.append('Reading timing report file example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt')
+        lExpected.append('PASSED: O_DAC_SDEN_F.SDR-SS-O-FLC')
+        lExpected.append('DEFERRED: I_DAC_DATA.SDR-SS-RT')
+        lExpected.append('Check Passed')
+        lExpected.append('')
+        self.assertEqual('\n'.join(lExpected), sOutput)
+
     def test_generated_report_script_matches_the_example_report_script(self):
         # Runs the command in the script's header, so the file is put back however the test ends.
         with open(sReportScriptFile) as oFile:
