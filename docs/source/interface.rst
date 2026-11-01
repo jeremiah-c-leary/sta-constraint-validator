@@ -201,3 +201,4 @@ Every other command stops on the error.
 
 Edge *n* of a clock is at (period / 2) × *n*, so the setup requirement is the time of the capture setup edge minus the time of the launch setup edge, and the hold requirement is the time of the capture hold edge minus the time of the launch hold edge.
 Check the edges with ``stacv visualize edges`` before generating the constraints.
+It reads only the interface file, so it can be run before the part and traces files are written, and their paths are not checked.

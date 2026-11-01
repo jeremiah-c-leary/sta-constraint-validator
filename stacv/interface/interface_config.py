@@ -31,7 +31,15 @@ PORT_CLOCK_KEYS = ['name', 'setup_edge', 'hold_edge']
 def read_interface_config(sInterfaceFile):
     oInterface = read_interface_config_for_drawing(sInterfaceFile)
     raise_first_edge_error(oInterface)
+    resolve_part_and_traces(oInterface, sInterfaceFile)
     return oInterface
+
+
+def resolve_part_and_traces(oInterface, sInterfaceFile):
+    # The edges are drawn from the interface file alone, so the part and traces paths are resolved only for the commands that read them.
+    oLocation = interface_location.InterfaceLocation(sInterfaceFile)
+    oInterface.part = resolve_file(oInterface.part_as_written, 'part', oLocation)
+    oInterface.traces = resolve_file(oInterface.traces_as_written, 'traces', oLocation)
 
 
 def read_interface_config_for_drawing(sInterfaceFile):
@@ -74,8 +82,8 @@ def create_interface_config(dConfig, sInterfaceFile):
     READER.check_keys(dConfig, TOP_LEVEL_KEYS, oLocation)
     oInterface.description = READER.get_required_string(dConfig, 'description', oLocation)
     oInterface.interface_name = READER.get_required_string(dConfig, 'name', oLocation)
-    oInterface.part = get_required_file(dConfig, 'part', oLocation)
-    oInterface.traces = get_required_file(dConfig, 'traces', oLocation)
+    oInterface.part_as_written = READER.get_required_string(dConfig, 'part', oLocation)
+    oInterface.traces_as_written = READER.get_required_string(dConfig, 'traces', oLocation)
     create_clocks(dConfig, oInterface, oLocation)
     oInterface.ports = create_ports(dConfig, oLocation, oInterface)
     return oInterface
@@ -198,11 +206,6 @@ def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     oPort.launch_clock = build_referenced_clock(dPort, 'launch_clock', oPort.name, oInterface, oLocation)
     oPort.edge_errors = find_edge_errors(oPort, oLocation)
     oPort.timing_reports_as_written = READER.get_required_list_of_strings(dPort, 'timing_reports', oLocation)
-
-
-def get_required_file(dDict, sKey, oLocation):
-    sFilename = READER.get_required_string(dDict, sKey, oLocation)
-    return resolve_file(sFilename, sKey, oLocation)
 
 
 def resolve_file(sFilename, sKey, oLocation):

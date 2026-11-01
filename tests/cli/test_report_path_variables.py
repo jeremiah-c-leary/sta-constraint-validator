@@ -63,7 +63,7 @@ class TestReportPathVariables(unittest.TestCase):
         self.assertEqual(2, iExitCode)
         self.assertEqual(sExpected, self.oStderr.getvalue())
 
-    def test_part_path_still_needs_its_variable_for_visualize(self):
+    def test_part_path_still_needs_its_variable_for_the_block_diagram(self):
         with tempfile.TemporaryDirectory() as sDirectory:
             sFile = os.path.join(sDirectory, 'interface.toml')
             with open(sFile, 'w') as oFile:
@@ -71,7 +71,8 @@ class TestReportPathVariables(unittest.TestCase):
                 oFile.write('name = "UNSET_PART"\n')
                 oFile.write('part = "$PROJ_DIR/part.toml"\n')
                 oFile.write('traces = "traces.toml"\n')
-            iExitCode = self.run_stacv(['visualize', 'edges', sFile])
+                oFile.write('[[port]]\nstatus = "defer"\nname = "O_DATA"\n')
+            iExitCode = self.run_stacv(['visualize', 'block_diagram', sFile])
         sExpected = f'ERROR: [interface_config_005] {sFile} key "part" uses environment variables that are not set: PROJ_DIR\n'
         self.assertEqual(2, iExitCode)
         self.assertEqual(sExpected, self.oStderr.getvalue())
