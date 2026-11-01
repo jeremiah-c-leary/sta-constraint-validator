@@ -380,7 +380,34 @@ The timing tool assumes every clock runs all the time, so it times the signal as
 SDR-SS-O-FLC therefore uses the SDR-SS-O constraints and checks unchanged.
 The part pin is still ``SDR-SS-I``, with the datasheet's setup and hold to the first and last clock edges, such as tCSS and tCSH.
 
-What differs is the edges diagram, in ``stacv visualize edges`` and in the constraints file.
+Independent setup and hold edges
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The key difference from SDR-SS-O is which edges make sense.
+A data bit changes once: its setup and hold both come from the same launch edge, so moving the launch edge moves both requirements.
+A chip select changes twice, when it is asserted and when it is released.
+Its setup comes from the launch edge that asserts it, and its hold from the launch edge that releases it, so each can be moved without changing the other.
+
+The DAC81404 chip select first used the data port's edges, and failed setup by about 10 ns, because tCSS is 30 ns:
+
+.. code-block:: toml
+
+   launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
+   capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
+
+Moving only the setup launch edge two launch periods earlier gave a 40 ns setup requirement and left the hold requirement at -20 ns, and both met timing:
+
+.. code-block:: toml
+
+   launch_clock = {name = "clk_100mhz", setup_edge = 4, hold_edge = 8}
+   capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
+
+For an SDR-SS-O data port, the same change would also have moved the hold requirement to 0 ns and failed hold.
+
+Edges diagram
+^^^^^^^^^^^^^
+
+What also differs is the edges diagram, in ``stacv visualize edges`` and in the constraints file.
 It is drawn in two windows, so it can be compared with the datasheet figure:
 
 * The setup window, with the clock idle up to its first pulse, and the first clock edge marked.
@@ -388,7 +415,7 @@ It is drawn in two windows, so it can be compared with the datasheet figure:
 
 Each window shows whole clock pulses, so the capture clock of an SDR-SS-O-FLC port needs its ``idle`` level (see :doc:`interface`).
 A clock that idles low pulses high, rising then falling; a clock that idles high pulses low.
-The DAC81404 chip select, captured on the falling edge with the clock idle low:
+The DAC81404 chip select, with the passing edges above, captured on the falling edge with the clock idle low:
 
 .. code-block:: text
 
@@ -396,14 +423,14 @@ The DAC81404 chip select, captured on the falling edge with the clock idle low:
                     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2
    clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
    (100 MHz)
-                                                                    |---setup requirement-->|
+                                            |---------------setup requirement-------------->|
                                               first clock edge ---->|
 
                                                                     C_______________________D
    dac_sclk       __________________________________________________|                       |
    (25 MHz)
 
-   setup requirement = 20 ns
+   setup requirement = 40 ns
 
                                                                                 1     1     1
                     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2
