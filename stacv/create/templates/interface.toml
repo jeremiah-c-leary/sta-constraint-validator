@@ -18,6 +18,7 @@ period = 10.000
 name = "clk_25mhz"
 period = 40.000
 port = "O_CLK"
+idle = "low"
 generator = {source = "DEVICE_ELEMENT", master_pin = "MASTER_PIN", target_pin = "TARGET_PIN", master_clock = "clk_100mhz"}
 
 [[port]]

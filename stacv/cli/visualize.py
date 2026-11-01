@@ -1,4 +1,5 @@
 from stacv.interface import interface_config
+from stacv.methodology import methodology_factory
 from stacv.part import part
 from stacv.traces import traces
 from stacv.visualize import block_diagram
@@ -29,6 +30,7 @@ def print_port_edges(oPort):
     print(f'Port:  {oPort.name}')
     print(DIVIDER)
     print('')
-    for sLine in edges.draw_edges(oPort):
+    oMethodology = methodology_factory.create_methodology(oPort.methodology)
+    for sLine in edges.draw_edges(oPort, oMethodology.edge_diagram_type):
         print(sLine)
     print('')

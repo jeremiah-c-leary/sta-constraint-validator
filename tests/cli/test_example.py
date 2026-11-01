@@ -10,6 +10,7 @@ sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'
 sInterfaceFile = 'example/texas_instruments/DAC81404/interface.toml'
 sConstraintsFile = 'example/constraints.xdc'
 sReportScriptFile = 'example/dac_spi_1_stacv_report.tcl'
+sCsfTimingReport = os.path.join(sProjectDir, 'example', 'texas_instruments', 'DAC81404', 'timing_reports', 'O_DAC_CSF_timing.rpt')
 
 
 class TestExample(unittest.TestCase):
@@ -43,6 +44,7 @@ class TestExample(unittest.TestCase):
         self.assertEqual(0, iExitCode)
         self.assertEqual(sExpected, sOutput)
 
+    @unittest.skipUnless(os.path.isfile(sCsfTimingReport), 'O_DAC_CSF timing report is not written yet; run the report script in Vivado')
     def test_check_passes_the_example_timing_reports(self):
         iExitCode, sOutput = self.run_stacv(['check', sInterfaceFile])
         self.assertEqual(0, iExitCode)

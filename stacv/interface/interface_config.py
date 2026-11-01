@@ -16,6 +16,9 @@ from stacv.methodology import methodology_factory
 from stacv.interface import clock
 from stacv.interface import clock_pin
 from stacv.interface import clock_generator
+from stacv.visualize import edges
+
+IDLE_LEVELS = ['low', 'high']
 
 
 def read_interface_config(sInterfaceFile):
@@ -69,7 +72,7 @@ def create_clocks(dConfig, oInterface, oLocation):
     if 'clock' not in dConfig:
         return
     for dClock in dConfig['clock']:
-        oClock = build_clock(dClock)
+        oClock = build_clock(dClock, oLocation)
         check_clock_is_not_defined(oInterface, oClock.name, oLocation)
         oInterface.clocks.append(oClock)
     check_master_clocks_are_defined(oInterface, oLocation)
@@ -86,15 +89,23 @@ def check_clock_is_not_defined(oInterface, sName, oLocation):
         raise interface_config_error.InterfaceConfigError('interface_config_008', oLocation.filename, f'clock {sName} is defined by more than one [[clock]] table')
 
 
-def build_clock(dClock):
+def build_clock(dClock, oLocation):
     oClock = clock.Clock()
     oClock.name = dClock['name']
     oClock.period = dClock['period']
     if 'port' in dClock:
         oClock.port = dClock['port']
+    if 'idle' in dClock:
+        oClock.idle = read_idle(dClock['idle'], oClock.name, oLocation)
     if 'generator' in dClock:
         oClock.generator = build_clock_generator(dClock['generator'])
     return oClock
+
+
+def read_idle(sIdle, sClockName, oLocation):
+    if sIdle not in IDLE_LEVELS:
+        raise interface_config_error.InterfaceConfigError('interface_config_011', oLocation.filename, f'key "idle" of clock {sClockName} must be "{IDLE_LEVELS[0]}" or "{IDLE_LEVELS[1]}"')
+    return sIdle
 
 
 def create_ports(dConfig, oLocation, oInterface):
@@ -138,6 +149,7 @@ def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     oPort.methodology = get_required_string(dPort, 'methodology', oLocation)
     check_methodology_is_supported(oPort.methodology, oLocation)
     oPort.capture_clock = build_capture_clock(dPort['capture_clock'], oInterface, oLocation)
+    check_capture_clock_stops_if_needed(oPort, oLocation)
     oPort.launch_clock = build_launch_clock(dPort['launch_clock'], oInterface, oLocation)
     oPort.timing_reports_as_written = get_required_list_of_strings(dPort, 'timing_reports', oLocation)
 
@@ -212,9 +224,19 @@ def build_referenced_clock(dClock, oInterface, sKey, oLocation):
     oClockPin.period = oClock.period
     oClockPin.port = oClock.port
     oClockPin.generator = oClock.generator
+    oClockPin.idle = oClock.idle
     oClockPin.setup_edge = dClock['setup_edge']
     oClockPin.hold_edge = dClock['hold_edge']
     return oClockPin
+
+
+def check_capture_clock_stops_if_needed(oPort, oLocation):
+    # The first and last edges of a clock only exist if the clock stops, and the drawing needs its idle level.
+    oMethodology = methodology_factory.create_methodology(oPort.methodology)
+    if oMethodology.edge_diagram_type != edges.FIRST_LAST_CLOCK:
+        return
+    if oPort.capture_clock.idle is None:
+        raise interface_config_error.InterfaceConfigError('interface_config_012', oLocation.filename, f'key "capture_clock"{oLocation.location} names clock {oPort.capture_clock.name}, which has no key "idle"; {oPort.methodology} is timed to the first and last edges of a clock that stops')
 
 
 def find_defined_clock(oInterface, sName, sKey, oLocation):

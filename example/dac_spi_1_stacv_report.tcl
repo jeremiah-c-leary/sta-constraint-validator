@@ -30,6 +30,10 @@ if {![info exists env(PROJ_DIR)]} {
 if {![file isdirectory "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"]} {
     error "stacv: O_DAC_DATA report directory does not exist: $env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
 }
+# O_DAC_CSF
+if {![file isdirectory "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"]} {
+    error "stacv: O_DAC_CSF report directory does not exist: $env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
+}
 
 ###############################################################################
 # Slow Corner
@@ -42,7 +46,8 @@ report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -pa
 report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 
 # O_DAC_CSF
-# Deferred
+report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
 
 # I_DAC_DATA
 # Deferred
@@ -58,7 +63,8 @@ report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -pa
 report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 
 # O_DAC_CSF
-# Deferred
+report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_CSF] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_CSF_timing.rpt"
 
 # I_DAC_DATA
 # Deferred

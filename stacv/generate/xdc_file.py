@@ -7,6 +7,7 @@ from stacv.generate import xdc
 from stacv.generate import xdc_section
 from stacv.inputs import port_profile
 from stacv.interface import port
+from stacv.methodology import methodology_factory
 from stacv.output import md5sum_table
 from stacv.output import number_format
 from stacv.output import text_table
@@ -209,15 +210,29 @@ def build_port_content(oPort, oTraceList, oPart):
     sMinOutputDelay = xdc.create_min_output_delay(oPortProfile)
     lMulticycleBlocks = build_multicycle_blocks(oPort)
     lContent = ['#']
-    lContent.extend(comment_lines(edges.draw_edge_diagram(oPort)))
-    lContent.append('#')
-    lContent.extend(build_requirement_lines(oPort))
+    lContent.extend(build_edge_windows(oPort))
     lContent.append('#')
     lContent.append('#' + '-' * 78)
     lContent.extend(build_command_block(build_argument_comments(build_max_output_delay_arguments(oPortProfile)), sMaxOutputDelay))
     lContent.extend(build_command_block(build_argument_comments(build_min_output_delay_arguments(oPortProfile)), sMinOutputDelay))
     lContent.extend(lMulticycleBlocks)
     return lContent
+
+
+def build_edge_windows(oPort):
+    # Each window of the edge diagram is followed by the requirements it shows.
+    oMethodology = methodology_factory.create_methodology(oPort.methodology)
+    lSetupLine, lHoldLine = build_requirement_lines(oPort)
+    dRequirements = {edges.edge_window.SETUP: lSetupLine, edges.edge_window.HOLD: lHoldLine}
+    lLines = []
+    for iIndex, oWindow in enumerate(edges.draw_edge_diagram(oPort, oMethodology.edge_diagram_type)):
+        if iIndex > 0:
+            lLines.append('#')
+        lLines.extend(comment_lines(oWindow.lines))
+        lLines.append('#')
+        for sRequirement in oWindow.requirements:
+            lLines.append(dRequirements[sRequirement])
+    return lLines
 
 
 def build_multicycle_blocks(oPort):

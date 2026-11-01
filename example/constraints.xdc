@@ -25,7 +25,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ----------------------------------------------
-# 3c90bb8e593173f3a924cfba2e8328fc  example/texas_instruments/DAC81404/interface.toml
+# e83149677f1d82ba6eaf6ad63935ba2a  example/texas_instruments/DAC81404/interface.toml
 # 0117e857e03a4af4824d81689ba503e6  example/texas_instruments/DAC81404/part.toml
 # 9cdbb0a77550a0f3869e6b48dd35c474  example/texas_instruments/DAC81404/traces.toml
 #
@@ -159,8 +159,78 @@ set_multicycle_path 3 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #  Section 5.2:  O_DAC_CSF
 ###############################################################################
 #
-# Deferred
+#                                                                              1     1     1
+#                  0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2
+# clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
+# (100 MHz)
+#                                                                  |---setup requirement-->|
+#                                            first clock edge ---->|
 #
+#                                                                  C_______________________D
+# dac_sclk       __________________________________________________|                       |
+# (25 MHz)
+#
+# setup requirement:  20 ns (launch edge 8 at 40 ns -> capture edge D at 60 ns)
+#
+#                                                                              1     1     1
+#                  0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2
+# clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
+# (100 MHz)
+#                                          |<---hold requirement---|
+#                     last clock edge ---->|
+#
+#                  A_______________________B
+# dac_sclk       __|                       |________________________________________________
+# (25 MHz)
+#
+# hold requirement:  -20 ns (launch edge 8 at 40 ns -> capture edge B at 20 ns)
+#
+#------------------------------------------------------------------------------
+#
+# -clock:                the capture clock
+# -clock_fall:           the capture edges D and B are falling edges of dac_sclk
+# -reference_pin:        dac_sclk is generated at q_spi_output_clock_reg/Q.  Without the reference pin,
+#                        the delay from Q to O_DAC_SCLK is left out of the clock path and the timing
+#                        report is wrong without any warning.
+# -max:                  this is the setup check
+# maximum output delay:  chip_select maximum - clock minimum + CSF setup
+#                        1 - 1 + 30
+#                        30 ns
+# objects:               which data port the output delay applies to
+#
+
+set_output_delay -clock [get_clocks dac_sclk] -clock_fall -reference_pin [get_ports O_DAC_SCLK] -max 30.000 [get_ports O_DAC_CSF]
+
+#
+# -min:                  this is a hold check
+# minimum output delay:  chip_select minimum - clock maximum - CSF hold
+#                        0 - 3 - 10
+#                        -13 ns
+#
+
+set_output_delay -clock [get_clocks dac_sclk] -clock_fall -reference_pin [get_ports O_DAC_SCLK] -min -13.000 [get_ports O_DAC_CSF]
+
+#
+# multiplier:  setup requirement / launch period
+#              20 ns / 10 ns
+#              2
+# -setup:      this is the setup multicycle
+# -start:      multiplier is relative to the launching clock
+# -from:       paths in the design that drive the output port
+# -to:         the output data port
+#
+
+set_multicycle_path 2 -setup -start -from [get_clocks clk_100mhz] -to [get_ports O_DAC_CSF]
+
+#
+# multiplier:  (setup requirement - hold requirement) / launch period - 1
+#              (20 ns - -20 ns) / 10 ns - 1
+#              3
+# -hold:       this is the hold multicycle
+#
+
+set_multicycle_path 3 -hold -start -from [get_clocks clk_100mhz] -to [get_ports O_DAC_CSF]
+
 ###############################################################################
 #  Section 5.3:  I_DAC_DATA
 ###############################################################################
