@@ -150,17 +150,17 @@ Traces file
    * - Identifier
      - Message
      - Correction
-   * - traces_config_001 (new)
+   * - traces_config_001
      - ``is not valid TOML: <reason>``
      - Correct the TOML syntax at the line given.
-   * - traces_config_002 (new)
+   * - traces_config_002
      - ``missing required key "<key>"<location>``
      - Add the key.
        Also used when there is no ``[[trace]]`` table.
-   * - traces_config_003 (new)
+   * - traces_config_003
      - ``key "<key>"<location> must be <type>``
      - Write the value as the type given.
-   * - traces_config_004 (new)
+   * - traces_config_004
      - ``key "<key>"<location> is not a key stacv reads; the keys are <keys>``
      - Correct the key name.
    * - traces_config_005

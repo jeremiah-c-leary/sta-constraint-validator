@@ -35,6 +35,12 @@ class ConfigReader():
     def get_required_list_of_strings(self, dDict, sKey, oLocation):
         return self.get_required_value_of_type(dDict, sKey, value_type.LIST_OF_STRINGS, oLocation)
 
+    def get_required_number(self, dDict, sKey, oLocation):
+        return self.get_required_value_of_type(dDict, sKey, value_type.NUMBER, oLocation)
+
+    def get_required_table(self, dDict, sKey, oLocation):
+        return self.get_required_value_of_type(dDict, sKey, value_type.TABLE, oLocation)
+
     def get_required_array_of_tables(self, dDict, sKey, oLocation):
         return self.get_required_value_of_type(dDict, sKey, value_type.ARRAY_OF_TABLES, oLocation)
 
@@ -46,3 +52,9 @@ class ConfigReader():
     def check_schema(self, oExpectedType, value, sKey, oLocation):
         if not oExpectedType.is_valid(value):
             self.raise_error(3, oLocation.filename, f'key "{sKey}"{oLocation.location} must be {oExpectedType.description}')
+
+    def check_keys(self, dDict, lKeys, oLocation):
+        # A misspelled key would otherwise be ignored, so every key must be one stacv reads.
+        for sKey in dDict:
+            if sKey not in lKeys:
+                self.raise_error(4, oLocation.filename, f'key "{sKey}"{oLocation.location} is not a key stacv reads; the keys are {", ".join(lKeys)}')
