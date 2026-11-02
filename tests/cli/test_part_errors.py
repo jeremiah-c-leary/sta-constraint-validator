@@ -7,7 +7,7 @@ from unittest import mock
 
 from stacv import __main__
 
-SDR_SS_I_KEYS = 'name, methodology, clock, capture_edge, setup, hold'
+SDR_SS_I_KEYS = 'name, methodology, clock, capture_edge, setup, hold, skew_min, skew_max'
 
 INTERFACE_TEXT = '''description = "part errors test"
 name = "DAC_SPI_1"
@@ -137,7 +137,7 @@ class TestPartErrors(PartTestCase):
 
     def test_unknown_pin_methodology_is_an_error(self):
         lReplacements = [('methodology', 'methodology = "SDR-SS-X"')]
-        self.assert_error([PROPERTIES, DATASHEET, INTERFACE, build_pin(lReplacements)], 'part_config_005', 'key "methodology" in pin DATA_IN of interface SPI names SDR-SS-X; a part pin is SDR-SS-I, SDR-SS-O or SDR-SS-RT-DO')
+        self.assert_error([PROPERTIES, DATASHEET, INTERFACE, build_pin(lReplacements)], 'part_config_005', 'key "methodology" in pin DATA_IN of interface SPI names SDR-SS-X; a part pin is SDR-SS-I, SDR-SS-O, SDR-SS-RT-DI, SDR-SS-RT-DO, SDR-SYS-I, SDR-SYS-O, DDR-SS-I or DDR-SS-O')
 
     def test_valid_part_file_draws_the_block_diagram(self):
         iExitCode = self.run_block_diagram([PROPERTIES, DATASHEET, INTERFACE, build_pin()])

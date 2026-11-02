@@ -174,8 +174,8 @@ def build_file_option(sCorner, sPath):
 def build_port_option(oPort):
     # The paths of an output port end at it, and the paths of an input port start at it.
     if xdc.is_input(oPort):
-        return f'-from [get_ports {oPort.name}]'
-    return f'-to [get_ports {oPort.name}]'
+        return f'-from [get_ports {xdc.format_port(oPort.name)}]'
+    return f'-to [get_ports {xdc.format_port(oPort.name)}]'
 
 
 def build_report_timing(sPortOption, sAnalysis, sFileOption):

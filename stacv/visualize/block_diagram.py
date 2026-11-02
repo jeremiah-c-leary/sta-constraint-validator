@@ -41,10 +41,29 @@ def find_clock_ports(oInterface):
 def select_traces(oInterface, oTraceList):
     lTraces = []
     for oPort in oInterface.ports:
-        lTraces.extend(find_traces_from_device_pin(oTraceList.traces, oPort.name))
+        add_traces(lTraces, find_traces_from_device_pin(oTraceList.traces, oPort.name))
     for sClockPort in find_clock_ports(oInterface):
-        lTraces.extend(find_traces_from_device_pin(oTraceList.traces, sClockPort))
+        add_traces(lTraces, find_traces_from_device_pin(oTraceList.traces, sClockPort))
+    # A clock source drives the part too, on a trace of its own.
+    for oTrace in list(lTraces):
+        if oTrace.source is not None:
+            add_traces(lTraces, find_traces_from_source_to_part(oTraceList.traces, oTrace.source))
     return lTraces
+
+
+def add_traces(lTraces, lNewTraces):
+    # A bidirectional port has a [[port]] table for each direction, but its trace is drawn once.
+    for oTrace in lNewTraces:
+        if oTrace not in lTraces:
+            lTraces.append(oTrace)
+
+
+def find_traces_from_source_to_part(lTraces, sSource):
+    lMatchingTraces = []
+    for oTrace in lTraces:
+        if oTrace.source == sSource and oTrace.source_to_part is not None:
+            lMatchingTraces.append(oTrace)
+    return lMatchingTraces
 
 
 def find_traces_from_device_pin(lTraces, sDevicePin):
@@ -56,7 +75,20 @@ def find_traces_from_device_pin(lTraces, sDevicePin):
 
 
 def is_input_trace(oTrace):
-    return oTrace.device_to_part is None
+    return oTrace.device_to_part is None and oTrace.source_to_part is None
+
+
+def get_device_end(oTrace):
+    # A trace from a clock source to the part shows the source where the device pin would be.
+    if oTrace.device_pin is None:
+        return '(' + oTrace.source + ')'
+    return oTrace.device_pin
+
+
+def get_part_end(oTrace):
+    if oTrace.part_pin is None:
+        return '(' + oTrace.source + ')'
+    return oTrace.part_pin
 
 
 def is_bidirectional_trace(oTrace):
@@ -66,7 +98,7 @@ def is_bidirectional_trace(oTrace):
 def calculate_device_edge(lTraces):
     lNames = [DEVICE_NAME]
     for oTrace in lTraces:
-        lNames.append(oTrace.device_pin)
+        lNames.append(get_device_end(oTrace))
     return len(INDENT) + find_longest(lNames) + MARGIN
 
 
@@ -87,7 +119,7 @@ def calculate_part_edge(iDeviceEdge, iLongestTraceName):
 def calculate_part_width(sPartNumber, lTraces):
     lNames = [sPartNumber]
     for oTrace in lTraces:
-        lNames.append(oTrace.part_pin)
+        lNames.append(get_part_end(oTrace))
     return MARGIN + find_longest(lNames) + MARGIN
 
 
@@ -122,8 +154,8 @@ def draw_label_row(sPartNumber, iDeviceEdge, iPartEdge):
 
 def draw_trace_row(oTrace, iDeviceEdge, iLongestTraceName):
     oRow = text_row.TextRow()
-    oRow.write(len(INDENT), oTrace.device_pin)
-    oRow.write(iDeviceEdge - 1, '[X] ' + draw_arrow(oTrace, iLongestTraceName) + ' [X] ' + oTrace.part_pin)
+    oRow.write(len(INDENT), get_device_end(oTrace))
+    oRow.write(iDeviceEdge - 1, '[X] ' + draw_arrow(oTrace, iLongestTraceName) + ' [X] ' + get_part_end(oTrace))
     return oRow.to_string()
 
 

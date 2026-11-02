@@ -76,6 +76,11 @@ Each interface of the part, as the manufacturer names it, has an ``[[interface]]
    * - ``name``
      - The name of the interface, as the manufacturer names it.
 
+A part with modes, such as a PHY with MII, RMII and RGMII, has one ``[[interface]]`` for each mode.
+The interface file names the one it uses with ``part_interface`` (see :doc:`interface`), and pins are looked up in that interface only.
+A ``part_interface`` the part does not have is an error (part_config_009).
+The VSC8540ET in ``example/microchip/vsc8540et`` is a part with five interfaces.
+
 Pins
 ----
 
@@ -109,33 +114,46 @@ Pins are described from the part's point of view.
    * - Key
      - Description
    * - ``name``
-     - The name of the pin.
-       Each pin name is used once in the part, in every interface, since traces name a pin without its interface (part_config_007).
+     - The name of the pin, as the datasheet names it in the interface's mode.
+       A bus is written ``NAME[upper:lower]``, such as ``TXD[3:0]``.
+       Interfaces may share pin names; within an interface a pin is used once for each methodology (part_config_007), so a bidirectional pin, such as MDIO, has a table for each direction.
    * - ``methodology``
-     - The :doc:`methodology <methodology>` of the pin.
+     - The :doc:`methodology <methodology>` of the pin, from the part's view.
        It decides the timing keys the pin has:
 
-       * ``SDR-SS-I``: ``capture_edge``, ``setup``, ``hold``
-       * ``SDR-SS-O``, ``SDR-SS-RT-DO``: ``launch_edge``, ``cko_max``, ``cko_min``
+       * inputs, ``SDR-SS-I``, ``SDR-SS-RT-DI``, ``SDR-SYS-I``, ``DDR-SS-I``: ``capture_edge``, and ``setup`` and ``hold``, or ``skew_min`` and ``skew_max``
+       * outputs, ``SDR-SS-O``, ``SDR-SS-RT-DO``, ``SDR-SYS-O``, ``DDR-SS-O``: ``launch_edge``, and ``cko_max`` and ``cko_min``, or ``valid_before`` and ``valid_after``
+
+       A pin gives its timing in exactly one form, the form its datasheet uses (part_config_010).
    * - ``clock``
      - The clock pin of the part the data is captured or launched on:
 
        * ``pin``: the name of the clock pin.
        * ``max_frequency``: the maximum frequency of the clock for this pin, in MHz, greater than 0 (part_config_008).
+       * ``duty_cycle``: optional, ``{min = ..., max = ...}`` in percent, for double data rate pins.
    * - ``capture_edge``
-     - The clock edge the part captures the data on: ``"Rising"`` or ``"Falling"`` (part_config_006).
+     - The clock edge the part captures the data on: ``"Rising"``, ``"Falling"``, or ``"Both"`` for double data rate (part_config_006).
    * - ``launch_edge``
-     - The clock edge the part launches the data on: ``"Rising"`` or ``"Falling"`` (part_config_006).
+     - The clock edge the part launches the data on: ``"Rising"``, ``"Falling"``, or ``"Both"`` for double data rate (part_config_006).
    * - ``setup``
-     - The setup requirement of the pin.
+     - The setup requirement of the pin, from the datasheet's Min column.
    * - ``hold``
-     - The hold requirement of the pin.
+     - The hold requirement of the pin, from the datasheet's Min column.
+   * - ``skew_min``, ``skew_max``
+     - The window the clock edge must arrive in after the data changes, such as RGMII's tSKEWR.
+       stacv takes setup = ``skew_min`` and hold = the time between data changes - ``skew_max``.
    * - ``cko_max``
      - The maximum clock-to-out delay of the pin.
    * - ``cko_min``
      - The minimum clock-to-out delay of the pin.
+   * - ``valid_before``, ``valid_after``
+     - The time the data is valid before and after the clock edge, for a clock centred in the data.
+       stacv takes clock to out minimum = ``valid_after`` and maximum = the time between data changes - ``valid_before``.
 
-``setup``, ``hold``, ``cko_max`` and ``cko_min`` each have the same keys:
+The time between data changes is the period of the interface's clock, or half of it for double data rate.
+Each conversion is written out in the constraints file, next to the constraint it gives.
+
+``setup``, ``hold``, ``cko_max``, ``cko_min`` and the window keys each have the same keys:
 
 .. list-table::
    :header-rows: 1

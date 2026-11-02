@@ -214,7 +214,7 @@ class Test(unittest.TestCase):
         self.write_interface_file('\n'.join(lText) + '\n')
 
         # The old key is reported as unknown before the missing name, which tells the user more.
-        sError = self.build_error_pattern('interface_config_004', 'key "interface" is not a key stacv reads; the keys are description, name, part, traces, clock, port$')
+        sError = self.build_error_pattern('interface_config_004', 'key "interface" is not a key stacv reads; the keys are description, name, part, part_interface, traces, clock, port$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 
@@ -665,9 +665,9 @@ class TestPortStatus(unittest.TestCase):
         return lLines
 
     def test_raises_error_if_an_analyzed_port_names_a_methodology_stacv_does_not_support(self):
-        sError = self.build_error_pattern('interface_config_011', 'key "methodology" in port I_DAC_DATA names SDR-SS-I, which stacv does not support; correct it, or defer the port with status = "defer"')
+        sError = self.build_error_pattern('interface_config_011', 'key "methodology" in port I_DAC_DATA names QDR-SS-I, which stacv does not support; correct it, or defer the port with status = "defer"')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
-            self.read_interface_with_port(self.build_analyzed_port('SDR-SS-I'))
+            self.read_interface_with_port(self.build_analyzed_port('QDR-SS-I'))
 
     def test_raises_error_if_an_analyzed_port_names_a_misspelled_methodology(self):
         sError = self.build_error_pattern('interface_config_011', 'key "methodology" in port I_DAC_DATA names SDR-SS-0, which stacv does not support; correct it, or defer the port with status = "defer"')

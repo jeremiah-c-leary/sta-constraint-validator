@@ -9,6 +9,8 @@ class Interface():
         self.part_as_written = None
         self.traces_as_written = None
         self.part = None
+        # The interface of the part this file times, or None for every interface of the part.
+        self.part_interface = None
         self.traces = None
         self.clocks = []
         self.ports = []

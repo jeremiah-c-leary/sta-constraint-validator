@@ -36,8 +36,8 @@ class TestCapturePortAndBuses(test_interface_keys.InterfaceTestCase):
         self.assertEqual(0, iExitCode)
 
     def test_bus_port_stops_every_command(self):
-        sPort = '[[port]]\nname = "O_DATA[7:0]"\nmethodology = "SDR-SS-O"'
-        sExpected = f'ERROR: [interface_config_022] {self.sInterfaceFile} port O_DATA[7:0] is a bus, which stacv does not support yet; give each bit its own [[port]], or defer it\n'
+        sPort = '[[port]]\nname = "O_DATA[7]"\nmethodology = "SDR-SS-O"'
+        sExpected = f'ERROR: [interface_config_022] {self.sInterfaceFile} port O_DATA[7] is not a port name or a bus written NAME[upper:lower]; give each bit its own [[port]], write the bus as NAME[upper:lower], or defer it\n'
         for lCommand in [['visualize', 'edges'], ['generate', 'xdc']]:
             with self.subTest(command=' '.join(lCommand)):
                 iExitCode = self.run_stacv(lCommand, build_interface({'port': sPort}))

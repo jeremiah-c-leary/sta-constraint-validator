@@ -12,7 +12,7 @@
 #    Section 3:  Inputs
 #    Section 3.1:  Trace Delays
 #    Section 3.2:  Part Timing
-#    Section 4:  Generated Clocks
+#    Section 4:  Clocks
 #    Section 4.1:  dac_sclk Generated Clock
 #    Section 4.2:  dac_sclk_rd Generated Clock
 #    Section 5:  Ports

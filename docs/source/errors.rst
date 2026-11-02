@@ -135,8 +135,8 @@ Interface file
        The clock is the one the device forwards to the part: the capture clock of an SDR-SS-O or SDR-SS-O-FLC port, and the launch clock of an SDR-SS-RT-DI port.
      - \-
    * - interface_config_022
-     - ``port <name> is a bus, which stacv does not support yet; give each bit its own [[port]], or defer it``
-     - A port name with ``[`` or ``*`` is a bus.
+     - ``port <name> is not a port name or a bus written NAME[upper:lower]; give each bit its own [[port]], write the bus as NAME[upper:lower], or defer it``
+     - A bus is written ``NAME[upper:lower]``, such as ``O_MII_TXD[3:0]``; a single bit or a wildcard is not a port name.
        Only an analyzed port is checked.
      - Stops
 
@@ -174,7 +174,7 @@ Traces file
      - ``trace <name> key "<key>" must give both max_delay and min_delay, or neither``
      - Give both delays, or write ``{}`` to use ``default_delay``.
    * - traces_config_007
-     - ``trace <name> has neither device_to_part nor part_to_device``
+     - ``trace <name> has neither device_to_part nor part_to_device``, or ``has neither source_to_device nor source_to_part`` for a trace from a clock source
      - Give the direction the trace carries.
    * - traces_config_008
      - ``trace <name> key "<key>" has max_delay <value> less than min_delay <value>``, or ``default_delay has max_delay <value> less than min_delay <value>``
@@ -209,17 +209,25 @@ Part file
      - ``key "<key>"<location> is not a key stacv reads; the keys are <keys>``
      - Correct the key name.
    * - part_config_005
-     - ``key "methodology"<location> names <methodology>; a part pin is SDR-SS-I, SDR-SS-O or SDR-SS-RT-DO``
+     - ``key "methodology"<location> names <methodology>; a part pin is SDR-SS-I, SDR-SS-O, SDR-SS-RT-DI, SDR-SS-RT-DO, SDR-SYS-I, SDR-SYS-O, DDR-SS-I or DDR-SS-O``
      - Correct the methodology.
    * - part_config_006
-     - ``key "<key>"<location> must be "Rising" or "Falling"``
+     - ``key "<key>"<location> must be "Rising", "Falling" or "Both"``
      - Correct the edge of ``capture_edge`` or ``launch_edge``.
+       ``"Both"`` is for double data rate pins.
    * - part_config_007
-     - ``pin <name> is defined by more than one [[interface.pin]] table``
+     - ``pin <name> with methodology <methodology> is defined by more than one [[interface.pin]] table in interface <interface>``
      - Remove or rename one of the tables.
+       Interfaces may share pin names, and a bidirectional pin has one table for each methodology.
    * - part_config_008
      - ``key "max_frequency"<location> must be greater than 0``
      - Correct the frequency, in MHz.
+   * - part_config_009
+     - ``has no interface named <name>, which key "part_interface" of the interface file names``
+     - Correct ``part_interface`` in the interface file, or the interface's ``name`` in the part file.
+   * - part_config_010
+     - ``timing<location> must give setup and hold, or skew_min and skew_max`` for an input pin, or ``cko_max and cko_min, or valid_before and valid_after`` for an output pin
+     - Give the pin's timing in one form, the form its datasheet uses.
 
 The location is ``in [properties]``, ``in [datasheet]``, ``in interface <name>``, or ``in pin <name> of interface <name>``.
 

@@ -4,9 +4,13 @@ from stacv.results import methodology_results
 # Which way the data goes between the device and the part.
 OUTPUT = 'output'
 INPUT = 'input'
-# The key of the port clock that the device forwards to the part.
+# The key of the port clock that crosses the board, between the device's clock port and the part.
 CAPTURE_CLOCK = 'capture_clock'
 LAUNCH_CLOCK = 'launch_clock'
+# Where that clock comes from: the device forwards it, the part sends it, or a clock source drives both.
+DEVICE_CLOCK = 'device'
+PART_CLOCK = 'part'
+SOURCE_CLOCK = 'source'
 
 
 def describe_clock_key(sClockKey):
@@ -20,6 +24,11 @@ class Methodology():
         self.stages = []
         self.data_direction = OUTPUT
         self.forwarded_clock_key = CAPTURE_CLOCK
+        self.clock_origin = DEVICE_CLOCK
+        # The methodology of the part pin, from the part's view.
+        self.part_pin_methodology = 'SDR-SS-I'
+        # A double data rate port changes its data on both edges of the clock.
+        self.double_data_rate = False
 
     def check(self, oPortProfile):
         oMethodologyResults = methodology_results.MethodologyResults()

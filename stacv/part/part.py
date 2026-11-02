@@ -18,9 +18,10 @@ PROPERTIES_KEYS = ['manufacturer', 'part_number']
 DATASHEET_KEYS = ['name', 'url', 'version']
 INTERFACE_KEYS = ['name', 'pin']
 PIN_KEYS = ['name', 'methodology', 'clock']
-CLOCK_KEYS = ['pin', 'max_frequency']
+CLOCK_KEYS = ['pin', 'max_frequency', 'duty_cycle']
+DUTY_CYCLE_KEYS = ['min', 'max']
 CONSTRAINT_KEYS = ['value', 'symbol', 'source']
-EDGES = ['Rising', 'Falling']
+EDGES = ['Rising', 'Falling', 'Both']
 
 
 class Part():
@@ -30,17 +31,33 @@ class Part():
         self.part_number = None
         self.datasheet = None
         self.interfaces = None
+        # The name of the part interface the interface file uses, or None to look at every interface.
+        self.selected_interface = None
 
-    def get_pin_named(self, sPinName):
-        return self.interfaces.get_pin_named(sPinName)
+    def get_pin_named(self, sPinName, sMethodology=None):
+        # The interface file can name the part interface it uses; its pins are then the only ones looked at.
+        return self.interfaces.get_pin_named(sPinName, sMethodology, self.selected_interface)
 
-    def has_pin_named(self, sPinName):
-        return self.interfaces.has_pin_named(sPinName)
+    def has_pin_named(self, sPinName, sMethodology=None):
+        return self.get_pin_named(sPinName, sMethodology) is not None
+
+    def has_interface_named(self, sInterfaceName):
+        return self.interfaces.get_interface_named(sInterfaceName) is not None
 
 
 def create_part(oInterface):
     dPart = READER.read_toml_file(oInterface.part)
-    return build_part(dPart, oInterface.part)
+    oPart = build_part(dPart, oInterface.part)
+    select_part_interface(oPart, oInterface)
+    return oPart
+
+
+def select_part_interface(oPart, oInterface):
+    if oInterface.part_interface is None:
+        return
+    if not oPart.has_interface_named(oInterface.part_interface):
+        READER.raise_error(9, oInterface.part, f'has no interface named {oInterface.part_interface}, which key "part_interface" of the interface file names')
+    oPart.selected_interface = oInterface.part_interface
 
 
 def build_part(dPart, sFilename):
@@ -86,13 +103,15 @@ def build_interface_list(lInterfaces, sFilename):
 
 
 def check_pins_are_defined_once(oInterfaceList, sFilename):
-    # Traces name a part pin without its interface, so a pin name is used once in the part.
-    lNames = []
+    # Modes of a part share pin names, so a pin is identified by its interface, its name and its methodology:
+    # a bidirectional pin, such as MDIO, has one table for each direction.
     for oInterface in oInterfaceList.interfaces:
+        lKeys = []
         for oPin in oInterface.pins.pins:
-            if oPin.name in lNames:
-                READER.raise_error(7, sFilename, f'pin {oPin.name} is defined by more than one [[interface.pin]] table')
-            lNames.append(oPin.name)
+            sKey = oPin.name + '.' + oPin.methodology
+            if sKey in lKeys:
+                READER.raise_error(7, sFilename, f'pin {oPin.name} with methodology {oPin.methodology} is defined by more than one [[interface.pin]] table in interface {oInterface.name}')
+            lKeys.append(sKey)
 
 
 def build_interface(dInterface, iInterface, sFilename):
@@ -169,6 +188,11 @@ def build_clock_pin(dPin, sPinName, sInterfaceName, oPinLocation):
     oClockPin.max_frequency = READER.get_required_number(dClock, 'max_frequency', oLocation)
     if oClockPin.max_frequency <= 0:
         READER.raise_error(8, oLocation.filename, f'key "max_frequency"{oLocation.location} must be greater than 0')
+    if 'duty_cycle' in dClock:
+        dDutyCycle = READER.get_required_table(dClock, 'duty_cycle', oLocation)
+        READER.check_keys(dDutyCycle, DUTY_CYCLE_KEYS, oLocation)
+        oClockPin.duty_cycle_min = READER.get_required_number(dDutyCycle, 'min', oLocation)
+        oClockPin.duty_cycle_max = READER.get_required_number(dDutyCycle, 'max', oLocation)
     return oClockPin
 
 
@@ -185,20 +209,48 @@ def build_constraint(dPin, sTable, sPinName, sInterfaceName, oPinLocation):
 def read_edge(dPin, sKey, oLocation):
     sEdge = READER.get_required_string(dPin, sKey, oLocation)
     if sEdge not in EDGES:
-        READER.raise_error(6, oLocation.filename, f'key "{sKey}"{oLocation.location} must be "{EDGES[0]}" or "{EDGES[1]}"')
+        READER.raise_error(6, oLocation.filename, f'key "{sKey}"{oLocation.location} must be "{EDGES[0]}", "{EDGES[1]}" or "{EDGES[2]}"')
     return sEdge
 
 
 def build_input_pin(oPin, dPin, sInterfaceName, oLocation):
+    # An input is given as a setup and a hold, or as the window the clock edge must arrive in after the data changes.
     oPin.capture_edge = read_edge(dPin, 'capture_edge', oLocation)
-    oPin.setup = build_constraint(dPin, 'setup', oPin.name, sInterfaceName, oLocation)
-    oPin.hold = build_constraint(dPin, 'hold', oPin.name, sInterfaceName, oLocation)
+    if read_timing_form(dPin, ['setup', 'hold'], ['skew_min', 'skew_max'], oLocation) == 0:
+        oPin.setup = build_constraint(dPin, 'setup', oPin.name, sInterfaceName, oLocation)
+        oPin.hold = build_constraint(dPin, 'hold', oPin.name, sInterfaceName, oLocation)
+    else:
+        oPin.skew_min = build_constraint(dPin, 'skew_min', oPin.name, sInterfaceName, oLocation)
+        oPin.skew_max = build_constraint(dPin, 'skew_max', oPin.name, sInterfaceName, oLocation)
 
 
 def build_output_pin(oPin, dPin, sInterfaceName, oLocation):
+    # An output is given as a clock to out, or as the window its data is valid in around the clock edge.
     oPin.launch_edge = read_edge(dPin, 'launch_edge', oLocation)
-    oPin.cko_max = build_constraint(dPin, 'cko_max', oPin.name, sInterfaceName, oLocation)
-    oPin.cko_min = build_constraint(dPin, 'cko_min', oPin.name, sInterfaceName, oLocation)
+    if read_timing_form(dPin, ['cko_max', 'cko_min'], ['valid_before', 'valid_after'], oLocation) == 0:
+        oPin.cko_max = build_constraint(dPin, 'cko_max', oPin.name, sInterfaceName, oLocation)
+        oPin.cko_min = build_constraint(dPin, 'cko_min', oPin.name, sInterfaceName, oLocation)
+    else:
+        oPin.valid_before = build_constraint(dPin, 'valid_before', oPin.name, sInterfaceName, oLocation)
+        oPin.valid_after = build_constraint(dPin, 'valid_after', oPin.name, sInterfaceName, oLocation)
+
+
+def read_timing_form(dPin, lFirstForm, lSecondForm, oLocation):
+    # Exactly one form gives the pin's timing: 0 for the first form, 1 for the second.
+    bFirstForm = has_any_key(dPin, lFirstForm)
+    bSecondForm = has_any_key(dPin, lSecondForm)
+    if bFirstForm == bSecondForm:
+        READER.raise_error(10, oLocation.filename, f'timing{oLocation.location} must give {" and ".join(lFirstForm)}, or {" and ".join(lSecondForm)}')
+    if bFirstForm:
+        return 0
+    return 1
+
+
+def has_any_key(dTable, lKeys):
+    for sKey in lKeys:
+        if sKey in dTable:
+            return True
+    return False
 
 
 class PinType():
@@ -211,13 +263,19 @@ class PinType():
         self.build = fBuild
 
 
-INPUT_PIN = PinType(['capture_edge', 'setup', 'hold'], build_input_pin)
-OUTPUT_PIN = PinType(['launch_edge', 'cko_max', 'cko_min'], build_output_pin)
+INPUT_PIN = PinType(['capture_edge', 'setup', 'hold', 'skew_min', 'skew_max'], build_input_pin)
+OUTPUT_PIN = PinType(['launch_edge', 'cko_max', 'cko_min', 'valid_before', 'valid_after'], build_output_pin)
 
+# Part pin methodologies are named from the part's view.
 PIN_TYPES = {}
 PIN_TYPES['SDR-SS-I'] = INPUT_PIN
 PIN_TYPES['SDR-SS-O'] = OUTPUT_PIN
+PIN_TYPES['SDR-SS-RT-DI'] = INPUT_PIN
 PIN_TYPES['SDR-SS-RT-DO'] = OUTPUT_PIN
+PIN_TYPES['SDR-SYS-I'] = INPUT_PIN
+PIN_TYPES['SDR-SYS-O'] = OUTPUT_PIN
+PIN_TYPES['DDR-SS-I'] = INPUT_PIN
+PIN_TYPES['DDR-SS-O'] = OUTPUT_PIN
 
 
 def is_input_pin(oPin):

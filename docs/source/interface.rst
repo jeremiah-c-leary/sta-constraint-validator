@@ -42,6 +42,11 @@ Top level
    * - ``part``
      - Yes
      - The path of the :doc:`part file <part>` of the part this interface connects to.
+   * - ``part_interface``
+     - No
+     - The ``[[interface]]`` of the part this interface uses, such as ``"MII"`` for a PHY with several modes.
+       Its pins are the only pins looked up.
+       Without it, every interface of the part is looked at.
    * - ``traces``
      - Yes
      - The path of the :doc:`traces file <traces>` that describes the connections between the device and the part.
@@ -161,7 +166,8 @@ A port can have more than one table, one for each methodology, such as a bidirec
    * - ``methodology``
      - Yes
      - The :doc:`methodology <methodology>` of the port.
-       An analyzed port must be ``SDR-SS-O``, ``SDR-SS-O-FLC`` or ``SDR-SS-RT-DI``; a port with another methodology is deferred until stacv supports it (interface_config_011).
+       An analyzed port is ``SDR-SS-O``, ``SDR-SS-O-FLC``, ``SDR-SS-RT-DI``, ``SDR-SS-I``, ``SDR-SS-RT-DO``, ``SDR-SYS-O``, ``SDR-SYS-I``, ``DDR-SS-O`` or ``DDR-SS-I``; a port with another methodology is deferred until stacv supports it (interface_config_011).
+       ``stacv check`` has rules for the first three only.
    * - ``launch_clock``
      - Yes
      - The clock that launches the data, and its edges.

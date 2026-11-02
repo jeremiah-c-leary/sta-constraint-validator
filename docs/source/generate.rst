@@ -205,7 +205,7 @@ Every number in a constraint is shown with the calculation and the inputs it com
 :Section 1, References: The md5sum of the interface, part and traces files, and the datasheet of the part.
 :Section 2, Block Diagram: The device, the part and the traces between them.
 :Section 3, Inputs: The delay of each trace, marking default delays, and the timing of each part pin the traces reach.
-:Section 4, Generated Clocks: One section for each generated clock.
+:Section 4, Clocks: One section for each clock that crosses the board: generated where the device generates it, or created on the port it enters the device on.
 :Section 5, Ports: One section for each port of the interface.
 
 The section of an analyzed port starts with its edges diagram and its setup and hold requirements, with the edges they come from.

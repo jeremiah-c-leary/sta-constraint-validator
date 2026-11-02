@@ -1,0 +1,197 @@
+# stacv traces file for a board with one VSC8540ET connected in each MAC mode.
+# Each mode is its own interface file; they all share this traces file.
+#
+# Delays are in nanoseconds.  These are example values, not a real board.
+
+default_delay = {max_delay = 1.0, min_delay = 0.0}
+
+# Serial management interface
+
+[[trace]]
+name = "mdc"
+device_pin = "O_MDC"
+part_pin = "MDC"
+device_to_part = {max_delay = 1.5, min_delay = 1.0}
+
+[[trace]]
+name = "mdio"
+device_pin = "IO_MDIO"
+part_pin = "MDIO"
+device_to_part = {max_delay = 1.5, min_delay = 1.0}
+part_to_device = {max_delay = 1.5, min_delay = 1.0}
+
+# MII: the PHY sends both clocks
+
+[[trace]]
+name = "mii_tx_clk"
+device_pin = "I_MII_TX_CLK"
+part_pin = "MII_TXCLK"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_txd"
+device_pin = "O_MII_TXD[3:0]"
+part_pin = "TXD[3:0]"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_tx_en"
+device_pin = "O_MII_TX_EN"
+part_pin = "TX_EN"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_tx_er"
+device_pin = "O_MII_TX_ER"
+part_pin = "TX_ER"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_rx_clk"
+device_pin = "I_MII_RX_CLK"
+part_pin = "RX_CLK"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_rxd"
+device_pin = "I_MII_RXD[3:0]"
+part_pin = "RXD[3:0]"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_rx_dv"
+device_pin = "I_MII_RX_DV"
+part_pin = "RX_DV"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_rx_er"
+device_pin = "I_MII_RX_ER"
+part_pin = "RX_ER"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+# RMII: the PHY's RMII_CLKOUT drives the 50 MHz clock back into its own RMII_CLKIN and into the device (Mode 2)
+
+[[trace]]
+name = "rmii_clk_to_device"
+source = "phy_rmii_clkout"
+device_pin = "I_RMII_REF_CLK"
+source_to_device = {max_delay = 1.4, min_delay = 1.0}
+
+[[trace]]
+name = "rmii_clk_to_part"
+source = "phy_rmii_clkout"
+part_pin = "RMII_CLKIN"
+source_to_part = {max_delay = 0.6, min_delay = 0.4}
+
+[[trace]]
+name = "rmii_txd"
+device_pin = "O_RMII_TXD[1:0]"
+part_pin = "TXD[1:0]"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "rmii_tx_en"
+device_pin = "O_RMII_TX_EN"
+part_pin = "TX_EN"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "rmii_tx_er"
+device_pin = "O_RMII_TX_ER"
+part_pin = "TX_ER"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "rmii_rxd"
+device_pin = "I_RMII_RXD[1:0]"
+part_pin = "RXD[1:0]"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "rmii_crs_dv"
+device_pin = "I_RMII_CRS_DV"
+part_pin = "CRS_DV"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "rmii_rx_er"
+device_pin = "I_RMII_RX_ER"
+part_pin = "RX_ER"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+# Uncompensated RGMII: the board adds more than 1.5 ns to each clock (Table 7-25, footnote 1)
+
+[[trace]]
+name = "rgmii_txc"
+device_pin = "O_RGMII_TXC"
+part_pin = "TX_CLK"
+device_to_part = {max_delay = 2.8, min_delay = 2.4}
+
+[[trace]]
+name = "rgmii_txd"
+device_pin = "O_RGMII_TXD[3:0]"
+part_pin = "TXD[3:0]"
+device_to_part = {max_delay = 0.8, min_delay = 0.6}
+
+[[trace]]
+name = "rgmii_tx_ctl"
+device_pin = "O_RGMII_TX_CTL"
+part_pin = "TX_CTL"
+device_to_part = {max_delay = 0.8, min_delay = 0.6}
+
+[[trace]]
+name = "rgmii_rxc"
+device_pin = "I_RGMII_RXC"
+part_pin = "RX_CLK"
+part_to_device = {max_delay = 2.8, min_delay = 2.4}
+
+[[trace]]
+name = "rgmii_rxd"
+device_pin = "I_RGMII_RXD[3:0]"
+part_pin = "RXD[3:0]"
+part_to_device = {max_delay = 0.8, min_delay = 0.6}
+
+[[trace]]
+name = "rgmii_rx_ctl"
+device_pin = "I_RGMII_RX_CTL"
+part_pin = "RX_CTL"
+part_to_device = {max_delay = 0.8, min_delay = 0.6}
+
+# Compensated RGMII: the PHY delays its clocks internally, so the traces are matched
+
+[[trace]]
+name = "rgmii_id_txc"
+device_pin = "O_RGMII_ID_TXC"
+part_pin = "TX_CLK"
+device_to_part = {max_delay = 0.8, min_delay = 0.6}
+
+[[trace]]
+name = "rgmii_id_txd"
+device_pin = "O_RGMII_ID_TXD[3:0]"
+part_pin = "TXD[3:0]"
+device_to_part = {max_delay = 0.8, min_delay = 0.6}
+
+[[trace]]
+name = "rgmii_id_tx_ctl"
+device_pin = "O_RGMII_ID_TX_CTL"
+part_pin = "TX_CTL"
+device_to_part = {max_delay = 0.8, min_delay = 0.6}
+
+[[trace]]
+name = "rgmii_id_rxc"
+device_pin = "I_RGMII_ID_RXC"
+part_pin = "RX_CLK"
+part_to_device = {max_delay = 0.8, min_delay = 0.6}
+
+[[trace]]
+name = "rgmii_id_rxd"
+device_pin = "I_RGMII_ID_RXD[3:0]"
+part_pin = "RXD[3:0]"
+part_to_device = {max_delay = 0.8, min_delay = 0.6}
+
+[[trace]]
+name = "rgmii_id_rx_ctl"
+device_pin = "I_RGMII_ID_RX_CTL"
+part_pin = "RX_CTL"
+part_to_device = {max_delay = 0.8, min_delay = 0.6}

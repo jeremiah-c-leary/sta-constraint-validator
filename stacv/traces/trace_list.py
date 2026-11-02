@@ -18,6 +18,24 @@ class TraceList():
                 return oTrace
         return None
 
+    def get_part_to_device_trace_between(self, sPartPinName, sDevicePinName):
+        for oTrace in self.get_part_to_device_traces():
+            if oTrace.device_pin == sDevicePinName and oTrace.part_pin == sPartPinName:
+                return oTrace
+        return None
+
+    def get_source_to_device_trace_ending_with_name(self, sDevicePinName):
+        for oTrace in self.traces:
+            if oTrace.source_to_device is not None and oTrace.device_pin == sDevicePinName:
+                return oTrace
+        return None
+
+    def get_source_to_part_trace(self, sSource, sPartPinName):
+        for oTrace in self.traces:
+            if oTrace.source_to_part is not None and oTrace.source == sSource and oTrace.part_pin == sPartPinName:
+                return oTrace
+        return None
+
     def get_part_to_device_trace_ending_with_name(self, sName):
         for oTrace in self.get_part_to_device_traces():
             if oTrace.device_pin == sName:

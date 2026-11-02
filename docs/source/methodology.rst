@@ -432,3 +432,32 @@ Stage    Rule                   Checks
 
 The timing tool reports a round trip from launch edge 0, such as ``dac_sclk_rd rise@0.000ns`` to ``clk_100mhz rise@40.000ns``, rather than from the configured edges 2 and Y.
 The requirement is the same, so s4_requirement_001 and s4_requirement_002 compare the requirements, not the edges.
+
+Methodologies stacv generates constraints for
+---------------------------------------------
+
+These methodologies are written from the device's view in the interface file.
+``stacv generate`` writes their constraints and report script; ``stacv check`` has no rules for them yet.
+
+==============  ==================================================================  ===================  ===============
+Methodology     The device...                                                       Clock comes from     Part pin
+==============  ==================================================================  ===================  ===============
+SDR-SS-I        captures data the part sends with its clock                          the part             SDR-SS-O
+SDR-SS-RT-DO    sends data on a clock the part sends, for the part to capture        the part             SDR-SS-RT-DI
+SDR-SYS-O       sends data; a clock source drives the device and the part            a clock source       SDR-SYS-I
+SDR-SYS-I       captures data; a clock source drives the device and the part         a clock source       SDR-SYS-O
+DDR-SS-O        sends data on both edges of a clock it forwards                      the device           DDR-SS-I
+DDR-SS-I        captures data the part sends on both edges of its clock              the part             DDR-SS-O
+==============  ==================================================================  ===================  ===============
+
+A round trip is named by where its data ends: SDR-SS-RT-DI when the data comes back to whoever supplies the clock, SDR-SS-RT-DO when the clock is received and data is returned.
+Part files use the part's view and interface files the device's, so the same round trip has one name in each.
+
+A clock from the part, or from a clock source, enters the device on a port and is created there; a forwarded clock is generated where the device generates it.
+The delays are measured from the clock at the device's clock port:
+
+* clock from the part: input delay = part clock to out + data trace - clock trace; output delay = data trace + part setup + clock trace (minimums with the hold and the other trace limits).
+* clock from a source: the part's clock edge comes the difference of the two clock traces after the device's, which is added to the input delay and subtracted from the output delay.
+* double data rate: the delays are written for the rising edges, and again for the falling edges with ``-clock_fall -add_delay``.
+
+The VSC8540ET example, in ``example/microchip/vsc8540et``, uses every one of them, with a VHDL design to run through Vivado.

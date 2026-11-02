@@ -38,6 +38,7 @@ class SdrSourceSynchronousRoundTrip(methodology.Methodology):
         self.edge_diagram_type = edges.CONTINUOUS_CLOCK
         self.data_direction = methodology.INPUT
         self.forwarded_clock_key = methodology.LAUNCH_CLOCK
+        self.part_pin_methodology = 'SDR-SS-RT-DO'
         self.stages.append(stage.Stage('stage 0', [s0_timing_report_001, s0_timing_report_002, s0_trace_001, s0_data_path_002, s0_clock_path_002]))
         self.stages.append(stage.Stage('stage 1', [s1_clock_001]))
         self.stages.append(stage.Stage('stage 2', [s2_clock_001, s2_clock_002, s2_data_path_001, s2_input_delay_001, s2_input_delay_002]))

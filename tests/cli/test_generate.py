@@ -459,7 +459,7 @@ class TestGenerateXdcLayout(XdcFileTestCase):
         lExpected.append('#    Section 3:  Inputs')
         lExpected.append('#    Section 3.1:  Trace Delays')
         lExpected.append('#    Section 3.2:  Part Timing')
-        lExpected.append('#    Section 4:  Generated Clocks')
+        lExpected.append('#    Section 4:  Clocks')
         lExpected.append('#    Section 4.1:  clk_capture Generated Clock')
         lExpected.append('#    Section 5:  Ports')
         lExpected.append('#    Section 5.1:  O_DATA')

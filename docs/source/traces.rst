@@ -82,3 +82,26 @@ Each direction is one of:
 
 Giving only one of ``max_delay`` and ``min_delay`` is an error (traces_config_006), and so is a ``max_delay`` less than its ``min_delay`` (traces_config_008).
 A trace with neither direction is an error (traces_config_007), and each trace name is used once (traces_config_009).
+
+Clock sources
+^^^^^^^^^^^^^
+
+A clock that comes from a third component, such as an oscillator, reaches the device and the part on two traces.
+Each one names the component with ``source``, and the methodology pairs the two by that name:
+
+.. code-block:: toml
+
+   [[trace]]
+   name = "rmii_clk_to_device"
+   source = "phy_rmii_clkout"
+   device_pin = "I_RMII_REF_CLK"
+   source_to_device = {max_delay = 1.4, min_delay = 1.0}
+
+   [[trace]]
+   name = "rmii_clk_to_part"
+   source = "phy_rmii_clkout"
+   part_pin = "RMII_CLKIN"
+   source_to_part = {max_delay = 0.6, min_delay = 0.4}
+
+``source`` here is the name of the clock source, not a datasheet reference as in the part file.
+A trace from a source gives ``device_pin`` with ``source_to_device``, or ``part_pin`` with ``source_to_part``.

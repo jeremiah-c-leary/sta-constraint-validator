@@ -7,7 +7,7 @@ from unittest import mock
 
 from stacv import __main__
 
-TRACE_KEYS = 'name, device_pin, part_pin, device_to_part, part_to_device'
+TRACE_KEYS = 'name, device_pin, part_pin, device_to_part, part_to_device, source, source_to_device, source_to_part'
 
 
 def build_interface_text():

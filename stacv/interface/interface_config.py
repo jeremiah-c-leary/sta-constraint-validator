@@ -25,7 +25,7 @@ SDR_SS_O = 'SDR-SS-O'
 # The previous edge of the same type is one clock period, two edges, earlier.
 EDGES_PER_PERIOD = 2
 READER = config_reader.ConfigReader('interface_config', interface_config_error.InterfaceConfigError)
-TOP_LEVEL_KEYS = ['description', 'name', 'part', 'traces', 'clock', 'port']
+TOP_LEVEL_KEYS = ['description', 'name', 'part', 'part_interface', 'traces', 'clock', 'port']
 CLOCK_KEYS = ['name', 'period', 'port', 'idle', 'generator']
 GENERATOR_KEYS = ['source', 'master_pin', 'target_pin', 'master_clock']
 PORT_KEYS = ['status', 'name', 'methodology', 'launch_clock', 'capture_clock', 'timing_reports']
@@ -98,6 +98,8 @@ def create_interface_config(dConfig, sInterfaceFile):
     oInterface.description = READER.get_required_string(dConfig, 'description', oLocation)
     oInterface.interface_name = READER.get_required_string(dConfig, 'name', oLocation)
     oInterface.part_as_written = READER.get_required_string(dConfig, 'part', oLocation)
+    if 'part_interface' in dConfig:
+        oInterface.part_interface = READER.get_required_string(dConfig, 'part_interface', oLocation)
     oInterface.traces_as_written = READER.get_required_string(dConfig, 'traces', oLocation)
     create_clocks(dConfig, oInterface, oLocation)
     oInterface.ports = create_ports(dConfig, oLocation, oInterface)
@@ -186,8 +188,11 @@ def create_ports(dConfig, oLocation, oInterface):
 
 
 def check_port_is_not_a_bus(sName, oLocation):
+    # A bus is written NAME[upper:lower]; any other bracket or a wildcard is not a port name stacv can use.
+    if re.fullmatch(r'[A-Za-z_]\w*\[\d+:\d+\]', sName) is not None:
+        return
     if '[' in sName or '*' in sName:
-        READER.raise_error(22, oLocation.filename, f'port {sName} is a bus, which stacv does not support yet; give each bit its own [[port]], or defer it')
+        READER.raise_error(22, oLocation.filename, f'port {sName} is not a port name or a bus written NAME[upper:lower]; give each bit its own [[port]], write the bus as NAME[upper:lower], or defer it')
 
 
 def check_port_is_not_defined(lPortKeys, oPort, oLocation):
@@ -234,6 +239,9 @@ def set_methodology_roles(oPort):
     oMethodology = methodology_factory.create_methodology(oPort.methodology)
     oPort.data_direction = oMethodology.data_direction
     oPort.forwarded_clock_key = oMethodology.forwarded_clock_key
+    oPort.clock_origin = oMethodology.clock_origin
+    oPort.part_pin_methodology = oMethodology.part_pin_methodology
+    oPort.double_data_rate = oMethodology.double_data_rate
     if oPort.forwarded_clock_key == methodology.LAUNCH_CLOCK:
         oPort.forwarded_clock = oPort.launch_clock
     else:
@@ -323,7 +331,10 @@ def format_edge(edge):
 
 
 def find_edge_errors(oPort, oLocation):
+    # A double data rate port captures on both edges, so its setup and hold edges can be different types.
     lErrors = []
+    if oPort.double_data_rate:
+        return lErrors
     if not capture_edges_are_the_same_type(oPort.capture_clock):
         lErrors.append(READER.create_error(18, oLocation.filename, f'key "capture_clock"{oLocation.location} has setup_edge {oPort.capture_clock.setup_edge} and hold_edge {oPort.capture_clock.hold_edge}, which are not the same edge type'))
     elif oPort.methodology == SDR_SS_O:

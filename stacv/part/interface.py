@@ -8,5 +8,5 @@ class Interface():
     def has_pin_named(self, sPinName):
         return self.pins.has_pin_named(sPinName)
 
-    def get_pin_named(self, sPinName):
-        return self.pins.get_pin_named(sPinName)
+    def get_pin_named(self, sPinName, sMethodology=None):
+        return self.pins.get_pin_named(sPinName, sMethodology)

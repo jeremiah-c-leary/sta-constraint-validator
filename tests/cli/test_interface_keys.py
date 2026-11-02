@@ -77,7 +77,7 @@ class TestInterfaceKeys(InterfaceTestCase):
         self.assertEqual(0, iExitCode)
 
     def test_unknown_top_level_key_is_an_error(self):
-        self.assert_error({'traces': 'tracess = "traces.toml"\ntraces = "traces.toml"'}, 'interface_config_004', 'key "tracess" is not a key stacv reads; the keys are description, name, part, traces, clock, port')
+        self.assert_error({'traces': 'tracess = "traces.toml"\ntraces = "traces.toml"'}, 'interface_config_004', 'key "tracess" is not a key stacv reads; the keys are description, name, part, part_interface, traces, clock, port')
 
     def test_unknown_clock_key_is_an_error(self):
         self.assert_error({'generator': 'idel = "low"'}, 'interface_config_004', f'key "idel" of clock clk_capture is not a key stacv reads; the keys are {CLOCK_KEYS}')

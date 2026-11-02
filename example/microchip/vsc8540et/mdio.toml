@@ -1,0 +1,40 @@
+# stacv interface file for the VSC8540ET serial management interface.
+#
+# Paths are relative to this file.
+#
+# All periods are in nanoseconds
+
+description = "VSC8540ET serial management interface"
+
+name = "VSC8540_MDIO"
+part = "vsc8540et.toml"
+part_interface = "Serial Management Interface"
+traces = "traces.toml"
+
+[[clock]]
+name = "clk_100mhz"
+period = 10.000
+
+[[clock]]
+name = "mdc"
+period = 400.000
+port = "O_MDC"
+generator = {source = "q_mdc_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_100mhz"}
+
+[[port]]
+name = "IO_MDIO"
+methodology = "SDR-SS-O"
+launch_clock = {name = "clk_100mhz", setup_edge = 40, hold_edge = 40}
+capture_clock = {name = "mdc", setup_edge = "C", hold_edge = "A"}
+timing_reports = [
+    "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt",
+]
+
+[[port]]
+name = "IO_MDIO"
+methodology = "SDR-SS-RT-DI"
+launch_clock = {name = "mdc", setup_edge = 2, hold_edge = 2}
+capture_clock = {name = "clk_100mhz", setup_edge = "FA", hold_edge = "BY"}
+timing_reports = [
+    "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt",
+]

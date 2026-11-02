@@ -17,6 +17,7 @@ from stacv.rules import edge_times
 from stacv.rules import input_delays
 from stacv.rules import output_delays
 from stacv.rules import path_lookups
+from stacv.rules import port_delays
 from stacv.rules import requirements
 from stacv.visualize import block_diagram
 from stacv.visualize import edge_window
@@ -43,7 +44,7 @@ def build_sections(sInterfaceFile, oInterface, oTraceList, oPart):
     lSections.append(xdc_section.Section('3', 'Inputs', None))
     lSections.append(xdc_section.Section('3.1', 'Trace Delays', build_trace_delays(oInterface, oTraceList)))
     lSections.append(xdc_section.Section('3.2', 'Part Timing', build_part_timing(oInterface, oTraceList, oPart)))
-    lSections.append(xdc_section.Section('4', 'Generated Clocks', None))
+    lSections.append(xdc_section.Section('4', 'Clocks', None))
     lSections.extend(build_generated_clock_sections(oInterface))
     lSections.append(xdc_section.Section('5', 'Ports', None))
     lSections.extend(build_port_sections(oInterface, oTraceList, oPart))
@@ -77,6 +78,10 @@ def build_trace_delays(oInterface, oTraceList):
             lRows.append(build_trace_delay_row(oTrace.name, oTrace.device_pin, oTrace.part_pin, oTrace.device_to_part))
         if oTrace.part_to_device is not None:
             lRows.append(build_trace_delay_row(oTrace.name, oTrace.part_pin, oTrace.device_pin, oTrace.part_to_device))
+        if oTrace.source_to_device is not None:
+            lRows.append(build_trace_delay_row(oTrace.name, oTrace.source, oTrace.device_pin, oTrace.source_to_device))
+        if oTrace.source_to_part is not None:
+            lRows.append(build_trace_delay_row(oTrace.name, oTrace.source, oTrace.part_pin, oTrace.source_to_part))
     lLines = ['#']
     lLines.extend(comment_lines(text_table.format_table(lRows, TABLE_COLUMN_GAP)))
     lLines.append('#')
@@ -105,18 +110,38 @@ def build_part_timing(oInterface, oTraceList, oPart):
 
 def find_part_pins(oInterface, oTraceList, oPart):
     # The part pins the traces reach, once each, in the order of the traces.
+    # A port picks the pin of its methodology, so a bidirectional pin is listed for each direction.
     lPins = []
     for oTrace in block_diagram.select_traces(oInterface, oTraceList):
-        oPin = oPart.get_pin_named(oTrace.part_pin)
-        if oPin is not None and oPin not in lPins:
-            lPins.append(oPin)
+        for oPin in find_trace_pins(oInterface, oTrace, oPart):
+            if oPin not in lPins:
+                lPins.append(oPin)
     return lPins
 
 
+def find_trace_pins(oInterface, oTrace, oPart):
+    lPins = []
+    for oPort in oInterface.get_analyzed_ports():
+        if oPort.name == oTrace.device_pin:
+            add_pin(lPins, oPart.get_pin_named(oTrace.part_pin, oPort.part_pin_methodology))
+    if len(lPins) == 0:
+        add_pin(lPins, oPart.get_pin_named(oTrace.part_pin))
+    return lPins
+
+
+def add_pin(lPins, oPin):
+    if oPin is not None:
+        lPins.append(oPin)
+
+
 def build_part_timing_rows(oPin):
-    if part.is_input_pin(oPin):
-        return [build_part_timing_row(oPin, 'setup', oPin.setup), build_part_timing_row(oPin, 'hold', oPin.hold)]
-    return [build_part_timing_row(oPin, 'cko_max', oPin.cko_max), build_part_timing_row(oPin, 'cko_min', oPin.cko_min)]
+    # Each pin is listed in the form the part file gives it.
+    lRows = []
+    for sTiming in ['setup', 'hold', 'skew_min', 'skew_max', 'cko_max', 'cko_min', 'valid_before', 'valid_after']:
+        oConstraint = getattr(oPin, sTiming)
+        if oConstraint is not None:
+            lRows.append(build_part_timing_row(oPin, sTiming, oConstraint))
+    return lRows
 
 
 def build_part_timing_row(oPin, sTiming, oConstraint):
@@ -137,19 +162,45 @@ def comment_lines(lLines):
 
 
 def build_generated_clock_sections(oInterface):
-    # Each forwarded clock is generated once, in the order the ports first use it.
+    # Each clock that crosses the board is defined once, in the order the ports first use it:
+    # generated where the device generates it, or created on the port it enters the device on.
     lSections = []
+    lClocks = []
     lGeneratedClocks = []
     for oPort in oInterface.get_analyzed_ports():
-        if not is_generated(lGeneratedClocks, oPort.forwarded_clock):
-            bAdd = has_clock_generated_at_the_same_pin(lGeneratedClocks, oPort)
-            lGeneratedClocks.append(oPort.forwarded_clock)
-            sNumber = f'4.{len(lGeneratedClocks)}'
-            sCommand = xdc.create_generated_clock(oPort, oInterface, bAdd)
-            lComments = build_argument_comments(build_generated_clock_arguments(oPort, oInterface, bAdd))
-            lContent = build_command_block(lComments, sCommand)
-            lSections.append(xdc_section.Section(sNumber, f'{oPort.forwarded_clock.name} Generated Clock', lContent))
+        if not is_generated(lClocks, oPort.forwarded_clock):
+            lClocks.append(oPort.forwarded_clock)
+            sNumber = f'4.{len(lClocks)}'
+            if xdc.is_generated(oPort):
+                lSections.append(build_generated_clock_section(sNumber, oPort, oInterface, lGeneratedClocks))
+            else:
+                lSections.append(build_created_clock_section(sNumber, oPort))
     return lSections
+
+
+def build_generated_clock_section(sNumber, oPort, oInterface, lGeneratedClocks):
+    bAdd = has_clock_generated_at_the_same_pin(lGeneratedClocks, oPort)
+    lGeneratedClocks.append(oPort.forwarded_clock)
+    sCommand = xdc.create_generated_clock(oPort, oInterface, bAdd)
+    lComments = build_argument_comments(build_generated_clock_arguments(oPort, oInterface, bAdd))
+    lContent = build_command_block(lComments, sCommand)
+    return xdc_section.Section(sNumber, f'{oPort.forwarded_clock.name} Generated Clock', lContent)
+
+
+def build_created_clock_section(sNumber, oPort):
+    oClock = oPort.forwarded_clock
+    lArguments = []
+    lArguments.append(('-name', ['the name of the clock']))
+    lArguments.append(('-period', [f'{oClock.name} period, {format_nanoseconds(oClock.period)}']))
+    lArguments.append(('objects', [f'the port the clock enters the device on, {describe_clock_origin(oPort)}']))
+    lContent = build_command_block(build_argument_comments(lArguments), xdc.create_clock(oClock))
+    return xdc_section.Section(sNumber, f'{oClock.name} Clock', lContent)
+
+
+def describe_clock_origin(oPort):
+    if oPort.clock_origin == methodology.PART_CLOCK:
+        return 'from the part'
+    return 'from a clock source that also drives the part'
 
 
 def is_generated(lGeneratedClocks, oClock):
@@ -229,7 +280,10 @@ def build_port_content(oPort, oTraceList, oPart):
         return ['#', '# Deferred', '#']
     oPortProfile = port_profile.PortProfile(oPort, oTraceList, oPart, None)
     xdc.check_traces_exist(oPortProfile)
-    lDelayBlocks = build_delay_blocks(oPortProfile)
+    if oPort.methodology in ['SDR-SS-O', 'SDR-SS-O-FLC', 'SDR-SS-RT-DI']:
+        lDelayBlocks = build_delay_blocks(oPortProfile)
+    else:
+        lDelayBlocks = build_clock_crossing_delay_blocks(oPortProfile)
     lMulticycleBlocks = build_multicycle_blocks(oPort)
     lContent = ['#']
     lContent.extend(build_edge_windows(oPort))
@@ -245,6 +299,62 @@ def build_delay_blocks(oPortProfile):
     if xdc.is_input(oPortProfile.port):
         return build_input_delay_blocks(oPortProfile)
     return build_output_delay_blocks(oPortProfile)
+
+
+def build_clock_crossing_delay_blocks(oPortProfile):
+    # The methodologies whose clock comes from the part or a clock source, and double data rate.
+    oPort = oPortProfile.port
+    oMax, oMin = port_delays.calculate_delays(oPortProfile)
+    sDelay = describe_delay(oPort)
+    if xdc.is_input(oPort):
+        fCreate = xdc.create_input_delay
+    else:
+        fCreate = xdc.create_output_delay
+    lLines = []
+    lMaxArguments = build_delay_clock_arguments(oPort)
+    lMaxArguments.append(('-max', ['this is the setup check']))
+    lMaxArguments.append((f'maximum {sDelay}', oMax.lines))
+    lMaxArguments.append(('objects', [f'which data port the {sDelay} applies to']))
+    lLines.extend(build_command_block(build_argument_comments(lMaxArguments), fCreate(oPort, '-max', oMax.value)))
+    lMinArguments = []
+    lMinArguments.append(('-min', ['this is a hold check']))
+    lMinArguments.append((f'minimum {sDelay}', oMin.lines))
+    lLines.extend(build_command_block(build_argument_comments(lMinArguments), fCreate(oPort, '-min', oMin.value)))
+    if oPort.double_data_rate:
+        lLines.extend(build_falling_edge_delay_blocks(oPort, fCreate, oMax, oMin))
+    return lLines
+
+
+def build_falling_edge_delay_blocks(oPort, fCreate, oMax, oMin):
+    # Double data rate data changes on both edges, so the falling edges get the same delays.
+    sEdgeOptions = '-clock_fall -add_delay'
+    lArguments = []
+    lArguments.append(('-clock_fall', [f'the same delays for the falling edges of {oPort.forwarded_clock.name}']))
+    lArguments.append(('-add_delay', ['keeps the delays of the rising edges']))
+    lLines = []
+    lLines.extend(build_command_block(build_argument_comments(lArguments), fCreate(oPort, '-max', oMax.value, sEdgeOptions)))
+    lLines.append(fCreate(oPort, '-min', oMin.value, sEdgeOptions))
+    lLines.append('')
+    return lLines
+
+
+def describe_delay(oPort):
+    if xdc.is_input(oPort):
+        return 'input delay'
+    return 'output delay'
+
+
+def build_delay_clock_arguments(oPort):
+    lArguments = []
+    if xdc.is_input(oPort):
+        lArguments.append(('-clock', ['the launch clock']))
+    else:
+        lArguments.append(('-clock', ['the capture clock']))
+    if not oPort.double_data_rate and xdc.forwarded_clock_setup_edge_is_falling(oPort):
+        lArguments.append(('-clock_fall', [describe_falling_edges(oPort)]))
+    if xdc.is_generated(oPort):
+        lArguments.extend(build_reference_pin_argument(oPort))
+    return lArguments
 
 
 def build_output_delay_blocks(oPortProfile):
@@ -371,18 +481,22 @@ def build_max_input_delay_arguments(oPortProfile):
 
 def build_forwarded_clock_arguments(oPort, sClockDescription):
     # The delays are measured from the forwarded clock where it leaves the device.
-    oForwardedClock = oPort.forwarded_clock
-    oGenerator = oForwardedClock.generator
     lArguments = []
     lArguments.append(('-clock', [sClockDescription]))
     if xdc.forwarded_clock_setup_edge_is_falling(oPort):
         lArguments.append(('-clock_fall', [describe_falling_edges(oPort)]))
+    lArguments.extend(build_reference_pin_argument(oPort))
+    return lArguments
+
+
+def build_reference_pin_argument(oPort):
+    oForwardedClock = oPort.forwarded_clock
+    oGenerator = oForwardedClock.generator
     lReferencePin = []
     lReferencePin.append(f'{oForwardedClock.name} is generated at {oGenerator.source}/{oGenerator.target_pin}.  Without the reference pin,')
     lReferencePin.append(f'the delay from {oGenerator.target_pin} to {oForwardedClock.port} is left out of the clock path and the timing')
     lReferencePin.append('report is wrong without any warning.')
-    lArguments.append(('-reference_pin', lReferencePin))
-    return lArguments
+    return [('-reference_pin', lReferencePin)]
 
 
 def describe_falling_edges(oPort):
