@@ -19,25 +19,26 @@ version = "DS60001648A"
 
 [[interface]]
 name = "Uncompensated RGMII MAC Interface"
-# Table 7-25 gives only the RGMII v1.3 receive skew (tSKEWR 1.0 to 2.6 ns).
-# The inputs use the RGMII v2.0 receiver setup and hold (TsetupR, TholdR) instead,
-# which TI SNLA243 Table 1 also lists.
+# The inputs are given as the RGMII v1.3 receive skew window: the TX_CLK edge must
+# arrive 1.0 to 2.6 ns after the data changes (tSKEWR).  stacv converts the window
+# to setup and hold for the clock in use.
+# Footnote 1: the board must add more than 1.5 ns of clock trace delay.
 
 [[interface.pin]]
 name = "TXD[3:0]"
 methodology = "DDR-SS-I"
 clock = {pin = "TX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
 capture_edge = "Both"
-setup = {value = 1.0, symbol = "TsetupR", source = "RGMII v2.0"}
-hold = {value = 1.0, symbol = "TholdR", source = "RGMII v2.0"}
+skew_min = {value = 1.0, symbol = "tSKEWR", source = "Table 7-25"}
+skew_max = {value = 2.6, symbol = "tSKEWR", source = "Table 7-25"}
 
 [[interface.pin]]
 name = "TX_CTL"
 methodology = "DDR-SS-I"
 clock = {pin = "TX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
 capture_edge = "Both"
-setup = {value = 1.0, symbol = "TsetupR", source = "RGMII v2.0"}
-hold = {value = 1.0, symbol = "TholdR", source = "RGMII v2.0"}
+skew_min = {value = 1.0, symbol = "tSKEWR", source = "Table 7-25"}
+skew_max = {value = 2.6, symbol = "tSKEWR", source = "Table 7-25"}
 
 [[interface.pin]]
 name = "RXD[3:0]"
@@ -63,10 +64,8 @@ name = "Compensated RGMII MAC Interface"
 # The datasheet names these tables by path: T for the TX path (PHY input),
 # R for the RX path (PHY output).  RGMII v2.0 uses T and R for transmitter and receiver.
 # The negative setup is real: the internal clock delay lets data arrive after the clock edge at the pin.
-#
-# The outputs, RXD[3:0] and RX_CTL, are left out until the part file can hold an
-# output's valid window: Table 7-27 gives data valid 1.4 ns before and 1.5 ns after
-# the delayed RX_CLK edge (tSETUP_R, tHOLD_R).
+# The outputs are given as a valid window: data is valid 1.4 ns before and 1.5 ns
+# after the delayed RX_CLK edge.  stacv converts the window to clock to out for the clock in use.
 
 [[interface.pin]]
 name = "TXD[3:0]"
@@ -83,6 +82,22 @@ clock = {pin = "TX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
 capture_edge = "Both"
 setup = {value = -1.0, symbol = "tSETUP_T", source = "Table 7-26"}
 hold = {value = 2.8, symbol = "tHOLD_T", source = "Table 7-26"}
+
+[[interface.pin]]
+name = "RXD[3:0]"
+methodology = "DDR-SS-O"
+clock = {pin = "RX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
+valid_before = {value = 1.4, symbol = "tSETUP_R", source = "Table 7-27"}
+valid_after = {value = 1.5, symbol = "tHOLD_R", source = "Table 7-27"}
+launch_edge = "Both"
+
+[[interface.pin]]
+name = "RX_CTL"
+methodology = "DDR-SS-O"
+clock = {pin = "RX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
+valid_before = {value = 1.4, symbol = "tSETUP_R", source = "Table 7-27"}
+valid_after = {value = 1.5, symbol = "tHOLD_R", source = "Table 7-27"}
+launch_edge = "Both"
 
 
 [[interface]]
