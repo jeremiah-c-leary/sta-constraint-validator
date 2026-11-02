@@ -37,11 +37,11 @@ class TestRoundTripPin(unittest.TestCase):
         self.addCleanup(oTemporaryDirectory.cleanup)
         sPartFile = os.path.join(oTemporaryDirectory.name, 'part.toml')
         with open(sPartFile, 'w') as oFile:
-            oFile.write(build_part_text('SDR-SS-RT'))
+            oFile.write(build_part_text('SDR-SS-RT-DO'))
         self.oPin = part.create_part(SimpleNamespace(part=sPartFile)).get_pin_named('DOUT')
 
     def test_round_trip_pin_keeps_its_methodology(self):
-        self.assertEqual('SDR-SS-RT', self.oPin.methodology)
+        self.assertEqual('SDR-SS-RT-DO', self.oPin.methodology)
 
     def test_round_trip_pin_keeps_its_launch_edge(self):
         self.assertEqual('Falling', self.oPin.launch_edge)

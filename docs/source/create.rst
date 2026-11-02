@@ -26,7 +26,7 @@ The templates show:
 * An interface with a launch clock and a generated capture clock that leaves the device on a clock port.
 * One analyzed SDR-SS-O output port, one deferred output port, and one deferred input port.
 * A trace for each port and for the clock, including a trace that uses the default delay.
-* Part pins with SDR-SS-I and SDR-SS-RT timing, one for each data and chip select trace.
+* Part pins with SDR-SS-I and SDR-SS-RT-DO timing, one for each data and chip select trace.
 
 Copy a table to add more clocks, ports, traces or pins.
 

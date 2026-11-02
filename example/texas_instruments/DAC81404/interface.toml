@@ -53,7 +53,7 @@ timing_reports = [
 [[port]]
 status = "analyze"
 name = "I_DAC_DATA"
-methodology = "SDR-SS-RT"
+methodology = "SDR-SS-RT-DI"
 launch_clock = {name = "dac_sclk_rd", setup_edge = 2, hold_edge = 2}
 capture_clock = {name = "clk_100mhz", setup_edge = "Y", hold_edge = "I"}
 timing_reports = [

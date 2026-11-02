@@ -160,9 +160,9 @@ class RuleTestCase(unittest.TestCase):
         self.assertIsNotNone(oTestcase.find('failure'))
 
 
-# The SDR-SS-RT rule tests check the example's I_DAC_DATA timing report, which has the same four reports, each 77 lines long.
+# The SDR-SS-RT-DI rule tests check the example's I_DAC_DATA timing report, which has the same four reports, each 77 lines long.
 sRoundTripTimingReport = os.path.join(sExampleDir, 'timing_reports', 'I_DAC_DATA_timing.rpt')
-sRoundTripSuiteName = 'I_DAC_DATA.SDR-SS-RT'
+sRoundTripSuiteName = 'I_DAC_DATA.SDR-SS-RT-DI'
 
 # Lines of the first report, the setup report at the Slow Process Corner.
 iRoundTripRequirementLine = 21
@@ -182,7 +182,7 @@ fPassingDataInputMinDelay = 0.0
 
 def build_round_trip_config_text(sPartFile, sTracesFile, sTimingReportFile, sPortName='I_DAC_DATA', sClockPort='O_DAC_SCLK'):
     lText = []
-    lText.append('description = "SDR-SS-RT rule test"')
+    lText.append('description = "SDR-SS-RT-DI rule test"')
     lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
     lText.append(f'traces = "{sTracesFile}"')
@@ -195,7 +195,7 @@ def build_round_trip_config_text(sPartFile, sTracesFile, sTimingReportFile, sPor
     lText.append(f'port = "{sClockPort}"')
     lText.append('[[port]]')
     lText.append(f'name = "{sPortName}"')
-    lText.append('methodology = "SDR-SS-RT"')
+    lText.append('methodology = "SDR-SS-RT-DI"')
     lText.append('launch_clock = {name = "dac_sclk_rd", setup_edge = 2, hold_edge = 2}')
     lText.append('capture_clock = {name = "clk_100mhz", setup_edge = "Y", hold_edge = "I"}')
     lText.append(f'timing_reports = ["{sTimingReportFile}"]')
@@ -207,7 +207,7 @@ def build_round_trip_part_text(sLaunchEdge=sPassingLaunchEdge, fClockToOutMax=fP
     lText.append(build_passing_part_text())
     lText.append('[[interface.pin]]')
     lText.append('name = "SDO"')
-    lText.append('methodology = "SDR-SS-RT"')
+    lText.append('methodology = "SDR-SS-RT-DO"')
     lText.append('clock = {pin = "SCLK", max_frequency = 12.5}')
     lText.append(f'cko_max = {{value = {fClockToOutMax}, symbol = "tSDODLY", source = "Table 7.8"}}')
     lText.append(f'cko_min = {{value = {fClockToOutMin}, symbol = "tSDODLY", source = "Table 7.8"}}')
@@ -233,7 +233,7 @@ def build_round_trip_traces_text(fDataMaxDelay=fPassingDataInputMaxDelay, fDataM
 
 class RoundTripRuleTestCase(RuleTestCase):
     '''
-    Runs check on an SDR-SS-RT port, with the passing inputs unless a test changes one.
+    Runs check on an SDR-SS-RT-DI port, with the passing inputs unless a test changes one.
     '''
 
     def setUp(self):
@@ -242,7 +242,7 @@ class RoundTripRuleTestCase(RuleTestCase):
         self.sChangedTimingReport = os.path.join(self.oTempDir.name, 'I_DAC_DATA_timing.rpt')
 
     def execute_round_trip(self, sTimingReportFile=sRoundTripTimingReport, sPortName='I_DAC_DATA', sClockPort='O_DAC_SCLK', sPartText=None, sTracesText=None):
-        self.sSuiteName = f'{sPortName}.SDR-SS-RT'
+        self.sSuiteName = f'{sPortName}.SDR-SS-RT-DI'
         if sPartText is None:
             sPartText = build_round_trip_part_text()
         if sTracesText is None:

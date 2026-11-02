@@ -57,7 +57,7 @@ class TestExample(unittest.TestCase):
         lExpected.append('Reading timing report file example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt')
         lExpected.append('PASSED: O_DAC_SDEN_F.SDR-SS-O-FLC')
         lExpected.append('Reading timing report file example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt')
-        lExpected.append('PASSED: I_DAC_DATA.SDR-SS-RT')
+        lExpected.append('PASSED: I_DAC_DATA.SDR-SS-RT-DI')
         lExpected.append('Check Passed')
         lExpected.append('')
         self.assertEqual('\n'.join(lExpected), sOutput)

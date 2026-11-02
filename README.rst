@@ -59,7 +59,7 @@ Example
    Reading timing report file example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt
    PASSED: O_DAC_SDEN_F.SDR-SS-O-FLC
    Reading timing report file example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt
-   PASSED: I_DAC_DATA.SDR-SS-RT
+   PASSED: I_DAC_DATA.SDR-SS-RT-DI
    Check Passed
 
 Documentation

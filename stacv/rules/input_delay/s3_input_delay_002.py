@@ -1,6 +1,6 @@
 '''
 :Stage: 3 - board and part
-:Applies to: SDR-SS-RT
+:Applies to: SDR-SS-RT-DI
 :Reads: ``input_delay`` of every hold timing report, trace delays, and part cko_min value
 :Depends on: s2_input_delay_002
 

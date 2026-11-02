@@ -17,7 +17,7 @@ class TestPartValues(test_part_errors.PartTestCase):
 
     def test_launch_edge_must_be_rising_or_falling(self):
         lReplacements = []
-        lReplacements.append(('methodology', 'methodology = "SDR-SS-RT"'))
+        lReplacements.append(('methodology', 'methodology = "SDR-SS-RT-DO"'))
         lReplacements.append(('capture_edge', 'launch_edge = "Up"'))
         lReplacements.append(('setup', 'cko_max = {value = 30, symbol = "tCkoMax", source = "Table Z"}'))
         lReplacements.append(('hold', 'cko_min = {value = 0, symbol = "tCkoMin", source = "Table Z"}'))

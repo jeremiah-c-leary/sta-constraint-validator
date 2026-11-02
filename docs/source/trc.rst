@@ -15,7 +15,7 @@ Each rule lists these fields:
 
 :Stage: When the rule runs (see `Stages`_).
 :Applies to: The methodology the rule checks:
-             SDR-SS-O, SDR-SS-RT, SDR-SS-I, DDR-SS-O, DDR-SS-I, or all (see :doc:`methodology`).
+             SDR-SS-O, SDR-SS-RT-DI, SDR-SS-I, DDR-SS-O, DDR-SS-I, or all (see :doc:`methodology`).
 :Reads: The timing report values the rule uses.
 :Depends on: Rules that must pass before this rule is checked.
 
@@ -72,43 +72,43 @@ It runs last, so the slack is known to come from the intended timing.
 Methodology coverage
 ^^^^^^^^^^^^^^^^^^^^
 
-=======================  ========  ============  =========  ========
-Rule                     SDR-SS-O  SDR-SS-O-FLC  SDR-SS-RT  SDR-SS-I
-=======================  ========  ============  =========  ========
-s0_timing_report_001     X         X             X          P
-s0_timing_report_002     X         X             X          P
-s0_trace_001             X         X             X          P
+=======================  ========  ============  ============  ========
+Rule                     SDR-SS-O  SDR-SS-O-FLC  SDR-SS-RT-DI  SDR-SS-I
+=======================  ========  ============  ============  ========
+s0_timing_report_001     X         X             X             P
+s0_timing_report_002     X         X             X             P
+s0_trace_001             X         X             X             P
 s0_data_path_001         X         X
 s0_data_path_002                                 X
 s0_clock_path_001        X         X
 s0_clock_path_002                                X
-s1_clock_001             X         X             X          P
-s2_clock_001             X         X             X          P
-s2_clock_002             X         X             X          P
-s2_data_path_001         X         X             X          P
+s1_clock_001             X         X             X             P
+s2_clock_001             X         X             X             P
+s2_clock_002             X         X             X             P
+s2_data_path_001         X         X             X             P
 s2_output_delay_001      X         X
 s2_output_delay_002      X         X
-s2_input_delay_001                               X          P
-s2_input_delay_002                               X          P
+s2_input_delay_001                               X             P
+s2_input_delay_002                               X             P
 s3_output_delay_001      X         X
 s3_output_delay_002      X         X
-s3_input_delay_001                               X          P
-s3_input_delay_002                               X          P
-s4_process_corner_001    P         P             P          P
-s4_process_corner_002    P         P             P          P
-s4_data_path_003                                            P
-s4_clock_path_002                                           P
-s4_launch_clock_001      X         X             X          P
-s4_launch_clock_002      X         X             X          P
-s4_capture_clock_001     X         X             X          P
-s4_capture_clock_002     X         X             X          P
-s4_requirement_001       X         X             X          P
-s4_requirement_002       X         X             X          P
+s3_input_delay_001                               X             P
+s3_input_delay_002                               X             P
+s4_process_corner_001    P         P             P             P
+s4_process_corner_002    P         P             P             P
+s4_data_path_003                                               P
+s4_clock_path_002                                              P
+s4_launch_clock_001      X         X             X             P
+s4_launch_clock_002      X         X             X             P
+s4_capture_clock_001     X         X             X             P
+s4_capture_clock_002     X         X             X             P
+s4_requirement_001       X         X             X             P
+s4_requirement_002       X         X             X             P
 s4_part_001              X         X
 s4_part_002                                      X
-s5_slack_001             X         X             X          P
-s5_slack_002             X         X             X          P
-=======================  ========  ============  =========  ========
+s5_slack_001             X         X             X             P
+s5_slack_002             X         X             X             P
+=======================  ========  ============  ============  ========
 
 ``X`` marks a rule stacv checks, and ``P`` a rule that is planned for the methodology.
 SDR-SS-O-FLC runs the SDR-SS-O rules unchanged.

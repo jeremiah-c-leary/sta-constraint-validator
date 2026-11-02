@@ -602,7 +602,7 @@ class TestGenerateXdcPartTiming(XdcFileTestCase):
         self.assertEqual(lExpected, self.read_section('3.2:  Part Timing'))
 
     def test_groups_the_timing_of_each_pin_and_lists_clock_to_out_of_outputs(self):
-        sOutputPin = '[[interface.pin]]\nname = "SDO"\nmethodology = "SDR-SS-RT"\nclock = {pin = "SCLK", max_frequency = 12.5}\ncko_max = {value = 30, symbol = "tSDODLY", source = "Table 7.8"}\ncko_min = {value = 0, symbol = "tSDODLY", source = "Table 7.8"}\nlaunch_edge = "Rising"\n'
+        sOutputPin = '[[interface.pin]]\nname = "SDO"\nmethodology = "SDR-SS-RT-DO"\nclock = {pin = "SCLK", max_frequency = 12.5}\ncko_max = {value = 30, symbol = "tSDODLY", source = "Table 7.8"}\ncko_min = {value = 0, symbol = "tSDODLY", source = "Table 7.8"}\nlaunch_edge = "Rising"\n'
         self.write_file('part.toml', build_part_text() + '\n' + sOutputPin)
         lTraces = []
         lTraces.append('[[trace]]\nname = "O_DATA_data"\ndevice_pin = "O_DATA"\npart_pin = "SDIN"\ndevice_to_part = {max_delay = 1.5, min_delay = 0.5}')

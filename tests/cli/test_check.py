@@ -150,7 +150,7 @@ def build_part_text():
     lText.append('')
     lText.append('[[interface.pin]]')
     lText.append('name = "SDO"')
-    lText.append('methodology = "SDR-SS-RT"')
+    lText.append('methodology = "SDR-SS-RT-DO"')
     lText.append('clock = {pin = "SCLK", max_frequency = 12.5}')
     lText.append('cko_max = {value = 30, symbol = "tSDODLY", source = "Table 7.8"}')
     lText.append('cko_min = {value = 0, symbol = "tSDODLY", source = "Table 7.8"}')
@@ -430,13 +430,13 @@ class TestExecuteReportSummary(unittest.TestCase):
         lPorts.append(('P1', sPassingReport))
         lPorts = write_named_port_timing_reports(self.oTempDir.name, lPorts)
         sConfigText = build_named_ports_config_text('Deferred port with a methodology', lPorts, self.sTracesFile, self.sPartFile)
-        sConfigText += '\n[[port]]\nname = "P2"\nstatus = "defer"\nmethodology = "SDR-SS-RT"\n'
+        sConfigText += '\n[[port]]\nname = "P2"\nstatus = "defer"\nmethodology = "SDR-SS-RT-DI"\n'
         self.execute_with_config_text(sConfigText, get_port_names(lPorts))
         lExpected = []
-        lExpected.append('Port   Methodology   Report Key     Section   Result')
-        lExpected.append('----   -----------   ------------   -------   --------')
-        lExpected.append('P1     SDR-SS-O      P1.SDR-SS-O    3.1       Passed')
-        lExpected.append('P2     SDR-SS-RT     P2.SDR-SS-RT   -         Deferred')
+        lExpected.append('Port   Methodology    Report Key        Section   Result')
+        lExpected.append('----   ------------   ---------------   -------   --------')
+        lExpected.append('P1     SDR-SS-O       P1.SDR-SS-O       3.1       Passed')
+        lExpected.append('P2     SDR-SS-RT-DI   P2.SDR-SS-RT-DI   -         Deferred')
         self.assertEqual(lExpected, self.read_summary_section()[7:])
 
     def test_rule_check_sections_number_only_the_analyzed_ports(self):

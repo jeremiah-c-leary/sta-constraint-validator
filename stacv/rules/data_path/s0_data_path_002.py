@@ -1,6 +1,6 @@
 '''
 :Stage: 0 - inputs
-:Applies to: SDR-SS-RT
+:Applies to: SDR-SS-RT-DI
 :Reads: first element of the data path of every timing report, ``name`` of the port in the configuration
 :Depends on: none
 

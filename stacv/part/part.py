@@ -217,7 +217,7 @@ OUTPUT_PIN = PinType(['launch_edge', 'cko_max', 'cko_min'], build_output_pin)
 PIN_TYPES = {}
 PIN_TYPES['SDR-SS-I'] = INPUT_PIN
 PIN_TYPES['SDR-SS-O'] = OUTPUT_PIN
-PIN_TYPES['SDR-SS-RT'] = OUTPUT_PIN
+PIN_TYPES['SDR-SS-RT-DO'] = OUTPUT_PIN
 
 
 def is_input_pin(oPin):

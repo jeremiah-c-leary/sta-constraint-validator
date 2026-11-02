@@ -1,6 +1,6 @@
 '''
 :Stage: 4 - configuration
-:Applies to: SDR-SS-RT
+:Applies to: SDR-SS-RT-DI
 :Reads: launch clock edge type in the ``requirement`` of every timing report, ``launch_edge`` of the part pin in the part
 :Depends on: none
 

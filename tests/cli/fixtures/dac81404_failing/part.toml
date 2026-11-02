@@ -31,7 +31,7 @@ hold = {value = 10, symbol = "tCSH", source = "Table 7.6"}
 
 [[interface.pin]]
 name = "SDO"
-methodology = "SDR-SS-RT"
+methodology = "SDR-SS-RT-DO"
 clock = {pin = "SCLK", max_frequency = 12.5}
 cko_max = {value = 30, symbol = "tSDODLY", source = "Table 7.8"}
 cko_min = {value = 0, symbol = "tSDODLY", source = "Table 7.8"}

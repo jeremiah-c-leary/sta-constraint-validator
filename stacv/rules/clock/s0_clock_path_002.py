@@ -1,6 +1,6 @@
 '''
 :Stage: 0 - inputs
-:Applies to: SDR-SS-RT
+:Applies to: SDR-SS-RT-DI
 :Reads: last element of the launch clock path of every timing report, ``launch_clock.port`` of the port in the configuration
 :Depends on: none
 

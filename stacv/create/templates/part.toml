@@ -34,7 +34,7 @@ hold = {value = 10, symbol = "tHold", source = "Table Y"}
 
 [[interface.pin]]
 name = "DATA_OUT"
-methodology = "SDR-SS-RT"
+methodology = "SDR-SS-RT-DO"
 clock = {pin = "CLK", max_frequency = 12.5}
 cko_max = {value = 30, symbol = "tCkoMax", source = "Table Z"}
 cko_min = {value = 0, symbol = "tCkoMin", source = "Table Z"}

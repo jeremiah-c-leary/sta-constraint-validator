@@ -11,7 +11,7 @@ Identifier    Name
 ============= ==================================================================
 SDR-SS-O      Single Data Rate (SDR) Source Synchronous (SS) Output (SDR-SS-O)
 SDR-SS-O-FLC  SDR SS Output to the First and Last Clock (SDR-SS-O-FLC)
-SDR-SS-RT     SDR SS Round Trip (SDR-SS-RT)
+SDR-SS-RT-DI     SDR SS Round Trip (SDR-SS-RT-DI)
 SDR-SS-I      SDR SS Input (SDR-SS-I)
 DDR-SS-O      Double Data Rate (DDR) SS Output (DDR-SS-O)
 DDR-SS-I      DDR SS Input (DDR-SS-I)
@@ -25,7 +25,7 @@ Pin       Methodology
 ========= ==============
 MOSI      SDR-SS-O
 CS_F      SDR-SS-O-FLC
-MISO      SDR-SS-RT
+MISO      SDR-SS-RT-DI
 ========= ==============
 
 An interface is considered fully timed when the methodology of each pin is validated.
@@ -42,7 +42,7 @@ If a device connects to two of the same part, each connection is a separate inte
 Not supported yet
 -----------------
 
-* Methodologies other than SDR-SS-O, SDR-SS-O-FLC and SDR-SS-RT: a port with another methodology can be listed with ``status = "defer"`` until it is supported (see :doc:`interface`).
+* Methodologies other than SDR-SS-O, SDR-SS-O-FLC and SDR-SS-RT-DI: a port with another methodology can be listed with ``status = "defer"`` until it is supported (see :doc:`interface`).
 * Buses: give each bit its own ``[[port]]`` (interface_config_022).
 * A device port shared by two interfaces, such as a shared SPI bus.
   Each interface would calculate its own output delay for the shared port, but the timing reports carry only one.
@@ -358,15 +358,15 @@ Both windows end where the first pulse ends, or at the latest edge of the port w
 
 A data port on the same clock stays SDR-SS-O: its bits are captured within the transfer, where the clock runs.
 
-Single Data Rate Source Synchronous Round Trip (SDR-SS-RT)
------------------------------------------------------------
+Single Data Rate Source Synchronous Round Trip, Data In (SDR-SS-RT-DI)
+----------------------------------------------------------------------
 
 A round trip reads data from the part on a clock the device forwards to it.
 The device forwards the clock, the part launches the data on it, and the device captures the data with its own clock.
 On the DAC81404, ``SDO`` is launched on the rising edge of ``SCLK`` and captured in the device by ``clk_100mhz``.
 
 The launch clock is the forwarded clock, so the launch clock has the ``port`` and the ``generator``, and the capture clock stays inside the device.
-The part pin is ``SDR-SS-RT``, with the datasheet's clock to out, such as tSDODLY, as ``cko_max`` and ``cko_min`` (see :doc:`part`).
+The part pin is ``SDR-SS-RT-DO``, with the datasheet's clock to out, such as tSDODLY, as ``cko_max`` and ``cko_min`` (see :doc:`part`).
 
 The data port is constrained with input delays: the clock trace, the part's clock to out and the data trace (see :doc:`generate`).
 For the DAC81404 example, the read clock ``dac_sclk_rd`` runs at 80 ns, as the part's ``SDO`` allows 12.5 MHz at most:
@@ -383,7 +383,7 @@ The hold edge I, at 40 ns, gives a hold requirement of -40 ns: the next bit, lau
 
    [[port]]
    name = "I_DAC_DATA"
-   methodology = "SDR-SS-RT"
+   methodology = "SDR-SS-RT-DI"
    launch_clock = {name = "dac_sclk_rd", setup_edge = 2, hold_edge = 2}
    capture_clock = {name = "clk_100mhz", setup_edge = "Y", hold_edge = "I"}
 
@@ -401,7 +401,7 @@ A timing report of a round trip runs from the launch clock to the capture regist
 The launch clock path runs through the device to the clock port, as ``-reference_pin`` makes it, and the input delay starts there.
 So the rules check that the launch clock path ends at the clock port, and the data path starts at the data port: together they show the whole clock path to the pin is included, and the right input port is timed.
 
-These rules are checked on the timing reports of each SDR-SS-RT port:
+These rules are checked on the timing reports of each SDR-SS-RT-DI port:
 
 =======  =====================  ==================================================================
 Stage    Rule                   Checks

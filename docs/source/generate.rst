@@ -110,7 +110,7 @@ Assumptions
 -----------
 
 * The clock that stays in the device is defined by the design, so it is not generated:
-  the launch clock of an SDR-SS-O or SDR-SS-O-FLC port, and the capture clock of an SDR-SS-RT port.
+  the launch clock of an SDR-SS-O or SDR-SS-O-FLC port, and the capture clock of an SDR-SS-RT-DI port.
 * Both clocks have a 50% duty cycle.
 * The longer period is an integer multiple of the shorter period.
 
@@ -124,7 +124,7 @@ Generated clock
 ^^^^^^^^^^^^^^^
 
 Each clock the device forwards to the part is generated once, on its generator, in the order the ports first use it.
-That is the capture clock of an SDR-SS-O or SDR-SS-O-FLC port, and the launch clock of an SDR-SS-RT port.
+That is the capture clock of an SDR-SS-O or SDR-SS-O-FLC port, and the launch clock of an SDR-SS-RT-DI port.
 
 :Name: The name of the clock.
 :Source: ``generator.source`` / ``generator.master_pin``
@@ -157,7 +157,7 @@ When the capture edges are falling edges (B, D, F, ...), the output delays are a
 Input delays
 ^^^^^^^^^^^^
 
-An SDR-SS-RT port gets a maximum and a minimum input delay against its launch clock, the clock the device forwards to the part.
+An SDR-SS-RT-DI port gets a maximum and a minimum input delay against its launch clock, the clock the device forwards to the part.
 The clock goes out to the part, the part launches the data, and the data comes back:
 
 :Maximum: clock trace maximum delay + part clock to out maximum (``cko_max``) + data trace maximum delay
@@ -186,7 +186,7 @@ The hold requirement is the time of the capture hold edge minus the time of the 
 :Hold multicycle: (setup requirement - hold requirement) / step period - 1
 
 A setup multicycle of 1 and a hold multicycle of 0 are the timing tool's default and are not written.
-Each multicycle path applies from the launch clock to an output port, or from an SDR-SS-RT port to its capture clock, so ports that share clocks can use different edges.
+Each multicycle path applies from the launch clock to an output port, or from an SDR-SS-RT-DI port to its capture clock, so ports that share clocks can use different edges.
 
 For example, a 10 ns launch clock and a 40 ns capture clock, with ``setup_edge = 4`` to ``"C"`` and ``hold_edge = 4`` to ``"A"``:
 
@@ -234,7 +234,7 @@ The script is written for a reader, like the constraints file:
 * There is one section for each corner.
   Each section turns on its corner, turns off the other, and lists every port of the interface under its name.
 * A deferred port is listed as ``Deferred``, with no reports.
-* The reports of an output port are the paths to it (``-to``), and the reports of an SDR-SS-RT port are the paths from it (``-from``).
+* The reports of an output port are the paths to it (``-to``), and the reports of an SDR-SS-RT-DI port are the paths from it (``-from``).
 * The first report of a port starts its file, so reports from an earlier run are not kept.
 * The script ends by restoring the Vivado default, both corners on.
 
@@ -311,7 +311,7 @@ Errors
   The capture edge does not line up with a launch edge, and the hardware cannot produce that clock.
 * has a setup multicycle less than 1 (generate_004).
 * has a hold multicycle less than 0 (generate_005).
-* has no trace from the device to the part, or from the part to the device for an SDR-SS-RT port (generate_007).
+* has no trace from the device to the part, or from the part to the device for an SDR-SS-RT-DI port (generate_007).
 * has a trace to a pin the part does not have (generate_008).
 * has no clock trace from its clock port to the clock pin of the part pin (generate_009).
 

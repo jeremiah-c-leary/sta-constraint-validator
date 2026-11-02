@@ -96,7 +96,7 @@ Pins are described from the part's point of view.
    # A part output:  the part launches the data on the clock it receives.
    [[interface.pin]]
    name = "DATA_OUT"
-   methodology = "SDR-SS-RT"
+   methodology = "SDR-SS-RT-DO"
    clock = {pin = "CLK", max_frequency = 12.5}
    cko_max = {value = 30, symbol = "tCkoMax", source = "Table Z"}
    cko_min = {value = 0, symbol = "tCkoMin", source = "Table Z"}
@@ -116,7 +116,7 @@ Pins are described from the part's point of view.
        It decides the timing keys the pin has:
 
        * ``SDR-SS-I``: ``capture_edge``, ``setup``, ``hold``
-       * ``SDR-SS-O``, ``SDR-SS-RT``: ``launch_edge``, ``cko_max``, ``cko_min``
+       * ``SDR-SS-O``, ``SDR-SS-RT-DO``: ``launch_edge``, ``cko_max``, ``cko_min``
    * - ``clock``
      - The clock pin of the part the data is captured or launched on:
 

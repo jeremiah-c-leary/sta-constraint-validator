@@ -452,7 +452,7 @@ class Test(unittest.TestCase):
         lText.append('part = "part.toml"')
         lText.append('traces = "traces.toml"')
         lText.append(self.build_port('IO_DAC_SDIO', 'SDR-SS-O'))
-        lText.append(self.build_port('IO_DAC_SDIO', 'SDR-SS-RT').replace('[[port]]\n', '[[port]]\nstatus = "defer"\n'))
+        lText.append(self.build_port('IO_DAC_SDIO', 'SDR-SS-RT-DI').replace('[[port]]\n', '[[port]]\nstatus = "defer"\n'))
         self.write_interface_file('\n'.join(lText) + '\n')
 
         oConfig = interface_config.read_interface_config(self.sInterfaceFile)
@@ -460,7 +460,7 @@ class Test(unittest.TestCase):
         lMethodologies = []
         for oPort in oConfig.ports:
             lMethodologies.append(oPort.methodology)
-        self.assertEqual(['SDR-SS-O', 'SDR-SS-RT'], lMethodologies)
+        self.assertEqual(['SDR-SS-O', 'SDR-SS-RT-DI'], lMethodologies)
 
     def build_config_with_part_and_traces(self, sPart, sTraces):
         lText = []
@@ -675,10 +675,10 @@ class TestPortStatus(unittest.TestCase):
             self.read_interface_with_port(self.build_analyzed_port('SDR-SS-0'))
 
     def test_deferred_port_may_name_a_methodology_stacv_does_not_support(self):
-        oInterface = self.read_interface_with_port(['name = "I_DAC_DATA"', 'status = "defer"', 'methodology = "SDR-SS-RT"'])
+        oInterface = self.read_interface_with_port(['name = "I_DAC_DATA"', 'status = "defer"', 'methodology = "SDR-SS-RT-DI"'])
         self.assertEqual('defer', oInterface.ports[0].status)
 
     def test_deferred_port_keeps_a_methodology_it_names(self):
-        oInterface = self.read_interface_with_port(['name = "I_DAC_DATA"', 'status = "defer"', 'methodology = "SDR-SS-RT"'])
-        self.assertEqual('SDR-SS-RT', oInterface.ports[0].methodology)
+        oInterface = self.read_interface_with_port(['name = "I_DAC_DATA"', 'status = "defer"', 'methodology = "SDR-SS-RT-DI"'])
+        self.assertEqual('SDR-SS-RT-DI', oInterface.ports[0].methodology)
 

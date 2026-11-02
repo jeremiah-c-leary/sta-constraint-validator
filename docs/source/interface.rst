@@ -85,7 +85,7 @@ Ports refer to clocks by name.
      - No
      - The device port the clock leaves the device on, to the part.
        Not used for a clock that stays inside the device.
-       The clock the device forwards to the part needs it (interface_config_021): the capture clock of an SDR-SS-O or SDR-SS-O-FLC port, and the launch clock of an SDR-SS-RT port.
+       The clock the device forwards to the part needs it (interface_config_021): the capture clock of an SDR-SS-O or SDR-SS-O-FLC port, and the launch clock of an SDR-SS-RT-DI port.
        Two clocks can leave on the same port, such as a write clock and a slower read clock.
    * - ``idle``
      - No
@@ -161,7 +161,7 @@ A port can have more than one table, one for each methodology, such as a bidirec
    * - ``methodology``
      - Yes
      - The :doc:`methodology <methodology>` of the port.
-       An analyzed port must be ``SDR-SS-O``, ``SDR-SS-O-FLC`` or ``SDR-SS-RT``; a port with another methodology is deferred until stacv supports it (interface_config_011).
+       An analyzed port must be ``SDR-SS-O``, ``SDR-SS-O-FLC`` or ``SDR-SS-RT-DI``; a port with another methodology is deferred until stacv supports it (interface_config_011).
    * - ``launch_clock``
      - Yes
      - The clock that launches the data, and its edges.

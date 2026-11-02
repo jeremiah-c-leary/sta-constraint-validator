@@ -7,12 +7,12 @@ from unittest import mock
 
 from stacv import __main__
 
-ROUND_TRIP = 'SDR-SS-RT'
+ROUND_TRIP = 'SDR-SS-RT-DI'
 GENERATOR = '{source = "q_sclk_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_sys"}'
 OTHER_GENERATOR = '{source = "q_other_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_sys"}'
 BANNER = '#' * 79
 
-# An SDR-SS-RT port forwards its launch clock, clk_sclk, to the part on O_SCLK.
+# An SDR-SS-RT-DI port forwards its launch clock, clk_sclk, to the part on O_SCLK.
 # The part launches SDO on that clock, and the device captures it on I_DATA with clk_sys.
 # With clk_sclk at 80 ns and clk_sys at 10 ns:
 #    launch edge 2   is at (80 / 2) * 2  = 80 ns
@@ -103,7 +103,7 @@ def build_part_text():
     lText.append('')
     lText.append('[[interface.pin]]')
     lText.append('name = "SDO"')
-    lText.append('methodology = "SDR-SS-RT"')
+    lText.append('methodology = "SDR-SS-RT-DO"')
     lText.append('clock = {pin = "SCLK", max_frequency = 12.5}')
     lText.append('cko_max = {value = 30, symbol = "tSDODLY", source = "Table 7.8"}')
     lText.append('cko_min = {value = 0, symbol = "tSDODLY", source = "Table 7.8"}')
@@ -344,7 +344,7 @@ class TestRoundTripReportScript(RoundTripTestCase):
 class TestRoundTripCheck(RoundTripTestCase):
 
     def test_reads_the_timing_reports_of_a_round_trip_port(self):
-        # The SDR-SS-RT rules read the timing reports, so a report that is not written yet is an input error.
+        # The SDR-SS-RT-DI rules read the timing reports, so a report that is not written yet is an input error.
         iExitCode = self.run_stacv(self.build_round_trip_tables(), ['check', self.sInterfaceFile])
         self.assertEqual(2, iExitCode)
         self.assertIn('[interface_config_006]', self.oStderr.getvalue())
