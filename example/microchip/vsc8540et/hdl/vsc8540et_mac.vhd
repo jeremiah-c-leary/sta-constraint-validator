@@ -10,7 +10,8 @@
 --               Uncompensated RXD is captured by an IDDR on the edge that launched it, after the BUFG's delay:
 --               Q1 captures on the rising edge and Q2 on the falling edge.
 --               Compensated RXD is centred on the next RXC edge, so it is captured by an IDDR on a copy of RXC
---               from a PLL, shifted 7.875 degrees (0.875 ns) into the middle of the data.
+--               from a PLL, shifted 31.5 degrees (3.5 ns) into the middle of the data.  The PLL's compensation
+--               puts its output about 2.5 ns ahead of the RXC pin at the IDDR, which the shift makes up.
 
 library ieee;
   use ieee.std_logic_1164.all;
@@ -291,14 +292,14 @@ begin
       );
   end generate GEN_RGMII_RX;
 
-  -- 25 MHz in, a 1000 MHz VCO, 25 MHz out, shifted 7.875 degrees.
+  -- 25 MHz in, a 1000 MHz VCO, 25 MHz out, shifted 31.5 degrees.
   -- The feedback runs through a BUFG so the shifted clock arrives at the IDDR aligned with the RXC pin.
   U_RGMII_ID_PLL : PLLE2_BASE
     generic map (
       CLKFBOUT_MULT  => 40,
       CLKIN1_PERIOD  => 40.0,
       CLKOUT0_DIVIDE => 40,
-      CLKOUT0_PHASE  => 7.875,
+      CLKOUT0_PHASE  => 31.5,
       DIVCLK_DIVIDE  => 1
     )
     port map (

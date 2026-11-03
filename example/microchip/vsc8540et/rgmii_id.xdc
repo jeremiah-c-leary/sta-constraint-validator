@@ -27,7 +27,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
-# 71136e22ccb19aee18a67a4ad03e51e4  example/microchip/vsc8540et/rgmii_id.toml
+# 89ae2ec8de05642a3fc1569f2cf09517  example/microchip/vsc8540et/rgmii_id.toml
 # 7a1bbe00fa141b90f88ea56d06587021  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #
@@ -288,6 +288,21 @@ set_input_delay -clock [get_clocks rgmii_id_rxc] -min 1.300 [get_ports {I_RGMII_
 
 set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -min 1.300 [get_ports {I_RGMII_ID_RXD[*]}]
 
+#
+# -setup:    an edge does not capture the data the same type of edge launches
+# -hold:     the hold check of an edge is against the data the same type of edge launches next,
+#            so the data the other type of edge launches is not a hold check
+# -through:  the data port, so only its paths are false
+#
+
+set_false_path -setup -rise_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -rise_to [get_clocks rgmii_id_rxc_shifted]
+
+set_false_path -setup -fall_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -fall_to [get_clocks rgmii_id_rxc_shifted]
+
+set_false_path -hold -rise_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -fall_to [get_clocks rgmii_id_rxc_shifted]
+
+set_false_path -hold -fall_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -rise_to [get_clocks rgmii_id_rxc_shifted]
+
 ###############################################################################
 #  Section 5.4:  I_RGMII_ID_RX_CTL
 ###############################################################################
@@ -336,3 +351,18 @@ set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -max 18.
 set_input_delay -clock [get_clocks rgmii_id_rxc] -min 1.300 [get_ports I_RGMII_ID_RX_CTL]
 
 set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -min 1.300 [get_ports I_RGMII_ID_RX_CTL]
+
+#
+# -setup:    an edge does not capture the data the same type of edge launches
+# -hold:     the hold check of an edge is against the data the same type of edge launches next,
+#            so the data the other type of edge launches is not a hold check
+# -through:  the data port, so only its paths are false
+#
+
+set_false_path -setup -rise_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -rise_to [get_clocks rgmii_id_rxc_shifted]
+
+set_false_path -setup -fall_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -fall_to [get_clocks rgmii_id_rxc_shifted]
+
+set_false_path -hold -rise_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -fall_to [get_clocks rgmii_id_rxc_shifted]
+
+set_false_path -hold -fall_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -rise_to [get_clocks rgmii_id_rxc_shifted]

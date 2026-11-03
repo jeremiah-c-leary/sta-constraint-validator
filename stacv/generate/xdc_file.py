@@ -426,6 +426,8 @@ def build_multicycle_blocks(oPort):
     lLines = []
     if oPort.double_data_rate and iSetupMulticycle == 0:
         return build_same_edge_double_data_rate_blocks(oPort)
+    if is_double_data_rate_input(oPort):
+        lLines.extend(build_next_edge_double_data_rate_blocks(oPort))
     bSetupMulticycleWritten = iSetupMulticycle != 1
     if bSetupMulticycleWritten:
         lArguments = build_setup_multicycle_arguments(oPort, iSetupMulticycle)
@@ -464,6 +466,31 @@ def build_same_edge_double_data_rate_blocks(oPort):
     lCommands.append(xdc.create_edge_false_path(oPort, '-hold', 'rise', 'rise'))
     lCommands.append(xdc.create_edge_false_path(oPort, '-hold', 'fall', 'fall'))
     lLines.extend(build_command_block(build_argument_comments(lFalseArguments), lCommands[0]))
+    for sCommand in lCommands[1:]:
+        lLines.append(sCommand)
+        lLines.append('')
+    return lLines
+
+
+def is_double_data_rate_input(oPort):
+    # The data is launched on both edges of the part's clock, so the timing tool pairs each launch edge with each capture edge.
+    return oPort.double_data_rate and xdc.is_input(oPort)
+
+
+def build_next_edge_double_data_rate_blocks(oPort):
+    # Each edge's data is captured on the next edge, of the other type: data launched on a rising edge is captured on a falling edge.
+    # The setup checks are between edges of different types; the hold checks are against the data the same type of edge launches next.
+    lArguments = []
+    lArguments.append(('-setup', ['an edge does not capture the data the same type of edge launches']))
+    lArguments.append(('-hold', ['the hold check of an edge is against the data the same type of edge launches next,', 'so the data the other type of edge launches is not a hold check']))
+    lArguments.append(('-through', ['the data port, so only its paths are false']))
+    lCommands = []
+    lCommands.append(xdc.create_edge_false_path(oPort, '-setup', 'rise', 'rise'))
+    lCommands.append(xdc.create_edge_false_path(oPort, '-setup', 'fall', 'fall'))
+    lCommands.append(xdc.create_edge_false_path(oPort, '-hold', 'rise', 'fall'))
+    lCommands.append(xdc.create_edge_false_path(oPort, '-hold', 'fall', 'rise'))
+    lLines = []
+    lLines.extend(build_command_block(build_argument_comments(lArguments), lCommands[0]))
     for sCommand in lCommands[1:]:
         lLines.append(sCommand)
         lLines.append('')

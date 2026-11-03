@@ -26,7 +26,7 @@ name = "rgmii_id_rxc"
 period = 40.000
 port = "I_RGMII_ID_RXC"
 
-# The PLL's copy of rgmii_id_rxc, shifted 0.875 ns into the middle of the data, that captures RXD.
+# The PLL's copy of rgmii_id_rxc, shifted 3.5 ns, that captures RXD in the middle of the data.
 [[clock]]
 name = "rgmii_id_rxc_shifted"
 period = 40.000
