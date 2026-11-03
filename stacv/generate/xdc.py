@@ -192,12 +192,12 @@ def calculate_hold_multicycle(oPort):
 
 
 def count_setup_step_periods(oPort):
-    fSetupRequirement = requirements.calculate_configuration_setup_requirement(oPort)
+    fSetupRequirement = requirements.calculate_edge_setup_requirement(oPort)
     return count_step_periods(oPort, fSetupRequirement, 'generate_002', 'setup requirement')
 
 
 def count_hold_step_periods(oPort):
-    fHoldRequirement = requirements.calculate_configuration_hold_requirement(oPort)
+    fHoldRequirement = requirements.calculate_edge_hold_requirement(oPort)
     return count_step_periods(oPort, fHoldRequirement, 'generate_003', 'hold requirement')
 
 

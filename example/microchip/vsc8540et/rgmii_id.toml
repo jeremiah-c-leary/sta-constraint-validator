@@ -31,6 +31,7 @@ port = "I_RGMII_ID_RXC"
 [[clock]]
 name = "w_rgmii_id_rxc_pll"
 period = 40.000
+phase = 3.5
 
 [[port]]
 name = "O_RGMII_ID_TXD[3:0]"

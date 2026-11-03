@@ -9,6 +9,8 @@ from stacv.timing_report import delay_path
 
 
 TOTAL_NUMBER_OF_SEPARATORS = 5
+# A path from an input port whose clock is created on a port has no launch clock path, and one separator fewer.
+SEPARATORS_WITHOUT_LAUNCH_CLOCK_PATH = 4
 
 
 def parse_timing_report(oTimingReportFile):
@@ -126,6 +128,7 @@ def extract_path_type_line(oTimingReportText):
 def populate_timing_report(oTimingReport):
     update_source(oTimingReport)
     update_destination(oTimingReport)
+    check_path_has_two_ends(oTimingReport)
     update_process_corner(oTimingReport)
     update_launch_clock(oTimingReport)
     update_capture_clock(oTimingReport)
@@ -139,6 +142,13 @@ def populate_timing_report(oTimingReport):
     update_port_delay(oTimingReport)
     update_clock_uncertainty(oTimingReport)
     update_slack(oTimingReport)
+
+
+def check_path_has_two_ends(oTimingReport):
+    # A path from a point to itself, such as through a bidirectional pad, times nothing.
+    if oTimingReport.source == oTimingReport.destination:
+        oLine = extract_key_line(oTimingReport, 'Source:', 'vivado_tr_parse_006')
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_018', oLine, f'timing report\'s path starts and ends at the same point {oTimingReport.source}; report the paths between the port and registers')
 
 
 def update_source(oTimingReport):
@@ -282,15 +292,35 @@ def extract_clock_line(oTimingReport, sKey):
 
 
 def extract_launch_clock_path_lines(oTimingReportText):
+    if has_no_launch_clock_path(oTimingReportText):
+        return []
     return extract_lines_between_separators(oTimingReportText, 1)
 
 
 def extract_data_path_lines(oTimingReportText):
-    return extract_lines_between_separators(oTimingReportText, 2)
+    return extract_lines_between_separators(oTimingReportText, 2 - count_missing_sections(oTimingReportText))
 
 
 def extract_capture_clock_path_lines(oTimingReportText):
-    return extract_lines_between_separators(oTimingReportText, 3)
+    return extract_lines_between_separators(oTimingReportText, 3 - count_missing_sections(oTimingReportText))
+
+
+def has_no_launch_clock_path(oTimingReportText):
+    return count_separators(oTimingReportText) == SEPARATORS_WITHOUT_LAUNCH_CLOCK_PATH
+
+
+def count_missing_sections(oTimingReportText):
+    if has_no_launch_clock_path(oTimingReportText):
+        return 1
+    return 0
+
+
+def count_separators(oTimingReportText):
+    iSeparatorCount = 0
+    for oLine in oTimingReportText.lines:
+        if is_separator_line(oLine):
+            iSeparatorCount += 1
+    return iSeparatorCount
 
 
 def extract_lines_between_separators(oTimingReportText, iSeparatorStart):
@@ -324,8 +354,8 @@ def check_number_of_separators(oTimingReportText):
     for oLine in oTimingReportText.lines:
         if is_separator_line(oLine):
             iSeparatorCount += 1
-    if iSeparatorCount != TOTAL_NUMBER_OF_SEPARATORS:
-        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_011', oTimingReportText.lines[0], f'timing report must have {TOTAL_NUMBER_OF_SEPARATORS} separator lines, but has {iSeparatorCount}; write it with report_timing -column_style variable_width')
+    if iSeparatorCount not in [SEPARATORS_WITHOUT_LAUNCH_CLOCK_PATH, TOTAL_NUMBER_OF_SEPARATORS]:
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_011', oTimingReportText.lines[0], f'timing report must have {SEPARATORS_WITHOUT_LAUNCH_CLOCK_PATH} or {TOTAL_NUMBER_OF_SEPARATORS} separator lines, but has {iSeparatorCount}; write it with report_timing -column_style variable_width')
 
 
 def create_delay(oLine):
@@ -371,7 +401,11 @@ def is_net_delay(oLine):
 
 
 def create_delay_path(lLines):
-    oDelayPath = delay_path.DelayPath(lLines[0])
+    # A missing launch clock path is an empty path, with no first line.
+    oFirstLine = None
+    if len(lLines) > 0:
+        oFirstLine = lLines[0]
+    oDelayPath = delay_path.DelayPath(oFirstLine)
     for oLine in lLines:
         if is_delay_row(oLine):
             oDelayPath.add_delay(create_delay(oLine))
@@ -408,7 +442,10 @@ def update_capture_clock_path(oTimingReport):
 
 
 def update_launch_edge(oTimingReport):
+    # Without a launch clock path, the data path starts with the launch edge.
     lLines = extract_launch_clock_path_lines(oTimingReport.text)
+    if len(lLines) == 0:
+        lLines = extract_data_path_lines(oTimingReport.text)
     oTimingReport.launch_edge = extract_clock_edge(lLines[0])
 
 

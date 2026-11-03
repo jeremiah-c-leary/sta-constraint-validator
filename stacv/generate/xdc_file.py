@@ -500,7 +500,7 @@ def build_next_edge_double_data_rate_blocks(oPort):
 
 def build_setup_multicycle_arguments(oPort, iSetupMulticycle):
     sStep = describe_step_clock(oPort)
-    fSetupRequirement = requirements.calculate_configuration_setup_requirement(oPort)
+    fSetupRequirement = requirements.calculate_edge_setup_requirement(oPort)
     lMultiplier = []
     lMultiplier.append(f'setup requirement / {sStep} period')
     lMultiplier.append(f'{format_nanoseconds(fSetupRequirement)} / {format_nanoseconds(xdc.find_step_period(oPort))}')
@@ -514,8 +514,8 @@ def build_setup_multicycle_arguments(oPort, iSetupMulticycle):
 
 def build_hold_multicycle_arguments(oPort, iHoldMulticycle):
     sStep = describe_step_clock(oPort)
-    fSetupRequirement = requirements.calculate_configuration_setup_requirement(oPort)
-    fHoldRequirement = requirements.calculate_configuration_hold_requirement(oPort)
+    fSetupRequirement = requirements.calculate_edge_setup_requirement(oPort)
+    fHoldRequirement = requirements.calculate_edge_hold_requirement(oPort)
     lMultiplier = []
     lMultiplier.append(f'(setup requirement - hold requirement) / {sStep} period - 1')
     lMultiplier.append(f'({format_nanoseconds(fSetupRequirement)} - {format_nanoseconds(fHoldRequirement)}) / {format_nanoseconds(xdc.find_step_period(oPort))} - 1')
@@ -694,9 +694,9 @@ def find_requirement_value_end(lRequirements):
 
 
 def describe_edges(oPort, iLaunchEdge, sCaptureEdge):
-    fLaunchTime = edge_times.calculate_edge_time(oPort.launch_clock.period, iLaunchEdge)
+    fLaunchTime = edge_times.calculate_clock_edge_time(oPort.launch_clock, iLaunchEdge)
     iCaptureEdge = edge_times.convert_edge_letter_to_number(sCaptureEdge)
-    fCaptureTime = edge_times.calculate_edge_time(oPort.capture_clock.period, iCaptureEdge)
+    fCaptureTime = edge_times.calculate_clock_edge_time(oPort.capture_clock, iCaptureEdge)
     return f'launch edge {iLaunchEdge} at {format_nanoseconds(fLaunchTime)} -> capture edge {sCaptureEdge} at {format_nanoseconds(fCaptureTime)}'
 
 

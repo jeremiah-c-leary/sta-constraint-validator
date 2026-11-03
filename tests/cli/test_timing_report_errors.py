@@ -116,3 +116,7 @@ class TestTimingReportErrors(unittest.TestCase):
     def test_report_of_a_false_path(self):
         self.change_line(14, 'Slack (MET) :             7.524ns  (required time - arrival time)', 'Slack:                    inf')
         self.assert_error('vivado_tr_parse_017', 14, 'timing report is of a path the constraints do not time, such as a false path; report only the paths between the port and registers')
+
+    def test_report_of_a_path_from_a_point_to_itself(self):
+        self.change_line(15, 'q_spi_output_data_reg/C', 'O_DAC_DATA')
+        self.assert_error('vivado_tr_parse_018', 15, "timing report's path starts and ends at the same point O_DAC_DATA; report the paths between the port and registers")

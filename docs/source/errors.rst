@@ -334,7 +334,7 @@ The file is followed by the line the error is on: ``ERROR: [<identifier>] <file>
      - ``clock has no period``, ``clock period must be in ns``, or ``clock period must be greater than 0``
      - The file is incomplete or edited; write it again.
    * - vivado_tr_parse_011
-     - ``timing report must have 5 separator lines, but has <n>; write it with report_timing -column_style variable_width``
+     - ``timing report must have 4 or 5 separator lines, but has <n>; write it with report_timing -column_style variable_width``
      - Write the report as the message says.
    * - vivado_tr_parse_012
      - ``timing report has no "Clock Pessimism Removal (CPR):"``, or ``"Clock Pessimism Removal (CPR):" has no value``
@@ -356,3 +356,7 @@ The file is followed by the line the error is on: ``ERROR: [<identifier>] <file>
      - ``timing report is of a path the constraints do not time, such as a false path; report only the paths between the port and registers``
      - The report starts ``Slack:`` with no result, as Vivado writes a false path.
        Write the reports with the script ``stacv generate report_tcl`` writes, which asks only for the paths between the port and registers.
+   * - vivado_tr_parse_018
+     - ``timing report's path starts and ends at the same point <name>; report the paths between the port and registers``
+     - A path from a point to itself times nothing, such as the path through a bidirectional pad from its input to its output.
+       Write the reports with the script ``stacv generate report_tcl`` writes, which leaves such paths out.

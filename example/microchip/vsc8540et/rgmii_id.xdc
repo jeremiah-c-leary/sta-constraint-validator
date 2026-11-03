@@ -27,7 +27,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
-# b8014d71bf2c03ae6c47937841036a49  example/microchip/vsc8540et/rgmii_id.toml
+# 25556d074679bceb6386c20ee0938757  example/microchip/vsc8540et/rgmii_id.toml
 # 7a1bbe00fa141b90f88ea56d06587021  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #
@@ -246,15 +246,15 @@ set_multicycle_path 1 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #                  0_____1     2
 # rgmii_id_rxc   __|     |_____|
 # (25 MHz)
-#                  |---->| setup requirement
-#                  | hold requirement
+#                  |----->| setup requirement
+#                  || hold requirement
 #
-#                  A_____B     C
-# w_rgmii_id_rxc_pl|__   |_____|
-# (25 MHz)
+#                   A_____B
+# w_rgmii_id_rxc_pl_|_    |____
+# (25 MHz, shifted 3.5 ns)
 #
-# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge B at 20 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  23.5 ns (launch edge 0 at 0 ns -> capture edge B at 23.5 ns)
+# hold requirement:    3.5 ns (launch edge 0 at 0 ns -> capture edge A at 3.5 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -310,15 +310,15 @@ set_false_path -hold -fall_from [get_clocks rgmii_id_rxc] -through [get_ports {I
 #                  0_____1     2
 # rgmii_id_rxc   __|     |_____|
 # (25 MHz)
-#                  |---->| setup requirement
-#                  | hold requirement
+#                  |----->| setup requirement
+#                  || hold requirement
 #
-#                  A_____B     C
-# w_rgmii_id_rxc_pl|__   |_____|
-# (25 MHz)
+#                   A_____B
+# w_rgmii_id_rxc_pl_|_    |____
+# (25 MHz, shifted 3.5 ns)
 #
-# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge B at 20 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  23.5 ns (launch edge 0 at 0 ns -> capture edge B at 23.5 ns)
+# hold requirement:    3.5 ns (launch edge 0 at 0 ns -> capture edge A at 3.5 ns)
 #
 #------------------------------------------------------------------------------
 #

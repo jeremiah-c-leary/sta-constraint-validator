@@ -25,3 +25,8 @@ def convert_edge_number_to_letter(iEdgeNumber):
 
 def calculate_edge_time(fPeriod, iEdgeNumber):
     return (fPeriod / 2) * iEdgeNumber
+
+
+def calculate_clock_edge_time(oClock, iEdgeNumber):
+    # The edge's time, shifted by the clock's phase.
+    return calculate_edge_time(oClock.period, iEdgeNumber) + oClock.phase

@@ -55,12 +55,12 @@ def draw_continuous_clock_diagram(oPort):
     iEndColumn = calculate_column(calculate_end_time(oPort), fColumnsPerNanosecond)
     lLines = []
     lLines.extend(draw_launch_clock(oPort.launch_clock, fColumnsPerNanosecond, iEndColumn))
-    lLines.append(format_frequency(oPort.launch_clock.period))
+    lLines.append(format_frequency(oPort.launch_clock.period, oPort.launch_clock.phase))
     lLines.append(draw_setup_requirement(oPort, fColumnsPerNanosecond))
     lLines.append(draw_hold_requirement(oPort, fColumnsPerNanosecond))
     lLines.append('')
     lLines.extend(draw_capture_clock(oPort.capture_clock, fColumnsPerNanosecond, iEndColumn))
-    lLines.append(format_frequency(oPort.capture_clock.period))
+    lLines.append(format_frequency(oPort.capture_clock.period, oPort.capture_clock.phase))
     return lLines
 
 
@@ -188,7 +188,10 @@ def format_hold_requirement(oPort):
     return f'hold requirement = {number_format.format_number(fRequirement)} ns'
 
 
-def format_frequency(fPeriod):
+def format_frequency(fPeriod, fPhase=0.0):
+    # A clock with a phase shows the shift next to its frequency, so its edges are not taken for unshifted ones.
+    if fPhase != 0:
+        return f'({number_format.format_number(1000 / fPeriod)} MHz, shifted {number_format.format_number(fPhase)} ns)'
     return f'({number_format.format_number(1000 / fPeriod)} MHz)'
 
 
@@ -210,18 +213,18 @@ def calculate_end_time(oPort):
 
 def find_next_edge_time(oClock, fTime):
     iEdgeNumber = 0
-    while edge_times.calculate_edge_time(oClock.period, iEdgeNumber) <= fTime:
+    while edge_times.calculate_clock_edge_time(oClock, iEdgeNumber) <= fTime:
         iEdgeNumber += 1
-    return edge_times.calculate_edge_time(oClock.period, iEdgeNumber)
+    return edge_times.calculate_clock_edge_time(oClock, iEdgeNumber)
 
 
 def calculate_launch_edge_time(oLaunchClock, iEdgeNumber):
-    return edge_times.calculate_edge_time(oLaunchClock.period, iEdgeNumber)
+    return edge_times.calculate_clock_edge_time(oLaunchClock, iEdgeNumber)
 
 
 def calculate_capture_edge_time(oCaptureClock, sEdgeLetter):
     iEdgeNumber = edge_times.convert_edge_letter_to_number(sEdgeLetter)
-    return edge_times.calculate_edge_time(oCaptureClock.period, iEdgeNumber)
+    return edge_times.calculate_clock_edge_time(oCaptureClock, iEdgeNumber)
 
 
 def calculate_column(fTime, fColumnsPerNanosecond):
@@ -229,26 +232,26 @@ def calculate_column(fTime, fColumnsPerNanosecond):
     return ORIGIN_COLUMN + math.floor(fTime * fColumnsPerNanosecond + 0.5)
 
 
-def calculate_edge_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond):
-    fEdgeTime = edge_times.calculate_edge_time(fPeriod, iEdgeNumber)
+def calculate_edge_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond, fPhase=0.0):
+    fEdgeTime = edge_times.calculate_edge_time(fPeriod, iEdgeNumber) + fPhase
     return calculate_column(fEdgeTime, fColumnsPerNanosecond)
 
 
 def draw_launch_clock(oLaunchClock, fColumnsPerNanosecond, iEndColumn):
-    iLastEdge = find_last_edge(oLaunchClock.period, fColumnsPerNanosecond, iEndColumn)
+    iLastEdge = find_last_edge(oLaunchClock.period, fColumnsPerNanosecond, iEndColumn, oLaunchClock.phase)
     lEdgeLabels = build_launch_edge_labels(iLastEdge)
-    return draw_clock(oLaunchClock.name, oLaunchClock.period, lEdgeLabels, fColumnsPerNanosecond, iEndColumn)
+    return draw_clock(oLaunchClock.name, oLaunchClock.period, lEdgeLabels, fColumnsPerNanosecond, iEndColumn, oLaunchClock.phase)
 
 
 def draw_capture_clock(oCaptureClock, fColumnsPerNanosecond, iEndColumn):
-    iLastEdge = find_last_edge(oCaptureClock.period, fColumnsPerNanosecond, iEndColumn)
+    iLastEdge = find_last_edge(oCaptureClock.period, fColumnsPerNanosecond, iEndColumn, oCaptureClock.phase)
     lEdgeLabels = build_capture_edge_labels(iLastEdge)
-    return draw_clock(oCaptureClock.name, oCaptureClock.period, lEdgeLabels, fColumnsPerNanosecond, iEndColumn)
+    return draw_clock(oCaptureClock.name, oCaptureClock.period, lEdgeLabels, fColumnsPerNanosecond, iEndColumn, oCaptureClock.phase)
 
 
-def find_last_edge(fPeriod, fColumnsPerNanosecond, iEndColumn):
+def find_last_edge(fPeriod, fColumnsPerNanosecond, iEndColumn, fPhase=0.0):
     iEdgeNumber = 0
-    while calculate_edge_column(fPeriod, iEdgeNumber + 1, fColumnsPerNanosecond) <= iEndColumn:
+    while calculate_edge_column(fPeriod, iEdgeNumber + 1, fColumnsPerNanosecond, fPhase) <= iEndColumn:
         iEdgeNumber += 1
     return iEdgeNumber
 
@@ -267,14 +270,18 @@ def build_capture_edge_labels(iLastEdge):
     return lEdgeLabels
 
 
-def draw_clock(sName, fPeriod, lEdgeLabels, fColumnsPerNanosecond, iEndColumn):
+def draw_clock(sName, fPeriod, lEdgeLabels, fColumnsPerNanosecond, iEndColumn, fPhase=0.0):
     oTensRow = text_row.TextRow()
     oLabelRow = text_row.TextRow()
     oWaveRow = text_row.TextRow()
     oWaveRow.write(0, sName.ljust(CLOCK_NAME_WIDTH) + LOW_BEFORE_FIRST_EDGE)
+    # A shifted clock is low until its first edge.
+    iFirstColumn = calculate_edge_column(fPeriod, 0, fColumnsPerNanosecond, fPhase)
+    if iFirstColumn > ORIGIN_COLUMN:
+        oWaveRow.write(ORIGIN_COLUMN, '_' * (iFirstColumn - ORIGIN_COLUMN))
     for iEdgeNumber, sEdgeLabel in enumerate(lEdgeLabels):
-        iColumn = calculate_edge_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond)
-        iSegmentEndColumn = calculate_segment_end_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond, iEndColumn)
+        iColumn = calculate_edge_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond, fPhase)
+        iSegmentEndColumn = calculate_segment_end_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond, iEndColumn, fPhase)
         draw_edge_label(oTensRow, oLabelRow, iColumn, sEdgeLabel)
         oWaveRow.write(iColumn, '|')
         sSegment = '_' * (iSegmentEndColumn - iColumn - 1)
@@ -285,8 +292,8 @@ def draw_clock(sName, fPeriod, lEdgeLabels, fColumnsPerNanosecond, iEndColumn):
     return build_clock_lines(oTensRow, oLabelRow, oWaveRow)
 
 
-def calculate_segment_end_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond, iEndColumn):
-    iNextColumn = calculate_edge_column(fPeriod, iEdgeNumber + 1, fColumnsPerNanosecond)
+def calculate_segment_end_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond, iEndColumn, fPhase=0.0):
+    iNextColumn = calculate_edge_column(fPeriod, iEdgeNumber + 1, fColumnsPerNanosecond, fPhase)
     return min(iNextColumn, iEndColumn)
 
 
