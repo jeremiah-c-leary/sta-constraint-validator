@@ -27,7 +27,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
-# 89ae2ec8de05642a3fc1569f2cf09517  example/microchip/vsc8540et/rgmii_id.toml
+# b8014d71bf2c03ae6c47937841036a49  example/microchip/vsc8540et/rgmii_id.toml
 # 7a1bbe00fa141b90f88ea56d06587021  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #
@@ -250,7 +250,7 @@ set_multicycle_path 1 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #                  | hold requirement
 #
 #                  A_____B     C
-# rgmii_id_rxc_shif|ed__ |_____|
+# w_rgmii_id_rxc_pl|__   |_____|
 # (25 MHz)
 #
 # setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge B at 20 ns)
@@ -295,13 +295,13 @@ set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -min 1.3
 # -through:  the data port, so only its paths are false
 #
 
-set_false_path -setup -rise_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -rise_to [get_clocks rgmii_id_rxc_shifted]
+set_false_path -setup -rise_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -rise_to [get_clocks w_rgmii_id_rxc_pll]
 
-set_false_path -setup -fall_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -fall_to [get_clocks rgmii_id_rxc_shifted]
+set_false_path -setup -fall_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -fall_to [get_clocks w_rgmii_id_rxc_pll]
 
-set_false_path -hold -rise_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -fall_to [get_clocks rgmii_id_rxc_shifted]
+set_false_path -hold -rise_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -fall_to [get_clocks w_rgmii_id_rxc_pll]
 
-set_false_path -hold -fall_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -rise_to [get_clocks rgmii_id_rxc_shifted]
+set_false_path -hold -fall_from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -rise_to [get_clocks w_rgmii_id_rxc_pll]
 
 ###############################################################################
 #  Section 5.4:  I_RGMII_ID_RX_CTL
@@ -314,7 +314,7 @@ set_false_path -hold -fall_from [get_clocks rgmii_id_rxc] -through [get_ports {I
 #                  | hold requirement
 #
 #                  A_____B     C
-# rgmii_id_rxc_shif|ed__ |_____|
+# w_rgmii_id_rxc_pl|__   |_____|
 # (25 MHz)
 #
 # setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge B at 20 ns)
@@ -359,10 +359,10 @@ set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -min 1.3
 # -through:  the data port, so only its paths are false
 #
 
-set_false_path -setup -rise_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -rise_to [get_clocks rgmii_id_rxc_shifted]
+set_false_path -setup -rise_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -rise_to [get_clocks w_rgmii_id_rxc_pll]
 
-set_false_path -setup -fall_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -fall_to [get_clocks rgmii_id_rxc_shifted]
+set_false_path -setup -fall_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -fall_to [get_clocks w_rgmii_id_rxc_pll]
 
-set_false_path -hold -rise_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -fall_to [get_clocks rgmii_id_rxc_shifted]
+set_false_path -hold -rise_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -fall_to [get_clocks w_rgmii_id_rxc_pll]
 
-set_false_path -hold -fall_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -rise_to [get_clocks rgmii_id_rxc_shifted]
+set_false_path -hold -fall_from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -rise_to [get_clocks w_rgmii_id_rxc_pll]
