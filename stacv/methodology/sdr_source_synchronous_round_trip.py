@@ -10,11 +10,13 @@ from stacv.rules.clock import s4_capture_clock_002
 from stacv.rules.clock import s4_launch_clock_001
 from stacv.rules.clock import s4_launch_clock_002
 from stacv.rules.data_path import s0_data_path_002
-from stacv.rules.data_path import s2_data_path_001
 from stacv.rules.input_delay import s2_input_delay_001
 from stacv.rules.input_delay import s2_input_delay_002
 from stacv.rules.input_delay import s3_input_delay_001
 from stacv.rules.input_delay import s3_input_delay_002
+from stacv.rules.register import s0_register_001
+from stacv.rules.register import s0_register_002
+from stacv.rules.register import s0_register_003
 from stacv.rules.part import s4_part_002
 from stacv.rules.requirement import s4_requirement_001
 from stacv.rules.requirement import s4_requirement_002
@@ -39,9 +41,9 @@ class SdrSourceSynchronousRoundTrip(methodology.Methodology):
         self.data_direction = methodology.INPUT
         self.forwarded_clock_key = methodology.LAUNCH_CLOCK
         self.part_pin_methodology = 'SDR-SS-RT-DO'
-        self.stages.append(stage.Stage('stage 0', [s0_timing_report_001, s0_timing_report_002, s0_trace_001, s0_data_path_002, s0_clock_path_002]))
+        self.stages.append(stage.Stage('stage 0', [s0_timing_report_001, s0_timing_report_002, s0_trace_001, s0_data_path_002, s0_clock_path_002, s0_register_001, s0_register_002, s0_register_003]))
         self.stages.append(stage.Stage('stage 1', [s1_clock_001]))
-        self.stages.append(stage.Stage('stage 2', [s2_clock_001, s2_clock_002, s2_data_path_001, s2_input_delay_001, s2_input_delay_002]))
+        self.stages.append(stage.Stage('stage 2', [s2_clock_001, s2_clock_002, s2_input_delay_001, s2_input_delay_002]))
         self.stages.append(stage.Stage('stage 3', [s3_input_delay_001, s3_input_delay_002]))
         self.stages.append(stage.Stage('stage 4', [s4_capture_clock_001, s4_capture_clock_002, s4_launch_clock_001, s4_launch_clock_002, s4_part_002, s4_requirement_001, s4_requirement_002]))
         self.stages.append(stage.Stage('stage 5', [s5_slack_001, s5_slack_002]))

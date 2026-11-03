@@ -167,6 +167,11 @@ A port can have more than one table, one for each methodology, such as a bidirec
      - The :doc:`methodology <methodology>` of the port.
        An analyzed port is ``SDR-SS-O``, ``SDR-SS-O-FLC``, ``SDR-SS-RT-DI``, ``SDR-SS-I``, ``SDR-SS-RT-DO``, ``SDR-SYS-O``, ``SDR-SYS-I``, ``DDR-SS-O`` or ``DDR-SS-I``; a port with another methodology is deferred until stacv supports it (interface_config_011).
        ``stacv check`` has rules for the first three only.
+   * - ``registers``
+     - No
+     - The registers that drive the port, for an output, or capture it, for an input, such as ``["q_mdio_out_reg", "q_mdio_oe_reg"]``.
+       ``*`` matches any characters, such as ``q_txd_reg[*]`` for every bit of a bus.
+       Every path in the port's timing reports must start or end at one of them (s0_register_001), and each one must be in a timing report (s0_register_002).
    * - ``launch_clock``
      - Yes
      - The clock that launches the data, and its edges.

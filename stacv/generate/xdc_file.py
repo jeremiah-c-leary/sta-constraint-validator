@@ -424,6 +424,8 @@ def build_multicycle_blocks(oPort):
     iHoldMulticycle = xdc.calculate_hold_multicycle(oPort)
     xdc.check_hold_multicycle(oPort, iHoldMulticycle)
     lLines = []
+    if oPort.double_data_rate and iSetupMulticycle == 0:
+        return build_same_edge_double_data_rate_blocks(oPort)
     bSetupMulticycleWritten = iSetupMulticycle != 1
     if bSetupMulticycleWritten:
         lArguments = build_setup_multicycle_arguments(oPort, iSetupMulticycle)
@@ -434,6 +436,37 @@ def build_multicycle_blocks(oPort):
         if not bSetupMulticycleWritten:
             lArguments.extend(build_shared_multicycle_arguments(oPort))
         lLines.extend(build_command_block(build_argument_comments(lArguments), xdc.create_multicycle_path(oPort, iHoldMulticycle, '-hold')))
+    return lLines
+
+
+def build_same_edge_double_data_rate_blocks(oPort):
+    # Each edge captures the data it launches, after the clock's delay to the register:
+    # the rising edge captures what the rising edge launched, and the falling edge what the falling edge launched.
+    # The setup checks move back to that same edge; the hold checks are against the data the other edge launches next.
+    lArguments = []
+    lArguments.append(('multiplier', ['0: the data is captured on the edge that launches it', 'setup requirement 0 ns']))
+    lArguments.append(('-setup', ['this is the setup multicycle, for the rising and the falling edges']))
+    lArguments.append(('-end', ['multiplier is relative to the capturing clock']))
+    lArguments.append(('-through', [f'the data port, so only its paths move']))
+    lLines = []
+    lCommands = []
+    lCommands.append(xdc.create_edge_multicycle_path(oPort, 0, '-setup', 'rise', 'rise'))
+    lCommands.append(xdc.create_edge_multicycle_path(oPort, 0, '-setup', 'fall', 'fall'))
+    lLines.extend(build_command_block(build_argument_comments(lArguments), lCommands[0]))
+    lLines.append(lCommands[1])
+    lLines.append('')
+    lFalseArguments = []
+    lFalseArguments.append(('-setup', ['an edge does not capture the data the other edge launches']))
+    lFalseArguments.append(('-hold', ['the hold check of an edge is against the data the other edge launches next,', 'so its own next data is not a hold check']))
+    lCommands = []
+    lCommands.append(xdc.create_edge_false_path(oPort, '-setup', 'rise', 'fall'))
+    lCommands.append(xdc.create_edge_false_path(oPort, '-setup', 'fall', 'rise'))
+    lCommands.append(xdc.create_edge_false_path(oPort, '-hold', 'rise', 'rise'))
+    lCommands.append(xdc.create_edge_false_path(oPort, '-hold', 'fall', 'fall'))
+    lLines.extend(build_command_block(build_argument_comments(lFalseArguments), lCommands[0]))
+    for sCommand in lCommands[1:]:
+        lLines.append(sCommand)
+        lLines.append('')
     return lLines
 
 

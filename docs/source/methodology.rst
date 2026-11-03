@@ -238,10 +238,12 @@ Stage    Rule                   Checks
 0        s0_trace_001           A data trace and its clock trace connect the port to the part.
 0        s0_data_path_001       The data path ends at the port.
 0        s0_clock_path_001      The capture clock path ends at the capture clock's port.
+0        s0_register_001        Every path starts at a register the port lists.
+0        s0_register_002        Every register the port lists is in a timing report.
+0        s0_register_003        No timing report has as many paths as the report script asks for.
 1        s1_clock_001           The launch and capture clock paths start at the same point.
 2        s2_clock_001           The launch clock path is the same in every timing report.
 2        s2_clock_002           The capture clock path is the same in every timing report.
-2        s2_data_path_001       The data path is the same in every timing report.
 2        s2_output_delay_001    The output delay is the same in every setup timing report.
 2        s2_output_delay_002    The output delay is the same in every hold timing report.
 3        s3_output_delay_001    The maximum output delay matches the calculated output delay.
@@ -411,10 +413,12 @@ Stage    Rule                   Checks
 0        s0_trace_001           A data trace from the part and its clock trace connect the port.
 0        s0_data_path_002       The data path starts at the port.
 0        s0_clock_path_002      The launch clock path ends at the launch clock's port.
+0        s0_register_001        Every path ends at a register the port lists.
+0        s0_register_002        Every register the port lists is in a timing report.
+0        s0_register_003        No timing report has as many paths as the report script asks for.
 1        s1_clock_001           The launch and capture clock paths start at the same point.
 2        s2_clock_001           The launch clock path is the same in every timing report.
 2        s2_clock_002           The capture clock path is the same in every timing report.
-2        s2_data_path_001       The data path is the same in every timing report.
 2        s2_input_delay_001     The input delay is the same in every setup timing report.
 2        s2_input_delay_002     The input delay is the same in every hold timing report.
 3        s3_input_delay_001     The maximum input delay matches the calculated input delay.

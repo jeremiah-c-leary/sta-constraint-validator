@@ -3,16 +3,23 @@ Provides functions to compare DelayPath objects.
 '''
 
 from stacv.results import rule_result
+from stacv.rules import registers
 from stacv.rules import rule_details
 
 
-def check_paths_match(lReports, sPathType, sRuleId, sFailureMessage):
-    lUniquePaths = identify_unique_paths(lReports, sPathType)
-    if less_than_two_unique_paths(lUniquePaths):
+def check_paths_match(lReports, sPathType, sRuleId, sFailureMessage, oPort=None):
+    # With a port, the reports of each register are compared with each other: each register has its own clock path.
+    lGroups = [lReports]
+    if oPort is not None:
+        lGroups = registers.group_reports_by_register(lReports, oPort)
+    lDetails = []
+    for lGroupReports in lGroups:
+        lUniquePaths = identify_unique_paths(lGroupReports, sPathType)
+        if not less_than_two_unique_paths(lUniquePaths):
+            lDetails.extend(create_path_details(lGroupReports, lUniquePaths, sPathType))
+    if len(lDetails) == 0:
         return rule_result.RuleResult(sRuleId, rule_result.PASSED, [], '')
-    else:
-        lDetails = create_path_details(lReports, lUniquePaths, sPathType)
-        return rule_result.RuleResult(sRuleId, rule_result.FAILED, lDetails, sFailureMessage)
+    return rule_result.RuleResult(sRuleId, rule_result.FAILED, lDetails, sFailureMessage)
 
 
 def identify_unique_paths(lReports, sPathType):

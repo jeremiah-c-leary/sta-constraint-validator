@@ -196,6 +196,15 @@ For example, a 10 ns launch clock and a 40 ns capture clock, with ``setup_edge =
   The configured hold check, 4 to A, is the same check as 12 to C, three launch cycles later.
   The hold requirement is 0 - 20 = -20 ns, a hold multicycle of (20 - -20) / 10 - 1 = 3.
 
+Capture on the launching edge
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A setup capture edge at the same time as the setup launch edge, a setup requirement of 0, means the edge that launches the data also captures it, after the clock's delay to the register.
+It is written as a setup multicycle of 0.
+For double data rate, each edge captures the data it launches, so the multicycle and false paths are written for each edge:
+the setup checks move to the same edge, an edge does not capture the data the other edge launches,
+and the hold check of an edge is against the data the other edge launches next.
+
 Bidirectional ports
 ^^^^^^^^^^^^^^^^^^^
 
@@ -246,7 +255,8 @@ The script is written for a reader, like the constraints file:
 * There is one section for each corner.
   Each section turns on its corner, turns off the other, and lists every port of the interface under its name.
 * A deferred port is listed as ``Deferred``, with no reports.
-* The reports of an output port are the paths to it (``-to``), and the reports of an SDR-SS-RT-DI port are the paths from it (``-from``).
+* The reports of an output port are the paths to it (``-to``), and the reports of an input port the paths from it (``-from``).
+* Each report asks for every path, up to 100, the worst for each set of pins (``-max_paths 100 -nworst 100 -unique_pins``), so every register that drives or captures the port is reported.
 * The first report of a port starts its file, so reports from an earlier run are not kept.
 * The script ends by restoring the Vivado default, both corners on.
 
@@ -321,7 +331,7 @@ Errors
 * forwards a clock without a ``generator`` (generate_001).
 * has a setup or hold requirement that is not a whole number of step periods (generate_002, generate_003).
   The capture edge does not line up with a launch edge, and the hardware cannot produce that clock.
-* has a setup multicycle less than 1 (generate_004).
+* has a setup multicycle less than 0 (generate_004).
 * has a hold multicycle less than 0 (generate_005).
 * has no trace from the device to the part, or from the part to the device for an SDR-SS-RT-DI port (generate_007).
 * has a trace to a pin the part does not have (generate_008).

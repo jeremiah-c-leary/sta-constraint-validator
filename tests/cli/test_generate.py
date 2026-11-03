@@ -317,7 +317,7 @@ class TestGenerateXdcErrors(GenerateTestCase):
         lPorts = []
         # Both ports are SDR-SS-O-FLC, so they share one clock table.
         lPorts.append(build_first_last_clock_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
-        lPorts.append(build_first_last_clock_port_text('O_CHIP_SELECT', 10, 40, [8, 'C'], [4, 'A']))
+        lPorts.append(build_first_last_clock_port_text('O_CHIP_SELECT', 10, 40, [10, 'C'], [4, 'A']))
         self.run_generate_xdc(lPorts)
         self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[generate_004\] ')
         self.assertEqual('', self.oStdout.getvalue())
@@ -337,8 +337,9 @@ class TestGenerateXdcErrors(GenerateTestCase):
         self.run_generate_xdc([sPort])
         self.assert_error_written('generate_003')
 
-    def test_reports_a_setup_multicycle_less_than_one(self):
-        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [8, 'C'], [4, 'A'])
+    def test_reports_a_setup_multicycle_less_than_zero(self):
+        # Launch edge 10 at 50 ns is after capture edge C at 40 ns.
+        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [10, 'C'], [4, 'A'])
         self.run_generate_xdc([sPort])
         self.assert_error_written('generate_004')
 

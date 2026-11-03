@@ -17,6 +17,7 @@ class Port():
         self.clock_origin = None
         self.part_pin_methodology = None
         self.double_data_rate = False
+        self.registers = None
         self.timing_reports = []
         # As written in the interface file, before environment variables are expanded.
         self.timing_reports_as_written = []

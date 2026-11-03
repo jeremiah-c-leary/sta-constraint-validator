@@ -210,8 +210,20 @@ def count_step_periods(oPort, fRequirement, sIdentifier, sRequirementName):
 
 
 def check_setup_multicycle(oPort, iSetupMulticycle):
-    if iSetupMulticycle < 1:
-        raise generate_error.GenerateError('generate_004', oPort.name, f'setup multicycle {iSetupMulticycle} is less than 1')
+    # A setup multicycle of 0 captures the data on the edge that launches it, after the clock's delay to the register.
+    if iSetupMulticycle < 0:
+        raise generate_error.GenerateError('generate_004', oPort.name, f'setup multicycle {iSetupMulticycle} is less than 0')
+
+
+def create_edge_multicycle_path(oPort, iMulticycle, sCheck, sLaunchEdge, sCaptureEdge):
+    sPort = format_port(oPort.name)
+    sEdge = select_moved_edge(oPort)
+    return f'set_multicycle_path {iMulticycle} {sCheck} {sEdge} -{sLaunchEdge}_from [get_clocks {oPort.launch_clock.name}] -through [get_ports {sPort}] -{sCaptureEdge}_to [get_clocks {oPort.capture_clock.name}]'
+
+
+def create_edge_false_path(oPort, sCheck, sLaunchEdge, sCaptureEdge):
+    sPort = format_port(oPort.name)
+    return f'set_false_path {sCheck} -{sLaunchEdge}_from [get_clocks {oPort.launch_clock.name}] -through [get_ports {sPort}] -{sCaptureEdge}_to [get_clocks {oPort.capture_clock.name}]'
 
 
 def check_hold_multicycle(oPort, iHoldMulticycle):

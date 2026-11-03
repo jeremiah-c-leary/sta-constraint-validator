@@ -9,6 +9,7 @@ from stacv import version
 from stacv.generate import generate_error
 from stacv.generate import xdc
 from stacv.interface import port
+from stacv.rules import registers
 
 BANNER = '#' * 79
 MINOR_DIVIDER = '#' + '-' * 78
@@ -179,7 +180,9 @@ def build_port_option(oPort):
 
 
 def build_report_timing(sPortOption, sAnalysis, sFileOption):
-    return f'report_timing -column_style variable_width {sPortOption} {sAnalysis} -path full_clock_expanded {sFileOption}'
+    # Every path to or from the port, the worst for each set of pins, so every register that drives or captures it is reported.
+    sPaths = f'-max_paths {registers.PATH_LIMIT} -nworst {registers.PATH_LIMIT} -unique_pins'
+    return f'report_timing -column_style variable_width {sPortOption} {sAnalysis} {sPaths} -path full_clock_expanded {sFileOption}'
 
 
 def convert_to_tcl_path(sPathAsWritten, sInterfaceFile):

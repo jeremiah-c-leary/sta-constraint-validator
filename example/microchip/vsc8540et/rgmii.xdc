@@ -27,7 +27,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
-# 4e1dac81370ba43d59778d9658d73a90  example/microchip/vsc8540et/rgmii.toml
+# f2ad13c6403b1a759c919178cbb672cd  example/microchip/vsc8540et/rgmii.toml
 # 7a1bbe00fa141b90f88ea56d06587021  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #
@@ -243,18 +243,18 @@ set_multicycle_path 1 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #  Section 5.3:  I_RGMII_RXD[3:0]
 ###############################################################################
 #
-#                  0_____1     2
-# rgmii_rxc      __|     |_____|
+#                  0_____1     2_____3
+# rgmii_rxc      __|     |_____|     |
 # (25 MHz)
-#                  |---->| setup requirement
-#                  | hold requirement
+#                              | setup requirement
+#                        |<----| hold requirement
 #
-#                  A_____B     C
-# rgmii_rxc      __|     |_____|
+#                  A_____B     C_____D
+# rgmii_rxc      __|     |_____|     |
 # (25 MHz)
 #
-# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge B at 20 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:   0 ns (launch edge 2 at 40 ns -> capture edge C at 40 ns)
+# hold requirement:  -20 ns (launch edge 2 at 40 ns -> capture edge B at 20 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -286,22 +286,48 @@ set_input_delay -clock [get_clocks rgmii_rxc] -min -2.700 [get_ports {I_RGMII_RX
 
 set_input_delay -clock [get_clocks rgmii_rxc] -clock_fall -add_delay -min -2.700 [get_ports {I_RGMII_RXD[*]}]
 
+#
+# multiplier:  0: the data is captured on the edge that launches it
+#              setup requirement 0 ns
+# -setup:      this is the setup multicycle, for the rising and the falling edges
+# -end:        multiplier is relative to the capturing clock
+# -through:    the data port, so only its paths move
+#
+
+set_multicycle_path 0 -setup -end -rise_from [get_clocks rgmii_rxc] -through [get_ports {I_RGMII_RXD[*]}] -rise_to [get_clocks rgmii_rxc]
+
+set_multicycle_path 0 -setup -end -fall_from [get_clocks rgmii_rxc] -through [get_ports {I_RGMII_RXD[*]}] -fall_to [get_clocks rgmii_rxc]
+
+#
+# -setup:  an edge does not capture the data the other edge launches
+# -hold:   the hold check of an edge is against the data the other edge launches next,
+#          so its own next data is not a hold check
+#
+
+set_false_path -setup -rise_from [get_clocks rgmii_rxc] -through [get_ports {I_RGMII_RXD[*]}] -fall_to [get_clocks rgmii_rxc]
+
+set_false_path -setup -fall_from [get_clocks rgmii_rxc] -through [get_ports {I_RGMII_RXD[*]}] -rise_to [get_clocks rgmii_rxc]
+
+set_false_path -hold -rise_from [get_clocks rgmii_rxc] -through [get_ports {I_RGMII_RXD[*]}] -rise_to [get_clocks rgmii_rxc]
+
+set_false_path -hold -fall_from [get_clocks rgmii_rxc] -through [get_ports {I_RGMII_RXD[*]}] -fall_to [get_clocks rgmii_rxc]
+
 ###############################################################################
 #  Section 5.4:  I_RGMII_RX_CTL
 ###############################################################################
 #
-#                  0_____1     2
-# rgmii_rxc      __|     |_____|
+#                  0_____1     2_____3
+# rgmii_rxc      __|     |_____|     |
 # (25 MHz)
-#                  |---->| setup requirement
-#                  | hold requirement
+#                              | setup requirement
+#                        |<----| hold requirement
 #
-#                  A_____B     C
-# rgmii_rxc      __|     |_____|
+#                  A_____B     C_____D
+# rgmii_rxc      __|     |_____|     |
 # (25 MHz)
 #
-# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge B at 20 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:   0 ns (launch edge 2 at 40 ns -> capture edge C at 40 ns)
+# hold requirement:  -20 ns (launch edge 2 at 40 ns -> capture edge B at 20 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -332,3 +358,29 @@ set_input_delay -clock [get_clocks rgmii_rxc] -clock_fall -add_delay -max -1.100
 set_input_delay -clock [get_clocks rgmii_rxc] -min -2.700 [get_ports I_RGMII_RX_CTL]
 
 set_input_delay -clock [get_clocks rgmii_rxc] -clock_fall -add_delay -min -2.700 [get_ports I_RGMII_RX_CTL]
+
+#
+# multiplier:  0: the data is captured on the edge that launches it
+#              setup requirement 0 ns
+# -setup:      this is the setup multicycle, for the rising and the falling edges
+# -end:        multiplier is relative to the capturing clock
+# -through:    the data port, so only its paths move
+#
+
+set_multicycle_path 0 -setup -end -rise_from [get_clocks rgmii_rxc] -through [get_ports I_RGMII_RX_CTL] -rise_to [get_clocks rgmii_rxc]
+
+set_multicycle_path 0 -setup -end -fall_from [get_clocks rgmii_rxc] -through [get_ports I_RGMII_RX_CTL] -fall_to [get_clocks rgmii_rxc]
+
+#
+# -setup:  an edge does not capture the data the other edge launches
+# -hold:   the hold check of an edge is against the data the other edge launches next,
+#          so its own next data is not a hold check
+#
+
+set_false_path -setup -rise_from [get_clocks rgmii_rxc] -through [get_ports I_RGMII_RX_CTL] -fall_to [get_clocks rgmii_rxc]
+
+set_false_path -setup -fall_from [get_clocks rgmii_rxc] -through [get_ports I_RGMII_RX_CTL] -rise_to [get_clocks rgmii_rxc]
+
+set_false_path -hold -rise_from [get_clocks rgmii_rxc] -through [get_ports I_RGMII_RX_CTL] -rise_to [get_clocks rgmii_rxc]
+
+set_false_path -hold -fall_from [get_clocks rgmii_rxc] -through [get_ports I_RGMII_RX_CTL] -fall_to [get_clocks rgmii_rxc]

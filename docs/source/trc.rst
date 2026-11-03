@@ -82,10 +82,12 @@ s0_data_path_001         X         X
 s0_data_path_002                                 X
 s0_clock_path_001        X         X
 s0_clock_path_002                                X
+s0_register_001          X         X             X
+s0_register_002          X         X             X
+s0_register_003          X         X             X
 s1_clock_001             X         X             X             P
 s2_clock_001             X         X             X             P
 s2_clock_002             X         X             X             P
-s2_data_path_001         X         X             X             P
 s2_output_delay_001      X         X
 s2_output_delay_002      X         X
 s2_input_delay_001                               X             P
@@ -153,6 +155,21 @@ s0_clock_path_002: Launch clock path ends at the configured clock port
 
 .. automodule:: stacv.rules.clock.s0_clock_path_002
 
+s0_register_001: Every path starts or ends at a register the port lists
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.register.s0_register_001
+
+s0_register_002: Every register the port lists is in a timing report
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.register.s0_register_002
+
+s0_register_003: No timing report reaches the path limit
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.register.s0_register_003
+
 Stage 1: Intra-Timing Report
 ----------------------------
 
@@ -174,10 +191,13 @@ s2_clock_002: Capture clock paths pass through the same elements in every timing
 
 .. automodule:: stacv.rules.clock.s2_clock_002
 
-s2_data_path_001: Data paths pass through the same elements in every timing report
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+s2_data_path_001: Retired
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: stacv.rules.data_path.s2_data_path_001
+This rule required the data path to be the same in every timing report.
+A port can have more than one path, such as the data and the output enable of a bidirectional pin, or logic before its register, so the rule is retired.
+The registers the port lists, checked by s0_register_001 and s0_register_002, say which paths are expected instead.
+The identifier is not used again.
 
 s2_output_delay_001: Output delays match in every setup timing report
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

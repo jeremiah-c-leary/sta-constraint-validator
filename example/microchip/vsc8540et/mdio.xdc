@@ -24,7 +24,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
-# a0bed801412cb76439b5e40aa5e9ad7b  example/microchip/vsc8540et/mdio.toml
+# 306007f6cb0a1480cd1e79b1ac0f1a63  example/microchip/vsc8540et/mdio.toml
 # 7a1bbe00fa141b90f88ea56d06587021  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #

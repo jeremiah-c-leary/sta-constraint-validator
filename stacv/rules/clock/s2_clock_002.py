@@ -62,4 +62,4 @@ def check(oPortProfile):
     '''
     Purpose:  Capture clock paths pass through the same elements in every timing report.
     '''
-    return path_comparisons.check_paths_match(oPortProfile.timing_reports.reports, 'capture_clock_path', RULE_ID, FAILURE_MESSAGE)
+    return path_comparisons.check_paths_match(oPortProfile.timing_reports.reports, 'capture_clock_path', RULE_ID, FAILURE_MESSAGE, oPortProfile.port)

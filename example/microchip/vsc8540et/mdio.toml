@@ -26,6 +26,7 @@ name = "IO_MDIO"
 methodology = "SDR-SS-O"
 launch_clock = {name = "clk_100mhz", setup_edge = 40, hold_edge = 40}
 capture_clock = {name = "mdc", setup_edge = "C", hold_edge = "A"}
+registers = ["q_mdio_out_reg", "q_mdio_oe_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt",
 ]
@@ -35,6 +36,7 @@ name = "IO_MDIO"
 methodology = "SDR-SS-RT-DI"
 launch_clock = {name = "mdc", setup_edge = 2, hold_edge = 2}
 capture_clock = {name = "clk_100mhz", setup_edge = "FA", hold_edge = "BY"}
+registers = ["q_mdio_in_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt",
 ]

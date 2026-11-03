@@ -254,8 +254,9 @@ The message starts with the port: ``ERROR: [<identifier>] port <name> <message>`
      - ``hold requirement <time>ns is not a whole number of <time>ns step periods``
      - Choose edges whose hold requirement is a whole number of launch periods.
    * - generate_004
-     - ``setup multicycle <n> is less than 1``
-     - The setup capture edge must be after the setup launch edge.
+     - ``setup multicycle <n> is less than 0``
+     - The setup capture edge must not be before the setup launch edge.
+       A setup capture edge at the same time as the launch edge is allowed: the data is captured by the edge that launches it.
    * - generate_005
      - ``hold multicycle <n> is less than 0``
      - The hold capture edge is too late for the setup edges.

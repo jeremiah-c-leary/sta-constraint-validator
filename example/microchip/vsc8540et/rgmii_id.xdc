@@ -27,7 +27,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
-# 7c41339d5db90f76ec00727062ad570d  example/microchip/vsc8540et/rgmii_id.toml
+# 71136e22ccb19aee18a67a4ad03e51e4  example/microchip/vsc8540et/rgmii_id.toml
 # 7a1bbe00fa141b90f88ea56d06587021  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #
@@ -250,7 +250,7 @@ set_multicycle_path 1 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #                  | hold requirement
 #
 #                  A_____B     C
-# rgmii_id_rxc   __|     |_____|
+# rgmii_id_rxc_shif|ed__ |_____|
 # (25 MHz)
 #
 # setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge B at 20 ns)
@@ -299,7 +299,7 @@ set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -min 1.3
 #                  | hold requirement
 #
 #                  A_____B     C
-# rgmii_id_rxc   __|     |_____|
+# rgmii_id_rxc_shif|ed__ |_____|
 # (25 MHz)
 #
 # setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge B at 20 ns)

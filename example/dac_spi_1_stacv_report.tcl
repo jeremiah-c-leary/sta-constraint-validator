@@ -46,16 +46,16 @@ config_timing_corners -corner Slow -delay_type min_max
 config_timing_corners -corner Fast -delay_type none
 
 # O_DAC_DATA
-report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
-report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 
 # O_DAC_SDEN_F
-report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
-report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
 
 # I_DAC_DATA
-report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
-report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
 
 ###############################################################################
 # Fast Corner
@@ -64,16 +64,16 @@ config_timing_corners -corner Fast -delay_type min_max
 config_timing_corners -corner Slow -delay_type none
 
 # O_DAC_DATA
-report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
-report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt"
 
 # O_DAC_SDEN_F
-report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
-report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
+report_timing -column_style variable_width -to [get_ports O_DAC_SDEN_F] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt"
 
 # I_DAC_DATA
-report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
-report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt"
 
 ###############################################################################
 # Restore Vivado Default

@@ -21,6 +21,7 @@ name = "O_RMII_TXD[1:0]"
 methodology = "SDR-SYS-O"
 launch_clock = {name = "rmii_ref_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "rmii_ref_clk", setup_edge = "C", hold_edge = "A"}
+registers = ["q_rmii_txd_reg[*]"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/O_RMII_TXD_timing.rpt",
 ]
@@ -30,6 +31,7 @@ name = "O_RMII_TX_EN"
 methodology = "SDR-SYS-O"
 launch_clock = {name = "rmii_ref_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "rmii_ref_clk", setup_edge = "C", hold_edge = "A"}
+registers = ["q_rmii_tx_en_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/O_RMII_TX_EN_timing.rpt",
 ]
@@ -39,6 +41,7 @@ name = "O_RMII_TX_ER"
 methodology = "SDR-SYS-O"
 launch_clock = {name = "rmii_ref_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "rmii_ref_clk", setup_edge = "C", hold_edge = "A"}
+registers = ["q_rmii_tx_er_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/O_RMII_TX_ER_timing.rpt",
 ]
@@ -48,6 +51,7 @@ name = "I_RMII_RXD[1:0]"
 methodology = "SDR-SYS-I"
 launch_clock = {name = "rmii_ref_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "rmii_ref_clk", setup_edge = "C", hold_edge = "A"}
+registers = ["q_rmii_rxd_reg[*]"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_RMII_RXD_timing.rpt",
 ]
@@ -57,6 +61,7 @@ name = "I_RMII_CRS_DV"
 methodology = "SDR-SYS-I"
 launch_clock = {name = "rmii_ref_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "rmii_ref_clk", setup_edge = "C", hold_edge = "A"}
+registers = ["q_rmii_crs_dv_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_RMII_CRS_DV_timing.rpt",
 ]
@@ -66,6 +71,7 @@ name = "I_RMII_RX_ER"
 methodology = "SDR-SYS-I"
 launch_clock = {name = "rmii_ref_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "rmii_ref_clk", setup_edge = "C", hold_edge = "A"}
+registers = ["q_rmii_rx_er_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_RMII_RX_ER_timing.rpt",
 ]

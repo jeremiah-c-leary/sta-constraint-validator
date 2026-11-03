@@ -8,7 +8,7 @@ from unittest import mock
 from stacv import __main__
 
 CLOCK_KEYS = 'name, period, port, idle, generator'
-PORT_KEYS = 'status, name, methodology, launch_clock, capture_clock, timing_reports'
+PORT_KEYS = 'status, name, methodology, launch_clock, capture_clock, registers, timing_reports'
 
 
 def build_interface(dReplacements=None):

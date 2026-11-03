@@ -28,7 +28,7 @@ READER = config_reader.ConfigReader('interface_config', interface_config_error.I
 TOP_LEVEL_KEYS = ['description', 'name', 'part', 'part_interface', 'traces', 'clock', 'port']
 CLOCK_KEYS = ['name', 'period', 'port', 'idle', 'generator']
 GENERATOR_KEYS = ['source', 'master_pin', 'target_pin', 'master_clock']
-PORT_KEYS = ['status', 'name', 'methodology', 'launch_clock', 'capture_clock', 'timing_reports']
+PORT_KEYS = ['status', 'name', 'methodology', 'launch_clock', 'capture_clock', 'registers', 'timing_reports']
 PORT_CLOCK_KEYS = ['name', 'setup_edge', 'hold_edge']
 
 
@@ -241,6 +241,9 @@ def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     set_methodology_roles(oPort)
     oPort.edge_errors = find_edge_errors(oPort, oLocation)
     oPort.timing_reports_as_written = READER.get_required_list_of_strings(dPort, 'timing_reports', oLocation)
+    # The registers that drive or capture the port, which every path in its timing reports must start or end at.
+    if 'registers' in dPort:
+        oPort.registers = READER.get_required_list_of_strings(dPort, 'registers', oLocation)
 
 
 def set_methodology_roles(oPort):

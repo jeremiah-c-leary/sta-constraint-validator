@@ -48,6 +48,9 @@ class Test(unittest.TestCase):
         lExpected.append('s0_trace_001')
         lExpected.append('s0_data_path_001')
         lExpected.append('s0_clock_path_001')
+        lExpected.append('s0_register_001')
+        lExpected.append('s0_register_002')
+        lExpected.append('s0_register_003')
 
         self.assertEqual(lExpected, get_rule_ids(self.oMethodology.stages[0]))
 
@@ -61,7 +64,6 @@ class Test(unittest.TestCase):
         lExpected = []
         lExpected.append('s2_clock_001')
         lExpected.append('s2_clock_002')
-        lExpected.append('s2_data_path_001')
         lExpected.append('s2_output_delay_001')
         lExpected.append('s2_output_delay_002')
 

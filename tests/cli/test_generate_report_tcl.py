@@ -35,7 +35,7 @@ def build_interface_text(sTimingReports):
 
 
 def build_setup_line(sPath):
-    return f'report_timing -column_style variable_width -to [get_ports O_DATA] -setup -path full_clock_expanded -file "{sPath}"'
+    return f'report_timing -column_style variable_width -to [get_ports O_DATA] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "{sPath}"'
 
 
 class TestGenerateReportTcl(unittest.TestCase):
