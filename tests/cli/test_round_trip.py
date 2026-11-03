@@ -72,6 +72,7 @@ def build_interface_text(lTables):
     lText.append('description = "round trip test"')
     lText.append('name = "DAC_SPI_1"')
     lText.append('part = "part.toml"')
+    lText.append('part_interface = "Serial Interface"')
     lText.append('traces = "traces.toml"')
     for sTable in lTables:
         lText.append('')

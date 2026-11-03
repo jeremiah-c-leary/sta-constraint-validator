@@ -13,6 +13,7 @@ def build_interface_text(lPorts, sMissingTimingReport):
     lText.append('description = "visualize test"')
     lText.append('name = "DAC_SPI_1"')
     lText.append('part = "part.toml"')
+    lText.append('part_interface = "Serial Interface"')
     lText.append('traces = "traces.toml"')
     for sClocks in find_distinct_clock_tables(lPorts):
         lText.append('')

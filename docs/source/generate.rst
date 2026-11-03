@@ -196,6 +196,18 @@ For example, a 10 ns launch clock and a 40 ns capture clock, with ``setup_edge =
   The configured hold check, 4 to A, is the same check as 12 to C, three launch cycles later.
   The hold requirement is 0 - 20 = -20 ns, a hold multicycle of (20 - -20) / 10 - 1 = 3.
 
+Bidirectional ports
+^^^^^^^^^^^^^^^^^^^
+
+A port timed in both directions, such as MDIO, has an input delay and an output delay.
+The timing tool joins them into a path from the port to itself through the pad, which does not exist in the design.
+It would be the worst path to the port, and would hide the device's output path in the timing reports.
+So the last section of the port ends with a false path from the port to itself, after the multicycle paths:
+
+.. code-block:: tcl
+
+   set_false_path -from [get_ports IO_MDIO] -to [get_ports IO_MDIO]
+
 Constraints file
 ----------------
 

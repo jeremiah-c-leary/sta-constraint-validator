@@ -3,6 +3,11 @@ class DelayPath():
     def __init__(self, oLine):
         self.first_line = oLine
         self.delays = []
+        # The ports the path passes, as the timing report names them on their own rows.
+        self.ports = []
+
+    def add_port(self, sPortName):
+        self.ports.append(sPortName)
 
     def add_delay(self, delay):
         self.delays.append(delay)
@@ -25,3 +30,7 @@ class DelayPath():
 
     def get_first_delay(self):
         return self.delays[0]
+
+    def has_no_delays(self):
+        # A path from a port straight to a port, such as through a bidirectional pad, has no delays.
+        return len(self.delays) == 0

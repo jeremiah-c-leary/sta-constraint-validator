@@ -3,6 +3,7 @@
 description = "Two ports on one interface"
 name = "DAC_SPI_1"
 part = "$PROJ_DIR/example/texas_instruments/DAC81404/part.toml"
+part_interface = "Serial Interface"
 traces = "$PROJ_DIR/example/texas_instruments/DAC81404/traces.toml"
 
 [[clock]]

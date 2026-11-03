@@ -19,26 +19,26 @@ version = "DS60001648A"
 
 [[interface]]
 name = "Uncompensated RGMII MAC Interface"
-# The inputs are given as the RGMII v1.3 receive skew window: the TX_CLK edge must
-# arrive 1.0 to 2.6 ns after the data changes (tSKEWR).  stacv converts the window
-# to setup and hold for the clock in use.
-# Footnote 1: the board must add more than 1.5 ns of clock trace delay.
+# Table 7-25 gives the inputs only as the RGMII v1.3 receive skew window, tSKEWR 1.0 to 2.6 ns.
+# That window is a board budget for an edge-aligned transmitter, not the PHY's requirement:
+# it leaves the data a 1.6 ns slot to change in.  The inputs use the RGMII v2.0 receiver
+# setup and hold instead (TsetupR, TholdR), which TI SNLA243 Table 1 also lists.
 
 [[interface.pin]]
 name = "TXD[3:0]"
 methodology = "DDR-SS-I"
 clock = {pin = "TX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
 capture_edge = "Both"
-skew_min = {value = 1.0, symbol = "tSKEWR", source = "Table 7-25"}
-skew_max = {value = 2.6, symbol = "tSKEWR", source = "Table 7-25"}
+setup = {value = 1.0, symbol = "TsetupR", source = "RGMII v2.0"}
+hold = {value = 1.0, symbol = "TholdR", source = "RGMII v2.0"}
 
 [[interface.pin]]
 name = "TX_CTL"
 methodology = "DDR-SS-I"
 clock = {pin = "TX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
 capture_edge = "Both"
-skew_min = {value = 1.0, symbol = "tSKEWR", source = "Table 7-25"}
-skew_max = {value = 2.6, symbol = "tSKEWR", source = "Table 7-25"}
+setup = {value = 1.0, symbol = "TsetupR", source = "RGMII v2.0"}
+hold = {value = 1.0, symbol = "TholdR", source = "RGMII v2.0"}
 
 [[interface.pin]]
 name = "RXD[3:0]"

@@ -55,13 +55,24 @@ def get_data_path_end_mismatches(oPortProfile):
     sPortName = oPortProfile.port.name
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
+        if oTimingReport.data_path.has_no_delays():
+            lDetails.append(rule_details.format_detail(oTimingReport.data_path.first_line, 'data path has no elements'))
+            continue
         oDataPathEnd = oTimingReport.data_path.get_last_delay()
-        if oDataPathEnd.resource != sPortName:
-            sErrorMessage = generate_error_message(oDataPathEnd, sPortName)
+        sEnd = find_data_path_end(oTimingReport.data_path, oDataPathEnd)
+        if sEnd != sPortName:
+            sErrorMessage = generate_error_message(oDataPathEnd, sEnd, sPortName)
             lDetails.append(sErrorMessage)
     return lDetails
 
 
-def generate_error_message(oDataPathEnd, sPortName):
-    sMessage = f'data path ends at {oDataPathEnd.resource}, configured port {sPortName}'
+def find_data_path_end(oDataPath, oDataPathEnd):
+    # The port row names the port; through a bidirectional pad, the last net is named after the pad's buffer instead.
+    if len(oDataPath.ports) > 0:
+        return oDataPath.ports[-1]
+    return oDataPathEnd.resource
+
+
+def generate_error_message(oDataPathEnd, sEnd, sPortName):
+    sMessage = f'data path ends at {sEnd}, configured port {sPortName}'
     return rule_details.format_detail(oDataPathEnd.line, sMessage)

@@ -28,7 +28,7 @@
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
 # 7c41339d5db90f76ec00727062ad570d  example/microchip/vsc8540et/rgmii_id.toml
-# 17081dbc37e3271a5c1c12bb1dfc42ea  example/microchip/vsc8540et/vsc8540et.toml
+# 7a1bbe00fa141b90f88ea56d06587021  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #
 # Part:       Microchip VSC8540ET
@@ -147,6 +147,13 @@ create_clock -name rgmii_id_rxc -period 40.000 [get_ports I_RGMII_ID_RXC]
 set_output_delay -clock [get_clocks rgmii_id_txc] -reference_pin [get_ports O_RGMII_ID_TXC] -max -0.800 [get_ports {O_RGMII_ID_TXD[*]}]
 
 #
+# -clock_fall:  the same delays for the falling edges of rgmii_id_txc
+# -add_delay:   keeps the delays of the rising edges
+#
+
+set_output_delay -clock [get_clocks rgmii_id_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_ID_TXC] -max -0.800 [get_ports {O_RGMII_ID_TXD[*]}]
+
+#
 # -min:                  this is a hold check
 # minimum output delay:  rgmii_id_txd minimum - rgmii_id_txc maximum - TXD[3:0] hold
 #                        0.6 - 0.8 - 2.8
@@ -154,13 +161,6 @@ set_output_delay -clock [get_clocks rgmii_id_txc] -reference_pin [get_ports O_RG
 #
 
 set_output_delay -clock [get_clocks rgmii_id_txc] -reference_pin [get_ports O_RGMII_ID_TXC] -min -3.000 [get_ports {O_RGMII_ID_TXD[*]}]
-
-#
-# -clock_fall:  the same delays for the falling edges of rgmii_id_txc
-# -add_delay:   keeps the delays of the rising edges
-#
-
-set_output_delay -clock [get_clocks rgmii_id_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_ID_TXC] -max -0.800 [get_ports {O_RGMII_ID_TXD[*]}]
 
 set_output_delay -clock [get_clocks rgmii_id_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_ID_TXC] -min -3.000 [get_ports {O_RGMII_ID_TXD[*]}]
 
@@ -210,6 +210,13 @@ set_multicycle_path 1 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 set_output_delay -clock [get_clocks rgmii_id_txc] -reference_pin [get_ports O_RGMII_ID_TXC] -max -0.800 [get_ports O_RGMII_ID_TX_CTL]
 
 #
+# -clock_fall:  the same delays for the falling edges of rgmii_id_txc
+# -add_delay:   keeps the delays of the rising edges
+#
+
+set_output_delay -clock [get_clocks rgmii_id_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_ID_TXC] -max -0.800 [get_ports O_RGMII_ID_TX_CTL]
+
+#
 # -min:                  this is a hold check
 # minimum output delay:  rgmii_id_tx_ctl minimum - rgmii_id_txc maximum - TX_CTL hold
 #                        0.6 - 0.8 - 2.8
@@ -217,13 +224,6 @@ set_output_delay -clock [get_clocks rgmii_id_txc] -reference_pin [get_ports O_RG
 #
 
 set_output_delay -clock [get_clocks rgmii_id_txc] -reference_pin [get_ports O_RGMII_ID_TXC] -min -3.000 [get_ports O_RGMII_ID_TX_CTL]
-
-#
-# -clock_fall:  the same delays for the falling edges of rgmii_id_txc
-# -add_delay:   keeps the delays of the rising edges
-#
-
-set_output_delay -clock [get_clocks rgmii_id_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_ID_TXC] -max -0.800 [get_ports O_RGMII_ID_TX_CTL]
 
 set_output_delay -clock [get_clocks rgmii_id_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_ID_TXC] -min -3.000 [get_ports O_RGMII_ID_TX_CTL]
 
@@ -270,6 +270,13 @@ set_multicycle_path 1 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 set_input_delay -clock [get_clocks rgmii_id_rxc] -max 18.800 [get_ports {I_RGMII_ID_RXD[*]}]
 
 #
+# -clock_fall:  the same delays for the falling edges of rgmii_id_rxc
+# -add_delay:   keeps the delays of the rising edges
+#
+
+set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -max 18.800 [get_ports {I_RGMII_ID_RXD[*]}]
+
+#
 # -min:                 this is a hold check
 # minimum input delay:  RXD[3:0] clock to out minimum = tHOLD_R = 1.5 ns
 #                       RXD[3:0] clock to out minimum + rgmii_id_rxd minimum - rgmii_id_rxc maximum
@@ -278,13 +285,6 @@ set_input_delay -clock [get_clocks rgmii_id_rxc] -max 18.800 [get_ports {I_RGMII
 #
 
 set_input_delay -clock [get_clocks rgmii_id_rxc] -min 1.300 [get_ports {I_RGMII_ID_RXD[*]}]
-
-#
-# -clock_fall:  the same delays for the falling edges of rgmii_id_rxc
-# -add_delay:   keeps the delays of the rising edges
-#
-
-set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -max 18.800 [get_ports {I_RGMII_ID_RXD[*]}]
 
 set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -min 1.300 [get_ports {I_RGMII_ID_RXD[*]}]
 
@@ -319,6 +319,13 @@ set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -min 1.3
 set_input_delay -clock [get_clocks rgmii_id_rxc] -max 18.800 [get_ports I_RGMII_ID_RX_CTL]
 
 #
+# -clock_fall:  the same delays for the falling edges of rgmii_id_rxc
+# -add_delay:   keeps the delays of the rising edges
+#
+
+set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -max 18.800 [get_ports I_RGMII_ID_RX_CTL]
+
+#
 # -min:                 this is a hold check
 # minimum input delay:  RX_CTL clock to out minimum = tHOLD_R = 1.5 ns
 #                       RX_CTL clock to out minimum + rgmii_id_rx_ctl minimum - rgmii_id_rxc maximum
@@ -327,12 +334,5 @@ set_input_delay -clock [get_clocks rgmii_id_rxc] -max 18.800 [get_ports I_RGMII_
 #
 
 set_input_delay -clock [get_clocks rgmii_id_rxc] -min 1.300 [get_ports I_RGMII_ID_RX_CTL]
-
-#
-# -clock_fall:  the same delays for the falling edges of rgmii_id_rxc
-# -add_delay:   keeps the delays of the rising edges
-#
-
-set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -max 18.800 [get_ports I_RGMII_ID_RX_CTL]
 
 set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -min 1.300 [get_ports I_RGMII_ID_RX_CTL]

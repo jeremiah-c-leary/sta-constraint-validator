@@ -25,7 +25,7 @@
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
 # a0bed801412cb76439b5e40aa5e9ad7b  example/microchip/vsc8540et/mdio.toml
-# 17081dbc37e3271a5c1c12bb1dfc42ea  example/microchip/vsc8540et/vsc8540et.toml
+# 7a1bbe00fa141b90f88ea56d06587021  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #
 # Part:       Microchip VSC8540ET
@@ -207,3 +207,13 @@ set_multicycle_path 38 -setup -end -from [get_ports IO_MDIO] -to [get_clocks clk
 #
 
 set_multicycle_path 39 -hold -end -from [get_ports IO_MDIO] -to [get_clocks clk_100mhz]
+
+#
+# -from:   IO_MDIO as an input, where the part's data arrives
+# -to:     IO_MDIO as an output, where the device's data leaves
+# reason:  the input and output delays make the timing tool time a path from the port to itself
+#          through the pad, which does not exist in the design.  Without the false path it is the
+#          worst path to the port, and hides the device's output path in the timing reports.
+#
+
+set_false_path -from [get_ports IO_MDIO] -to [get_ports IO_MDIO]

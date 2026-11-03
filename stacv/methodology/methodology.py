@@ -30,6 +30,9 @@ class Methodology():
         # A double data rate port changes its data on both edges of the clock.
         self.double_data_rate = False
 
+    def has_rules(self):
+        return len(self.stages) > 0
+
     def check(self, oPortProfile):
         oMethodologyResults = methodology_results.MethodologyResults()
         sSkipStageReason = None

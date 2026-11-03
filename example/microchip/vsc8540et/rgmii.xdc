@@ -28,7 +28,7 @@
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
 # 4e1dac81370ba43d59778d9658d73a90  example/microchip/vsc8540et/rgmii.toml
-# 17081dbc37e3271a5c1c12bb1dfc42ea  example/microchip/vsc8540et/vsc8540et.toml
+# 7a1bbe00fa141b90f88ea56d06587021  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #
 # Part:       Microchip VSC8540ET
@@ -74,19 +74,19 @@
 #  Section 3.2:  Part Timing
 ###############################################################################
 #
-# Pin       Timing    Value (ns)  Symbol  Source
-# --------  --------  ----------  ------  ----------
-# TXD[3:0]  skew_min  1           tSKEWR  Table 7-25
-# TXD[3:0]  skew_max  2.6         tSKEWR  Table 7-25
+# Pin       Timing   Value (ns)  Symbol   Source
+# --------  -------  ----------  -------  ----------
+# TXD[3:0]  setup    1           TsetupR  RGMII v2.0
+# TXD[3:0]  hold     1           TholdR   RGMII v2.0
 #
-# TX_CTL    skew_min  1           tSKEWR  Table 7-25
-# TX_CTL    skew_max  2.6         tSKEWR  Table 7-25
+# TX_CTL    setup    1           TsetupR  RGMII v2.0
+# TX_CTL    hold     1           TholdR   RGMII v2.0
 #
-# RXD[3:0]  cko_max   0.5         tSKEWT  Table 7-25
-# RXD[3:0]  cko_min   -0.5        tSKEWT  Table 7-25
+# RXD[3:0]  cko_max  0.5         tSKEWT   Table 7-25
+# RXD[3:0]  cko_min  -0.5        tSKEWT   Table 7-25
 #
-# RX_CTL    cko_max   0.5         tSKEWT  Table 7-25
-# RX_CTL    cko_min   -0.5        tSKEWT  Table 7-25
+# RX_CTL    cko_max  0.5         tSKEWT   Table 7-25
+# RX_CTL    cko_min  -0.5        tSKEWT   Table 7-25
 #
 ###############################################################################
 #  Section 4.1:  rgmii_txc Generated Clock
@@ -138,8 +138,7 @@ create_clock -name rgmii_rxc -period 40.000 [get_ports I_RGMII_RXC]
 #                        the delay from Q to O_RGMII_TXC is left out of the clock path and the timing
 #                        report is wrong without any warning.
 # -max:                  this is the setup check
-# maximum output delay:  TXD[3:0] setup = tSKEWR minimum = 1 ns
-#                        rgmii_txd maximum - rgmii_txc minimum + TXD[3:0] setup
+# maximum output delay:  rgmii_txd maximum - rgmii_txc minimum + TXD[3:0] setup
 #                        0.8 - 2.4 + 1
 #                        -0.6 ns
 # objects:               which data port the output delay applies to
@@ -148,23 +147,22 @@ create_clock -name rgmii_rxc -period 40.000 [get_ports I_RGMII_RXC]
 set_output_delay -clock [get_clocks rgmii_txc] -reference_pin [get_ports O_RGMII_TXC] -max -0.600 [get_ports {O_RGMII_TXD[*]}]
 
 #
-# -min:                  this is a hold check
-# minimum output delay:  TXD[3:0] hold = data change interval - tSKEWR maximum = 20 ns - 2.6 ns = 17.4 ns
-#                        rgmii_txd minimum - rgmii_txc maximum - TXD[3:0] hold
-#                        0.6 - 2.8 - 17.4
-#                        -19.6 ns
-#
-
-set_output_delay -clock [get_clocks rgmii_txc] -reference_pin [get_ports O_RGMII_TXC] -min -19.600 [get_ports {O_RGMII_TXD[*]}]
-
-#
 # -clock_fall:  the same delays for the falling edges of rgmii_txc
 # -add_delay:   keeps the delays of the rising edges
 #
 
 set_output_delay -clock [get_clocks rgmii_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_TXC] -max -0.600 [get_ports {O_RGMII_TXD[*]}]
 
-set_output_delay -clock [get_clocks rgmii_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_TXC] -min -19.600 [get_ports {O_RGMII_TXD[*]}]
+#
+# -min:                  this is a hold check
+# minimum output delay:  rgmii_txd minimum - rgmii_txc maximum - TXD[3:0] hold
+#                        0.6 - 2.8 - 1
+#                        -3.2 ns
+#
+
+set_output_delay -clock [get_clocks rgmii_txc] -reference_pin [get_ports O_RGMII_TXC] -min -3.200 [get_ports {O_RGMII_TXD[*]}]
+
+set_output_delay -clock [get_clocks rgmii_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_TXC] -min -3.200 [get_ports {O_RGMII_TXD[*]}]
 
 #
 # multiplier:  (setup requirement - hold requirement) / launch period - 1
@@ -203,8 +201,7 @@ set_multicycle_path 1 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #                        the delay from Q to O_RGMII_TXC is left out of the clock path and the timing
 #                        report is wrong without any warning.
 # -max:                  this is the setup check
-# maximum output delay:  TX_CTL setup = tSKEWR minimum = 1 ns
-#                        rgmii_tx_ctl maximum - rgmii_txc minimum + TX_CTL setup
+# maximum output delay:  rgmii_tx_ctl maximum - rgmii_txc minimum + TX_CTL setup
 #                        0.8 - 2.4 + 1
 #                        -0.6 ns
 # objects:               which data port the output delay applies to
@@ -213,23 +210,22 @@ set_multicycle_path 1 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 set_output_delay -clock [get_clocks rgmii_txc] -reference_pin [get_ports O_RGMII_TXC] -max -0.600 [get_ports O_RGMII_TX_CTL]
 
 #
-# -min:                  this is a hold check
-# minimum output delay:  TX_CTL hold = data change interval - tSKEWR maximum = 20 ns - 2.6 ns = 17.4 ns
-#                        rgmii_tx_ctl minimum - rgmii_txc maximum - TX_CTL hold
-#                        0.6 - 2.8 - 17.4
-#                        -19.6 ns
-#
-
-set_output_delay -clock [get_clocks rgmii_txc] -reference_pin [get_ports O_RGMII_TXC] -min -19.600 [get_ports O_RGMII_TX_CTL]
-
-#
 # -clock_fall:  the same delays for the falling edges of rgmii_txc
 # -add_delay:   keeps the delays of the rising edges
 #
 
 set_output_delay -clock [get_clocks rgmii_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_TXC] -max -0.600 [get_ports O_RGMII_TX_CTL]
 
-set_output_delay -clock [get_clocks rgmii_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_TXC] -min -19.600 [get_ports O_RGMII_TX_CTL]
+#
+# -min:                  this is a hold check
+# minimum output delay:  rgmii_tx_ctl minimum - rgmii_txc maximum - TX_CTL hold
+#                        0.6 - 2.8 - 1
+#                        -3.2 ns
+#
+
+set_output_delay -clock [get_clocks rgmii_txc] -reference_pin [get_ports O_RGMII_TXC] -min -3.200 [get_ports O_RGMII_TX_CTL]
+
+set_output_delay -clock [get_clocks rgmii_txc] -clock_fall -add_delay -reference_pin [get_ports O_RGMII_TXC] -min -3.200 [get_ports O_RGMII_TX_CTL]
 
 #
 # multiplier:  (setup requirement - hold requirement) / launch period - 1
@@ -273,6 +269,13 @@ set_multicycle_path 1 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 set_input_delay -clock [get_clocks rgmii_rxc] -max -1.100 [get_ports {I_RGMII_RXD[*]}]
 
 #
+# -clock_fall:  the same delays for the falling edges of rgmii_rxc
+# -add_delay:   keeps the delays of the rising edges
+#
+
+set_input_delay -clock [get_clocks rgmii_rxc] -clock_fall -add_delay -max -1.100 [get_ports {I_RGMII_RXD[*]}]
+
+#
 # -min:                 this is a hold check
 # minimum input delay:  RXD[3:0] clock to out minimum + rgmii_rxd minimum - rgmii_rxc maximum
 #                       -0.5 + 0.6 - 2.8
@@ -280,13 +283,6 @@ set_input_delay -clock [get_clocks rgmii_rxc] -max -1.100 [get_ports {I_RGMII_RX
 #
 
 set_input_delay -clock [get_clocks rgmii_rxc] -min -2.700 [get_ports {I_RGMII_RXD[*]}]
-
-#
-# -clock_fall:  the same delays for the falling edges of rgmii_rxc
-# -add_delay:   keeps the delays of the rising edges
-#
-
-set_input_delay -clock [get_clocks rgmii_rxc] -clock_fall -add_delay -max -1.100 [get_ports {I_RGMII_RXD[*]}]
 
 set_input_delay -clock [get_clocks rgmii_rxc] -clock_fall -add_delay -min -2.700 [get_ports {I_RGMII_RXD[*]}]
 
@@ -320,6 +316,13 @@ set_input_delay -clock [get_clocks rgmii_rxc] -clock_fall -add_delay -min -2.700
 set_input_delay -clock [get_clocks rgmii_rxc] -max -1.100 [get_ports I_RGMII_RX_CTL]
 
 #
+# -clock_fall:  the same delays for the falling edges of rgmii_rxc
+# -add_delay:   keeps the delays of the rising edges
+#
+
+set_input_delay -clock [get_clocks rgmii_rxc] -clock_fall -add_delay -max -1.100 [get_ports I_RGMII_RX_CTL]
+
+#
 # -min:                 this is a hold check
 # minimum input delay:  RX_CTL clock to out minimum + rgmii_rx_ctl minimum - rgmii_rxc maximum
 #                       -0.5 + 0.6 - 2.8
@@ -327,12 +330,5 @@ set_input_delay -clock [get_clocks rgmii_rxc] -max -1.100 [get_ports I_RGMII_RX_
 #
 
 set_input_delay -clock [get_clocks rgmii_rxc] -min -2.700 [get_ports I_RGMII_RX_CTL]
-
-#
-# -clock_fall:  the same delays for the falling edges of rgmii_rxc
-# -add_delay:   keeps the delays of the rising edges
-#
-
-set_input_delay -clock [get_clocks rgmii_rxc] -clock_fall -add_delay -max -1.100 [get_ports I_RGMII_RX_CTL]
 
 set_input_delay -clock [get_clocks rgmii_rxc] -clock_fall -add_delay -min -2.700 [get_ports I_RGMII_RX_CTL]

@@ -15,6 +15,7 @@ def build_interface_text(lPorts):
     lText.append('description = "report script path checks test"')
     lText.append('name = "DAC_SPI_1"')
     lText.append('part = "part.toml"')
+    lText.append('part_interface = "Serial Interface"')
     lText.append('traces = "traces.toml"')
     lText.append('')
     lText.append('[[clock]]')

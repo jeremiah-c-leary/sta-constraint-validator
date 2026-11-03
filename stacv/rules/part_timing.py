@@ -1,7 +1,7 @@
 '''
 Gives a part pin's setup, hold and clock to out, whichever form the part file gives them in.
 
-An input pin gives a setup and a hold, or the window the clock edge must arrive in after its data changes.
+An input pin gives a setup and a hold.
 An output pin gives a clock to out, or the window its data is valid in around the clock edge.
 A window is converted with the interval between data changes: the clock period, or half of it for double data rate.
 '''
@@ -29,19 +29,11 @@ def calculate_data_change_interval(oPort):
 
 
 def get_setup(oPin, oPort):
-    if oPin.setup is not None:
-        return PartTiming(oPin.setup.value, f'{oPin.name} setup', [])
-    sCalculation = f'{oPin.name} setup = {oPin.skew_min.symbol} minimum = {format_time(oPin.skew_min.value)}'
-    return PartTiming(oPin.skew_min.value, f'{oPin.name} setup', [sCalculation])
+    return PartTiming(oPin.setup.value, f'{oPin.name} setup', [])
 
 
 def get_hold(oPin, oPort):
-    if oPin.hold is not None:
-        return PartTiming(oPin.hold.value, f'{oPin.name} hold', [])
-    fInterval = calculate_data_change_interval(oPort)
-    fHold = fInterval - oPin.skew_max.value
-    sCalculation = f'{oPin.name} hold = data change interval - {oPin.skew_max.symbol} maximum = {format_time(fInterval)} - {format_time(oPin.skew_max.value)} = {format_time(fHold)}'
-    return PartTiming(fHold, f'{oPin.name} hold', [sCalculation])
+    return PartTiming(oPin.hold.value, f'{oPin.name} hold', [])
 
 
 def get_clock_to_out_max(oPin, oPort):

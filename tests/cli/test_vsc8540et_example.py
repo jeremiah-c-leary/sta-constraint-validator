@@ -108,10 +108,10 @@ class TestPartInterfaceSelection(unittest.TestCase):
         self.assertIn('set_output_delay -clock [get_clocks mii_tx_clk] -max 17.400 [get_ports {O_MII_TXD[*]}]', self.oStdout.getvalue())
 
     def test_a_pin_gives_one_form_of_its_timing(self):
-        self.sPartText = self.sPartText.replace('skew_min = {value = 1.0, symbol = "tSKEWR", source = "Table 7-25"}\nskew_max', 'setup = {value = 1.0, symbol = "tSKEWR", source = "Table 7-25"}\nskew_max', 1)
+        self.sPartText = self.sPartText.replace('valid_before = {value = 1.4, symbol = "tSETUP_R", source = "Table 7-27"}', 'cko_max = {value = 1.4, symbol = "tSETUP_R", source = "Table 7-27"}', 1)
         self.assertEqual(2, self.run_generate())
         self.assertIn('[part_config_010]', self.oStderr.getvalue())
-        self.assertIn('timing in pin TXD[3:0] of interface Uncompensated RGMII MAC Interface must give setup and hold, or skew_min and skew_max', self.oStderr.getvalue())
+        self.assertIn('timing in pin RXD[3:0] of interface Compensated RGMII MAC Interface must give cko_max and cko_min, or valid_before and valid_after', self.oStderr.getvalue())
 
     def test_a_trace_from_a_source_needs_a_delay(self):
         self.sTracesText = self.sTracesText.replace('part_pin = "RMII_CLKIN"\nsource_to_part = {max_delay = 0.6, min_delay = 0.4}\n', '')

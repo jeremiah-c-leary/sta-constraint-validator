@@ -18,6 +18,7 @@ def build_config_text(sPartFile, sTracesFile, sTimingReportFile, sPortName):
     lText.append('description = "s0_data_path_001 test"')
     lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
+    lText.append('part_interface = "Serial Interface"')
     lText.append(f'traces = "{sTracesFile}"')
     lText.append('[[clock]]')
     lText.append('name = "clk_100mhz"')
@@ -42,9 +43,11 @@ class Test(rule_test_case.RuleTestCase):
 
     def execute_with_data_path_ends_changed(self, lLineNumbers, sNewPortName):
         lLines = rule_test_case.read_lines(sTimingReport)
+        # The net to the port and the port's row, on the next line, both name the port.
         for iLineNumber in lLineNumbers:
-            self.assertIn('O_DAC_DATA', lLines[iLineNumber - 1])
-            lLines[iLineNumber - 1] = lLines[iLineNumber - 1].replace('O_DAC_DATA', sNewPortName)
+            for iLine in [iLineNumber, iLineNumber + 1]:
+                self.assertIn('O_DAC_DATA', lLines[iLine - 1])
+                lLines[iLine - 1] = lLines[iLine - 1].replace('O_DAC_DATA', sNewPortName)
         rule_test_case.write_file(self.sChangedTimingReport, '\n'.join(lLines))
         return self.execute(sPassingPortName, self.sChangedTimingReport)
 

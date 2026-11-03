@@ -43,10 +43,9 @@ Top level
      - Yes
      - The path of the :doc:`part file <part>` of the part this interface connects to.
    * - ``part_interface``
-     - No
+     - Yes
      - The ``[[interface]]`` of the part this interface uses, such as ``"MII"`` for a PHY with several modes.
-       Its pins are the only pins looked up.
-       Without it, every interface of the part is looked at.
+       Its pins are the only pins looked up, so a pin of another mode is never used by mistake.
    * - ``traces``
      - Yes
      - The path of the :doc:`traces file <traces>` that describes the connections between the device and the part.

@@ -17,6 +17,7 @@ def build_interface_text(sTimingReport):
     lText.append('description = "timing report errors test"')
     lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{os.path.join(sExampleDir, "part.toml")}"')
+    lText.append('part_interface = "Serial Interface"')
     lText.append(f'traces = "{os.path.join(sExampleDir, "traces.toml")}"')
     lText.append('[[clock]]\nname = "clk_100mhz"\nperiod = 10.000')
     lText.append('[[clock]]\nname = "dac_sclk"\nperiod = 40.000\nport = "O_DAC_SCLK"')

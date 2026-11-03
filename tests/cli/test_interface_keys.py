@@ -17,6 +17,7 @@ def build_interface(dReplacements=None):
     dLines['description'] = 'description = "interface keys test"'
     dLines['name'] = 'name = "DAC_SPI_1"'
     dLines['part'] = 'part = "part.toml"'
+    dLines['part_interface'] = 'part_interface = "Serial Interface"'
     dLines['traces'] = 'traces = "traces.toml"'
     dLines['clock_1'] = '[[clock]]\nname = "clk_launch"\nperiod = 10.0'
     dLines['clock_2'] = '[[clock]]\nname = "clk_capture"\nperiod = 40.0\nport = "O_CLK"'

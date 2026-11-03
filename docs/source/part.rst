@@ -121,10 +121,11 @@ Pins are described from the part's point of view.
      - The :doc:`methodology <methodology>` of the pin, from the part's view.
        It decides the timing keys the pin has:
 
-       * inputs, ``SDR-SS-I``, ``SDR-SS-RT-DI``, ``SDR-SYS-I``, ``DDR-SS-I``: ``capture_edge``, and ``setup`` and ``hold``, or ``skew_min`` and ``skew_max``
+       * inputs, ``SDR-SS-I``, ``SDR-SS-RT-DI``, ``SDR-SYS-I``, ``DDR-SS-I``: ``capture_edge``, ``setup`` and ``hold``
        * outputs, ``SDR-SS-O``, ``SDR-SS-RT-DO``, ``SDR-SYS-O``, ``DDR-SS-O``: ``launch_edge``, and ``cko_max`` and ``cko_min``, or ``valid_before`` and ``valid_after``
 
-       A pin gives its timing in exactly one form, the form its datasheet uses (part_config_010).
+       An output gives its timing in exactly one form, the form its datasheet uses (part_config_010).
+       An input gives the receiver's real setup and hold; a skew window, such as RGMII v1.3's tSKEWR, is a board budget and not a requirement of the pin.
    * - ``clock``
      - The clock pin of the part the data is captured or launched on:
 
@@ -139,9 +140,6 @@ Pins are described from the part's point of view.
      - The setup requirement of the pin, from the datasheet's Min column.
    * - ``hold``
      - The hold requirement of the pin, from the datasheet's Min column.
-   * - ``skew_min``, ``skew_max``
-     - The window the clock edge must arrive in after the data changes, such as RGMII's tSKEWR.
-       stacv takes setup = ``skew_min`` and hold = the time between data changes - ``skew_max``.
    * - ``cko_max``
      - The maximum clock-to-out delay of the pin.
    * - ``cko_min``

@@ -226,7 +226,7 @@ Part file
      - ``has no interface named <name>, which key "part_interface" of the interface file names``
      - Correct ``part_interface`` in the interface file, or the interface's ``name`` in the part file.
    * - part_config_010
-     - ``timing<location> must give setup and hold, or skew_min and skew_max`` for an input pin, or ``cko_max and cko_min, or valid_before and valid_after`` for an output pin
+     - ``timing<location> must give cko_max and cko_min, or valid_before and valid_after``, for an output pin
      - Give the pin's timing in one form, the form its datasheet uses.
 
 The location is ``in [properties]``, ``in [datasheet]``, ``in interface <name>``, or ``in pin <name> of interface <name>``.

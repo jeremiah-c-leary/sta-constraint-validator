@@ -7,7 +7,8 @@
 --   MII       : TXD is launched on the PHY's MII_TXCLK; RXD is captured on the PHY's RX_CLK.
 --   RMII      : both directions use the 50 MHz clock from RMII_CLKOUT.
 --   RGMII     : TXC is clk_100mhz / 4 (25 MHz); TXD changes 10 ns after each TXC edge, centred between edges.
---               RXD launched on an RXC edge is captured on the next RXC edge, by a register of the other edge.
+--               RXD launched on an RXC edge is captured on the next RXC edge, by an IDDR at the pin:
+--               its Q1 captures on the rising edge and its Q2 on the falling edge.
 
 library ieee;
   use ieee.std_logic_1164.all;
@@ -55,6 +56,26 @@ end entity vsc8540et_mac;
 
 architecture rtl of vsc8540et_mac is
 
+  -- The 7-series input DDR register, in the input/output block next to the pin.
+  -- Declared here so the design analyses without the Xilinx UNISIM library; Vivado binds it to the primitive.
+  component IDDR is
+    generic (
+      DDR_CLK_EDGE : string := "OPPOSITE_EDGE";
+      INIT_Q1      : bit := '0';
+      INIT_Q2      : bit := '0';
+      SRTYPE       : string := "SYNC"
+    );
+    port (
+      Q1 : out std_logic;
+      Q2 : out std_logic;
+      C  : in  std_logic;
+      CE : in  std_logic;
+      D  : in  std_logic;
+      R  : in  std_logic;
+      S  : in  std_logic
+    );
+  end component IDDR;
+
   -- The capture registers drive nothing, so they are kept for the timing reports.
   attribute dont_touch : string;
 
@@ -97,22 +118,12 @@ architecture rtl of vsc8540et_mac is
   signal q_rgmii_tx_ctl      : std_logic := '0';
   signal q_rgmii_id_txd      : unsigned(3 downto 0) := (others => '0');
   signal q_rgmii_id_tx_ctl   : std_logic := '0';
-  signal q_rgmii_rxd_rise    : std_logic_vector(3 downto 0) := (others => '0');
-  signal q_rgmii_rxd_fall    : std_logic_vector(3 downto 0) := (others => '0');
-  signal q_rgmii_rx_ctl_rise : std_logic := '0';
-  signal q_rgmii_rx_ctl_fall : std_logic := '0';
-  signal q_rgmii_id_rxd_rise    : std_logic_vector(3 downto 0) := (others => '0');
-  signal q_rgmii_id_rxd_fall    : std_logic_vector(3 downto 0) := (others => '0');
-  signal q_rgmii_id_rx_ctl_rise : std_logic := '0';
-  signal q_rgmii_id_rx_ctl_fall : std_logic := '0';
-  attribute dont_touch of q_rgmii_rxd_rise       : signal is "true";
-  attribute dont_touch of q_rgmii_rxd_fall       : signal is "true";
-  attribute dont_touch of q_rgmii_rx_ctl_rise    : signal is "true";
-  attribute dont_touch of q_rgmii_rx_ctl_fall    : signal is "true";
-  attribute dont_touch of q_rgmii_id_rxd_rise    : signal is "true";
-  attribute dont_touch of q_rgmii_id_rxd_fall    : signal is "true";
-  attribute dont_touch of q_rgmii_id_rx_ctl_rise : signal is "true";
-  attribute dont_touch of q_rgmii_id_rx_ctl_fall : signal is "true";
+  signal w_rgmii_rx_in       : std_logic_vector(4 downto 0);
+  signal w_rgmii_rx_rise     : std_logic_vector(4 downto 0);
+  signal w_rgmii_rx_fall     : std_logic_vector(4 downto 0);
+  signal w_rgmii_id_rx_in    : std_logic_vector(4 downto 0);
+  signal w_rgmii_id_rx_rise  : std_logic_vector(4 downto 0);
+  signal w_rgmii_id_rx_fall  : std_logic_vector(4 downto 0);
 
 begin
 
@@ -220,38 +231,40 @@ begin
   O_RGMII_ID_TX_CTL <= q_rgmii_id_tx_ctl;
 
   ---------------------------------------------------------------------------
-  -- RGMII receive: data launched on one RXC edge is captured on the next edge.
+  -- RGMII receive: data launched on one RXC edge is captured on the next edge, by an IDDR at each pin.
   ---------------------------------------------------------------------------
-  PROC_RGMII_RX_RISE : process (I_RGMII_RXC) is
+  GEN_RGMII_RX : for i in 0 to 4 generate
+    attribute dont_touch of U_IDDR : label is "true";
   begin
-    if rising_edge(I_RGMII_RXC) then
-      q_rgmii_rxd_rise    <= I_RGMII_RXD;
-      q_rgmii_rx_ctl_rise <= I_RGMII_RX_CTL;
-    end if;
-  end process PROC_RGMII_RX_RISE;
+    U_IDDR : IDDR
+      port map (
+        Q1 => w_rgmii_rx_rise(i),
+        Q2 => w_rgmii_rx_fall(i),
+        C  => I_RGMII_RXC,
+        CE => '1',
+        D  => w_rgmii_rx_in(i),
+        R  => '0',
+        S  => '0'
+      );
+  end generate GEN_RGMII_RX;
 
-  PROC_RGMII_RX_FALL : process (I_RGMII_RXC) is
+  GEN_RGMII_ID_RX : for i in 0 to 4 generate
+    attribute dont_touch of U_IDDR : label is "true";
   begin
-    if falling_edge(I_RGMII_RXC) then
-      q_rgmii_rxd_fall    <= I_RGMII_RXD;
-      q_rgmii_rx_ctl_fall <= I_RGMII_RX_CTL;
-    end if;
-  end process PROC_RGMII_RX_FALL;
+    U_IDDR : IDDR
+      port map (
+        Q1 => w_rgmii_id_rx_rise(i),
+        Q2 => w_rgmii_id_rx_fall(i),
+        C  => I_RGMII_ID_RXC,
+        CE => '1',
+        D  => w_rgmii_id_rx_in(i),
+        R  => '0',
+        S  => '0'
+      );
+  end generate GEN_RGMII_ID_RX;
 
-  PROC_RGMII_ID_RX_RISE : process (I_RGMII_ID_RXC) is
-  begin
-    if rising_edge(I_RGMII_ID_RXC) then
-      q_rgmii_id_rxd_rise    <= I_RGMII_ID_RXD;
-      q_rgmii_id_rx_ctl_rise <= I_RGMII_ID_RX_CTL;
-    end if;
-  end process PROC_RGMII_ID_RX_RISE;
-
-  PROC_RGMII_ID_RX_FALL : process (I_RGMII_ID_RXC) is
-  begin
-    if falling_edge(I_RGMII_ID_RXC) then
-      q_rgmii_id_rxd_fall    <= I_RGMII_ID_RXD;
-      q_rgmii_id_rx_ctl_fall <= I_RGMII_ID_RX_CTL;
-    end if;
-  end process PROC_RGMII_ID_RX_FALL;
+  -- Bits 3 to 0 are RXD, and bit 4 is RX_CTL.
+  w_rgmii_rx_in    <= I_RGMII_RX_CTL & I_RGMII_RXD;
+  w_rgmii_id_rx_in <= I_RGMII_ID_RX_CTL & I_RGMII_ID_RXD;
 
 end architecture rtl;

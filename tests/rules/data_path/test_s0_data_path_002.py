@@ -14,7 +14,11 @@ sRuleId = 's0_data_path_002'
 class Test(rule_test_case.RoundTripRuleTestCase):
 
     def execute_with_data_path_starts_changed(self, lLineNumbers):
-        return self.execute_round_trip_with_lines_changed(lLineNumbers, 'I_DAC_DATA', 'I_DAC_OTHER')
+        # The port's row, on the line before, and the net from the port both name the port.
+        lLines = []
+        for iLineNumber in lLineNumbers:
+            lLines.extend([iLineNumber - 1, iLineNumber])
+        return self.execute_round_trip_with_lines_changed(lLines, 'I_DAC_DATA', 'I_DAC_OTHER')
 
     def test_passes_when_data_path_starts_at_configured_port(self):
         self.execute_round_trip()

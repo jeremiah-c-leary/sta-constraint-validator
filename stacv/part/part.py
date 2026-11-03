@@ -214,14 +214,9 @@ def read_edge(dPin, sKey, oLocation):
 
 
 def build_input_pin(oPin, dPin, sInterfaceName, oLocation):
-    # An input is given as a setup and a hold, or as the window the clock edge must arrive in after the data changes.
     oPin.capture_edge = read_edge(dPin, 'capture_edge', oLocation)
-    if read_timing_form(dPin, ['setup', 'hold'], ['skew_min', 'skew_max'], oLocation) == 0:
-        oPin.setup = build_constraint(dPin, 'setup', oPin.name, sInterfaceName, oLocation)
-        oPin.hold = build_constraint(dPin, 'hold', oPin.name, sInterfaceName, oLocation)
-    else:
-        oPin.skew_min = build_constraint(dPin, 'skew_min', oPin.name, sInterfaceName, oLocation)
-        oPin.skew_max = build_constraint(dPin, 'skew_max', oPin.name, sInterfaceName, oLocation)
+    oPin.setup = build_constraint(dPin, 'setup', oPin.name, sInterfaceName, oLocation)
+    oPin.hold = build_constraint(dPin, 'hold', oPin.name, sInterfaceName, oLocation)
 
 
 def build_output_pin(oPin, dPin, sInterfaceName, oLocation):
@@ -263,7 +258,7 @@ class PinType():
         self.build = fBuild
 
 
-INPUT_PIN = PinType(['capture_edge', 'setup', 'hold', 'skew_min', 'skew_max'], build_input_pin)
+INPUT_PIN = PinType(['capture_edge', 'setup', 'hold'], build_input_pin)
 OUTPUT_PIN = PinType(['launch_edge', 'cko_max', 'cko_min', 'valid_before', 'valid_after'], build_output_pin)
 
 # Part pin methodologies are named from the part's view.

@@ -11,8 +11,6 @@ class Pin():
         self.hold = None
         self.cko_max = None
         self.cko_min = None
-        # The second form of each kind of pin: a skew window for an input, a valid window for an output.
-        self.skew_min = None
-        self.skew_max = None
+        # An output can give its timing as the window its data is valid in, instead of a clock to out.
         self.valid_before = None
         self.valid_after = None

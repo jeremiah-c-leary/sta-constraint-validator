@@ -8,6 +8,7 @@
 description = "This interface drives data to the external DAC."
 name = "DAC_DATA_SPI"
 part = "ad7399.toml"
+part_interface = "Serial Data Interface"
 traces = "dac_spi_traces.toml"
 
 [[clock]]

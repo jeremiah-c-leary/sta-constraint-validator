@@ -10,6 +10,7 @@ description = "DAC81404 serial interface"
 
 name = "DAC_SPI_1"
 part = "part.toml"
+part_interface = "Serial Interface"
 traces = "traces.toml"
 
 [[clock]]

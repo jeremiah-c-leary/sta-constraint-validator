@@ -24,6 +24,7 @@ from stacv.visualize import edge_window
 from stacv.visualize import edges
 
 BANNER = '#' * 79
+FALLING_EDGE_OPTIONS = '-clock_fall -add_delay'
 TABLE_COLUMN_GAP = 2
 
 
@@ -137,7 +138,7 @@ def add_pin(lPins, oPin):
 def build_part_timing_rows(oPin):
     # Each pin is listed in the form the part file gives it.
     lRows = []
-    for sTiming in ['setup', 'hold', 'skew_min', 'skew_max', 'cko_max', 'cko_min', 'valid_before', 'valid_after']:
+    for sTiming in ['setup', 'hold', 'cko_max', 'cko_min', 'valid_before', 'valid_after']:
         oConstraint = getattr(oPin, sTiming)
         if oConstraint is not None:
             lRows.append(build_part_timing_row(oPin, sTiming, oConstraint))
@@ -271,8 +272,36 @@ def find_longest_label(lArguments):
 def build_port_sections(oInterface, oTraceList, oPart):
     lSections = []
     for iPort, oPort in enumerate(oInterface.ports, start=1):
-        lSections.append(xdc_section.Section(f'5.{iPort}', oPort.name, build_port_content(oPort, oTraceList, oPart)))
+        lContent = build_port_content(oPort, oTraceList, oPart)
+        if is_last_direction_of_bidirectional_port(oInterface, oPort):
+            lContent.extend(build_bidirectional_false_path_block(oPort))
+        lSections.append(xdc_section.Section(f'5.{iPort}', oPort.name, lContent))
     return lSections
+
+
+def is_last_direction_of_bidirectional_port(oInterface, oPort):
+    # A port timed both ways has an input delay and an output delay, which Vivado joins into a path through the pad.
+    # The false path follows the last of the port's sections, once both directions are constrained.
+    if oPort.status != port.ANALYZE:
+        return False
+    lDirections = []
+    oLastPort = None
+    for oOtherPort in oInterface.get_analyzed_ports():
+        if oOtherPort.name == oPort.name:
+            lDirections.append(oOtherPort.data_direction)
+            oLastPort = oOtherPort
+    if oLastPort is not oPort:
+        return False
+    return methodology.INPUT in lDirections and methodology.OUTPUT in lDirections
+
+
+def build_bidirectional_false_path_block(oPort):
+    sPort = xdc.format_port(oPort.name)
+    lArguments = []
+    lArguments.append(('-from', [f"{oPort.name} as an input, where the part's data arrives"]))
+    lArguments.append(('-to', [f"{oPort.name} as an output, where the device's data leaves"]))
+    lArguments.append(('reason', ['the input and output delays make the timing tool time a path from the port to itself', 'through the pad, which does not exist in the design.  Without the false path it is the', "worst path to the port, and hides the device's output path in the timing reports."]))
+    return build_command_block(build_argument_comments(lArguments), f'set_false_path -from [get_ports {sPort}] -to [get_ports {sPort}]')
 
 
 def build_port_content(oPort, oTraceList, oPart):
@@ -316,26 +345,24 @@ def build_clock_crossing_delay_blocks(oPortProfile):
     lMaxArguments.append((f'maximum {sDelay}', oMax.lines))
     lMaxArguments.append(('objects', [f'which data port the {sDelay} applies to']))
     lLines.extend(build_command_block(build_argument_comments(lMaxArguments), fCreate(oPort, '-max', oMax.value)))
+    if oPort.double_data_rate:
+        lLines.extend(build_falling_edge_max_delay_block(oPort, fCreate, oMax))
     lMinArguments = []
     lMinArguments.append(('-min', ['this is a hold check']))
     lMinArguments.append((f'minimum {sDelay}', oMin.lines))
     lLines.extend(build_command_block(build_argument_comments(lMinArguments), fCreate(oPort, '-min', oMin.value)))
     if oPort.double_data_rate:
-        lLines.extend(build_falling_edge_delay_blocks(oPort, fCreate, oMax, oMin))
+        lLines.append(fCreate(oPort, '-min', oMin.value, FALLING_EDGE_OPTIONS))
+        lLines.append('')
     return lLines
 
 
-def build_falling_edge_delay_blocks(oPort, fCreate, oMax, oMin):
-    # Double data rate data changes on both edges, so the falling edges get the same delays.
-    sEdgeOptions = '-clock_fall -add_delay'
+def build_falling_edge_max_delay_block(oPort, fCreate, oMax):
+    # Double data rate data changes on both edges, so each delay is followed by the same delay for the falling edges.
     lArguments = []
     lArguments.append(('-clock_fall', [f'the same delays for the falling edges of {oPort.forwarded_clock.name}']))
     lArguments.append(('-add_delay', ['keeps the delays of the rising edges']))
-    lLines = []
-    lLines.extend(build_command_block(build_argument_comments(lArguments), fCreate(oPort, '-max', oMax.value, sEdgeOptions)))
-    lLines.append(fCreate(oPort, '-min', oMin.value, sEdgeOptions))
-    lLines.append('')
-    return lLines
+    return build_command_block(build_argument_comments(lArguments), fCreate(oPort, '-max', oMax.value, FALLING_EDGE_OPTIONS))
 
 
 def describe_delay(oPort):

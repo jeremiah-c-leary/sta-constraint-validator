@@ -31,6 +31,7 @@ def build_config_text(lTimingReports, sTracesFile, sPartFile):
     lText.append('description = "check.py test"')
     lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
+    lText.append('part_interface = "Serial Interface"')
     lText.append(f'traces = "{sTracesFile}"')
     lText.extend(build_clock_tables())
     for iPort, sTimingReport in enumerate(lTimingReports, start=1):
@@ -252,6 +253,7 @@ def build_named_ports_config_text(sDescription, lPorts, sTracesFile, sPartFile):
     lText.append(f'description = "{sDescription}"')
     lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
+    lText.append('part_interface = "Serial Interface"')
     lText.append(f'traces = "{sTracesFile}"')
     lText.extend(build_clock_tables())
     for sPortName, sTimingReport in lPorts:

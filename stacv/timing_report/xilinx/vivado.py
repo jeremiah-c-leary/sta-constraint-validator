@@ -1,4 +1,5 @@
 
+import re
 from stacv.timing_report import timing_report
 from stacv.timing_report import timing_report_file
 from stacv.timing_report import timing_report_list
@@ -338,10 +339,12 @@ def create_cell_delay(oLine):
 
 
 def create_net_delay(oLine):
-    lWords = oLine.text.strip().replace(', routed', '').split()
+    # The fanout is followed by the net's routing status, such as "routed" or "unset": net (fo=1, routed)
+    oFanOut = re.search(r'\(fo=(\d+)[^)]*\)', oLine.text)
+    lWords = oLine.text[oFanOut.end():].split()
     oDelay = delay_element.NetDelay()
-    oDelay.fan_out = int(lWords[1].split('=')[1].replace(')', ''))
-    oDelay.delay = float(lWords[2])
+    oDelay.fan_out = int(oFanOut.group(1))
+    oDelay.delay = float(lWords[0])
     oDelay.resource = lWords[-1]
     oDelay.line = oLine
     return oDelay
@@ -364,7 +367,21 @@ def create_delay_path(lLines):
     for oLine in lLines:
         if is_delay_row(oLine):
             oDelayPath.add_delay(create_delay(oLine))
+        elif is_port_row(oLine):
+            oDelayPath.add_port(extract_port_name(oLine))
     return oDelayPath
+
+
+PORT_ROW = re.compile(r'\s(\S+) \((IN|OUT|INOUT)\)\s*$')
+
+
+def is_port_row(oLine):
+    # A port is shown with its direction, such as "r  IO_MDIO (INOUT)".
+    return PORT_ROW.search(oLine.text) is not None
+
+
+def extract_port_name(oLine):
+    return PORT_ROW.search(oLine.text).group(1)
 
 
 def update_launch_clock_path(oTimingReport):

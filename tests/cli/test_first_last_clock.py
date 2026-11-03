@@ -31,6 +31,7 @@ def build_interface_text(sIdle, sMethodology, lLaunchEdges, lCaptureEdges, sTimi
     lText.append('description = "first and last clock test"')
     lText.append('name = "DAC_SPI_1"')
     lText.append('part = "part.toml"')
+    lText.append('part_interface = "Serial Interface"')
     lText.append('traces = "traces.toml"')
     lText.append('')
     lText.append('[[clock]]')
@@ -172,7 +173,7 @@ class TestFirstLastClock(unittest.TestCase):
         sTimingReport = os.path.join(sExampleDir, 'timing_reports', 'O_DAC_DATA_timing.rpt')
         lText = build_interface_text('low', 'SDR-SS-O-FLC', [8, 8], ['D', 'B'], sTimingReport).split('\n')
         lText[2] = f'part = "{os.path.join(sExampleDir, "part.toml")}"'
-        lText[3] = f'traces = "{os.path.join(sExampleDir, "traces.toml")}"'
+        lText[4] = f'traces = "{os.path.join(sExampleDir, "traces.toml")}"'
         self.write_file('interface.toml', '\n'.join(lText))
         iExitCode = self.run_stacv(['check', self.sInterfaceFile, '--junit', sJunitFile])
         self.assertEqual('', self.oStderr.getvalue())

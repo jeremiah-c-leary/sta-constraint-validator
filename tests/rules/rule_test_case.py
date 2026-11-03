@@ -185,6 +185,7 @@ def build_round_trip_config_text(sPartFile, sTracesFile, sTimingReportFile, sPor
     lText.append('description = "SDR-SS-RT-DI rule test"')
     lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
+    lText.append('part_interface = "Serial Interface"')
     lText.append(f'traces = "{sTracesFile}"')
     lText.append('[[clock]]')
     lText.append('name = "clk_100mhz"')

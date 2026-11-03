@@ -25,6 +25,7 @@ def build_config_text(sPartFile, sTracesFile, sTimingReportFile, oEdges):
     lText.append('description = "s4_requirement_001 test"')
     lText.append('name = "DAC_SPI_1"')
     lText.append(f'part = "{sPartFile}"')
+    lText.append('part_interface = "Serial Interface"')
     lText.append(f'traces = "{sTracesFile}"')
     lText.append('[[clock]]')
     lText.append('name = "clk_100mhz"')

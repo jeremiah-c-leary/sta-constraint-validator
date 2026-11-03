@@ -80,8 +80,16 @@ def resolve_timing_reports(oInterface, sInterfaceFile):
     # Only check reads the timing reports, so their environment variables are expanded here and not when the interface is read.
     oLocation = interface_location.InterfaceLocation(sInterfaceFile)
     for oPort in oInterface.ports:
-        oLocation.set_port_name(oPort.name)
-        oPort.timing_reports = resolve_files(oPort.timing_reports_as_written, 'timing_reports', oLocation)
+        if is_checked(oPort):
+            oLocation.set_port_name(oPort.name)
+            oPort.timing_reports = resolve_files(oPort.timing_reports_as_written, 'timing_reports', oLocation)
+
+
+def is_checked(oPort):
+    # A port whose methodology has no rules yet is deferred by check, so its timing reports are not read.
+    if oPort.status == port.DEFER:
+        return False
+    return methodology_factory.create_methodology(oPort.methodology).has_rules()
 
 
 def resolve_files(lFilenames, sKey, oLocation):
@@ -98,8 +106,8 @@ def create_interface_config(dConfig, sInterfaceFile):
     oInterface.description = READER.get_required_string(dConfig, 'description', oLocation)
     oInterface.interface_name = READER.get_required_string(dConfig, 'name', oLocation)
     oInterface.part_as_written = READER.get_required_string(dConfig, 'part', oLocation)
-    if 'part_interface' in dConfig:
-        oInterface.part_interface = READER.get_required_string(dConfig, 'part_interface', oLocation)
+    # The interface of the part this file times; the user names it, so the part's other modes are never used by mistake.
+    oInterface.part_interface = READER.get_required_string(dConfig, 'part_interface', oLocation)
     oInterface.traces_as_written = READER.get_required_string(dConfig, 'traces', oLocation)
     create_clocks(dConfig, oInterface, oLocation)
     oInterface.ports = create_ports(dConfig, oLocation, oInterface)

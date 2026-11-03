@@ -43,7 +43,7 @@ def get_port_results(oInterface):
 
 
 def get_port_result(oPort, oTraceList, oPart):
-    if oPort.status == port.DEFER:
+    if not interface_config.is_checked(oPort):
         oDeferredPortResult = deferred_port_result.DeferredPortResult(oPort)
         print(f'DEFERRED: {oDeferredPortResult.get_identifier()}')
         return oDeferredPortResult

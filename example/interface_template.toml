@@ -8,6 +8,7 @@
 description = "INTERFACE_DESCRIPTION"
 name = "INTERFACE_NAME"
 part = "part.toml"
+part_interface = "INTERFACE_NAME"
 traces = "traces.toml"
 
 [[clock]]

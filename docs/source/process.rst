@@ -38,7 +38,7 @@ Check output
 * ``PASSED:`` every rule of the port passed.
 * ``FAILED:`` one line for each failing rule, followed by its details, each indented four spaces with the file and line it comes from.
   Rules skipped because an earlier stage failed are not printed.
-* ``DEFERRED:`` the port has ``status = "defer"``, and is not checked yet.
+* ``DEFERRED:`` the port has ``status = "defer"``, or its methodology has no rules yet, and is not checked; its timing reports are not read.
 
 Each result names the port as ``<port>.<methodology>``, the same identifier as in the ``--report`` and ``--junit`` files, so it can be searched for in a CI log.
 Paths are shown relative to where stacv runs; the ``--report`` file keeps them in full.

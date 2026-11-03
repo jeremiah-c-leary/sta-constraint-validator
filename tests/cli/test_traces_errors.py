@@ -15,6 +15,7 @@ def build_interface_text():
     lText.append('description = "traces errors test"')
     lText.append('name = "DAC_SPI_1"')
     lText.append('part = "part.toml"')
+    lText.append('part_interface = "INTERFACE_NAME"')
     lText.append('traces = "traces.toml"')
     lText.append('[[clock]]')
     lText.append('name = "clk_capture"')

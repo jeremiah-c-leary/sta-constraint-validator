@@ -7,11 +7,12 @@ from unittest import mock
 
 from stacv import __main__
 
-SDR_SS_I_KEYS = 'name, methodology, clock, capture_edge, setup, hold, skew_min, skew_max'
+SDR_SS_I_KEYS = 'name, methodology, clock, capture_edge, setup, hold'
 
 INTERFACE_TEXT = '''description = "part errors test"
 name = "DAC_SPI_1"
 part = "part.toml"
+part_interface = "SPI"
 traces = "traces.toml"
 
 [[port]]

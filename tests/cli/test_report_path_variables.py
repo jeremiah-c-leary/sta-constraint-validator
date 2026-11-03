@@ -70,6 +70,7 @@ class TestReportPathVariables(unittest.TestCase):
                 oFile.write('description = "A part path with an unset variable"\n')
                 oFile.write('name = "UNSET_PART"\n')
                 oFile.write('part = "$PROJ_DIR/part.toml"\n')
+                oFile.write('part_interface = "Serial Interface"\n')
                 oFile.write('traces = "traces.toml"\n')
                 oFile.write('[[port]]\nstatus = "defer"\nname = "O_DATA"\n')
             iExitCode = self.run_stacv(['visualize', 'block_diagram', sFile])
