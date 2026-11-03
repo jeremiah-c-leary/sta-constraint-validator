@@ -112,3 +112,7 @@ class TestTimingReportErrors(unittest.TestCase):
     def test_input_delay_in_other_units(self):
         self.change_line(24, 'Output Delay:           12.000ns', 'Input Delay:            12.000ps')
         self.assert_error('vivado_tr_parse_015', 24, '"Input Delay:" must be in ns')
+
+    def test_report_of_a_false_path(self):
+        self.change_line(14, 'Slack (MET) :             7.524ns  (required time - arrival time)', 'Slack:                    inf')
+        self.assert_error('vivado_tr_parse_017', 14, 'timing report is of a path the constraints do not time, such as a false path; report only the paths between the port and registers')

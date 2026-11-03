@@ -15,6 +15,7 @@ def parse_timing_report(oTimingReportFile):
     validate_timing_report_file(oTimingReportFile)
     oTimingReports = timing_report_list.TimingReportList()
     for oTimingReportText in extract_timing_report_texts(oTimingReportFile):
+        check_path_is_timed(oTimingReportText)
         validate_timing_report_text(oTimingReportText)
         oTimingReport = create_timing_report(oTimingReportText)
         populate_timing_report(oTimingReport)
@@ -84,7 +85,14 @@ def check_beginning_of_timing_report_without_ending(oTimingReportFile):
 
 
 def is_start_of_timing_report(oLine):
-    return oLine.text.startswith('Slack ')
+    # A timed path starts "Slack (MET) :", and a path the constraints make false starts "Slack:".
+    return oLine.text.startswith('Slack ') or oLine.text.startswith('Slack:')
+
+
+def check_path_is_timed(oTimingReportText):
+    oSlackLine = oTimingReportText.lines[0]
+    if oSlackLine.text.startswith('Slack:'):
+        raise timing_report_parse_error.TimingReportParseError('vivado_tr_parse_017', oSlackLine, 'timing report is of a path the constraints do not time, such as a false path; report only the paths between the port and registers')
 
 
 def is_end_of_timing_report(oLine):

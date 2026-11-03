@@ -352,3 +352,7 @@ The file is followed by the line the error is on: ``ERROR: [<identifier>] <file>
    * - vivado_tr_parse_016
      - ``slack must be a number of ns``
      - The file is incomplete or edited; write it again.
+   * - vivado_tr_parse_017
+     - ``timing report is of a path the constraints do not time, such as a false path; report only the paths between the port and registers``
+     - The report starts ``Slack:`` with no result, as Vivado writes a false path.
+       Write the reports with the script ``stacv generate report_tcl`` writes, which asks only for the paths between the port and registers.

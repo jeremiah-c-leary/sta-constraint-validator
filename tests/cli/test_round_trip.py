@@ -337,9 +337,9 @@ class TestRoundTripReportScript(RoundTripTestCase):
     def test_reports_the_paths_from_the_input_port(self):
         self.assertEqual(0, self.run_stacv(self.build_round_trip_tables(), ['generate', 'report_tcl', self.sInterfaceFile]))
         sOptions = f'-max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "{self.sMissingTimingReport}"'
-        self.assert_line_written(f'report_timing -column_style variable_width -from [get_ports I_DATA] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "{self.sMissingTimingReport}"')
-        self.assert_line_written(f'report_timing -column_style variable_width -from [get_ports I_DATA] -hold {sOptions}')
-        self.assert_line_written(f'report_timing -column_style variable_width -from [get_ports I_DATA] -setup {sOptions}')
+        self.assert_line_written(f'report_timing -column_style variable_width -from [get_ports I_DATA] -to [all_registers] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "{self.sMissingTimingReport}"')
+        self.assert_line_written(f'report_timing -column_style variable_width -from [get_ports I_DATA] -to [all_registers] -hold {sOptions}')
+        self.assert_line_written(f'report_timing -column_style variable_width -from [get_ports I_DATA] -to [all_registers] -setup {sOptions}')
 
 
 class TestRoundTripCheck(RoundTripTestCase):

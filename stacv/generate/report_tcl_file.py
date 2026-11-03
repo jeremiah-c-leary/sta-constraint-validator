@@ -173,10 +173,12 @@ def build_file_option(sCorner, sPath):
 
 
 def build_port_option(oPort):
-    # The paths of an output port end at it, and the paths of an input port start at it.
+    # The paths of an output port run from a register to it, and the paths of an input port from it to a register.
+    # Naming the registers keeps out paths from port to port, such as through a bidirectional pad, which Vivado
+    # reports in their place when only one process corner is on.
     if xdc.is_input(oPort):
-        return f'-from [get_ports {xdc.format_port(oPort.name)}]'
-    return f'-to [get_ports {xdc.format_port(oPort.name)}]'
+        return f'-from [get_ports {xdc.format_port(oPort.name)}] -to [all_registers]'
+    return f'-from [all_registers] -to [get_ports {xdc.format_port(oPort.name)}]'
 
 
 def build_report_timing(sPortOption, sAnalysis, sFileOption):
