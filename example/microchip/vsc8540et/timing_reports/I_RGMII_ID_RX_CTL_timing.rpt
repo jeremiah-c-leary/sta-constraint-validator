@@ -1,0 +1,464 @@
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Mon Nov  2 23:36:46 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_ports I_RGMII_ID_RX_CTL] -to [all_registers] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt
+| Design       : vsc8540et_mac
+| Device       : xa7a15t-csg324
+| Speed File   : -1Q  PRODUCTION 1.16 2018-06-13
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             1.011ns  (required time - arrival time)
+  Source:                 I_RGMII_ID_RX_CTL
+                            (input port clocked by rgmii_id_rxc  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Destination:            GEN_RGMII_ID_RX[4].U_IDDR/D
+                            (rising edge-triggered cell IDDR clocked by w_rgmii_id_rxc_pll  {rise@3.500ns fall@23.500ns period=40.000ns})
+  Path Group:             w_rgmii_id_rxc_pll
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            23.500ns  (w_rgmii_id_rxc_pll rise@43.500ns - rgmii_id_rxc fall@20.000ns)
+  Data Path Delay:        1.054ns  (logic 1.054ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            18.800ns
+  Clock Path Skew:        -2.543ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -2.543ns = ( 40.957 - 43.500 ) 
+    Source Clock Delay      (SCD):    0.000ns = ( 20.000 - 20.000 ) 
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.081ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.028ns
+    Phase Error              (PE):    0.043ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rgmii_id_rxc fall edge)    20.000    20.000 f  
+                         input delay                 18.800    38.800    
+    V16                                               0.000    38.800 r  I_RGMII_ID_RX_CTL (IN)
+                         net (fo=0)                   0.000    38.800    I_RGMII_ID_RX_CTL
+    V16                  IBUF (Prop_ibuf_I_O)         1.054    39.854 r  I_RGMII_ID_RX_CTL_IBUF_inst/O
+                         net (fo=1, routed)           0.000    39.854    I_RGMII_ID_RX_CTL_IBUF
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock w_rgmii_id_rxc_pll rise edge)    43.500    43.500 r  
+    P17                                               0.000    43.500 r  I_RGMII_ID_RXC (IN)
+                         net (fo=0)                   0.000    43.500    I_RGMII_ID_RXC
+    P17                  IBUF (Prop_ibuf_I_O)         0.830    44.330 r  I_RGMII_ID_RXC_IBUF_inst/O
+                         net (fo=1, routed)           1.181    45.511    I_RGMII_ID_RXC_IBUF
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)    -7.753    37.757 r  U_RGMII_ID_PLL/CLKOUT0
+                         net (fo=1, routed)           1.582    39.339    w_rgmii_id_rxc_pll
+    BUFGCTRL_X0Y3        BUFG (Prop_bufg_I_O)         0.091    39.430 r  U_RGMII_ID_RXC_BUFG/O
+                         net (fo=5, routed)           1.527    40.957    w_rgmii_id_rxc_shifted
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/C
+                         clock pessimism              0.000    40.957    
+                         clock uncertainty           -0.081    40.876    
+    ILOGIC_X0Y17         IDDR (Setup_iddr_C_D)       -0.011    40.865    GEN_RGMII_ID_RX[4].U_IDDR
+  -------------------------------------------------------------------
+                         required time                         40.865    
+                         arrival time                         -39.854    
+  -------------------------------------------------------------------
+                         slack                                  1.011    
+
+Slack (MET) :             1.011ns  (required time - arrival time)
+  Source:                 I_RGMII_ID_RX_CTL
+                            (input port clocked by rgmii_id_rxc  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Destination:            GEN_RGMII_ID_RX[4].U_IDDR/D
+                            (falling edge-triggered cell IDDR clocked by w_rgmii_id_rxc_pll  {rise@3.500ns fall@23.500ns period=40.000ns})
+  Path Group:             w_rgmii_id_rxc_pll
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            23.500ns  (w_rgmii_id_rxc_pll fall@23.500ns - rgmii_id_rxc rise@0.000ns)
+  Data Path Delay:        1.054ns  (logic 1.054ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            18.800ns
+  Clock Path Skew:        -2.543ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -2.543ns = ( 20.957 - 23.500 ) 
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.081ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.028ns
+    Phase Error              (PE):    0.043ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rgmii_id_rxc rise edge)     0.000     0.000 r  
+                         input delay                 18.800    18.800    
+    V16                                               0.000    18.800 r  I_RGMII_ID_RX_CTL (IN)
+                         net (fo=0)                   0.000    18.800    I_RGMII_ID_RX_CTL
+    V16                  IBUF (Prop_ibuf_I_O)         1.054    19.854 r  I_RGMII_ID_RX_CTL_IBUF_inst/O
+                         net (fo=1, routed)           0.000    19.854    I_RGMII_ID_RX_CTL_IBUF
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock w_rgmii_id_rxc_pll fall edge)    23.500    23.500 f  
+    P17                                               0.000    23.500 f  I_RGMII_ID_RXC (IN)
+                         net (fo=0)                   0.000    23.500    I_RGMII_ID_RXC
+    P17                  IBUF (Prop_ibuf_I_O)         0.830    24.330 f  I_RGMII_ID_RXC_IBUF_inst/O
+                         net (fo=1, routed)           1.181    25.511    I_RGMII_ID_RXC_IBUF
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)    -7.753    17.757 f  U_RGMII_ID_PLL/CLKOUT0
+                         net (fo=1, routed)           1.582    19.339    w_rgmii_id_rxc_pll
+    BUFGCTRL_X0Y3        BUFG (Prop_bufg_I_O)         0.091    19.430 f  U_RGMII_ID_RXC_BUFG/O
+                         net (fo=5, routed)           1.527    20.957    w_rgmii_id_rxc_shifted
+    ILOGIC_X0Y17         IDDR                                         f  GEN_RGMII_ID_RX[4].U_IDDR/C
+                         clock pessimism              0.000    20.957    
+                         clock uncertainty           -0.081    20.876    
+    ILOGIC_X0Y17         IDDR (Setup_iddr_C_D)       -0.011    20.865    GEN_RGMII_ID_RX[4].U_IDDR
+  -------------------------------------------------------------------
+                         required time                         20.865    
+                         arrival time                         -19.854    
+  -------------------------------------------------------------------
+                         slack                                  1.011    
+
+
+
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Mon Nov  2 23:36:46 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_ports I_RGMII_ID_RX_CTL] -to [all_registers] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt
+| Design       : vsc8540et_mac
+| Device       : xa7a15t-csg324
+| Speed File   : -1Q  PRODUCTION 1.16 2018-06-13
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             41.135ns  (arrival time - required time)
+  Source:                 I_RGMII_ID_RX_CTL
+                            (input port clocked by rgmii_id_rxc  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Destination:            GEN_RGMII_ID_RX[4].U_IDDR/D
+                            (rising edge-triggered cell IDDR clocked by w_rgmii_id_rxc_pll  {rise@3.500ns fall@23.500ns period=40.000ns})
+  Path Group:             w_rgmii_id_rxc_pll
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            -36.500ns  (w_rgmii_id_rxc_pll rise@3.500ns - rgmii_id_rxc rise@40.000ns)
+  Data Path Delay:        0.843ns  (logic 0.843ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            1.300ns
+  Clock Path Skew:        -2.764ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    -2.764ns = ( 0.736 - 3.500 ) 
+    Source Clock Delay      (SCD):    0.000ns = ( 40.000 - 40.000 ) 
+    Clock Pessimism Removal (CPR):    -0.000ns
+  Clock Uncertainty:      0.081ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.028ns
+    Phase Error              (PE):    0.043ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rgmii_id_rxc rise edge)    40.000    40.000 r  
+                         input delay                  1.300    41.300    
+    V16                                               0.000    41.300 r  I_RGMII_ID_RX_CTL (IN)
+                         net (fo=0)                   0.000    41.300    I_RGMII_ID_RX_CTL
+    V16                  IBUF (Prop_ibuf_I_O)         0.843    42.143 r  I_RGMII_ID_RX_CTL_IBUF_inst/O
+                         net (fo=1, routed)           0.000    42.143    I_RGMII_ID_RX_CTL_IBUF
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock w_rgmii_id_rxc_pll rise edge)     3.500     3.500 r  
+    P17                                               0.000     3.500 r  I_RGMII_ID_RXC (IN)
+                         net (fo=0)                   0.000     3.500    I_RGMII_ID_RXC
+    P17                  IBUF (Prop_ibuf_I_O)         1.041     4.541 r  I_RGMII_ID_RXC_IBUF_inst/O
+                         net (fo=1, routed)           1.253     5.794    I_RGMII_ID_RXC_IBUF
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)    -8.486    -2.691 r  U_RGMII_ID_PLL/CLKOUT0
+                         net (fo=1, routed)           1.660    -1.031    w_rgmii_id_rxc_pll
+    BUFGCTRL_X0Y3        BUFG (Prop_bufg_I_O)         0.096    -0.935 r  U_RGMII_ID_RXC_BUFG/O
+                         net (fo=5, routed)           1.671     0.736    w_rgmii_id_rxc_shifted
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/C
+                         clock pessimism              0.000     0.736    
+                         clock uncertainty            0.081     0.817    
+    ILOGIC_X0Y17         IDDR (Hold_iddr_C_D)         0.191     1.008    GEN_RGMII_ID_RX[4].U_IDDR
+  -------------------------------------------------------------------
+                         required time                         -1.008    
+                         arrival time                          42.143    
+  -------------------------------------------------------------------
+                         slack                                 41.135    
+
+Slack (MET) :             41.135ns  (arrival time - required time)
+  Source:                 I_RGMII_ID_RX_CTL
+                            (input port clocked by rgmii_id_rxc  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Destination:            GEN_RGMII_ID_RX[4].U_IDDR/D
+                            (falling edge-triggered cell IDDR clocked by w_rgmii_id_rxc_pll  {rise@3.500ns fall@23.500ns period=40.000ns})
+  Path Group:             w_rgmii_id_rxc_pll
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            -36.500ns  (w_rgmii_id_rxc_pll fall@23.500ns - rgmii_id_rxc fall@60.000ns)
+  Data Path Delay:        0.843ns  (logic 0.843ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            1.300ns
+  Clock Path Skew:        -2.764ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    -2.764ns = ( 20.736 - 23.500 ) 
+    Source Clock Delay      (SCD):    0.000ns = ( 60.000 - 60.000 ) 
+    Clock Pessimism Removal (CPR):    -0.000ns
+  Clock Uncertainty:      0.081ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.028ns
+    Phase Error              (PE):    0.043ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rgmii_id_rxc fall edge)    60.000    60.000 f  
+                         input delay                  1.300    61.300    
+    V16                                               0.000    61.300 r  I_RGMII_ID_RX_CTL (IN)
+                         net (fo=0)                   0.000    61.300    I_RGMII_ID_RX_CTL
+    V16                  IBUF (Prop_ibuf_I_O)         0.843    62.143 r  I_RGMII_ID_RX_CTL_IBUF_inst/O
+                         net (fo=1, routed)           0.000    62.143    I_RGMII_ID_RX_CTL_IBUF
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock w_rgmii_id_rxc_pll fall edge)    23.500    23.500 f  
+    P17                                               0.000    23.500 f  I_RGMII_ID_RXC (IN)
+                         net (fo=0)                   0.000    23.500    I_RGMII_ID_RXC
+    P17                  IBUF (Prop_ibuf_I_O)         1.041    24.541 f  I_RGMII_ID_RXC_IBUF_inst/O
+                         net (fo=1, routed)           1.253    25.794    I_RGMII_ID_RXC_IBUF
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)    -8.486    17.309 f  U_RGMII_ID_PLL/CLKOUT0
+                         net (fo=1, routed)           1.660    18.969    w_rgmii_id_rxc_pll
+    BUFGCTRL_X0Y3        BUFG (Prop_bufg_I_O)         0.096    19.065 f  U_RGMII_ID_RXC_BUFG/O
+                         net (fo=5, routed)           1.671    20.736    w_rgmii_id_rxc_shifted
+    ILOGIC_X0Y17         IDDR                                         f  GEN_RGMII_ID_RX[4].U_IDDR/C
+                         clock pessimism              0.000    20.736    
+                         clock uncertainty            0.081    20.817    
+    ILOGIC_X0Y17         IDDR (Hold_iddr_C_D)         0.191    21.008    GEN_RGMII_ID_RX[4].U_IDDR
+  -------------------------------------------------------------------
+                         required time                        -21.008    
+                         arrival time                          62.143    
+  -------------------------------------------------------------------
+                         slack                                 41.135    
+
+
+
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Mon Nov  2 23:36:46 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_ports I_RGMII_ID_RX_CTL] -to [all_registers] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt
+| Design       : vsc8540et_mac
+| Device       : xa7a15t-csg324
+| Speed File   : -1Q  PRODUCTION 1.16 2018-06-13
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             3.643ns  (required time - arrival time)
+  Source:                 I_RGMII_ID_RX_CTL
+                            (input port clocked by rgmii_id_rxc  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Destination:            GEN_RGMII_ID_RX[4].U_IDDR/D
+                            (rising edge-triggered cell IDDR clocked by w_rgmii_id_rxc_pll  {rise@3.500ns fall@23.500ns period=40.000ns})
+  Path Group:             w_rgmii_id_rxc_pll
+  Path Type:              Setup (Max at Fast Process Corner)
+  Requirement:            23.500ns  (w_rgmii_id_rxc_pll rise@43.500ns - rgmii_id_rxc fall@20.000ns)
+  Data Path Delay:        0.394ns  (logic 0.394ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            18.800ns
+  Clock Path Skew:        -0.580ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -0.580ns = ( 42.920 - 43.500 ) 
+    Source Clock Delay      (SCD):    0.000ns = ( 20.000 - 20.000 ) 
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.081ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.028ns
+    Phase Error              (PE):    0.043ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rgmii_id_rxc fall edge)    20.000    20.000 f  
+                         input delay                 18.800    38.800    
+    V16                                               0.000    38.800 r  I_RGMII_ID_RX_CTL (IN)
+                         net (fo=0)                   0.000    38.800    I_RGMII_ID_RX_CTL
+    V16                  IBUF (Prop_ibuf_I_O)         0.394    39.194 r  I_RGMII_ID_RX_CTL_IBUF_inst/O
+                         net (fo=1, routed)           0.000    39.194    I_RGMII_ID_RX_CTL_IBUF
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock w_rgmii_id_rxc_pll rise edge)    43.500    43.500 r  
+    P17                                               0.000    43.500 r  I_RGMII_ID_RXC (IN)
+                         net (fo=0)                   0.000    43.500    I_RGMII_ID_RXC
+    P17                  IBUF (Prop_ibuf_I_O)         0.192    43.692 r  I_RGMII_ID_RXC_IBUF_inst/O
+                         net (fo=1, routed)           0.440    44.132    I_RGMII_ID_RXC_IBUF
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)    -2.326    41.807 r  U_RGMII_ID_PLL/CLKOUT0
+                         net (fo=1, routed)           0.504    42.311    w_rgmii_id_rxc_pll
+    BUFGCTRL_X0Y3        BUFG (Prop_bufg_I_O)         0.026    42.337 r  U_RGMII_ID_RXC_BUFG/O
+                         net (fo=5, routed)           0.584    42.920    w_rgmii_id_rxc_shifted
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/C
+                         clock pessimism              0.000    42.920    
+                         clock uncertainty           -0.081    42.839    
+    ILOGIC_X0Y17         IDDR (Setup_iddr_C_D)       -0.002    42.837    GEN_RGMII_ID_RX[4].U_IDDR
+  -------------------------------------------------------------------
+                         required time                         42.837    
+                         arrival time                         -39.194    
+  -------------------------------------------------------------------
+                         slack                                  3.643    
+
+Slack (MET) :             3.643ns  (required time - arrival time)
+  Source:                 I_RGMII_ID_RX_CTL
+                            (input port clocked by rgmii_id_rxc  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Destination:            GEN_RGMII_ID_RX[4].U_IDDR/D
+                            (falling edge-triggered cell IDDR clocked by w_rgmii_id_rxc_pll  {rise@3.500ns fall@23.500ns period=40.000ns})
+  Path Group:             w_rgmii_id_rxc_pll
+  Path Type:              Setup (Max at Fast Process Corner)
+  Requirement:            23.500ns  (w_rgmii_id_rxc_pll fall@23.500ns - rgmii_id_rxc rise@0.000ns)
+  Data Path Delay:        0.394ns  (logic 0.394ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            18.800ns
+  Clock Path Skew:        -0.580ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    -0.580ns = ( 22.920 - 23.500 ) 
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.081ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.028ns
+    Phase Error              (PE):    0.043ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rgmii_id_rxc rise edge)     0.000     0.000 r  
+                         input delay                 18.800    18.800    
+    V16                                               0.000    18.800 r  I_RGMII_ID_RX_CTL (IN)
+                         net (fo=0)                   0.000    18.800    I_RGMII_ID_RX_CTL
+    V16                  IBUF (Prop_ibuf_I_O)         0.394    19.194 r  I_RGMII_ID_RX_CTL_IBUF_inst/O
+                         net (fo=1, routed)           0.000    19.194    I_RGMII_ID_RX_CTL_IBUF
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock w_rgmii_id_rxc_pll fall edge)    23.500    23.500 f  
+    P17                                               0.000    23.500 f  I_RGMII_ID_RXC (IN)
+                         net (fo=0)                   0.000    23.500    I_RGMII_ID_RXC
+    P17                  IBUF (Prop_ibuf_I_O)         0.192    23.692 f  I_RGMII_ID_RXC_IBUF_inst/O
+                         net (fo=1, routed)           0.440    24.132    I_RGMII_ID_RXC_IBUF
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)    -2.326    21.807 f  U_RGMII_ID_PLL/CLKOUT0
+                         net (fo=1, routed)           0.504    22.311    w_rgmii_id_rxc_pll
+    BUFGCTRL_X0Y3        BUFG (Prop_bufg_I_O)         0.026    22.337 f  U_RGMII_ID_RXC_BUFG/O
+                         net (fo=5, routed)           0.584    22.920    w_rgmii_id_rxc_shifted
+    ILOGIC_X0Y17         IDDR                                         f  GEN_RGMII_ID_RX[4].U_IDDR/C
+                         clock pessimism              0.000    22.920    
+                         clock uncertainty           -0.081    22.839    
+    ILOGIC_X0Y17         IDDR (Setup_iddr_C_D)       -0.002    22.837    GEN_RGMII_ID_RX[4].U_IDDR
+  -------------------------------------------------------------------
+                         required time                         22.837    
+                         arrival time                         -19.194    
+  -------------------------------------------------------------------
+                         slack                                  3.643    
+
+
+
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Mon Nov  2 23:36:46 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_ports I_RGMII_ID_RX_CTL] -to [all_registers] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt
+| Design       : vsc8540et_mac
+| Device       : xa7a15t-csg324
+| Speed File   : -1Q  PRODUCTION 1.16 2018-06-13
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             38.202ns  (arrival time - required time)
+  Source:                 I_RGMII_ID_RX_CTL
+                            (input port clocked by rgmii_id_rxc  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Destination:            GEN_RGMII_ID_RX[4].U_IDDR/D
+                            (rising edge-triggered cell IDDR clocked by w_rgmii_id_rxc_pll  {rise@3.500ns fall@23.500ns period=40.000ns})
+  Path Group:             w_rgmii_id_rxc_pll
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            -36.500ns  (w_rgmii_id_rxc_pll rise@3.500ns - rgmii_id_rxc rise@40.000ns)
+  Data Path Delay:        0.205ns  (logic 0.205ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            1.300ns
+  Clock Path Skew:        -0.346ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    -0.346ns = ( 3.154 - 3.500 ) 
+    Source Clock Delay      (SCD):    0.000ns = ( 40.000 - 40.000 ) 
+    Clock Pessimism Removal (CPR):    -0.000ns
+  Clock Uncertainty:      0.081ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.028ns
+    Phase Error              (PE):    0.043ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rgmii_id_rxc rise edge)    40.000    40.000 r  
+                         input delay                  1.300    41.300    
+    V16                                               0.000    41.300 r  I_RGMII_ID_RX_CTL (IN)
+                         net (fo=0)                   0.000    41.300    I_RGMII_ID_RX_CTL
+    V16                  IBUF (Prop_ibuf_I_O)         0.205    41.505 r  I_RGMII_ID_RX_CTL_IBUF_inst/O
+                         net (fo=1, routed)           0.000    41.505    I_RGMII_ID_RX_CTL_IBUF
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock w_rgmii_id_rxc_pll rise edge)     3.500     3.500 r  
+    P17                                               0.000     3.500 r  I_RGMII_ID_RXC (IN)
+                         net (fo=0)                   0.000     3.500    I_RGMII_ID_RXC
+    P17                  IBUF (Prop_ibuf_I_O)         0.381     3.881 r  I_RGMII_ID_RXC_IBUF_inst/O
+                         net (fo=1, routed)           0.481     4.362    I_RGMII_ID_RXC_IBUF
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)    -2.641     1.721 r  U_RGMII_ID_PLL/CLKOUT0
+                         net (fo=1, routed)           0.550     2.271    w_rgmii_id_rxc_pll
+    BUFGCTRL_X0Y3        BUFG (Prop_bufg_I_O)         0.029     2.300 r  U_RGMII_ID_RXC_BUFG/O
+                         net (fo=5, routed)           0.855     3.154    w_rgmii_id_rxc_shifted
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/C
+                         clock pessimism              0.000     3.154    
+                         clock uncertainty            0.081     3.235    
+    ILOGIC_X0Y17         IDDR (Hold_iddr_C_D)         0.068     3.303    GEN_RGMII_ID_RX[4].U_IDDR
+  -------------------------------------------------------------------
+                         required time                         -3.303    
+                         arrival time                          41.505    
+  -------------------------------------------------------------------
+                         slack                                 38.202    
+
+Slack (MET) :             38.202ns  (arrival time - required time)
+  Source:                 I_RGMII_ID_RX_CTL
+                            (input port clocked by rgmii_id_rxc  {rise@0.000ns fall@20.000ns period=40.000ns})
+  Destination:            GEN_RGMII_ID_RX[4].U_IDDR/D
+                            (falling edge-triggered cell IDDR clocked by w_rgmii_id_rxc_pll  {rise@3.500ns fall@23.500ns period=40.000ns})
+  Path Group:             w_rgmii_id_rxc_pll
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            -36.500ns  (w_rgmii_id_rxc_pll fall@23.500ns - rgmii_id_rxc fall@60.000ns)
+  Data Path Delay:        0.205ns  (logic 0.205ns (100.000%)  route 0.000ns (0.000%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            1.300ns
+  Clock Path Skew:        -0.346ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    -0.346ns = ( 23.154 - 23.500 ) 
+    Source Clock Delay      (SCD):    0.000ns = ( 60.000 - 60.000 ) 
+    Clock Pessimism Removal (CPR):    -0.000ns
+  Clock Uncertainty:      0.081ns  ((TSJ^2 + DJ^2)^1/2) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Discrete Jitter          (DJ):    0.028ns
+    Phase Error              (PE):    0.043ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rgmii_id_rxc fall edge)    60.000    60.000 f  
+                         input delay                  1.300    61.300    
+    V16                                               0.000    61.300 r  I_RGMII_ID_RX_CTL (IN)
+                         net (fo=0)                   0.000    61.300    I_RGMII_ID_RX_CTL
+    V16                  IBUF (Prop_ibuf_I_O)         0.205    61.505 r  I_RGMII_ID_RX_CTL_IBUF_inst/O
+                         net (fo=1, routed)           0.000    61.505    I_RGMII_ID_RX_CTL_IBUF
+    ILOGIC_X0Y17         IDDR                                         r  GEN_RGMII_ID_RX[4].U_IDDR/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock w_rgmii_id_rxc_pll fall edge)    23.500    23.500 f  
+    P17                                               0.000    23.500 f  I_RGMII_ID_RXC (IN)
+                         net (fo=0)                   0.000    23.500    I_RGMII_ID_RXC
+    P17                  IBUF (Prop_ibuf_I_O)         0.381    23.881 f  I_RGMII_ID_RXC_IBUF_inst/O
+                         net (fo=1, routed)           0.481    24.362    I_RGMII_ID_RXC_IBUF
+    PLLE2_ADV_X0Y0       PLLE2_ADV (Prop_plle2_adv_CLKIN1_CLKOUT0)    -2.641    21.721 f  U_RGMII_ID_PLL/CLKOUT0
+                         net (fo=1, routed)           0.550    22.271    w_rgmii_id_rxc_pll
+    BUFGCTRL_X0Y3        BUFG (Prop_bufg_I_O)         0.029    22.300 f  U_RGMII_ID_RXC_BUFG/O
+                         net (fo=5, routed)           0.855    23.154    w_rgmii_id_rxc_shifted
+    ILOGIC_X0Y17         IDDR                                         f  GEN_RGMII_ID_RX[4].U_IDDR/C
+                         clock pessimism              0.000    23.154    
+                         clock uncertainty            0.081    23.235    
+    ILOGIC_X0Y17         IDDR (Hold_iddr_C_D)         0.068    23.303    GEN_RGMII_ID_RX[4].U_IDDR
+  -------------------------------------------------------------------
+                         required time                        -23.303    
+                         arrival time                          61.505    
+  -------------------------------------------------------------------
+                         slack                                 38.202    
+
+
+
+
