@@ -255,7 +255,8 @@ The script is written for a reader, like the constraints file:
 * There is one section for each corner.
   Each section turns on its corner, turns off the other, and lists every port of the interface under its name.
 * A deferred port is listed as ``Deferred``, with no reports.
-* The reports of an output port are the paths to it (``-to``), and the reports of an input port the paths from it (``-from``).
+* The reports of an output port are the paths from registers to it (``-from [all_registers] -to``), and the reports of an input port the paths from it to registers (``-from … -to [all_registers]``).
+  Naming the registers keeps out paths from port to port, such as the path through a bidirectional pad, which Vivado reports in place of the register paths when only one process corner is on.
 * Each report asks for every path, up to 100, the worst for each set of pins (``-max_paths 100 -nworst 100 -unique_pins``), so every register that drives or captures the port is reported.
 * The first report of a port starts its file, so reports from an earlier run are not kept.
 * The script ends by restoring the Vivado default, both corners on.
