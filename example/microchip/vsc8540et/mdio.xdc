@@ -207,3 +207,13 @@ set_multicycle_path 38 -setup -end -from [get_ports IO_MDIO] -to [get_clocks clk
 #
 
 set_multicycle_path 39 -hold -end -from [get_ports IO_MDIO] -to [get_clocks clk_100mhz]
+
+#
+# -from:   IO_MDIO as an input, where the part's data arrives
+# -to:     IO_MDIO as an output, where the device's data leaves
+# reason:  the input and output delays make the timing tool time a path from the port to itself
+#          through the pad, which does not exist in the design.  Without the false path it is the
+#          worst hold path in the design, failing by the pad's input and output delays.
+#
+
+set_false_path -from [get_ports IO_MDIO] -to [get_ports IO_MDIO]

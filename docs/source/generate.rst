@@ -205,6 +205,18 @@ For double data rate, each edge captures the data it launches, so the multicycle
 the setup checks move to the same edge, an edge does not capture the data the other edge launches,
 and the hold check of an edge is against the data the other edge launches next.
 
+Bidirectional ports
+^^^^^^^^^^^^^^^^^^^
+
+A port timed in both directions, such as MDIO, has an input delay and an output delay.
+The timing tool joins them into a path from the port to itself through the pad, which does not exist in the design.
+The report script leaves it out of the timing reports, but the timing tool still times it, and it would be the worst hold path in the design.
+So the last section of the port ends with a false path from the port to itself, after the multicycle paths:
+
+.. code-block:: tcl
+
+   set_false_path -from [get_ports IO_MDIO] -to [get_ports IO_MDIO]
+
 Constraints file
 ----------------
 
