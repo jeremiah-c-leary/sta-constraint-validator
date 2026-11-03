@@ -173,17 +173,20 @@ def build_file_option(sCorner, sPath):
 
 
 def build_port_option(oPort):
-    # The paths of an output port run from a register to it, and the paths of an input port from it to a register.
-    # Naming the registers keeps out paths from port to port, such as through a bidirectional pad, which Vivado
-    # reports in their place when only one process corner is on.
+    # The paths through the port to the clock of its output delay, or from the clock of its input delay.
+    # The device side is left open, so every register that drives or captures the port is reported, whatever its clock.
+    # Naming the delay's clock keeps out the path through a bidirectional pad, from the port to itself,
+    # which Vivado reports in place of the register paths when only one process corner is on.
+    sClock = f'[get_clocks {oPort.forwarded_clock.name}]'
+    sPort = f'[get_ports {xdc.format_port(oPort.name)}]'
     if xdc.is_input(oPort):
-        return f'-from [get_ports {xdc.format_port(oPort.name)}] -to [all_registers]'
-    return f'-from [all_registers] -to [get_ports {xdc.format_port(oPort.name)}]'
+        return f'-from {sClock} -through {sPort}'
+    return f'-to {sClock} -through {sPort}'
 
 
 def build_report_timing(sPortOption, sAnalysis, sFileOption):
     # Every path to or from the port, the worst for each set of pins, so every register that drives or captures it is reported.
-    sPaths = f'-max_paths {registers.PATH_LIMIT} -nworst {registers.PATH_LIMIT} -unique_pins'
+    sPaths = f'-max_paths {registers.PATH_LIMIT} -nworst {registers.PATH_LIMIT}'
     return f'report_timing -column_style variable_width {sPortOption} {sAnalysis} {sPaths} -path full_clock_expanded {sFileOption}'
 
 

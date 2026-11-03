@@ -50,20 +50,20 @@ config_timing_corners -corner Slow -delay_type min_max
 config_timing_corners -corner Fast -delay_type none
 
 # O_RGMII_ID_TXD[3:0]
-report_timing -column_style variable_width -from [all_registers] -to [get_ports {O_RGMII_ID_TXD[*]}] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TXD_timing.rpt"
-report_timing -column_style variable_width -from [all_registers] -to [get_ports {O_RGMII_ID_TXD[*]}] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TXD_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks rgmii_id_txc] -through [get_ports {O_RGMII_ID_TXD[*]}] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TXD_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks rgmii_id_txc] -through [get_ports {O_RGMII_ID_TXD[*]}] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TXD_timing.rpt"
 
 # O_RGMII_ID_TX_CTL
-report_timing -column_style variable_width -from [all_registers] -to [get_ports O_RGMII_ID_TX_CTL] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TX_CTL_timing.rpt"
-report_timing -column_style variable_width -from [all_registers] -to [get_ports O_RGMII_ID_TX_CTL] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TX_CTL_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks rgmii_id_txc] -through [get_ports O_RGMII_ID_TX_CTL] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TX_CTL_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks rgmii_id_txc] -through [get_ports O_RGMII_ID_TX_CTL] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TX_CTL_timing.rpt"
 
 # I_RGMII_ID_RXD[3:0]
-report_timing -column_style variable_width -from [get_ports {I_RGMII_ID_RXD[*]}] -to [all_registers] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RXD_timing.rpt"
-report_timing -column_style variable_width -from [get_ports {I_RGMII_ID_RXD[*]}] -to [all_registers] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RXD_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RXD_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RXD_timing.rpt"
 
 # I_RGMII_ID_RX_CTL
-report_timing -column_style variable_width -from [get_ports I_RGMII_ID_RX_CTL] -to [all_registers] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt"
-report_timing -column_style variable_width -from [get_ports I_RGMII_ID_RX_CTL] -to [all_registers] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt"
 
 ###############################################################################
 # Fast Corner
@@ -72,20 +72,20 @@ config_timing_corners -corner Fast -delay_type min_max
 config_timing_corners -corner Slow -delay_type none
 
 # O_RGMII_ID_TXD[3:0]
-report_timing -column_style variable_width -from [all_registers] -to [get_ports {O_RGMII_ID_TXD[*]}] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TXD_timing.rpt"
-report_timing -column_style variable_width -from [all_registers] -to [get_ports {O_RGMII_ID_TXD[*]}] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TXD_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks rgmii_id_txc] -through [get_ports {O_RGMII_ID_TXD[*]}] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TXD_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks rgmii_id_txc] -through [get_ports {O_RGMII_ID_TXD[*]}] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TXD_timing.rpt"
 
 # O_RGMII_ID_TX_CTL
-report_timing -column_style variable_width -from [all_registers] -to [get_ports O_RGMII_ID_TX_CTL] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TX_CTL_timing.rpt"
-report_timing -column_style variable_width -from [all_registers] -to [get_ports O_RGMII_ID_TX_CTL] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TX_CTL_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks rgmii_id_txc] -through [get_ports O_RGMII_ID_TX_CTL] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TX_CTL_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks rgmii_id_txc] -through [get_ports O_RGMII_ID_TX_CTL] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/O_RGMII_ID_TX_CTL_timing.rpt"
 
 # I_RGMII_ID_RXD[3:0]
-report_timing -column_style variable_width -from [get_ports {I_RGMII_ID_RXD[*]}] -to [all_registers] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RXD_timing.rpt"
-report_timing -column_style variable_width -from [get_ports {I_RGMII_ID_RXD[*]}] -to [all_registers] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RXD_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RXD_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks rgmii_id_rxc] -through [get_ports {I_RGMII_ID_RXD[*]}] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RXD_timing.rpt"
 
 # I_RGMII_ID_RX_CTL
-report_timing -column_style variable_width -from [get_ports I_RGMII_ID_RX_CTL] -to [all_registers] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt"
-report_timing -column_style variable_width -from [get_ports I_RGMII_ID_RX_CTL] -to [all_registers] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt"
 
 ###############################################################################
 # Restore Vivado Default

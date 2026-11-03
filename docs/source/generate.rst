@@ -205,18 +205,6 @@ For double data rate, each edge captures the data it launches, so the multicycle
 the setup checks move to the same edge, an edge does not capture the data the other edge launches,
 and the hold check of an edge is against the data the other edge launches next.
 
-Bidirectional ports
-^^^^^^^^^^^^^^^^^^^
-
-A port timed in both directions, such as MDIO, has an input delay and an output delay.
-The timing tool joins them into a path from the port to itself through the pad, which does not exist in the design.
-It would be the worst path to the port, and would hide the device's output path in the timing reports.
-So the last section of the port ends with a false path from the port to itself, after the multicycle paths:
-
-.. code-block:: tcl
-
-   set_false_path -from [get_ports IO_MDIO] -to [get_ports IO_MDIO]
-
 Constraints file
 ----------------
 
@@ -255,9 +243,10 @@ The script is written for a reader, like the constraints file:
 * There is one section for each corner.
   Each section turns on its corner, turns off the other, and lists every port of the interface under its name.
 * A deferred port is listed as ``Deferred``, with no reports.
-* The reports of an output port are the paths from registers to it (``-from [all_registers] -to``), and the reports of an input port the paths from it to registers (``-from … -to [all_registers]``).
-  Naming the registers keeps out paths from port to port, such as the path through a bidirectional pad, which Vivado reports in place of the register paths when only one process corner is on.
-* Each report asks for every path, up to 100, the worst for each set of pins (``-max_paths 100 -nworst 100 -unique_pins``), so every register that drives or captures the port is reported.
+* The reports of an output port are the paths through it to the clock of its output delay (``-to [get_clocks …] -through [get_ports …]``), and the reports of an input port the paths through it from the clock of its input delay (``-from [get_clocks …] -through [get_ports …]``).
+  The device side is left open, so every register that drives or captures the port is reported, whatever its clock.
+  Naming the delay's clock keeps out the path through a bidirectional pad, from the port to itself, which Vivado reports in place of the register paths when only one process corner is on.
+* Each report asks for every path, up to 100 (``-max_paths 100 -nworst 100``), so every register that drives or captures the port is reported; stacv checks the worst path of each register.
 * The first report of a port starts its file, so reports from an earlier run are not kept.
 * The script ends by restoring the Vivado default, both corners on.
 

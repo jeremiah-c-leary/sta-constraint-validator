@@ -42,12 +42,12 @@ config_timing_corners -corner Slow -delay_type min_max
 config_timing_corners -corner Fast -delay_type none
 
 # IO_MDIO
-report_timing -column_style variable_width -from [all_registers] -to [get_ports IO_MDIO] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt"
-report_timing -column_style variable_width -from [all_registers] -to [get_ports IO_MDIO] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks mdc] -through [get_ports IO_MDIO] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks mdc] -through [get_ports IO_MDIO] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt"
 
 # IO_MDIO
-report_timing -column_style variable_width -from [get_ports IO_MDIO] -to [all_registers] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt"
-report_timing -column_style variable_width -from [get_ports IO_MDIO] -to [all_registers] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks mdc] -through [get_ports IO_MDIO] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks mdc] -through [get_ports IO_MDIO] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt"
 
 ###############################################################################
 # Fast Corner
@@ -56,12 +56,12 @@ config_timing_corners -corner Fast -delay_type min_max
 config_timing_corners -corner Slow -delay_type none
 
 # IO_MDIO
-report_timing -column_style variable_width -from [all_registers] -to [get_ports IO_MDIO] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt"
-report_timing -column_style variable_width -from [all_registers] -to [get_ports IO_MDIO] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks mdc] -through [get_ports IO_MDIO] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks mdc] -through [get_ports IO_MDIO] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt"
 
 # IO_MDIO
-report_timing -column_style variable_width -from [get_ports IO_MDIO] -to [all_registers] -setup -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt"
-report_timing -column_style variable_width -from [get_ports IO_MDIO] -to [all_registers] -hold -max_paths 100 -nworst 100 -unique_pins -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks mdc] -through [get_ports IO_MDIO] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt"
+report_timing -column_style variable_width -from [get_clocks mdc] -through [get_ports IO_MDIO] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt"
 
 ###############################################################################
 # Restore Vivado Default
