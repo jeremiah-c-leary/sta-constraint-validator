@@ -1,7 +1,7 @@
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:26 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -from [get_clocks mii_rx_clk] -through [get_ports I_MII_RX_DV] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_MII_RX_DV_timing.rpt
 | Design       : vsc8540et_mac
@@ -115,7 +115,7 @@ Slack (MET) :             12.028ns  (required time - arrival time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:26 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -from [get_clocks mii_rx_clk] -through [get_ports I_MII_RX_DV] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_MII_RX_DV_timing.rpt
 | Design       : vsc8540et_mac
@@ -229,7 +229,7 @@ Slack (MET) :             5.990ns  (arrival time - required time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:26 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -from [get_clocks mii_rx_clk] -through [get_ports I_MII_RX_DV] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_MII_RX_DV_timing.rpt
 | Design       : vsc8540et_mac
@@ -343,7 +343,7 @@ Slack (MET) :             10.289ns  (required time - arrival time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:26 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -from [get_clocks mii_rx_clk] -through [get_ports I_MII_RX_DV] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_MII_RX_DV_timing.rpt
 | Design       : vsc8540et_mac

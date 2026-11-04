@@ -1,7 +1,7 @@
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:25 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -from [get_clocks mdc] -through [get_ports IO_MDIO] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt
 | Design       : vsc8540et_mac
@@ -11,7 +11,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             69.345ns  (required time - arrival time)
+Slack (MET) :             69.141ns  (required time - arrival time)
   Source:                 IO_MDIO
                             (input port clocked by mdc  {rise@0.000ns fall@200.000ns period=400.000ns})
   Destination:            q_mdio_in_reg/D
@@ -22,9 +22,9 @@ Slack (MET) :             69.345ns  (required time - arrival time)
   Data Path Delay:        2.007ns  (logic 1.168ns (58.171%)  route 0.840ns (41.829%))
   Logic Levels:           2  (IBUF=1 LUT3=1)
   Input Delay:            303.000ns
-  Clock Path Skew:        -0.571ns (DCD - SCD + CPR)
+  Clock Path Skew:        -0.573ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    4.341ns = ( 14.341 - 10.000 ) 
-    Source Clock Delay      (SCD):    5.233ns
+    Source Clock Delay      (SCD):    5.235ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -41,19 +41,19 @@ Slack (MET) :             69.345ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071     1.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972     3.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096     3.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.638     4.777    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.456     5.233 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.437     7.669    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.634    10.303 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000    10.303    O_MDC
+                         net (fo=27, routed)          1.640     4.779    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.456     5.235 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.639     7.873    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.634    10.507 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000    10.507    O_MDC
   -------------------------------------------------------------------    -------------------
-                         input delay                303.000   313.303    
-    R10                                               0.000   313.303 r  IO_MDIO (INOUT)
-                         net (fo=1, unset)            0.000   313.303    IO_MDIO_IOBUF_inst/IO
-    R10                  IBUF (Prop_ibuf_I_O)         1.044   314.347 r  IO_MDIO_IOBUF_inst/IBUF/O
-                         net (fo=1, routed)           0.840   315.187    IO_MDIO_IBUF
-    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.124   315.311 r  q_mdio_in_i_1/O
-                         net (fo=1, routed)           0.000   315.311    q_mdio_in__0
+                         input delay                303.000   313.507    
+    R10                                               0.000   313.507 r  IO_MDIO (INOUT)
+                         net (fo=1, unset)            0.000   313.507    IO_MDIO_IOBUF_inst/IO
+    R10                  IBUF (Prop_ibuf_I_O)         1.044   314.551 r  IO_MDIO_IOBUF_inst/IBUF/O
+                         net (fo=1, routed)           0.840   315.391    IO_MDIO_IBUF
+    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.124   315.515 r  q_mdio_in_i_1/O
+                         net (fo=1, routed)           0.000   315.515    q_mdio_in__0
     SLICE_X0Y0           FDRE                                         r  q_mdio_in_reg/D
   -------------------------------------------------------------------    -------------------
 
@@ -70,11 +70,11 @@ Slack (MET) :             69.345ns  (required time - arrival time)
     SLICE_X0Y0           FDRE (Setup_fdre_C_D)        0.029   384.655    q_mdio_in_reg
   -------------------------------------------------------------------
                          required time                        384.655    
-                         arrival time                        -315.311    
+                         arrival time                        -315.515    
   -------------------------------------------------------------------
-                         slack                                 69.345    
+                         slack                                 69.141    
 
-Slack (MET) :             69.345ns  (required time - arrival time)
+Slack (MET) :             69.141ns  (required time - arrival time)
   Source:                 IO_MDIO
                             (input port clocked by mdc  {rise@0.000ns fall@200.000ns period=400.000ns})
   Destination:            q_mdio_in_reg/D
@@ -85,9 +85,9 @@ Slack (MET) :             69.345ns  (required time - arrival time)
   Data Path Delay:        2.007ns  (logic 1.168ns (58.171%)  route 0.840ns (41.829%))
   Logic Levels:           2  (IBUF=1 LUT3=1)
   Input Delay:            303.000ns
-  Clock Path Skew:        -0.571ns (DCD - SCD + CPR)
+  Clock Path Skew:        -0.573ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    4.341ns = ( 14.341 - 10.000 ) 
-    Source Clock Delay      (SCD):    5.233ns
+    Source Clock Delay      (SCD):    5.235ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -104,19 +104,19 @@ Slack (MET) :             69.345ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071     1.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972     3.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096     3.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.638     4.777    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.456     5.233 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.437     7.669    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.634    10.303 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000    10.303    O_MDC
+                         net (fo=27, routed)          1.640     4.779    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.456     5.235 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.639     7.873    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.634    10.507 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000    10.507    O_MDC
   -------------------------------------------------------------------    -------------------
-                         input delay                303.000   313.303    
-    R10                                               0.000   313.303 f  IO_MDIO (INOUT)
-                         net (fo=1, unset)            0.000   313.303    IO_MDIO_IOBUF_inst/IO
-    R10                  IBUF (Prop_ibuf_I_O)         1.044   314.347 f  IO_MDIO_IOBUF_inst/IBUF/O
-                         net (fo=1, routed)           0.840   315.187    IO_MDIO_IBUF
-    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.124   315.311 f  q_mdio_in_i_1/O
-                         net (fo=1, routed)           0.000   315.311    q_mdio_in__0
+                         input delay                303.000   313.507    
+    R10                                               0.000   313.507 f  IO_MDIO (INOUT)
+                         net (fo=1, unset)            0.000   313.507    IO_MDIO_IOBUF_inst/IO
+    R10                  IBUF (Prop_ibuf_I_O)         1.044   314.551 f  IO_MDIO_IOBUF_inst/IBUF/O
+                         net (fo=1, routed)           0.840   315.391    IO_MDIO_IBUF
+    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.124   315.515 f  q_mdio_in_i_1/O
+                         net (fo=1, routed)           0.000   315.515    q_mdio_in__0
     SLICE_X0Y0           FDRE                                         f  q_mdio_in_reg/D
   -------------------------------------------------------------------    -------------------
 
@@ -133,9 +133,9 @@ Slack (MET) :             69.345ns  (required time - arrival time)
     SLICE_X0Y0           FDRE (Setup_fdre_C_D)        0.029   384.655    q_mdio_in_reg
   -------------------------------------------------------------------
                          required time                        384.655    
-                         arrival time                        -315.311    
+                         arrival time                        -315.515    
   -------------------------------------------------------------------
-                         slack                                 69.345    
+                         slack                                 69.141    
 
 
 
@@ -143,7 +143,7 @@ Slack (MET) :             69.345ns  (required time - arrival time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:25 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -from [get_clocks mdc] -through [get_ports IO_MDIO] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt
 | Design       : vsc8540et_mac
@@ -153,7 +153,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             28.056ns  (arrival time - required time)
+Slack (MET) :             28.227ns  (arrival time - required time)
   Source:                 IO_MDIO
                             (input port clocked by mdc  {rise@0.000ns fall@200.000ns period=400.000ns})
   Destination:            q_mdio_in_reg/D
@@ -164,9 +164,9 @@ Slack (MET) :             28.056ns  (arrival time - required time)
   Data Path Delay:        1.651ns  (logic 0.932ns (56.466%)  route 0.719ns (43.534%))
   Logic Levels:           2  (IBUF=1 LUT3=1)
   Input Delay:            2.000ns
-  Clock Path Skew:        -0.246ns (DCD - SCD - CPR)
+  Clock Path Skew:        -0.248ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    4.780ns
-    Source Clock Delay      (SCD):    4.705ns
+    Source Clock Delay      (SCD):    4.707ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -183,19 +183,19 @@ Slack (MET) :             28.056ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859     0.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868     2.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091     2.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.520     4.338    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.367     4.705 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.084     6.789    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.477     9.265 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     9.265    O_MDC
+                         net (fo=27, routed)          1.522     4.340    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.367     4.707 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.253     6.960    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.477     9.436 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     9.436    O_MDC
   -------------------------------------------------------------------    -------------------
-                         input delay                  2.000    11.265    
-    R10                                               0.000    11.265 r  IO_MDIO (INOUT)
-                         net (fo=1, unset)            0.000    11.265    IO_MDIO_IOBUF_inst/IO
-    R10                  IBUF (Prop_ibuf_I_O)         0.832    12.098 r  IO_MDIO_IOBUF_inst/IBUF/O
-                         net (fo=1, routed)           0.719    12.816    IO_MDIO_IBUF
-    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.100    12.916 r  q_mdio_in_i_1/O
-                         net (fo=1, routed)           0.000    12.916    q_mdio_in__0
+                         input delay                  2.000    11.436    
+    R10                                               0.000    11.436 r  IO_MDIO (INOUT)
+                         net (fo=1, unset)            0.000    11.436    IO_MDIO_IOBUF_inst/IO
+    R10                  IBUF (Prop_ibuf_I_O)         0.832    12.269 r  IO_MDIO_IOBUF_inst/IBUF/O
+                         net (fo=1, routed)           0.719    12.987    IO_MDIO_IBUF
+    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.100    13.087 r  q_mdio_in_i_1/O
+                         net (fo=1, routed)           0.000    13.087    q_mdio_in__0
     SLICE_X0Y0           FDRE                                         r  q_mdio_in_reg/D
   -------------------------------------------------------------------    -------------------
 
@@ -212,11 +212,11 @@ Slack (MET) :             28.056ns  (arrival time - required time)
     SLICE_X0Y0           FDRE (Hold_fdre_C_D)         0.366   -15.139    q_mdio_in_reg
   -------------------------------------------------------------------
                          required time                         15.139    
-                         arrival time                          12.916    
+                         arrival time                          13.087    
   -------------------------------------------------------------------
-                         slack                                 28.056    
+                         slack                                 28.227    
 
-Slack (MET) :             28.056ns  (arrival time - required time)
+Slack (MET) :             28.227ns  (arrival time - required time)
   Source:                 IO_MDIO
                             (input port clocked by mdc  {rise@0.000ns fall@200.000ns period=400.000ns})
   Destination:            q_mdio_in_reg/D
@@ -227,9 +227,9 @@ Slack (MET) :             28.056ns  (arrival time - required time)
   Data Path Delay:        1.651ns  (logic 0.932ns (56.466%)  route 0.719ns (43.534%))
   Logic Levels:           2  (IBUF=1 LUT3=1)
   Input Delay:            2.000ns
-  Clock Path Skew:        -0.246ns (DCD - SCD - CPR)
+  Clock Path Skew:        -0.248ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    4.780ns
-    Source Clock Delay      (SCD):    4.705ns
+    Source Clock Delay      (SCD):    4.707ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -246,19 +246,19 @@ Slack (MET) :             28.056ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859     0.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868     2.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091     2.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.520     4.338    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.367     4.705 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.084     6.789    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.477     9.265 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     9.265    O_MDC
+                         net (fo=27, routed)          1.522     4.340    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.367     4.707 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.253     6.960    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.477     9.436 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     9.436    O_MDC
   -------------------------------------------------------------------    -------------------
-                         input delay                  2.000    11.265    
-    R10                                               0.000    11.265 f  IO_MDIO (INOUT)
-                         net (fo=1, unset)            0.000    11.265    IO_MDIO_IOBUF_inst/IO
-    R10                  IBUF (Prop_ibuf_I_O)         0.832    12.098 f  IO_MDIO_IOBUF_inst/IBUF/O
-                         net (fo=1, routed)           0.719    12.816    IO_MDIO_IBUF
-    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.100    12.916 f  q_mdio_in_i_1/O
-                         net (fo=1, routed)           0.000    12.916    q_mdio_in__0
+                         input delay                  2.000    11.436    
+    R10                                               0.000    11.436 f  IO_MDIO (INOUT)
+                         net (fo=1, unset)            0.000    11.436    IO_MDIO_IOBUF_inst/IO
+    R10                  IBUF (Prop_ibuf_I_O)         0.832    12.269 f  IO_MDIO_IOBUF_inst/IBUF/O
+                         net (fo=1, routed)           0.719    12.987    IO_MDIO_IBUF
+    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.100    13.087 f  q_mdio_in_i_1/O
+                         net (fo=1, routed)           0.000    13.087    q_mdio_in__0
     SLICE_X0Y0           FDRE                                         f  q_mdio_in_reg/D
   -------------------------------------------------------------------    -------------------
 
@@ -275,9 +275,9 @@ Slack (MET) :             28.056ns  (arrival time - required time)
     SLICE_X0Y0           FDRE (Hold_fdre_C_D)         0.366   -15.139    q_mdio_in_reg
   -------------------------------------------------------------------
                          required time                         15.139    
-                         arrival time                          12.916    
+                         arrival time                          13.087    
   -------------------------------------------------------------------
-                         slack                                 28.056    
+                         slack                                 28.227    
 
 
 
@@ -285,7 +285,7 @@ Slack (MET) :             28.056ns  (arrival time - required time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:25 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -from [get_clocks mdc] -through [get_ports IO_MDIO] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt
 | Design       : vsc8540et_mac
@@ -295,7 +295,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             73.407ns  (required time - arrival time)
+Slack (MET) :             73.303ns  (required time - arrival time)
   Source:                 IO_MDIO
                             (input port clocked by mdc  {rise@0.000ns fall@200.000ns period=400.000ns})
   Destination:            q_mdio_in_reg/D
@@ -306,9 +306,9 @@ Slack (MET) :             73.407ns  (required time - arrival time)
   Data Path Delay:        0.834ns  (logic 0.439ns (52.683%)  route 0.395ns (47.318%))
   Logic Levels:           2  (IBUF=1 LUT3=1)
   Input Delay:            303.000ns
-  Clock Path Skew:        -0.444ns (DCD - SCD + CPR)
+  Clock Path Skew:        -0.445ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    1.479ns = ( 11.479 - 10.000 ) 
-    Source Clock Delay      (SCD):    2.170ns
+    Source Clock Delay      (SCD):    2.171ns
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -325,19 +325,19 @@ Slack (MET) :             73.407ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410     0.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689     1.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029     1.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.867     1.995    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.175     2.170 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.956     3.125    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.337     4.462 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     4.462    O_MDC
+                         net (fo=27, routed)          0.868     1.996    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.175     2.171 r  q_mdc_reg/Q
+                         net (fo=1, routed)           1.059     3.229    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.337     4.566 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     4.566    O_MDC
   -------------------------------------------------------------------    -------------------
-                         input delay                303.000   307.462    
-    R10                                               0.000   307.462 r  IO_MDIO (INOUT)
-                         net (fo=1, unset)            0.000   307.462    IO_MDIO_IOBUF_inst/IO
-    R10                  IBUF (Prop_ibuf_I_O)         0.383   307.846 r  IO_MDIO_IOBUF_inst/IBUF/O
-                         net (fo=1, routed)           0.395   308.240    IO_MDIO_IBUF
-    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.056   308.296 r  q_mdio_in_i_1/O
-                         net (fo=1, routed)           0.000   308.296    q_mdio_in__0
+                         input delay                303.000   307.566    
+    R10                                               0.000   307.566 r  IO_MDIO (INOUT)
+                         net (fo=1, unset)            0.000   307.566    IO_MDIO_IOBUF_inst/IO
+    R10                  IBUF (Prop_ibuf_I_O)         0.383   307.950 r  IO_MDIO_IOBUF_inst/IBUF/O
+                         net (fo=1, routed)           0.395   308.345    IO_MDIO_IBUF
+    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.056   308.401 r  q_mdio_in_i_1/O
+                         net (fo=1, routed)           0.000   308.401    q_mdio_in__0
     SLICE_X0Y0           FDRE                                         r  q_mdio_in_reg/D
   -------------------------------------------------------------------    -------------------
 
@@ -354,11 +354,11 @@ Slack (MET) :             73.407ns  (required time - arrival time)
     SLICE_X0Y0           FDRE (Setup_fdre_C_D)        0.013   381.703    q_mdio_in_reg
   -------------------------------------------------------------------
                          required time                        381.703    
-                         arrival time                        -308.297    
+                         arrival time                        -308.401    
   -------------------------------------------------------------------
-                         slack                                 73.407    
+                         slack                                 73.303    
 
-Slack (MET) :             73.407ns  (required time - arrival time)
+Slack (MET) :             73.303ns  (required time - arrival time)
   Source:                 IO_MDIO
                             (input port clocked by mdc  {rise@0.000ns fall@200.000ns period=400.000ns})
   Destination:            q_mdio_in_reg/D
@@ -369,9 +369,9 @@ Slack (MET) :             73.407ns  (required time - arrival time)
   Data Path Delay:        0.834ns  (logic 0.439ns (52.683%)  route 0.395ns (47.318%))
   Logic Levels:           2  (IBUF=1 LUT3=1)
   Input Delay:            303.000ns
-  Clock Path Skew:        -0.444ns (DCD - SCD + CPR)
+  Clock Path Skew:        -0.445ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    1.479ns = ( 11.479 - 10.000 ) 
-    Source Clock Delay      (SCD):    2.170ns
+    Source Clock Delay      (SCD):    2.171ns
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -388,19 +388,19 @@ Slack (MET) :             73.407ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410     0.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689     1.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029     1.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.867     1.995    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.175     2.170 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.956     3.125    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.337     4.462 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     4.462    O_MDC
+                         net (fo=27, routed)          0.868     1.996    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.175     2.171 r  q_mdc_reg/Q
+                         net (fo=1, routed)           1.059     3.229    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.337     4.566 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     4.566    O_MDC
   -------------------------------------------------------------------    -------------------
-                         input delay                303.000   307.462    
-    R10                                               0.000   307.462 f  IO_MDIO (INOUT)
-                         net (fo=1, unset)            0.000   307.462    IO_MDIO_IOBUF_inst/IO
-    R10                  IBUF (Prop_ibuf_I_O)         0.383   307.846 f  IO_MDIO_IOBUF_inst/IBUF/O
-                         net (fo=1, routed)           0.395   308.240    IO_MDIO_IBUF
-    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.056   308.296 f  q_mdio_in_i_1/O
-                         net (fo=1, routed)           0.000   308.296    q_mdio_in__0
+                         input delay                303.000   307.566    
+    R10                                               0.000   307.566 f  IO_MDIO (INOUT)
+                         net (fo=1, unset)            0.000   307.566    IO_MDIO_IOBUF_inst/IO
+    R10                  IBUF (Prop_ibuf_I_O)         0.383   307.950 f  IO_MDIO_IOBUF_inst/IBUF/O
+                         net (fo=1, routed)           0.395   308.345    IO_MDIO_IBUF
+    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.056   308.401 f  q_mdio_in_i_1/O
+                         net (fo=1, routed)           0.000   308.401    q_mdio_in__0
     SLICE_X0Y0           FDRE                                         f  q_mdio_in_reg/D
   -------------------------------------------------------------------    -------------------
 
@@ -417,9 +417,9 @@ Slack (MET) :             73.407ns  (required time - arrival time)
     SLICE_X0Y0           FDRE (Setup_fdre_C_D)        0.013   381.703    q_mdio_in_reg
   -------------------------------------------------------------------
                          required time                        381.703    
-                         arrival time                        -308.297    
+                         arrival time                        -308.401    
   -------------------------------------------------------------------
-                         slack                                 73.407    
+                         slack                                 73.303    
 
 
 
@@ -427,7 +427,7 @@ Slack (MET) :             73.407ns  (required time - arrival time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:25 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -from [get_clocks mdc] -through [get_ports IO_MDIO] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt
 | Design       : vsc8540et_mac
@@ -437,7 +437,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             24.104ns  (arrival time - required time)
+Slack (MET) :             24.193ns  (arrival time - required time)
   Source:                 IO_MDIO
                             (input port clocked by mdc  {rise@0.000ns fall@200.000ns period=400.000ns})
   Destination:            q_mdio_in_reg/D
@@ -448,9 +448,9 @@ Slack (MET) :             24.104ns  (arrival time - required time)
   Data Path Delay:        0.574ns  (logic 0.240ns (41.719%)  route 0.335ns (58.281%))
   Logic Levels:           2  (IBUF=1 LUT3=1)
   Input Delay:            2.000ns
-  Clock Path Skew:        0.132ns (DCD - SCD - CPR)
+  Clock Path Skew:        0.131ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    1.997ns
-    Source Clock Delay      (SCD):    1.618ns
+    Source Clock Delay      (SCD):    1.619ns
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -467,19 +467,19 @@ Slack (MET) :             24.104ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.221     0.221 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.634     0.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026     0.881 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.596     1.477    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.141     1.618 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.639     2.256    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.150     3.406 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     3.406    O_MDC
+                         net (fo=27, routed)          0.597     1.478    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.141     1.619 r  q_mdc_reg/Q
+                         net (fo=1, routed)           0.727     2.345    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.150     3.495 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     3.495    O_MDC
   -------------------------------------------------------------------    -------------------
-                         input delay                  2.000     5.406    
-    R10                                               0.000     5.406 r  IO_MDIO (INOUT)
-                         net (fo=1, unset)            0.000     5.406    IO_MDIO_IOBUF_inst/IO
-    R10                  IBUF (Prop_ibuf_I_O)         0.195     5.601 r  IO_MDIO_IOBUF_inst/IBUF/O
-                         net (fo=1, routed)           0.335     5.936    IO_MDIO_IBUF
-    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.045     5.981 r  q_mdio_in_i_1/O
-                         net (fo=1, routed)           0.000     5.981    q_mdio_in__0
+                         input delay                  2.000     5.495    
+    R10                                               0.000     5.495 r  IO_MDIO (INOUT)
+                         net (fo=1, unset)            0.000     5.495    IO_MDIO_IOBUF_inst/IO
+    R10                  IBUF (Prop_ibuf_I_O)         0.195     5.690 r  IO_MDIO_IOBUF_inst/IBUF/O
+                         net (fo=1, routed)           0.335     6.025    IO_MDIO_IBUF
+    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.045     6.070 r  q_mdio_in_i_1/O
+                         net (fo=1, routed)           0.000     6.070    q_mdio_in__0
     SLICE_X0Y0           FDRE                                         r  q_mdio_in_reg/D
   -------------------------------------------------------------------    -------------------
 
@@ -496,11 +496,11 @@ Slack (MET) :             24.104ns  (arrival time - required time)
     SLICE_X0Y0           FDRE (Hold_fdre_C_D)         0.091   -18.124    q_mdio_in_reg
   -------------------------------------------------------------------
                          required time                         18.124    
-                         arrival time                           5.981    
+                         arrival time                           6.070    
   -------------------------------------------------------------------
-                         slack                                 24.104    
+                         slack                                 24.193    
 
-Slack (MET) :             24.104ns  (arrival time - required time)
+Slack (MET) :             24.193ns  (arrival time - required time)
   Source:                 IO_MDIO
                             (input port clocked by mdc  {rise@0.000ns fall@200.000ns period=400.000ns})
   Destination:            q_mdio_in_reg/D
@@ -511,9 +511,9 @@ Slack (MET) :             24.104ns  (arrival time - required time)
   Data Path Delay:        0.574ns  (logic 0.240ns (41.719%)  route 0.335ns (58.281%))
   Logic Levels:           2  (IBUF=1 LUT3=1)
   Input Delay:            2.000ns
-  Clock Path Skew:        0.132ns (DCD - SCD - CPR)
+  Clock Path Skew:        0.131ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    1.997ns
-    Source Clock Delay      (SCD):    1.618ns
+    Source Clock Delay      (SCD):    1.619ns
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -530,19 +530,19 @@ Slack (MET) :             24.104ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.221     0.221 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.634     0.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026     0.881 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.596     1.477    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.141     1.618 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.639     2.256    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.150     3.406 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     3.406    O_MDC
+                         net (fo=27, routed)          0.597     1.478    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.141     1.619 r  q_mdc_reg/Q
+                         net (fo=1, routed)           0.727     2.345    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.150     3.495 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     3.495    O_MDC
   -------------------------------------------------------------------    -------------------
-                         input delay                  2.000     5.406    
-    R10                                               0.000     5.406 f  IO_MDIO (INOUT)
-                         net (fo=1, unset)            0.000     5.406    IO_MDIO_IOBUF_inst/IO
-    R10                  IBUF (Prop_ibuf_I_O)         0.195     5.601 f  IO_MDIO_IOBUF_inst/IBUF/O
-                         net (fo=1, routed)           0.335     5.936    IO_MDIO_IBUF
-    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.045     5.981 f  q_mdio_in_i_1/O
-                         net (fo=1, routed)           0.000     5.981    q_mdio_in__0
+                         input delay                  2.000     5.495    
+    R10                                               0.000     5.495 f  IO_MDIO (INOUT)
+                         net (fo=1, unset)            0.000     5.495    IO_MDIO_IOBUF_inst/IO
+    R10                  IBUF (Prop_ibuf_I_O)         0.195     5.690 f  IO_MDIO_IOBUF_inst/IBUF/O
+                         net (fo=1, routed)           0.335     6.025    IO_MDIO_IBUF
+    SLICE_X0Y0           LUT3 (Prop_lut3_I0_O)        0.045     6.070 f  q_mdio_in_i_1/O
+                         net (fo=1, routed)           0.000     6.070    q_mdio_in__0
     SLICE_X0Y0           FDRE                                         f  q_mdio_in_reg/D
   -------------------------------------------------------------------    -------------------
 
@@ -559,9 +559,9 @@ Slack (MET) :             24.104ns  (arrival time - required time)
     SLICE_X0Y0           FDRE (Hold_fdre_C_D)         0.091   -18.124    q_mdio_in_reg
   -------------------------------------------------------------------
                          required time                         18.124    
-                         arrival time                           5.981    
+                         arrival time                           6.070    
   -------------------------------------------------------------------
-                         slack                                 24.104    
+                         slack                                 24.193    
 
 
 

@@ -1,7 +1,7 @@
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:13 2026
+| Date         : Tue Nov  3 22:53:25 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -to [get_clocks mdc] -through [get_ports IO_MDIO] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt
 | Design       : vsc8540et_mac
@@ -11,7 +11,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             189.376ns  (required time - arrival time)
+Slack (MET) :             189.547ns  (required time - arrival time)
   Source:                 q_mdio_out_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -22,8 +22,8 @@ Slack (MET) :             189.376ns  (required time - arrival time)
   Data Path Delay:        4.894ns  (logic 3.224ns (65.861%)  route 1.671ns (34.139%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        4.806ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    9.265ns = ( 409.265 - 400.000 ) 
+  Clock Path Skew:        4.977ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    9.436ns = ( 409.436 - 400.000 ) 
     Source Clock Delay      (SCD):    4.780ns = ( 394.780 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -57,22 +57,22 @@ Slack (MET) :             189.376ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859   400.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868   402.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091   402.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.520   404.338    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.367   404.705 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.084   406.789    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.477   409.265 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   409.265    O_MDC
+                         net (fo=27, routed)          1.522   404.340    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.367   404.707 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.253   406.960    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.477   409.437 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   409.437    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.320   409.586    
-                         clock uncertainty           -0.035   409.550    
-                         output delay               -10.500   399.050    
+                         clock pessimism              0.320   409.757    
+                         clock uncertainty           -0.035   409.721    
+                         output delay               -10.500   399.221    
   -------------------------------------------------------------------
-                         required time                        399.050    
+                         required time                        399.221    
                          arrival time                        -209.674    
   -------------------------------------------------------------------
-                         slack                                189.376    
+                         slack                                189.547    
 
-Slack (MET) :             189.376ns  (required time - arrival time)
+Slack (MET) :             189.547ns  (required time - arrival time)
   Source:                 q_mdio_out_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -83,8 +83,8 @@ Slack (MET) :             189.376ns  (required time - arrival time)
   Data Path Delay:        4.894ns  (logic 3.224ns (65.861%)  route 1.671ns (34.139%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        4.806ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    9.265ns = ( 409.265 - 400.000 ) 
+  Clock Path Skew:        4.977ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    9.436ns = ( 409.436 - 400.000 ) 
     Source Clock Delay      (SCD):    4.780ns = ( 394.780 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -118,22 +118,22 @@ Slack (MET) :             189.376ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859   400.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868   402.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091   402.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.520   404.338    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.367   404.705 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.084   406.789    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.477   409.265 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   409.265    O_MDC
+                         net (fo=27, routed)          1.522   404.340    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.367   404.707 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.253   406.960    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.477   409.437 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   409.437    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.320   409.586    
-                         clock uncertainty           -0.035   409.550    
-                         output delay               -10.500   399.050    
+                         clock pessimism              0.320   409.757    
+                         clock uncertainty           -0.035   409.721    
+                         output delay               -10.500   399.221    
   -------------------------------------------------------------------
-                         required time                        399.050    
+                         required time                        399.221    
                          arrival time                        -209.674    
   -------------------------------------------------------------------
-                         slack                                189.376    
+                         slack                                189.547    
 
-Slack (MET) :             189.529ns  (required time - arrival time)
+Slack (MET) :             189.701ns  (required time - arrival time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -141,11 +141,11 @@ Slack (MET) :             189.529ns  (required time - arrival time)
   Path Group:             mdc
   Path Type:              Max at Slow Process Corner
   Requirement:            200.000ns  (mdc rise@400.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        4.742ns  (logic 3.101ns (65.396%)  route 1.641ns (34.604%))
+  Data Path Delay:        4.741ns  (logic 3.101ns (65.411%)  route 1.640ns (34.589%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        4.806ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    9.265ns = ( 409.265 - 400.000 ) 
+  Clock Path Skew:        4.977ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    9.436ns = ( 409.436 - 400.000 ) 
     Source Clock Delay      (SCD):    4.780ns = ( 394.780 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -167,9 +167,9 @@ Slack (MET) :             189.529ns  (required time - arrival time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.456   205.236 f  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           1.641   206.876    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatE_obuft_T_O)     2.645   209.521 r  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   209.521    IO_MDIO
+                         net (fo=2, routed)           1.640   206.875    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatE_obuft_T_O)     2.645   209.520 r  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   209.520    IO_MDIO
     R10                                                               r  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -179,22 +179,22 @@ Slack (MET) :             189.529ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859   400.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868   402.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091   402.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.520   404.338    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.367   404.705 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.084   406.789    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.477   409.265 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   409.265    O_MDC
+                         net (fo=27, routed)          1.522   404.340    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.367   404.707 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.253   406.960    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.477   409.437 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   409.437    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.320   409.586    
-                         clock uncertainty           -0.035   409.550    
-                         output delay               -10.500   399.050    
+                         clock pessimism              0.320   409.757    
+                         clock uncertainty           -0.035   409.721    
+                         output delay               -10.500   399.221    
   -------------------------------------------------------------------
-                         required time                        399.050    
-                         arrival time                        -209.521    
+                         required time                        399.221    
+                         arrival time                        -209.520    
   -------------------------------------------------------------------
-                         slack                                189.529    
+                         slack                                189.701    
 
-Slack (MET) :             189.529ns  (required time - arrival time)
+Slack (MET) :             189.701ns  (required time - arrival time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -202,11 +202,11 @@ Slack (MET) :             189.529ns  (required time - arrival time)
   Path Group:             mdc
   Path Type:              Max at Slow Process Corner
   Requirement:            200.000ns  (mdc rise@400.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        4.742ns  (logic 3.101ns (65.396%)  route 1.641ns (34.604%))
+  Data Path Delay:        4.741ns  (logic 3.101ns (65.411%)  route 1.640ns (34.589%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        4.806ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    9.265ns = ( 409.265 - 400.000 ) 
+  Clock Path Skew:        4.977ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    9.436ns = ( 409.436 - 400.000 ) 
     Source Clock Delay      (SCD):    4.780ns = ( 394.780 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -228,9 +228,9 @@ Slack (MET) :             189.529ns  (required time - arrival time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.456   205.236 f  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           1.641   206.876    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatE_obuft_T_O)     2.645   209.521 f  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   209.521    IO_MDIO
+                         net (fo=2, routed)           1.640   206.875    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatE_obuft_T_O)     2.645   209.520 f  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   209.520    IO_MDIO
     R10                                                               f  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -240,22 +240,22 @@ Slack (MET) :             189.529ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859   400.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868   402.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091   402.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.520   404.338    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.367   404.705 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.084   406.789    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.477   409.265 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   409.265    O_MDC
+                         net (fo=27, routed)          1.522   404.340    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.367   404.707 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.253   406.960    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.477   409.437 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   409.437    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.320   409.586    
-                         clock uncertainty           -0.035   409.550    
-                         output delay               -10.500   399.050    
+                         clock pessimism              0.320   409.757    
+                         clock uncertainty           -0.035   409.721    
+                         output delay               -10.500   399.221    
   -------------------------------------------------------------------
-                         required time                        399.050    
-                         arrival time                        -209.521    
+                         required time                        399.221    
+                         arrival time                        -209.520    
   -------------------------------------------------------------------
-                         slack                                189.529    
+                         slack                                189.701    
 
-Slack (MET) :             189.811ns  (required time - arrival time)
+Slack (MET) :             189.983ns  (required time - arrival time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -263,11 +263,11 @@ Slack (MET) :             189.811ns  (required time - arrival time)
   Path Group:             mdc
   Path Type:              Max at Slow Process Corner
   Requirement:            200.000ns  (mdc rise@400.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        4.460ns  (logic 2.819ns (63.209%)  route 1.641ns (36.791%))
+  Data Path Delay:        4.459ns  (logic 2.819ns (63.224%)  route 1.640ns (36.776%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        4.806ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    9.265ns = ( 409.265 - 400.000 ) 
+  Clock Path Skew:        4.977ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    9.436ns = ( 409.436 - 400.000 ) 
     Source Clock Delay      (SCD):    4.780ns = ( 394.780 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -289,9 +289,9 @@ Slack (MET) :             189.811ns  (required time - arrival time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.456   205.236 r  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           1.641   206.876    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatD_obuft_T_O)     2.363   209.239 r  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   209.239    IO_MDIO
+                         net (fo=2, routed)           1.640   206.875    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatD_obuft_T_O)     2.363   209.238 r  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   209.238    IO_MDIO
     R10                                                               r  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -301,22 +301,22 @@ Slack (MET) :             189.811ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859   400.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868   402.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091   402.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.520   404.338    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.367   404.705 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.084   406.789    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.477   409.265 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   409.265    O_MDC
+                         net (fo=27, routed)          1.522   404.340    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.367   404.707 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.253   406.960    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.477   409.437 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   409.437    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.320   409.586    
-                         clock uncertainty           -0.035   409.550    
-                         output delay               -10.500   399.050    
+                         clock pessimism              0.320   409.757    
+                         clock uncertainty           -0.035   409.721    
+                         output delay               -10.500   399.221    
   -------------------------------------------------------------------
-                         required time                        399.050    
-                         arrival time                        -209.239    
+                         required time                        399.221    
+                         arrival time                        -209.238    
   -------------------------------------------------------------------
-                         slack                                189.811    
+                         slack                                189.983    
 
-Slack (MET) :             189.811ns  (required time - arrival time)
+Slack (MET) :             189.983ns  (required time - arrival time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -324,11 +324,11 @@ Slack (MET) :             189.811ns  (required time - arrival time)
   Path Group:             mdc
   Path Type:              Max at Slow Process Corner
   Requirement:            200.000ns  (mdc rise@400.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        4.460ns  (logic 2.819ns (63.209%)  route 1.641ns (36.791%))
+  Data Path Delay:        4.459ns  (logic 2.819ns (63.224%)  route 1.640ns (36.776%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        4.806ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    9.265ns = ( 409.265 - 400.000 ) 
+  Clock Path Skew:        4.977ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    9.436ns = ( 409.436 - 400.000 ) 
     Source Clock Delay      (SCD):    4.780ns = ( 394.780 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -350,9 +350,9 @@ Slack (MET) :             189.811ns  (required time - arrival time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.456   205.236 r  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           1.641   206.876    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatD_obuft_T_O)     2.363   209.239 f  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   209.239    IO_MDIO
+                         net (fo=2, routed)           1.640   206.875    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatD_obuft_T_O)     2.363   209.238 f  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   209.238    IO_MDIO
     R10                                                               f  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -362,20 +362,20 @@ Slack (MET) :             189.811ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859   400.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868   402.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091   402.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.520   404.338    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.367   404.705 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.084   406.789    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.477   409.265 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   409.265    O_MDC
+                         net (fo=27, routed)          1.522   404.340    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.367   404.707 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.253   406.960    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.477   409.437 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   409.437    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.320   409.586    
-                         clock uncertainty           -0.035   409.550    
-                         output delay               -10.500   399.050    
+                         clock pessimism              0.320   409.757    
+                         clock uncertainty           -0.035   409.721    
+                         output delay               -10.500   399.221    
   -------------------------------------------------------------------
-                         required time                        399.050    
-                         arrival time                        -209.239    
+                         required time                        399.221    
+                         arrival time                        -209.238    
   -------------------------------------------------------------------
-                         slack                                189.811    
+                         slack                                189.983    
 
 
 
@@ -383,7 +383,7 @@ Slack (MET) :             189.811ns  (required time - arrival time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:25 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -to [get_clocks mdc] -through [get_ports IO_MDIO] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt
 | Design       : vsc8540et_mac
@@ -393,7 +393,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             183.668ns  (arrival time - required time)
+Slack (MET) :             183.463ns  (arrival time - required time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -401,11 +401,11 @@ Slack (MET) :             183.668ns  (arrival time - required time)
   Path Group:             mdc
   Path Type:              Min at Slow Process Corner
   Requirement:            -200.000ns  (mdc rise@0.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        3.845ns  (logic 2.421ns (62.969%)  route 1.424ns (37.031%))
+  Data Path Delay:        3.844ns  (logic 2.421ns (62.985%)  route 1.423ns (37.015%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        5.642ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    10.303ns
+  Clock Path Skew:        5.846ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    10.507ns
     Source Clock Delay      (SCD):    4.341ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -427,9 +427,9 @@ Slack (MET) :             183.668ns  (arrival time - required time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.367   204.708 r  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           1.424   206.132    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatD_obuft_T_O)     2.054   208.186 r  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   208.186    IO_MDIO
+                         net (fo=2, routed)           1.423   206.131    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatD_obuft_T_O)     2.054   208.185 r  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   208.185    IO_MDIO
     R10                                                               r  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -439,22 +439,22 @@ Slack (MET) :             183.668ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071     1.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972     3.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096     3.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.638     4.777    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.456     5.233 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.437     7.669    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.634    10.303 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000    10.303    O_MDC
+                         net (fo=27, routed)          1.640     4.779    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.456     5.235 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.639     7.873    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.634    10.507 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000    10.507    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.320     9.983    
-                         clock uncertainty            0.035    10.018    
-                         output delay                14.500    24.518    
+                         clock pessimism             -0.320    10.187    
+                         clock uncertainty            0.035    10.222    
+                         output delay                14.500    24.722    
   -------------------------------------------------------------------
-                         required time                        -24.518    
-                         arrival time                         208.186    
+                         required time                        -24.722    
+                         arrival time                         208.185    
   -------------------------------------------------------------------
-                         slack                                183.668    
+                         slack                                183.463    
 
-Slack (MET) :             183.668ns  (arrival time - required time)
+Slack (MET) :             183.463ns  (arrival time - required time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -462,11 +462,11 @@ Slack (MET) :             183.668ns  (arrival time - required time)
   Path Group:             mdc
   Path Type:              Min at Slow Process Corner
   Requirement:            -200.000ns  (mdc rise@0.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        3.845ns  (logic 2.421ns (62.969%)  route 1.424ns (37.031%))
+  Data Path Delay:        3.844ns  (logic 2.421ns (62.985%)  route 1.423ns (37.015%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        5.642ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    10.303ns
+  Clock Path Skew:        5.846ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    10.507ns
     Source Clock Delay      (SCD):    4.341ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -488,9 +488,9 @@ Slack (MET) :             183.668ns  (arrival time - required time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.367   204.708 r  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           1.424   206.132    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatD_obuft_T_O)     2.054   208.186 f  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   208.186    IO_MDIO
+                         net (fo=2, routed)           1.423   206.131    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatD_obuft_T_O)     2.054   208.185 f  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   208.185    IO_MDIO
     R10                                                               f  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -500,22 +500,22 @@ Slack (MET) :             183.668ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071     1.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972     3.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096     3.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.638     4.777    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.456     5.233 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.437     7.669    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.634    10.303 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000    10.303    O_MDC
+                         net (fo=27, routed)          1.640     4.779    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.456     5.235 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.639     7.873    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.634    10.507 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000    10.507    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.320     9.983    
-                         clock uncertainty            0.035    10.018    
-                         output delay                14.500    24.518    
+                         clock pessimism             -0.320    10.187    
+                         clock uncertainty            0.035    10.222    
+                         output delay                14.500    24.722    
   -------------------------------------------------------------------
-                         required time                        -24.518    
-                         arrival time                         208.186    
+                         required time                        -24.722    
+                         arrival time                         208.185    
   -------------------------------------------------------------------
-                         slack                                183.668    
+                         slack                                183.463    
 
-Slack (MET) :             183.822ns  (arrival time - required time)
+Slack (MET) :             183.617ns  (arrival time - required time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -523,11 +523,11 @@ Slack (MET) :             183.822ns  (arrival time - required time)
   Path Group:             mdc
   Path Type:              Min at Slow Process Corner
   Requirement:            -200.000ns  (mdc rise@0.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        3.999ns  (logic 2.575ns (64.396%)  route 1.424ns (35.604%))
+  Data Path Delay:        3.998ns  (logic 2.575ns (64.412%)  route 1.423ns (35.588%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        5.642ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    10.303ns
+  Clock Path Skew:        5.846ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    10.507ns
     Source Clock Delay      (SCD):    4.341ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -549,9 +549,9 @@ Slack (MET) :             183.822ns  (arrival time - required time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.367   204.708 f  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           1.424   206.132    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatE_obuft_T_O)     2.208   208.340 r  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   208.340    IO_MDIO
+                         net (fo=2, routed)           1.423   206.131    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatE_obuft_T_O)     2.208   208.339 r  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   208.339    IO_MDIO
     R10                                                               r  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -561,22 +561,22 @@ Slack (MET) :             183.822ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071     1.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972     3.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096     3.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.638     4.777    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.456     5.233 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.437     7.669    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.634    10.303 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000    10.303    O_MDC
+                         net (fo=27, routed)          1.640     4.779    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.456     5.235 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.639     7.873    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.634    10.507 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000    10.507    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.320     9.983    
-                         clock uncertainty            0.035    10.018    
-                         output delay                14.500    24.518    
+                         clock pessimism             -0.320    10.187    
+                         clock uncertainty            0.035    10.222    
+                         output delay                14.500    24.722    
   -------------------------------------------------------------------
-                         required time                        -24.518    
-                         arrival time                         208.340    
+                         required time                        -24.722    
+                         arrival time                         208.339    
   -------------------------------------------------------------------
-                         slack                                183.822    
+                         slack                                183.617    
 
-Slack (MET) :             183.822ns  (arrival time - required time)
+Slack (MET) :             183.617ns  (arrival time - required time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -584,11 +584,11 @@ Slack (MET) :             183.822ns  (arrival time - required time)
   Path Group:             mdc
   Path Type:              Min at Slow Process Corner
   Requirement:            -200.000ns  (mdc rise@0.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        3.999ns  (logic 2.575ns (64.396%)  route 1.424ns (35.604%))
+  Data Path Delay:        3.998ns  (logic 2.575ns (64.412%)  route 1.423ns (35.588%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        5.642ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    10.303ns
+  Clock Path Skew:        5.846ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    10.507ns
     Source Clock Delay      (SCD):    4.341ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -610,9 +610,9 @@ Slack (MET) :             183.822ns  (arrival time - required time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.367   204.708 f  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           1.424   206.132    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatE_obuft_T_O)     2.208   208.340 f  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   208.340    IO_MDIO
+                         net (fo=2, routed)           1.423   206.131    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatE_obuft_T_O)     2.208   208.339 f  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   208.339    IO_MDIO
     R10                                                               f  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -622,22 +622,22 @@ Slack (MET) :             183.822ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071     1.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972     3.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096     3.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.638     4.777    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.456     5.233 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.437     7.669    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.634    10.303 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000    10.303    O_MDC
+                         net (fo=27, routed)          1.640     4.779    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.456     5.235 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.639     7.873    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.634    10.507 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000    10.507    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.320     9.983    
-                         clock uncertainty            0.035    10.018    
-                         output delay                14.500    24.518    
+                         clock pessimism             -0.320    10.187    
+                         clock uncertainty            0.035    10.222    
+                         output delay                14.500    24.722    
   -------------------------------------------------------------------
-                         required time                        -24.518    
-                         arrival time                         208.340    
+                         required time                        -24.722    
+                         arrival time                         208.339    
   -------------------------------------------------------------------
-                         slack                                183.822    
+                         slack                                183.617    
 
-Slack (MET) :             184.218ns  (arrival time - required time)
+Slack (MET) :             184.014ns  (arrival time - required time)
   Source:                 q_mdio_out_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -648,8 +648,8 @@ Slack (MET) :             184.218ns  (arrival time - required time)
   Data Path Delay:        4.395ns  (logic 2.950ns (67.125%)  route 1.445ns (32.875%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        5.642ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    10.303ns
+  Clock Path Skew:        5.846ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    10.507ns
     Source Clock Delay      (SCD):    4.341ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -683,22 +683,22 @@ Slack (MET) :             184.218ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071     1.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972     3.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096     3.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.638     4.777    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.456     5.233 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.437     7.669    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.634    10.303 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000    10.303    O_MDC
+                         net (fo=27, routed)          1.640     4.779    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.456     5.235 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.639     7.873    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.634    10.507 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000    10.507    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.320     9.983    
-                         clock uncertainty            0.035    10.018    
-                         output delay                14.500    24.518    
+                         clock pessimism             -0.320    10.187    
+                         clock uncertainty            0.035    10.222    
+                         output delay                14.500    24.722    
   -------------------------------------------------------------------
-                         required time                        -24.518    
+                         required time                        -24.722    
                          arrival time                         208.736    
   -------------------------------------------------------------------
-                         slack                                184.218    
+                         slack                                184.014    
 
-Slack (MET) :             184.218ns  (arrival time - required time)
+Slack (MET) :             184.014ns  (arrival time - required time)
   Source:                 q_mdio_out_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -709,8 +709,8 @@ Slack (MET) :             184.218ns  (arrival time - required time)
   Data Path Delay:        4.395ns  (logic 2.950ns (67.125%)  route 1.445ns (32.875%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        5.642ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    10.303ns
+  Clock Path Skew:        5.846ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    10.507ns
     Source Clock Delay      (SCD):    4.341ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -744,20 +744,20 @@ Slack (MET) :             184.218ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071     1.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972     3.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096     3.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.638     4.777    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.456     5.233 r  q_mdc_reg/Q
-                         net (fo=1, routed)           2.437     7.669    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         2.634    10.303 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000    10.303    O_MDC
+                         net (fo=27, routed)          1.640     4.779    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.456     5.235 r  q_mdc_reg/Q
+                         net (fo=1, routed)           2.639     7.873    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         2.634    10.507 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000    10.507    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.320     9.983    
-                         clock uncertainty            0.035    10.018    
-                         output delay                14.500    24.518    
+                         clock pessimism             -0.320    10.187    
+                         clock uncertainty            0.035    10.222    
+                         output delay                14.500    24.722    
   -------------------------------------------------------------------
-                         required time                        -24.518    
+                         required time                        -24.722    
                          arrival time                         208.736    
   -------------------------------------------------------------------
-                         slack                                184.218    
+                         slack                                184.014    
 
 
 
@@ -765,7 +765,7 @@ Slack (MET) :             184.218ns  (arrival time - required time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:25 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -to [get_clocks mdc] -through [get_ports IO_MDIO] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt
 | Design       : vsc8540et_mac
@@ -775,7 +775,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             188.965ns  (required time - arrival time)
+Slack (MET) :             189.054ns  (required time - arrival time)
   Source:                 q_mdio_out_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -786,8 +786,8 @@ Slack (MET) :             188.965ns  (required time - arrival time)
   Data Path Delay:        2.156ns  (logic 1.561ns (72.401%)  route 0.595ns (27.599%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        1.656ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    3.406ns = ( 403.406 - 400.000 ) 
+  Clock Path Skew:        1.745ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    3.495ns = ( 403.495 - 400.000 ) 
     Source Clock Delay      (SCD):    1.997ns = ( 391.997 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -821,22 +821,22 @@ Slack (MET) :             188.965ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.221   400.221 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.634   400.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026   400.881 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.596   401.477    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.141   401.618 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.639   402.256    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.150   403.406 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   403.406    O_MDC
+                         net (fo=27, routed)          0.597   401.478    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.141   401.619 r  q_mdc_reg/Q
+                         net (fo=1, routed)           0.727   402.345    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.150   403.495 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   403.495    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.247   403.653    
-                         clock uncertainty           -0.035   403.618    
-                         output delay               -10.500   393.118    
+                         clock pessimism              0.247   403.742    
+                         clock uncertainty           -0.035   403.707    
+                         output delay               -10.500   393.207    
   -------------------------------------------------------------------
-                         required time                        393.118    
+                         required time                        393.207    
                          arrival time                        -204.152    
   -------------------------------------------------------------------
-                         slack                                188.965    
+                         slack                                189.054    
 
-Slack (MET) :             188.965ns  (required time - arrival time)
+Slack (MET) :             189.054ns  (required time - arrival time)
   Source:                 q_mdio_out_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -847,8 +847,8 @@ Slack (MET) :             188.965ns  (required time - arrival time)
   Data Path Delay:        2.156ns  (logic 1.561ns (72.401%)  route 0.595ns (27.599%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        1.656ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    3.406ns = ( 403.406 - 400.000 ) 
+  Clock Path Skew:        1.745ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    3.495ns = ( 403.495 - 400.000 ) 
     Source Clock Delay      (SCD):    1.997ns = ( 391.997 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -882,22 +882,22 @@ Slack (MET) :             188.965ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.221   400.221 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.634   400.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026   400.881 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.596   401.477    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.141   401.618 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.639   402.256    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.150   403.406 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   403.406    O_MDC
+                         net (fo=27, routed)          0.597   401.478    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.141   401.619 r  q_mdc_reg/Q
+                         net (fo=1, routed)           0.727   402.345    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.150   403.495 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   403.495    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.247   403.653    
-                         clock uncertainty           -0.035   403.618    
-                         output delay               -10.500   393.118    
+                         clock pessimism              0.247   403.742    
+                         clock uncertainty           -0.035   403.707    
+                         output delay               -10.500   393.207    
   -------------------------------------------------------------------
-                         required time                        393.118    
+                         required time                        393.207    
                          arrival time                        -204.152    
   -------------------------------------------------------------------
-                         slack                                188.965    
+                         slack                                189.054    
 
-Slack (MET) :             189.323ns  (required time - arrival time)
+Slack (MET) :             189.413ns  (required time - arrival time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -905,11 +905,11 @@ Slack (MET) :             189.323ns  (required time - arrival time)
   Path Group:             mdc
   Path Type:              Max at Fast Process Corner
   Requirement:            200.000ns  (mdc rise@400.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        1.798ns  (logic 1.123ns (62.466%)  route 0.675ns (37.534%))
+  Data Path Delay:        1.797ns  (logic 1.123ns (62.502%)  route 0.674ns (37.498%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        1.656ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    3.406ns = ( 403.406 - 400.000 ) 
+  Clock Path Skew:        1.745ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    3.495ns = ( 403.495 - 400.000 ) 
     Source Clock Delay      (SCD):    1.997ns = ( 391.997 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -931,9 +931,9 @@ Slack (MET) :             189.323ns  (required time - arrival time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.175   202.172 r  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           0.675   202.846    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatD_obuft_T_O)     0.948   203.794 r  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   203.794    IO_MDIO
+                         net (fo=2, routed)           0.674   202.845    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatD_obuft_T_O)     0.948   203.793 r  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   203.793    IO_MDIO
     R10                                                               r  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -943,22 +943,22 @@ Slack (MET) :             189.323ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.221   400.221 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.634   400.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026   400.881 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.596   401.477    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.141   401.618 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.639   402.256    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.150   403.406 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   403.406    O_MDC
+                         net (fo=27, routed)          0.597   401.478    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.141   401.619 r  q_mdc_reg/Q
+                         net (fo=1, routed)           0.727   402.345    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.150   403.495 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   403.495    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.247   403.653    
-                         clock uncertainty           -0.035   403.618    
-                         output delay               -10.500   393.118    
+                         clock pessimism              0.247   403.742    
+                         clock uncertainty           -0.035   403.707    
+                         output delay               -10.500   393.207    
   -------------------------------------------------------------------
-                         required time                        393.118    
-                         arrival time                        -203.794    
+                         required time                        393.207    
+                         arrival time                        -203.793    
   -------------------------------------------------------------------
-                         slack                                189.323    
+                         slack                                189.413    
 
-Slack (MET) :             189.323ns  (required time - arrival time)
+Slack (MET) :             189.413ns  (required time - arrival time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -966,11 +966,11 @@ Slack (MET) :             189.323ns  (required time - arrival time)
   Path Group:             mdc
   Path Type:              Max at Fast Process Corner
   Requirement:            200.000ns  (mdc rise@400.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        1.798ns  (logic 1.123ns (62.466%)  route 0.675ns (37.534%))
+  Data Path Delay:        1.797ns  (logic 1.123ns (62.502%)  route 0.674ns (37.498%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        1.656ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    3.406ns = ( 403.406 - 400.000 ) 
+  Clock Path Skew:        1.745ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    3.495ns = ( 403.495 - 400.000 ) 
     Source Clock Delay      (SCD):    1.997ns = ( 391.997 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -992,9 +992,9 @@ Slack (MET) :             189.323ns  (required time - arrival time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.175   202.172 r  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           0.675   202.846    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatD_obuft_T_O)     0.948   203.794 f  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   203.794    IO_MDIO
+                         net (fo=2, routed)           0.674   202.845    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatD_obuft_T_O)     0.948   203.793 f  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   203.793    IO_MDIO
     R10                                                               f  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -1004,22 +1004,22 @@ Slack (MET) :             189.323ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.221   400.221 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.634   400.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026   400.881 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.596   401.477    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.141   401.618 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.639   402.256    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.150   403.406 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   403.406    O_MDC
+                         net (fo=27, routed)          0.597   401.478    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.141   401.619 r  q_mdc_reg/Q
+                         net (fo=1, routed)           0.727   402.345    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.150   403.495 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   403.495    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.247   403.653    
-                         clock uncertainty           -0.035   403.618    
-                         output delay               -10.500   393.118    
+                         clock pessimism              0.247   403.742    
+                         clock uncertainty           -0.035   403.707    
+                         output delay               -10.500   393.207    
   -------------------------------------------------------------------
-                         required time                        393.118    
-                         arrival time                        -203.794    
+                         required time                        393.207    
+                         arrival time                        -203.793    
   -------------------------------------------------------------------
-                         slack                                189.323    
+                         slack                                189.413    
 
-Slack (MET) :             189.340ns  (required time - arrival time)
+Slack (MET) :             189.430ns  (required time - arrival time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -1027,11 +1027,11 @@ Slack (MET) :             189.340ns  (required time - arrival time)
   Path Group:             mdc
   Path Type:              Max at Fast Process Corner
   Requirement:            200.000ns  (mdc rise@400.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        1.781ns  (logic 1.106ns (62.105%)  route 0.675ns (37.895%))
+  Data Path Delay:        1.780ns  (logic 1.106ns (62.141%)  route 0.674ns (37.859%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        1.656ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    3.406ns = ( 403.406 - 400.000 ) 
+  Clock Path Skew:        1.745ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    3.495ns = ( 403.495 - 400.000 ) 
     Source Clock Delay      (SCD):    1.997ns = ( 391.997 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1053,9 +1053,9 @@ Slack (MET) :             189.340ns  (required time - arrival time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.175   202.172 f  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           0.675   202.846    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatE_obuft_T_O)     0.931   203.777 r  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   203.777    IO_MDIO
+                         net (fo=2, routed)           0.674   202.845    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatE_obuft_T_O)     0.931   203.776 r  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   203.776    IO_MDIO
     R10                                                               r  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -1065,22 +1065,22 @@ Slack (MET) :             189.340ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.221   400.221 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.634   400.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026   400.881 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.596   401.477    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.141   401.618 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.639   402.256    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.150   403.406 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   403.406    O_MDC
+                         net (fo=27, routed)          0.597   401.478    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.141   401.619 r  q_mdc_reg/Q
+                         net (fo=1, routed)           0.727   402.345    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.150   403.495 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   403.495    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.247   403.653    
-                         clock uncertainty           -0.035   403.618    
-                         output delay               -10.500   393.118    
+                         clock pessimism              0.247   403.742    
+                         clock uncertainty           -0.035   403.707    
+                         output delay               -10.500   393.207    
   -------------------------------------------------------------------
-                         required time                        393.118    
-                         arrival time                        -203.777    
+                         required time                        393.207    
+                         arrival time                        -203.776    
   -------------------------------------------------------------------
-                         slack                                189.340    
+                         slack                                189.430    
 
-Slack (MET) :             189.340ns  (required time - arrival time)
+Slack (MET) :             189.430ns  (required time - arrival time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -1088,11 +1088,11 @@ Slack (MET) :             189.340ns  (required time - arrival time)
   Path Group:             mdc
   Path Type:              Max at Fast Process Corner
   Requirement:            200.000ns  (mdc rise@400.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        1.781ns  (logic 1.106ns (62.105%)  route 0.675ns (37.895%))
+  Data Path Delay:        1.780ns  (logic 1.106ns (62.141%)  route 0.674ns (37.859%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           10.500ns
-  Clock Path Skew:        1.656ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    3.406ns = ( 403.406 - 400.000 ) 
+  Clock Path Skew:        1.745ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    3.495ns = ( 403.495 - 400.000 ) 
     Source Clock Delay      (SCD):    1.997ns = ( 391.997 - 390.000 ) 
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1114,9 +1114,9 @@ Slack (MET) :             189.340ns  (required time - arrival time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.175   202.172 f  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           0.675   202.846    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatE_obuft_T_O)     0.931   203.777 f  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   203.777    IO_MDIO
+                         net (fo=2, routed)           0.674   202.845    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatE_obuft_T_O)     0.931   203.776 f  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   203.776    IO_MDIO
     R10                                                               f  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -1126,20 +1126,20 @@ Slack (MET) :             189.340ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.221   400.221 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.634   400.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026   400.881 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.596   401.477    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.141   401.618 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.639   402.256    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.150   403.406 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000   403.406    O_MDC
+                         net (fo=27, routed)          0.597   401.478    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.141   401.619 r  q_mdc_reg/Q
+                         net (fo=1, routed)           0.727   402.345    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.150   403.495 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000   403.495    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism              0.247   403.653    
-                         clock uncertainty           -0.035   403.618    
-                         output delay               -10.500   393.118    
+                         clock pessimism              0.247   403.742    
+                         clock uncertainty           -0.035   403.707    
+                         output delay               -10.500   393.207    
   -------------------------------------------------------------------
-                         required time                        393.118    
-                         arrival time                        -203.777    
+                         required time                        393.207    
+                         arrival time                        -203.776    
   -------------------------------------------------------------------
-                         slack                                189.340    
+                         slack                                189.430    
 
 
 
@@ -1147,7 +1147,7 @@ Slack (MET) :             189.340ns  (required time - arrival time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:25 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -to [get_clocks mdc] -through [get_ports IO_MDIO] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/IO_MDIO_write_timing.rpt
 | Design       : vsc8540et_mac
@@ -1157,7 +1157,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             184.279ns  (arrival time - required time)
+Slack (MET) :             184.174ns  (arrival time - required time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -1165,11 +1165,11 @@ Slack (MET) :             184.279ns  (arrival time - required time)
   Path Group:             mdc
   Path Type:              Min at Fast Process Corner
   Requirement:            -200.000ns  (mdc rise@0.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        1.551ns  (logic 0.957ns (61.714%)  route 0.594ns (38.286%))
+  Data Path Delay:        1.550ns  (logic 0.957ns (61.755%)  route 0.593ns (38.245%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        2.737ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    4.462ns
+  Clock Path Skew:        2.841ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.566ns
     Source Clock Delay      (SCD):    1.479ns
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1191,9 +1191,9 @@ Slack (MET) :             184.279ns  (arrival time - required time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.141   201.620 f  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           0.594   202.214    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatE_obuft_T_O)     0.816   203.030 r  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   203.030    IO_MDIO
+                         net (fo=2, routed)           0.593   202.213    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatE_obuft_T_O)     0.816   203.029 r  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   203.029    IO_MDIO
     R10                                                               r  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -1203,22 +1203,22 @@ Slack (MET) :             184.279ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410     0.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689     1.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029     1.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.867     1.995    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.175     2.170 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.956     3.125    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.337     4.462 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     4.462    O_MDC
+                         net (fo=27, routed)          0.868     1.996    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.175     2.171 r  q_mdc_reg/Q
+                         net (fo=1, routed)           1.059     3.229    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.337     4.566 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     4.566    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.247     4.216    
-                         clock uncertainty            0.035     4.251    
-                         output delay                14.500    18.751    
+                         clock pessimism             -0.247     4.320    
+                         clock uncertainty            0.035     4.355    
+                         output delay                14.500    18.855    
   -------------------------------------------------------------------
-                         required time                        -18.751    
-                         arrival time                         203.030    
+                         required time                        -18.855    
+                         arrival time                         203.029    
   -------------------------------------------------------------------
-                         slack                                184.279    
+                         slack                                184.174    
 
-Slack (MET) :             184.279ns  (arrival time - required time)
+Slack (MET) :             184.174ns  (arrival time - required time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -1226,11 +1226,11 @@ Slack (MET) :             184.279ns  (arrival time - required time)
   Path Group:             mdc
   Path Type:              Min at Fast Process Corner
   Requirement:            -200.000ns  (mdc rise@0.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        1.551ns  (logic 0.957ns (61.714%)  route 0.594ns (38.286%))
+  Data Path Delay:        1.550ns  (logic 0.957ns (61.755%)  route 0.593ns (38.245%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        2.737ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    4.462ns
+  Clock Path Skew:        2.841ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.566ns
     Source Clock Delay      (SCD):    1.479ns
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1252,9 +1252,9 @@ Slack (MET) :             184.279ns  (arrival time - required time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.141   201.620 f  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           0.594   202.214    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatE_obuft_T_O)     0.816   203.030 f  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   203.030    IO_MDIO
+                         net (fo=2, routed)           0.593   202.213    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatE_obuft_T_O)     0.816   203.029 f  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   203.029    IO_MDIO
     R10                                                               f  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -1264,22 +1264,22 @@ Slack (MET) :             184.279ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410     0.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689     1.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029     1.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.867     1.995    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.175     2.170 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.956     3.125    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.337     4.462 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     4.462    O_MDC
+                         net (fo=27, routed)          0.868     1.996    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.175     2.171 r  q_mdc_reg/Q
+                         net (fo=1, routed)           1.059     3.229    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.337     4.566 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     4.566    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.247     4.216    
-                         clock uncertainty            0.035     4.251    
-                         output delay                14.500    18.751    
+                         clock pessimism             -0.247     4.320    
+                         clock uncertainty            0.035     4.355    
+                         output delay                14.500    18.855    
   -------------------------------------------------------------------
-                         required time                        -18.751    
-                         arrival time                         203.030    
+                         required time                        -18.855    
+                         arrival time                         203.029    
   -------------------------------------------------------------------
-                         slack                                184.279    
+                         slack                                184.174    
 
-Slack (MET) :             184.287ns  (arrival time - required time)
+Slack (MET) :             184.182ns  (arrival time - required time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -1287,11 +1287,11 @@ Slack (MET) :             184.287ns  (arrival time - required time)
   Path Group:             mdc
   Path Type:              Min at Fast Process Corner
   Requirement:            -200.000ns  (mdc rise@0.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        1.559ns  (logic 0.965ns (61.907%)  route 0.594ns (38.093%))
+  Data Path Delay:        1.558ns  (logic 0.965ns (61.948%)  route 0.593ns (38.052%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        2.737ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    4.462ns
+  Clock Path Skew:        2.841ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.566ns
     Source Clock Delay      (SCD):    1.479ns
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1313,9 +1313,9 @@ Slack (MET) :             184.287ns  (arrival time - required time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.141   201.620 r  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           0.594   202.214    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatD_obuft_T_O)     0.824   203.038 r  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   203.038    IO_MDIO
+                         net (fo=2, routed)           0.593   202.213    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatD_obuft_T_O)     0.824   203.037 r  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   203.037    IO_MDIO
     R10                                                               r  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -1325,22 +1325,22 @@ Slack (MET) :             184.287ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410     0.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689     1.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029     1.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.867     1.995    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.175     2.170 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.956     3.125    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.337     4.462 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     4.462    O_MDC
+                         net (fo=27, routed)          0.868     1.996    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.175     2.171 r  q_mdc_reg/Q
+                         net (fo=1, routed)           1.059     3.229    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.337     4.566 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     4.566    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.247     4.216    
-                         clock uncertainty            0.035     4.251    
-                         output delay                14.500    18.751    
+                         clock pessimism             -0.247     4.320    
+                         clock uncertainty            0.035     4.355    
+                         output delay                14.500    18.855    
   -------------------------------------------------------------------
-                         required time                        -18.751    
-                         arrival time                         203.038    
+                         required time                        -18.855    
+                         arrival time                         203.037    
   -------------------------------------------------------------------
-                         slack                                184.287    
+                         slack                                184.182    
 
-Slack (MET) :             184.287ns  (arrival time - required time)
+Slack (MET) :             184.182ns  (arrival time - required time)
   Source:                 q_mdio_oe_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -1348,11 +1348,11 @@ Slack (MET) :             184.287ns  (arrival time - required time)
   Path Group:             mdc
   Path Type:              Min at Fast Process Corner
   Requirement:            -200.000ns  (mdc rise@0.000ns - clk_100mhz rise@200.000ns)
-  Data Path Delay:        1.559ns  (logic 0.965ns (61.907%)  route 0.594ns (38.093%))
+  Data Path Delay:        1.558ns  (logic 0.965ns (61.948%)  route 0.593ns (38.052%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        2.737ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    4.462ns
+  Clock Path Skew:        2.841ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.566ns
     Source Clock Delay      (SCD):    1.479ns
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1374,9 +1374,9 @@ Slack (MET) :             184.287ns  (arrival time - required time)
     SLICE_X1Y0           FDRE                                         r  q_mdio_oe_reg/C
   -------------------------------------------------------------------    -------------------
     SLICE_X1Y0           FDRE (Prop_fdre_C_Q)         0.141   201.620 r  q_mdio_oe_reg/Q
-                         net (fo=2, routed)           0.594   202.214    IO_MDIO_IOBUF_inst/T
-    R10                  OBUFT (TriStatD_obuft_T_O)     0.824   203.038 f  IO_MDIO_IOBUF_inst/OBUFT/O
-                         net (fo=1, unset)            0.000   203.038    IO_MDIO
+                         net (fo=2, routed)           0.593   202.213    IO_MDIO_IOBUF_inst/T
+    R10                  OBUFT (TriStatD_obuft_T_O)     0.824   203.037 f  IO_MDIO_IOBUF_inst/OBUFT/O
+                         net (fo=1, unset)            0.000   203.037    IO_MDIO
     R10                                                               f  IO_MDIO (INOUT)
   -------------------------------------------------------------------    -------------------
 
@@ -1386,22 +1386,22 @@ Slack (MET) :             184.287ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410     0.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689     1.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029     1.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.867     1.995    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.175     2.170 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.956     3.125    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.337     4.462 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     4.462    O_MDC
+                         net (fo=27, routed)          0.868     1.996    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.175     2.171 r  q_mdc_reg/Q
+                         net (fo=1, routed)           1.059     3.229    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.337     4.566 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     4.566    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.247     4.216    
-                         clock uncertainty            0.035     4.251    
-                         output delay                14.500    18.751    
+                         clock pessimism             -0.247     4.320    
+                         clock uncertainty            0.035     4.355    
+                         output delay                14.500    18.855    
   -------------------------------------------------------------------
-                         required time                        -18.751    
-                         arrival time                         203.038    
+                         required time                        -18.855    
+                         arrival time                         203.037    
   -------------------------------------------------------------------
-                         slack                                184.287    
+                         slack                                184.182    
 
-Slack (MET) :             184.391ns  (arrival time - required time)
+Slack (MET) :             184.287ns  (arrival time - required time)
   Source:                 q_mdio_out_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -1412,8 +1412,8 @@ Slack (MET) :             184.391ns  (arrival time - required time)
   Data Path Delay:        1.663ns  (logic 1.327ns (79.804%)  route 0.336ns (20.196%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        2.737ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    4.462ns
+  Clock Path Skew:        2.841ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.566ns
     Source Clock Delay      (SCD):    1.479ns
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1447,22 +1447,22 @@ Slack (MET) :             184.391ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410     0.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689     1.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029     1.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.867     1.995    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.175     2.170 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.956     3.125    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.337     4.462 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     4.462    O_MDC
+                         net (fo=27, routed)          0.868     1.996    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.175     2.171 r  q_mdc_reg/Q
+                         net (fo=1, routed)           1.059     3.229    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.337     4.566 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     4.566    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.247     4.216    
-                         clock uncertainty            0.035     4.251    
-                         output delay                14.500    18.751    
+                         clock pessimism             -0.247     4.320    
+                         clock uncertainty            0.035     4.355    
+                         output delay                14.500    18.855    
   -------------------------------------------------------------------
-                         required time                        -18.751    
+                         required time                        -18.855    
                          arrival time                         203.142    
   -------------------------------------------------------------------
-                         slack                                184.391    
+                         slack                                184.287    
 
-Slack (MET) :             184.391ns  (arrival time - required time)
+Slack (MET) :             184.287ns  (arrival time - required time)
   Source:                 q_mdio_out_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            IO_MDIO
@@ -1473,8 +1473,8 @@ Slack (MET) :             184.391ns  (arrival time - required time)
   Data Path Delay:        1.663ns  (logic 1.327ns (79.804%)  route 0.336ns (20.196%))
   Logic Levels:           1  (OBUFT=1)
   Output Delay:           -14.500ns
-  Clock Path Skew:        2.737ns (DCD - SCD - CPR)
-    Destination Clock Delay (DCD):    4.462ns
+  Clock Path Skew:        2.841ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.566ns
     Source Clock Delay      (SCD):    1.479ns
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1508,20 +1508,20 @@ Slack (MET) :             184.391ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410     0.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689     1.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029     1.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.867     1.995    I_CLK_IBUF_BUFG
-    SLICE_X1Y9           FDRE (Prop_fdre_C_Q)         0.175     2.170 r  q_mdc_reg/Q
-                         net (fo=1, routed)           0.956     3.125    q_mdc
-    R13                  OBUF (Prop_obuf_I_O)         1.337     4.462 r  O_MDC_OBUF_inst/O
-                         net (fo=0)                   0.000     4.462    O_MDC
+                         net (fo=27, routed)          0.868     1.996    I_CLK_IBUF_BUFG
+    SLICE_X0Y6           FDRE (Prop_fdre_C_Q)         0.175     2.171 r  q_mdc_reg/Q
+                         net (fo=1, routed)           1.059     3.229    q_mdc
+    R13                  OBUF (Prop_obuf_I_O)         1.337     4.566 r  O_MDC_OBUF_inst/O
+                         net (fo=0)                   0.000     4.566    O_MDC
     R13                                                               r  O_MDC (OUT)
-                         clock pessimism             -0.247     4.216    
-                         clock uncertainty            0.035     4.251    
-                         output delay                14.500    18.751    
+                         clock pessimism             -0.247     4.320    
+                         clock uncertainty            0.035     4.355    
+                         output delay                14.500    18.855    
   -------------------------------------------------------------------
-                         required time                        -18.751    
+                         required time                        -18.855    
                          arrival time                         203.142    
   -------------------------------------------------------------------
-                         slack                                184.391    
+                         slack                                184.287    
 
 
 

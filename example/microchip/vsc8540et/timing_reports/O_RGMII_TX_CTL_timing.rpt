@@ -1,7 +1,7 @@
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:26 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -to [get_clocks rgmii_txc] -through [get_ports O_RGMII_TX_CTL] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/O_RGMII_TX_CTL_timing.rpt
 | Design       : vsc8540et_mac
@@ -11,7 +11,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             9.948ns  (required time - arrival time)
+Slack (MET) :             9.798ns  (required time - arrival time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -19,12 +19,12 @@ Slack (MET) :             9.948ns  (required time - arrival time)
   Path Group:             rgmii_txc
   Path Type:              Max at Slow Process Corner
   Requirement:            10.000ns  (rgmii_txc rise@40.000ns - clk_100mhz rise@30.000ns)
-  Data Path Delay:        5.002ns  (logic 3.082ns (61.624%)  route 1.919ns (38.376%))
+  Data Path Delay:        5.149ns  (logic 3.082ns (59.855%)  route 2.067ns (40.145%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -0.600ns
-  Clock Path Skew:        4.385ns (DCD - SCD + CPR)
+  Clock Path Skew:        4.383ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    8.836ns = ( 48.836 - 40.000 ) 
-    Source Clock Delay      (SCD):    4.772ns = ( 34.772 - 30.000 ) 
+    Source Clock Delay      (SCD):    4.774ns = ( 34.774 - 30.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -40,13 +40,13 @@ Slack (MET) :             9.948ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071    31.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972    33.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096    33.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.633    34.772    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          1.635    34.774    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.456    35.228 r  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           1.919    37.147    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         2.626    39.773 r  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    39.773    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.456    35.230 r  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           2.067    37.297    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         2.626    39.923 r  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    39.923    O_RGMII_TX_CTL
     M14                                                               r  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -67,11 +67,11 @@ Slack (MET) :             9.948ns  (required time - arrival time)
                          output delay                 0.600    49.721    
   -------------------------------------------------------------------
                          required time                         49.721    
-                         arrival time                         -39.773    
+                         arrival time                         -39.923    
   -------------------------------------------------------------------
-                         slack                                  9.948    
+                         slack                                  9.798    
 
-Slack (MET) :             9.948ns  (required time - arrival time)
+Slack (MET) :             9.798ns  (required time - arrival time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -79,12 +79,12 @@ Slack (MET) :             9.948ns  (required time - arrival time)
   Path Group:             rgmii_txc
   Path Type:              Max at Slow Process Corner
   Requirement:            10.000ns  (rgmii_txc rise@40.000ns - clk_100mhz rise@30.000ns)
-  Data Path Delay:        5.002ns  (logic 3.082ns (61.624%)  route 1.919ns (38.376%))
+  Data Path Delay:        5.149ns  (logic 3.082ns (59.855%)  route 2.067ns (40.145%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -0.600ns
-  Clock Path Skew:        4.385ns (DCD - SCD + CPR)
+  Clock Path Skew:        4.383ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    8.836ns = ( 48.836 - 40.000 ) 
-    Source Clock Delay      (SCD):    4.772ns = ( 34.772 - 30.000 ) 
+    Source Clock Delay      (SCD):    4.774ns = ( 34.774 - 30.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -100,13 +100,13 @@ Slack (MET) :             9.948ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071    31.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972    33.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096    33.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.633    34.772    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          1.635    34.774    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.456    35.228 f  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           1.919    37.147    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         2.626    39.773 f  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    39.773    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.456    35.230 f  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           2.067    37.297    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         2.626    39.923 f  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    39.923    O_RGMII_TX_CTL
     M14                                                               f  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -127,11 +127,11 @@ Slack (MET) :             9.948ns  (required time - arrival time)
                          output delay                 0.600    49.721    
   -------------------------------------------------------------------
                          required time                         49.721    
-                         arrival time                         -39.773    
+                         arrival time                         -39.923    
   -------------------------------------------------------------------
-                         slack                                  9.948    
+                         slack                                  9.798    
 
-Slack (MET) :             9.948ns  (required time - arrival time)
+Slack (MET) :             9.798ns  (required time - arrival time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -139,12 +139,12 @@ Slack (MET) :             9.948ns  (required time - arrival time)
   Path Group:             rgmii_txc
   Path Type:              Max at Slow Process Corner
   Requirement:            10.000ns  (rgmii_txc fall@20.000ns - clk_100mhz rise@10.000ns)
-  Data Path Delay:        5.002ns  (logic 3.082ns (61.624%)  route 1.919ns (38.376%))
+  Data Path Delay:        5.149ns  (logic 3.082ns (59.855%)  route 2.067ns (40.145%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -0.600ns
-  Clock Path Skew:        4.385ns (DCD - SCD + CPR)
+  Clock Path Skew:        4.383ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    8.836ns = ( 28.836 - 20.000 ) 
-    Source Clock Delay      (SCD):    4.772ns = ( 14.772 - 10.000 ) 
+    Source Clock Delay      (SCD):    4.774ns = ( 14.774 - 10.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -160,13 +160,13 @@ Slack (MET) :             9.948ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071    11.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972    13.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096    13.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.633    14.772    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          1.635    14.774    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.456    15.228 r  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           1.919    17.147    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         2.626    19.773 r  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    19.773    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.456    15.230 r  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           2.067    17.297    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         2.626    19.923 r  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    19.923    O_RGMII_TX_CTL
     M14                                                               r  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -187,11 +187,11 @@ Slack (MET) :             9.948ns  (required time - arrival time)
                          output delay                 0.600    29.721    
   -------------------------------------------------------------------
                          required time                         29.721    
-                         arrival time                         -19.773    
+                         arrival time                         -19.923    
   -------------------------------------------------------------------
-                         slack                                  9.948    
+                         slack                                  9.798    
 
-Slack (MET) :             9.948ns  (required time - arrival time)
+Slack (MET) :             9.798ns  (required time - arrival time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -199,12 +199,12 @@ Slack (MET) :             9.948ns  (required time - arrival time)
   Path Group:             rgmii_txc
   Path Type:              Max at Slow Process Corner
   Requirement:            10.000ns  (rgmii_txc fall@20.000ns - clk_100mhz rise@10.000ns)
-  Data Path Delay:        5.002ns  (logic 3.082ns (61.624%)  route 1.919ns (38.376%))
+  Data Path Delay:        5.149ns  (logic 3.082ns (59.855%)  route 2.067ns (40.145%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -0.600ns
-  Clock Path Skew:        4.385ns (DCD - SCD + CPR)
+  Clock Path Skew:        4.383ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    8.836ns = ( 28.836 - 20.000 ) 
-    Source Clock Delay      (SCD):    4.772ns = ( 14.772 - 10.000 ) 
+    Source Clock Delay      (SCD):    4.774ns = ( 14.774 - 10.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -220,13 +220,13 @@ Slack (MET) :             9.948ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         1.071    11.071 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.972    13.042    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.096    13.138 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.633    14.772    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          1.635    14.774    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.456    15.228 f  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           1.919    17.147    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         2.626    19.773 f  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    19.773    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.456    15.230 f  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           2.067    17.297    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         2.626    19.923 f  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    19.923    O_RGMII_TX_CTL
     M14                                                               f  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -247,9 +247,9 @@ Slack (MET) :             9.948ns  (required time - arrival time)
                          output delay                 0.600    29.721    
   -------------------------------------------------------------------
                          required time                         29.721    
-                         arrival time                         -19.773    
+                         arrival time                         -19.923    
   -------------------------------------------------------------------
-                         slack                                  9.948    
+                         slack                                  9.798    
 
 
 
@@ -257,7 +257,7 @@ Slack (MET) :             9.948ns  (required time - arrival time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:26 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -to [get_clocks rgmii_txc] -through [get_ports O_RGMII_TX_CTL] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/O_RGMII_TX_CTL_timing.rpt
 | Design       : vsc8540et_mac
@@ -267,7 +267,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             6.121ns  (arrival time - required time)
+Slack (MET) :             6.247ns  (arrival time - required time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -275,12 +275,12 @@ Slack (MET) :             6.121ns  (arrival time - required time)
   Path Group:             rgmii_txc
   Path Type:              Min at Slow Process Corner
   Requirement:            -10.000ns  (rgmii_txc rise@0.000ns - clk_100mhz rise@10.000ns)
-  Data Path Delay:        4.488ns  (logic 2.836ns (63.184%)  route 1.652ns (36.816%))
+  Data Path Delay:        4.613ns  (logic 2.836ns (61.475%)  route 1.777ns (38.525%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -3.200ns
-  Clock Path Skew:        5.132ns (DCD - SCD - CPR)
+  Clock Path Skew:        5.131ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    9.787ns
-    Source Clock Delay      (SCD):    4.334ns
+    Source Clock Delay      (SCD):    4.335ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -297,13 +297,13 @@ Slack (MET) :             6.121ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859    10.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868    12.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091    12.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.516    14.334    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          1.517    14.335    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.367    14.701 r  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           1.652    16.354    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         2.469    18.823 r  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    18.823    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.367    14.702 r  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           1.777    16.479    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         2.469    18.948 r  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    18.948    O_RGMII_TX_CTL
     M14                                                               r  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -324,11 +324,11 @@ Slack (MET) :             6.121ns  (arrival time - required time)
                          output delay                 3.200    12.702    
   -------------------------------------------------------------------
                          required time                        -12.702    
-                         arrival time                          18.823    
+                         arrival time                          18.948    
   -------------------------------------------------------------------
-                         slack                                  6.121    
+                         slack                                  6.247    
 
-Slack (MET) :             6.121ns  (arrival time - required time)
+Slack (MET) :             6.247ns  (arrival time - required time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -336,12 +336,12 @@ Slack (MET) :             6.121ns  (arrival time - required time)
   Path Group:             rgmii_txc
   Path Type:              Min at Slow Process Corner
   Requirement:            -10.000ns  (rgmii_txc rise@0.000ns - clk_100mhz rise@10.000ns)
-  Data Path Delay:        4.488ns  (logic 2.836ns (63.184%)  route 1.652ns (36.816%))
+  Data Path Delay:        4.613ns  (logic 2.836ns (61.475%)  route 1.777ns (38.525%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -3.200ns
-  Clock Path Skew:        5.132ns (DCD - SCD - CPR)
+  Clock Path Skew:        5.131ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    9.787ns
-    Source Clock Delay      (SCD):    4.334ns
+    Source Clock Delay      (SCD):    4.335ns
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -358,13 +358,13 @@ Slack (MET) :             6.121ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859    10.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868    12.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091    12.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.516    14.334    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          1.517    14.335    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.367    14.701 f  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           1.652    16.354    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         2.469    18.823 f  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    18.823    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.367    14.702 f  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           1.777    16.479    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         2.469    18.948 f  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    18.948    O_RGMII_TX_CTL
     M14                                                               f  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -385,11 +385,11 @@ Slack (MET) :             6.121ns  (arrival time - required time)
                          output delay                 3.200    12.702    
   -------------------------------------------------------------------
                          required time                        -12.702    
-                         arrival time                          18.823    
+                         arrival time                          18.948    
   -------------------------------------------------------------------
-                         slack                                  6.121    
+                         slack                                  6.247    
 
-Slack (MET) :             6.121ns  (arrival time - required time)
+Slack (MET) :             6.247ns  (arrival time - required time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -397,12 +397,12 @@ Slack (MET) :             6.121ns  (arrival time - required time)
   Path Group:             rgmii_txc
   Path Type:              Min at Slow Process Corner
   Requirement:            -10.000ns  (rgmii_txc fall@20.000ns - clk_100mhz rise@30.000ns)
-  Data Path Delay:        4.488ns  (logic 2.836ns (63.184%)  route 1.652ns (36.816%))
+  Data Path Delay:        4.613ns  (logic 2.836ns (61.475%)  route 1.777ns (38.525%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -3.200ns
-  Clock Path Skew:        5.132ns (DCD - SCD - CPR)
+  Clock Path Skew:        5.131ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    9.787ns = ( 29.787 - 20.000 ) 
-    Source Clock Delay      (SCD):    4.334ns = ( 24.334 - 20.000 ) 
+    Source Clock Delay      (SCD):    4.335ns = ( 24.335 - 20.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -419,13 +419,13 @@ Slack (MET) :             6.121ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859    30.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868    32.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091    32.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.516    34.334    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          1.517    34.335    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.367    34.701 r  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           1.652    36.354    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         2.469    38.823 r  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    38.823    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.367    34.702 r  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           1.777    36.479    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         2.469    38.948 r  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    38.948    O_RGMII_TX_CTL
     M14                                                               r  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -446,11 +446,11 @@ Slack (MET) :             6.121ns  (arrival time - required time)
                          output delay                 3.200    32.702    
   -------------------------------------------------------------------
                          required time                        -32.702    
-                         arrival time                          38.823    
+                         arrival time                          38.948    
   -------------------------------------------------------------------
-                         slack                                  6.121    
+                         slack                                  6.247    
 
-Slack (MET) :             6.121ns  (arrival time - required time)
+Slack (MET) :             6.247ns  (arrival time - required time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -458,12 +458,12 @@ Slack (MET) :             6.121ns  (arrival time - required time)
   Path Group:             rgmii_txc
   Path Type:              Min at Slow Process Corner
   Requirement:            -10.000ns  (rgmii_txc fall@20.000ns - clk_100mhz rise@30.000ns)
-  Data Path Delay:        4.488ns  (logic 2.836ns (63.184%)  route 1.652ns (36.816%))
+  Data Path Delay:        4.613ns  (logic 2.836ns (61.475%)  route 1.777ns (38.525%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -3.200ns
-  Clock Path Skew:        5.132ns (DCD - SCD - CPR)
+  Clock Path Skew:        5.131ns (DCD - SCD - CPR)
     Destination Clock Delay (DCD):    9.787ns = ( 29.787 - 20.000 ) 
-    Source Clock Delay      (SCD):    4.334ns = ( 24.334 - 20.000 ) 
+    Source Clock Delay      (SCD):    4.335ns = ( 24.335 - 20.000 ) 
     Clock Pessimism Removal (CPR):    0.320ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -480,13 +480,13 @@ Slack (MET) :             6.121ns  (arrival time - required time)
     D15                  IBUF (Prop_ibuf_I_O)         0.859    30.859 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           1.868    32.727    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.091    32.818 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          1.516    34.334    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          1.517    34.335    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.367    34.701 f  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           1.652    36.354    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         2.469    38.823 f  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    38.823    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.367    34.702 f  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           1.777    36.479    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         2.469    38.948 f  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    38.948    O_RGMII_TX_CTL
     M14                                                               f  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -507,9 +507,9 @@ Slack (MET) :             6.121ns  (arrival time - required time)
                          output delay                 3.200    32.702    
   -------------------------------------------------------------------
                          required time                        -32.702    
-                         arrival time                          38.823    
+                         arrival time                          38.948    
   -------------------------------------------------------------------
-                         slack                                  6.121    
+                         slack                                  6.247    
 
 
 
@@ -517,7 +517,7 @@ Slack (MET) :             6.121ns  (arrival time - required time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:26 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -to [get_clocks rgmii_txc] -through [get_ports O_RGMII_TX_CTL] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/O_RGMII_TX_CTL_timing.rpt
 | Design       : vsc8540et_mac
@@ -527,7 +527,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             9.813ns  (required time - arrival time)
+Slack (MET) :             9.737ns  (required time - arrival time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -535,12 +535,12 @@ Slack (MET) :             9.813ns  (required time - arrival time)
   Path Group:             rgmii_txc
   Path Type:              Max at Fast Process Corner
   Requirement:            10.000ns  (rgmii_txc rise@40.000ns - clk_100mhz rise@30.000ns)
-  Data Path Delay:        2.213ns  (logic 1.504ns (67.983%)  route 0.708ns (32.017%))
+  Data Path Delay:        2.288ns  (logic 1.504ns (65.761%)  route 0.783ns (34.239%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -0.600ns
-  Clock Path Skew:        1.461ns (DCD - SCD + CPR)
+  Clock Path Skew:        1.460ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    3.204ns = ( 43.204 - 40.000 ) 
-    Source Clock Delay      (SCD):    1.990ns = ( 31.990 - 30.000 ) 
+    Source Clock Delay      (SCD):    1.991ns = ( 31.991 - 30.000 ) 
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -556,13 +556,13 @@ Slack (MET) :             9.813ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410    30.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689    31.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029    31.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.862    31.990    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          0.863    31.991    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.175    32.165 r  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           0.708    32.873    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         1.329    34.202 r  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    34.202    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.175    32.166 r  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           0.783    32.949    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         1.329    34.278 r  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    34.278    O_RGMII_TX_CTL
     M14                                                               r  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -583,11 +583,11 @@ Slack (MET) :             9.813ns  (required time - arrival time)
                          output delay                 0.600    44.015    
   -------------------------------------------------------------------
                          required time                         44.015    
-                         arrival time                         -34.202    
+                         arrival time                         -34.278    
   -------------------------------------------------------------------
-                         slack                                  9.813    
+                         slack                                  9.737    
 
-Slack (MET) :             9.813ns  (required time - arrival time)
+Slack (MET) :             9.737ns  (required time - arrival time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -595,12 +595,12 @@ Slack (MET) :             9.813ns  (required time - arrival time)
   Path Group:             rgmii_txc
   Path Type:              Max at Fast Process Corner
   Requirement:            10.000ns  (rgmii_txc rise@40.000ns - clk_100mhz rise@30.000ns)
-  Data Path Delay:        2.213ns  (logic 1.504ns (67.983%)  route 0.708ns (32.017%))
+  Data Path Delay:        2.288ns  (logic 1.504ns (65.761%)  route 0.783ns (34.239%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -0.600ns
-  Clock Path Skew:        1.461ns (DCD - SCD + CPR)
+  Clock Path Skew:        1.460ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    3.204ns = ( 43.204 - 40.000 ) 
-    Source Clock Delay      (SCD):    1.990ns = ( 31.990 - 30.000 ) 
+    Source Clock Delay      (SCD):    1.991ns = ( 31.991 - 30.000 ) 
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -616,13 +616,13 @@ Slack (MET) :             9.813ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410    30.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689    31.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029    31.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.862    31.990    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          0.863    31.991    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.175    32.165 f  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           0.708    32.873    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         1.329    34.202 f  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    34.202    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.175    32.166 f  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           0.783    32.949    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         1.329    34.278 f  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    34.278    O_RGMII_TX_CTL
     M14                                                               f  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -643,11 +643,11 @@ Slack (MET) :             9.813ns  (required time - arrival time)
                          output delay                 0.600    44.015    
   -------------------------------------------------------------------
                          required time                         44.015    
-                         arrival time                         -34.202    
+                         arrival time                         -34.278    
   -------------------------------------------------------------------
-                         slack                                  9.813    
+                         slack                                  9.737    
 
-Slack (MET) :             9.813ns  (required time - arrival time)
+Slack (MET) :             9.737ns  (required time - arrival time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -655,12 +655,12 @@ Slack (MET) :             9.813ns  (required time - arrival time)
   Path Group:             rgmii_txc
   Path Type:              Max at Fast Process Corner
   Requirement:            10.000ns  (rgmii_txc fall@20.000ns - clk_100mhz rise@10.000ns)
-  Data Path Delay:        2.213ns  (logic 1.504ns (67.983%)  route 0.708ns (32.017%))
+  Data Path Delay:        2.288ns  (logic 1.504ns (65.761%)  route 0.783ns (34.239%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -0.600ns
-  Clock Path Skew:        1.461ns (DCD - SCD + CPR)
+  Clock Path Skew:        1.460ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    3.204ns = ( 23.204 - 20.000 ) 
-    Source Clock Delay      (SCD):    1.990ns = ( 11.990 - 10.000 ) 
+    Source Clock Delay      (SCD):    1.991ns = ( 11.991 - 10.000 ) 
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -676,13 +676,13 @@ Slack (MET) :             9.813ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410    10.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689    11.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029    11.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.862    11.990    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          0.863    11.991    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.175    12.165 r  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           0.708    12.873    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         1.329    14.202 r  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    14.202    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.175    12.166 r  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           0.783    12.949    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         1.329    14.278 r  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    14.278    O_RGMII_TX_CTL
     M14                                                               r  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -703,11 +703,11 @@ Slack (MET) :             9.813ns  (required time - arrival time)
                          output delay                 0.600    24.015    
   -------------------------------------------------------------------
                          required time                         24.015    
-                         arrival time                         -14.202    
+                         arrival time                         -14.278    
   -------------------------------------------------------------------
-                         slack                                  9.813    
+                         slack                                  9.737    
 
-Slack (MET) :             9.813ns  (required time - arrival time)
+Slack (MET) :             9.737ns  (required time - arrival time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -715,12 +715,12 @@ Slack (MET) :             9.813ns  (required time - arrival time)
   Path Group:             rgmii_txc
   Path Type:              Max at Fast Process Corner
   Requirement:            10.000ns  (rgmii_txc fall@20.000ns - clk_100mhz rise@10.000ns)
-  Data Path Delay:        2.213ns  (logic 1.504ns (67.983%)  route 0.708ns (32.017%))
+  Data Path Delay:        2.288ns  (logic 1.504ns (65.761%)  route 0.783ns (34.239%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -0.600ns
-  Clock Path Skew:        1.461ns (DCD - SCD + CPR)
+  Clock Path Skew:        1.460ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    3.204ns = ( 23.204 - 20.000 ) 
-    Source Clock Delay      (SCD):    1.990ns = ( 11.990 - 10.000 ) 
+    Source Clock Delay      (SCD):    1.991ns = ( 11.991 - 10.000 ) 
     Clock Pessimism Removal (CPR):    0.247ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
     Total System Jitter     (TSJ):    0.071ns
@@ -736,13 +736,13 @@ Slack (MET) :             9.813ns  (required time - arrival time)
     D15                  IBUF (Prop_ibuf_I_O)         0.410    10.410 r  I_CLK_IBUF_inst/O
                          net (fo=1, routed)           0.689    11.099    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.029    11.128 r  I_CLK_IBUF_BUFG_inst/O
-                         net (fo=27, routed)          0.862    11.990    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+                         net (fo=27, routed)          0.863    11.991    I_CLK_IBUF_BUFG
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.175    12.165 f  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           0.708    12.873    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         1.329    14.202 f  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    14.202    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.175    12.166 f  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           0.783    12.949    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         1.329    14.278 f  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    14.278    O_RGMII_TX_CTL
     M14                                                               f  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -763,9 +763,9 @@ Slack (MET) :             9.813ns  (required time - arrival time)
                          output delay                 0.600    24.015    
   -------------------------------------------------------------------
                          required time                         24.015    
-                         arrival time                         -14.202    
+                         arrival time                         -14.278    
   -------------------------------------------------------------------
-                         slack                                  9.813    
+                         slack                                  9.737    
 
 
 
@@ -773,7 +773,7 @@ Slack (MET) :             9.813ns  (required time - arrival time)
 Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
-| Date         : Tue Nov  3 06:38:14 2026
+| Date         : Tue Nov  3 22:53:26 2026
 | Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
 | Command      : report_timing -column_style variable_width -to [get_clocks rgmii_txc] -through [get_ports O_RGMII_TX_CTL] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/O_RGMII_TX_CTL_timing.rpt
 | Design       : vsc8540et_mac
@@ -783,7 +783,7 @@ Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 
 Timing Report
 
-Slack (MET) :             5.986ns  (arrival time - required time)
+Slack (MET) :             6.049ns  (arrival time - required time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -791,7 +791,7 @@ Slack (MET) :             5.986ns  (arrival time - required time)
   Path Group:             rgmii_txc
   Path Type:              Min at Fast Process Corner
   Requirement:            -10.000ns  (rgmii_txc rise@0.000ns - clk_100mhz rise@10.000ns)
-  Data Path Delay:        1.717ns  (logic 1.283ns (74.748%)  route 0.433ns (25.252%))
+  Data Path Delay:        1.779ns  (logic 1.283ns (72.110%)  route 0.496ns (27.890%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -3.200ns
   Clock Path Skew:        2.495ns (DCD - SCD - CPR)
@@ -814,12 +814,12 @@ Slack (MET) :             5.986ns  (arrival time - required time)
                          net (fo=1, routed)           0.634    10.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026    10.881 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=27, routed)          0.593    11.474    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.141    11.615 r  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           0.433    12.048    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         1.142    13.190 r  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    13.190    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.141    11.615 r  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           0.496    12.111    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         1.142    13.253 r  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    13.253    O_RGMII_TX_CTL
     M14                                                               r  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -840,11 +840,11 @@ Slack (MET) :             5.986ns  (arrival time - required time)
                          output delay                 3.200     7.205    
   -------------------------------------------------------------------
                          required time                         -7.205    
-                         arrival time                          13.190    
+                         arrival time                          13.253    
   -------------------------------------------------------------------
-                         slack                                  5.986    
+                         slack                                  6.049    
 
-Slack (MET) :             5.986ns  (arrival time - required time)
+Slack (MET) :             6.049ns  (arrival time - required time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -852,7 +852,7 @@ Slack (MET) :             5.986ns  (arrival time - required time)
   Path Group:             rgmii_txc
   Path Type:              Min at Fast Process Corner
   Requirement:            -10.000ns  (rgmii_txc rise@0.000ns - clk_100mhz rise@10.000ns)
-  Data Path Delay:        1.717ns  (logic 1.283ns (74.748%)  route 0.433ns (25.252%))
+  Data Path Delay:        1.779ns  (logic 1.283ns (72.110%)  route 0.496ns (27.890%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -3.200ns
   Clock Path Skew:        2.495ns (DCD - SCD - CPR)
@@ -875,12 +875,12 @@ Slack (MET) :             5.986ns  (arrival time - required time)
                          net (fo=1, routed)           0.634    10.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026    10.881 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=27, routed)          0.593    11.474    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.141    11.615 f  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           0.433    12.048    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         1.142    13.190 f  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    13.190    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.141    11.615 f  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           0.496    12.111    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         1.142    13.253 f  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    13.253    O_RGMII_TX_CTL
     M14                                                               f  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -901,11 +901,11 @@ Slack (MET) :             5.986ns  (arrival time - required time)
                          output delay                 3.200     7.205    
   -------------------------------------------------------------------
                          required time                         -7.205    
-                         arrival time                          13.190    
+                         arrival time                          13.253    
   -------------------------------------------------------------------
-                         slack                                  5.986    
+                         slack                                  6.049    
 
-Slack (MET) :             5.986ns  (arrival time - required time)
+Slack (MET) :             6.049ns  (arrival time - required time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -913,7 +913,7 @@ Slack (MET) :             5.986ns  (arrival time - required time)
   Path Group:             rgmii_txc
   Path Type:              Min at Fast Process Corner
   Requirement:            -10.000ns  (rgmii_txc fall@20.000ns - clk_100mhz rise@30.000ns)
-  Data Path Delay:        1.717ns  (logic 1.283ns (74.748%)  route 0.433ns (25.252%))
+  Data Path Delay:        1.779ns  (logic 1.283ns (72.110%)  route 0.496ns (27.890%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -3.200ns
   Clock Path Skew:        2.495ns (DCD - SCD - CPR)
@@ -936,12 +936,12 @@ Slack (MET) :             5.986ns  (arrival time - required time)
                          net (fo=1, routed)           0.634    30.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026    30.881 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=27, routed)          0.593    31.474    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.141    31.615 r  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           0.433    32.048    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         1.142    33.190 r  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    33.190    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.141    31.615 r  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           0.496    32.111    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         1.142    33.253 r  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    33.253    O_RGMII_TX_CTL
     M14                                                               r  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -962,11 +962,11 @@ Slack (MET) :             5.986ns  (arrival time - required time)
                          output delay                 3.200    27.205    
   -------------------------------------------------------------------
                          required time                        -27.205    
-                         arrival time                          33.190    
+                         arrival time                          33.253    
   -------------------------------------------------------------------
-                         slack                                  5.986    
+                         slack                                  6.049    
 
-Slack (MET) :             5.986ns  (arrival time - required time)
+Slack (MET) :             6.049ns  (arrival time - required time)
   Source:                 q_rgmii_tx_ctl_reg/C
                             (rising edge-triggered cell FDRE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            O_RGMII_TX_CTL
@@ -974,7 +974,7 @@ Slack (MET) :             5.986ns  (arrival time - required time)
   Path Group:             rgmii_txc
   Path Type:              Min at Fast Process Corner
   Requirement:            -10.000ns  (rgmii_txc fall@20.000ns - clk_100mhz rise@30.000ns)
-  Data Path Delay:        1.717ns  (logic 1.283ns (74.748%)  route 0.433ns (25.252%))
+  Data Path Delay:        1.779ns  (logic 1.283ns (72.110%)  route 0.496ns (27.890%))
   Logic Levels:           1  (OBUF=1)
   Output Delay:           -3.200ns
   Clock Path Skew:        2.495ns (DCD - SCD - CPR)
@@ -997,12 +997,12 @@ Slack (MET) :             5.986ns  (arrival time - required time)
                          net (fo=1, routed)           0.634    30.855    I_CLK_IBUF
     BUFGCTRL_X0Y16       BUFG (Prop_bufg_I_O)         0.026    30.881 r  I_CLK_IBUF_BUFG_inst/O
                          net (fo=27, routed)          0.593    31.474    I_CLK_IBUF_BUFG
-    SLICE_X1Y34          FDRE                                         r  q_rgmii_tx_ctl_reg/C
+    SLICE_X0Y35          FDRE                                         r  q_rgmii_tx_ctl_reg/C
   -------------------------------------------------------------------    -------------------
-    SLICE_X1Y34          FDRE (Prop_fdre_C_Q)         0.141    31.615 f  q_rgmii_tx_ctl_reg/Q
-                         net (fo=1, routed)           0.433    32.048    O_RGMII_TX_CTL_OBUF
-    M14                  OBUF (Prop_obuf_I_O)         1.142    33.190 f  O_RGMII_TX_CTL_OBUF_inst/O
-                         net (fo=0)                   0.000    33.190    O_RGMII_TX_CTL
+    SLICE_X0Y35          FDRE (Prop_fdre_C_Q)         0.141    31.615 f  q_rgmii_tx_ctl_reg/Q
+                         net (fo=1, routed)           0.496    32.111    O_RGMII_TX_CTL_OBUF
+    M14                  OBUF (Prop_obuf_I_O)         1.142    33.253 f  O_RGMII_TX_CTL_OBUF_inst/O
+                         net (fo=0)                   0.000    33.253    O_RGMII_TX_CTL
     M14                                                               f  O_RGMII_TX_CTL (OUT)
   -------------------------------------------------------------------    -------------------
 
@@ -1023,9 +1023,9 @@ Slack (MET) :             5.986ns  (arrival time - required time)
                          output delay                 3.200    27.205    
   -------------------------------------------------------------------
                          required time                        -27.205    
-                         arrival time                          33.190    
+                         arrival time                          33.253    
   -------------------------------------------------------------------
-                         slack                                  5.986    
+                         slack                                  6.049    
 
 
 
