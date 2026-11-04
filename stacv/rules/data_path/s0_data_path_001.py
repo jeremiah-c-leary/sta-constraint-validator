@@ -1,11 +1,12 @@
 '''
 :Stage: 0 - inputs
-:Applies to: SDR-SS-O
+:Applies to: SDR-SS-O, SDR-SS-RT-DO, SDR-SYS-O, DDR-SS-O
 :Reads: last element of the data path of every timing report, ``name`` of the port in the configuration
 :Depends on: none
 
 The data path of every timing report of a port must end at the port.
 Every timing report is checked, setup and hold, at every process corner.
+A bus, configured as ``NAME[upper:lower]``, is reported one bit at a time, so the data path ends at a bit of the bus, such as ``NAME[3]``.
 The last element of the data path is the net to the port, which the timing tool names after the port.
 If the data path ends anywhere else, the timing report times a different port or an internal path, and the results of the other rules do not apply to the port.
 
@@ -35,6 +36,7 @@ When the rule fails, it lists each timing report whose data path ends somewhere 
 '''
 
 from stacv.results import rule_result
+from stacv.rules import port_names
 from stacv.rules import rule_details
 
 
@@ -60,7 +62,7 @@ def get_data_path_end_mismatches(oPortProfile):
             continue
         oDataPathEnd = oTimingReport.data_path.get_last_delay()
         sEnd = find_data_path_end(oTimingReport.data_path, oDataPathEnd)
-        if sEnd != sPortName:
+        if not port_names.matches_configured_port(sEnd, sPortName):
             sErrorMessage = generate_error_message(oDataPathEnd, sEnd, sPortName)
             lDetails.append(sErrorMessage)
     return lDetails

@@ -1,13 +1,14 @@
 '''
 :Stage: 4 - configuration
-:Applies to: SDR-SS-RT-DI
+:Applies to: SDR-SS-RT-DI, SDR-SS-I, SDR-SYS-I, DDR-SS-I-SE, DDR-SS-I-NE
 :Reads: launch clock edge type in the ``requirement`` of every timing report, ``launch_edge`` of the part pin in the part
 :Depends on: none
 
 The part states whether each data pin it drives launches on the rising or falling edge of its clock pin.
-In a round trip, that clock is the launch clock the device forwards to the part, so the launch clock edge in every timing report must be that edge type.
+That clock is the launch clock, so the launch clock edge in every timing report must be that edge type.
 Every timing report is checked, setup and hold, at every process corner.
 If the edge type differs, the timing report times data the part launches on an edge it does not launch on.
+A double data rate pin, with ``launch_edge = "Both"``, launches on either edge type; s4_edge_001 checks the timing reports time both.
 
 **Violation**
 
@@ -43,7 +44,8 @@ from stacv.rules import rule_details
 
 RULE_ID = 's4_part_002'
 FAILURE_MESSAGE = 'Launch clock edge type in timing reports does not match the launch edge of the part pin.'
-TIMING_REPORT_EDGE_TYPES = {'Rising': 'rise', 'Falling': 'fall'}
+# A double data rate pin takes data on both edges, so either edge type matches it.
+TIMING_REPORT_EDGE_TYPES = {'Rising': ['rise'], 'Falling': ['fall'], 'Both': ['rise', 'fall']}
 
 
 def check(oPortProfile):
@@ -57,10 +59,10 @@ def check(oPortProfile):
 
 def get_launch_clock_edge_type_mismatches(oPortProfile):
     oPartPin = path_lookups.get_part_data_pin(oPortProfile)
-    sPartEdgeType = TIMING_REPORT_EDGE_TYPES[oPartPin.launch_edge]
+    lPartEdgeTypes = TIMING_REPORT_EDGE_TYPES[oPartPin.launch_edge]
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
-        if oTimingReport.launch_clock_edge_type != sPartEdgeType:
+        if oTimingReport.launch_clock_edge_type not in lPartEdgeTypes:
             sErrorMessage = generate_error_message(oTimingReport, oPartPin)
             lDetails.append(sErrorMessage)
     return lDetails

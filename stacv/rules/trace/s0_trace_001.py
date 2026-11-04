@@ -1,12 +1,17 @@
 '''
 :Stage: 0 - inputs
-:Applies to: SDR-SS-O, SDR-SS-RT-DI, DDR-SS-O
+:Applies to: all
 :Reads: interface ports, trace delays, and part pins
 :Depends on: none
 
 The data trace and associated clock trace must exist.
-The data trace runs from the device to the part for an output, and from the part to the device for an SDR-SS-RT-DI port.
-The clock trace runs from the device's clock port to the clock pin of the part pin.
+The data trace runs from the device to the part for an output, and from the part to the device for an input.
+The clock trace depends on where the clock comes from:
+
+* the device: a trace from the device's clock port to the clock pin of the part pin
+* the part: a trace from the clock pin of the part pin to the device's clock port
+* a clock source: a trace from the source to the device's clock port, and a trace from the same source to the clock pin of the part pin
+
 This rule checks the trace and part TOML files for the existence of each trace.
 If the traces do not exist then further analysis can not be performed.
 
@@ -41,18 +46,45 @@ def check(oPortProfile):
         return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
     oPartDataPin = path_lookups.get_part_pin_at_end_of_trace(oPortProfile, oDataTrace)
-    sPartClockPinName = oPartDataPin.clock.pin
-    if not oPortProfile.traces.trace_ends_with_part_pin_named(sPartClockPinName):
-        lDetail = [f'a clock trace does not exist for part pin {sPartClockPinName}']
-        return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
-
-    oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartDataPin)
-    sDeviceClockPinName = oPortProfile.port.forwarded_clock.port
-    if clock_trace_does_not_exist(oClockTrace, sDeviceClockPinName):
-        lDetail = [f'a clock trace does not exist for device pin {sDeviceClockPinName}']
+    lDetail = find_missing_clock_trace(oPortProfile, oPartDataPin)
+    if len(lDetail) > 0:
         return rule_result.RuleResult(RULE_ID, rule_result.FAILED, lDetail, FAILURE_MESSAGE)
 
     return rule_result.RuleResult(RULE_ID, rule_result.PASSED, [], '')
+
+
+def find_missing_clock_trace(oPortProfile, oPartDataPin):
+    if oPortProfile.port.clock_origin == methodology.PART_CLOCK:
+        return find_missing_part_clock_trace(oPortProfile, oPartDataPin)
+    if oPortProfile.port.clock_origin == methodology.SOURCE_CLOCK:
+        return find_missing_source_clock_traces(oPortProfile, oPartDataPin)
+    return find_missing_device_clock_trace(oPortProfile, oPartDataPin)
+
+
+def find_missing_device_clock_trace(oPortProfile, oPartDataPin):
+    sPartClockPinName = oPartDataPin.clock.pin
+    if not oPortProfile.traces.trace_ends_with_part_pin_named(sPartClockPinName):
+        return [f'a clock trace does not exist for part pin {sPartClockPinName}']
+    oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartDataPin)
+    if oClockTrace is None:
+        return [f'a clock trace does not exist for device pin {oPortProfile.port.forwarded_clock.port}']
+    return []
+
+
+def find_missing_part_clock_trace(oPortProfile, oPartDataPin):
+    oClockTrace = path_lookups.get_clock_trace(oPortProfile, oPartDataPin)
+    if oClockTrace is None:
+        return [f'a clock trace does not run from part pin {oPartDataPin.clock.pin} to device pin {oPortProfile.port.forwarded_clock.port}']
+    return []
+
+
+def find_missing_source_clock_traces(oPortProfile, oPartDataPin):
+    sDeviceClockPinName = oPortProfile.port.forwarded_clock.port
+    if path_lookups.get_source_to_device_clock_trace(oPortProfile) is None:
+        return [f'a clock trace does not run from a clock source to device pin {sDeviceClockPinName}']
+    if path_lookups.get_source_to_part_clock_trace(oPortProfile, oPartDataPin) is None:
+        return [f'a clock trace does not run from the clock source of device pin {sDeviceClockPinName} to part pin {oPartDataPin.clock.pin}']
+    return []
 
 
 def describe_trace_end(oPort):
@@ -60,7 +92,3 @@ def describe_trace_end(oPort):
     if oPort.data_direction == methodology.INPUT:
         return 'end with'
     return 'start with'
-
-
-def clock_trace_does_not_exist(oClockTrace, sDeviceClockPinName):
-    return oClockTrace is None

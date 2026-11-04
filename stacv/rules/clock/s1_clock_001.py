@@ -8,6 +8,10 @@ The launch clock path and the capture clock path must start at the same clock so
 In a forwarded clock interface, both clocks come from one input clock.
 If the paths start at different points, the relationship between the clocks is not defined by the design, and clock pessimism removal has no common section to work from.
 
+A clock created on an input port, as a clock from the part or from a clock source is, has no clock path on the side of the port's delay:
+the launch clock path of an input, or the capture clock path of an output, is empty, because the delay is measured from the clock at the port.
+A timing report with an empty clock path has only one clock path, so the rule passes it; s0_clock_path_003 checks the other path starts at the clock port.
+
 **Violation**
 
 The launch clock path starts at ``I_CLK`` and the capture clock path starts at ``I_CLK2``:
@@ -62,14 +66,22 @@ def check(oPortProfile):
 
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
+        if has_an_empty_clock_path(oTimingReport):
+            continue
 
         sLaunchClockStartPoint = get_start_point(oTimingReport.launch_clock_path)
         sCaptureClockStartPoint = get_start_point(oTimingReport.capture_clock_path)
-    
+
         if sLaunchClockStartPoint != sCaptureClockStartPoint:
             lDetails.extend(create_details(oTimingReport))
 
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
+
+
+def has_an_empty_clock_path(oTimingReport):
+    if oTimingReport.launch_clock_path.has_no_delays():
+        return True
+    return oTimingReport.capture_clock_path.has_no_delays()
 
 
 def create_details(oTimingReport):

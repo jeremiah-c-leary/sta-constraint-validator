@@ -1,6 +1,6 @@
 '''
 :Stage: 4 - configuration
-:Applies to: SDR-SS-O
+:Applies to: SDR-SS-O, SDR-SS-RT-DO, SDR-SYS-O, DDR-SS-O
 :Reads: capture clock edge type in the ``requirement`` of every timing report, ``capture_edge`` of the part pin in the part
 :Depends on: none
 
@@ -8,6 +8,7 @@ The part states whether each data pin captures on the rising or falling edge of 
 The capture clock edge in every timing report must be that edge type.
 Every timing report is checked, setup and hold, at every process corner.
 If the edge type differs, the timing report times the data against an edge the part does not capture on.
+A double data rate pin, with ``capture_edge = "Both"``, captures on either edge type; s4_edge_001 checks the timing reports time both.
 
 **Violation**
 
@@ -43,7 +44,8 @@ from stacv.rules import rule_details
 
 RULE_ID = 's4_part_001'
 FAILURE_MESSAGE = 'Capture clock edge type in timing reports does not match the capture edge of the part pin.'
-TIMING_REPORT_EDGE_TYPES = {'Rising': 'rise', 'Falling': 'fall'}
+# A double data rate pin takes data on both edges, so either edge type matches it.
+TIMING_REPORT_EDGE_TYPES = {'Rising': ['rise'], 'Falling': ['fall'], 'Both': ['rise', 'fall']}
 
 
 def check(oPortProfile):
@@ -57,10 +59,10 @@ def check(oPortProfile):
 
 def get_capture_clock_edge_type_mismatches(oPortProfile):
     oPartPin = path_lookups.get_part_data_pin(oPortProfile)
-    sPartEdgeType = TIMING_REPORT_EDGE_TYPES[oPartPin.capture_edge]
+    lPartEdgeTypes = TIMING_REPORT_EDGE_TYPES[oPartPin.capture_edge]
     lDetails = []
     for oTimingReport in oPortProfile.timing_reports.reports:
-        if oTimingReport.capture_clock_edge_type != sPartEdgeType:
+        if oTimingReport.capture_clock_edge_type not in lPartEdgeTypes:
             sErrorMessage = generate_error_message(oTimingReport, oPartPin)
             lDetails.append(sErrorMessage)
     return lDetails
