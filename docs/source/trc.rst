@@ -14,8 +14,7 @@ A rule is named after its stage, its subject and a number, for example ``s1_cloc
 Each rule lists these fields:
 
 :Stage: When the rule runs (see `Stages`_).
-:Applies to: The methodology the rule checks:
-             SDR-SS-O, SDR-SS-RT-DI, SDR-SS-I, DDR-SS-O, DDR-SS-I-SE, DDR-SS-I-NE, or all (see :doc:`methodology`).
+:Applies to: The methodologies the rule checks, or all (see :doc:`methodology`).
 :Reads: The timing report values the rule uses.
 :Depends on: Rules that must pass before this rule is checked.
 
@@ -72,50 +71,59 @@ It runs last, so the slack is known to come from the intended timing.
 Methodology coverage
 ^^^^^^^^^^^^^^^^^^^^
 
-=======================  ========  ============  ============  ========
-Rule                     SDR-SS-O  SDR-SS-O-FLC  SDR-SS-RT-DI  SDR-SS-I
-=======================  ========  ============  ============  ========
-s0_timing_report_001     X         X             X             P
-s0_timing_report_002     X         X             X             P
-s0_trace_001             X         X             X             P
-s0_data_path_001         X         X
-s0_data_path_002                                 X
-s0_clock_path_001        X         X
-s0_clock_path_002                                X
-s0_register_001          X         X             X
-s0_register_002          X         X             X
-s0_register_003          X         X             X
-s1_clock_001             X         X             X             P
-s2_clock_001             X         X             X             P
-s2_clock_002             X         X             X             P
-s2_output_delay_001      X         X
-s2_output_delay_002      X         X
-s2_input_delay_001                               X             P
-s2_input_delay_002                               X             P
-s3_output_delay_001      X         X
-s3_output_delay_002      X         X
-s3_input_delay_001                               X             P
-s3_input_delay_002                               X             P
-s4_process_corner_001    P         P             P             P
-s4_process_corner_002    P         P             P             P
-s4_data_path_003                                               P
-s4_clock_path_002                                              P
-s4_launch_clock_001      X         X             X             P
-s4_launch_clock_002      X         X             X             P
-s4_capture_clock_001     X         X             X             P
-s4_capture_clock_002     X         X             X             P
-s4_requirement_001       X         X             X             P
-s4_requirement_002       X         X             X             P
-s4_part_001              X         X
-s4_part_002                                      X
-s5_slack_001             X         X             X             P
-s5_slack_002             X         X             X             P
-=======================  ========  ============  ============  ========
+======================  ========  ============  ========  ============  =========  =========  ========  ===========  ===========
+Rule                    SDR-SS-O  SDR-SS-RT-DI  SDR-SS-I  SDR-SS-RT-DO  SDR-SYS-O  SDR-SYS-I  DDR-SS-O  DDR-SS-I-SE  DDR-SS-I-NE
+======================  ========  ============  ========  ============  =========  =========  ========  ===========  ===========
+s0_timing_report_001    X         X             X         X             X          X          X         X            X
+s0_timing_report_002    X         X             X         X             X          X          X         X            X
+s0_trace_001            X         X             X         X             X          X          X         X            X
+s0_data_path_001        X                                 X             X                     X
+s0_data_path_002                  X             X                                  X                    X            X
+s0_clock_path_001       X                                                                     X
+s0_clock_path_002                 X
+s0_clock_path_003                               X         X             X          X                    X            X
+s0_register_001         X         X             X         X             X          X          X         X            X
+s0_register_002         X         X             X         X             X          X          X         X            X
+s0_register_003         X         X             X         X             X          X          X         X            X
+s1_clock_001            X         X             X         X             X          X          X         X            X
+s2_clock_001            X         X             X         X             X          X          X         X            X
+s2_clock_002            X         X             X         X             X          X          X         X            X
+s2_output_delay_001     X                                 X             X                     X
+s2_output_delay_002     X                                 X             X                     X
+s2_input_delay_001                X             X                                  X                    X            X
+s2_input_delay_002                X             X                                  X                    X            X
+s3_output_delay_001     X                                                                     X
+s3_output_delay_002     X                                                                     X
+s3_output_delay_003                                       X
+s3_output_delay_004                                       X
+s3_output_delay_005                                                     X
+s3_output_delay_006                                                     X
+s3_input_delay_001                X
+s3_input_delay_002                X
+s3_input_delay_003                              X                                                       X            X
+s3_input_delay_004                              X                                                       X            X
+s3_input_delay_005                                                                 X
+s3_input_delay_006                                                                 X
+s4_process_corner_001   P         P             P         P             P          P          P         P            P
+s4_process_corner_002   P         P             P         P             P          P          P         P            P
+s4_launch_clock_001     X         X             X         X             X          X          X         X            X
+s4_launch_clock_002     X         X             X         X             X          X          X         X            X
+s4_capture_clock_001    X         X             X         X             X          X          X         X            X
+s4_capture_clock_002    X         X             X         X             X          X          X         X            X
+s4_requirement_001      X         X             X         X             X          X          X         X            X
+s4_requirement_002      X         X             X         X             X          X          X         X            X
+s4_part_001             X                                 X             X                     X
+s4_part_002                       X             X                                  X                    X            X
+s4_edge_001                                                                                   X         X            X
+s4_edge_002                                                                                             X            X
+s5_slack_001            X         X             X         X             X          X          X         X            X
+s5_slack_002            X         X             X         X             X          X          X         X            X
+======================  ========  ============  ========  ============  =========  =========  ========  ===========  ===========
 
 ``X`` marks a rule stacv checks, and ``P`` a rule that is planned for the methodology.
 SDR-SS-O-FLC runs the SDR-SS-O rules unchanged.
 The columns are the methodologies described in :doc:`methodology`.
-The DDR methodologies are added once their rules are defined.
+A rule whose calculation differs between methodologies has an identifier for each calculation, such as s3_input_delay_003 for a clock from the part and s3_input_delay_005 for a clock source.
 
 Stage 0: Input Checks
 ---------------------
@@ -154,6 +162,11 @@ s0_clock_path_002: Launch clock path ends at the configured clock port
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: stacv.rules.clock.s0_clock_path_002
+
+s0_clock_path_003: Clock path starts at the configured clock port
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.clock.s0_clock_path_003
 
 s0_register_001: Every path starts or ends at a register the port lists
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -242,6 +255,46 @@ s3_input_delay_002: Minimum input delays match the calculated input delays
 
 .. automodule:: stacv.rules.input_delay.s3_input_delay_002
 
+s3_output_delay_003: Maximum output delays on a clock from the part match the calculated output delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.output_delay.s3_output_delay_003
+
+s3_output_delay_004: Minimum output delays on a clock from the part match the calculated output delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.output_delay.s3_output_delay_004
+
+s3_output_delay_005: Maximum output delays on a clock source match the calculated output delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.output_delay.s3_output_delay_005
+
+s3_output_delay_006: Minimum output delays on a clock source match the calculated output delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.output_delay.s3_output_delay_006
+
+s3_input_delay_003: Maximum input delays on a clock from the part match the calculated input delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.input_delay.s3_input_delay_003
+
+s3_input_delay_004: Minimum input delays on a clock from the part match the calculated input delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.input_delay.s3_input_delay_004
+
+s3_input_delay_005: Maximum input delays on a clock source match the calculated input delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.input_delay.s3_input_delay_005
+
+s3_input_delay_006: Minimum input delays on a clock source match the calculated input delays
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.input_delay.s3_input_delay_006
+
 Stage 4: Intent
 ---------------
 
@@ -262,20 +315,6 @@ s4_process_corner_002: Every timing report is at a process corner listed in the 
 A timing report at any other process corner is a failure.
 It usually means the timing reports were generated for a different device, or with different settings than intended.
 This rule waits for a second timing tool: the Vivado parser accepts only the Slow and Fast process corners, and stage 0 requires both.
-
-s4_data_path_003: Data path starts at an input port
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-*Planned: stacv does not check this rule yet.*
-
-The data path in the timing report must start at an input port.
-
-s4_clock_path_002: Capture clock path starts at the interface clock input port
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-*Planned: stacv does not check this rule yet.*
-
-The capture clock path in the timing report must start at a port.
 
 s4_launch_clock_001: Launch clock name matches the configured launch clock
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -316,6 +355,16 @@ s4_part_002: Launch clock edge is the edge type the part launches on
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: stacv.rules.part.s4_part_002
+
+s4_edge_001: Timing reports time both edges of a double data rate clock
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.edge.s4_edge_001
+
+s4_edge_002: Timing reports pair the edges a double data rate input captures on
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: stacv.rules.edge.s4_edge_002
 
 Stage 5: Slack
 --------------

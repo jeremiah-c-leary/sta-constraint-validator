@@ -43,8 +43,8 @@ If a device connects to two of the same part, each connection is a separate inte
 Not supported yet
 -----------------
 
-* Methodologies other than SDR-SS-O, SDR-SS-O-FLC and SDR-SS-RT-DI: a port with another methodology can be listed with ``status = "defer"`` until it is supported (see :doc:`interface`).
-* Buses: give each bit its own ``[[port]]`` (interface_config_022).
+* Methodologies other than those listed here, such as a phase compensated input: a port with another methodology can be listed with ``status = "defer"`` until it is supported (see :doc:`interface`).
+* A bus written any other way than ``NAME[upper:lower]`` (interface_config_022).
 * A device port shared by two interfaces, such as a shared SPI bus.
   Each interface would calculate its own output delay for the shared port, but the timing reports carry only one.
 * Pins without a clock, such as the DAC81404 LDAC pin: it has no setup and hold to a clock edge, so no methodology times it.
@@ -438,11 +438,11 @@ Stage    Rule                   Checks
 The timing tool reports a round trip from launch edge 0, such as ``dac_sclk_rd rise@0.000ns`` to ``clk_100mhz rise@40.000ns``, rather than from the configured edges 2 and Y.
 The requirement is the same, so s4_requirement_001 and s4_requirement_002 compare the requirements, not the edges.
 
-Methodologies stacv generates constraints for
----------------------------------------------
+Methodologies with a clock from the part or a clock source, and double data rate
+---------------------------------------------------------------------------------
 
 These methodologies are written from the device's view in the interface file.
-``stacv generate`` writes their constraints and report script; ``stacv check`` has no rules for them yet.
+``stacv generate`` writes their constraints and report script, and ``stacv check`` runs the shared rules with the delay calculation of each (see :doc:`trc`).
 
 ==============  ==================================================================  ===================  ===============
 Methodology     The device...                                                       Clock comes from     Part pin

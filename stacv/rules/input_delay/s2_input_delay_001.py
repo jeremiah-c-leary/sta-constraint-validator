@@ -1,6 +1,6 @@
 '''
 :Stage: 2 - across timing reports
-:Applies to: SDR-SS-RT-DI
+:Applies to: SDR-SS-RT-DI, SDR-SS-I, SDR-SYS-I, DDR-SS-I-SE, DDR-SS-I-NE
 :Reads: ``input_delay`` of every setup timing report
 :Depends on: none
 

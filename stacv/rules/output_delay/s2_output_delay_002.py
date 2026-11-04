@@ -1,6 +1,6 @@
 '''
 :Stage: 2 - across timing reports
-:Applies to: SDR-SS-O, DDR-SS-O
+:Applies to: SDR-SS-O, SDR-SS-RT-DO, SDR-SYS-O, DDR-SS-O
 :Reads: ``output_delay`` of every hold timing report
 :Depends on: none
 

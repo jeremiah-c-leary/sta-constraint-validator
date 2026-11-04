@@ -1,6 +1,6 @@
 '''
 :Stage: 0 - inputs
-:Applies to: SDR-SS-O, SDR-SS-RT-DI
+:Applies to: all
 :Reads: process corner and type of every timing report
 :Depends on: none
 

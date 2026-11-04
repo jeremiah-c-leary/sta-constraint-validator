@@ -1,6 +1,6 @@
 '''
 :Stage: 0 - inputs
-:Applies to: SDR-SS-O
+:Applies to: SDR-SS-O, DDR-SS-O
 :Reads: last element of the capture clock path of every timing report, ``capture_clock.port`` of the port in the configuration
 :Depends on: none
 

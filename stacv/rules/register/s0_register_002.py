@@ -1,6 +1,6 @@
 '''
 :Stage: 0 - inputs
-:Applies to: SDR-SS-O, SDR-SS-RT-DI
+:Applies to: all
 :Reads: source or destination of every timing report, ``registers`` of the port in the configuration
 :Depends on: none
 
