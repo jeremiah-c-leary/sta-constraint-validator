@@ -9,9 +9,8 @@
 --   RGMII     : TXC is clk_100mhz / 4 (25 MHz); TXD changes 10 ns after each TXC edge, centred between edges.
 --               Uncompensated RXD is captured by an IDDR on the edge that launched it, after the BUFG's delay:
 --               Q1 captures on the rising edge and Q2 on the falling edge.
---               Compensated RXD is centred on the next RXC edge, so it is captured by an IDDR on a copy of RXC
---               from a PLL, shifted 31.5 degrees (3.5 ns) into the middle of the data.  The PLL's compensation
---               puts its output about 2.5 ns ahead of the RXC pin at the IDDR, which the shift makes up.
+--               Compensated RXD is captured the same way.  The PHY delays RX_CLK by 2.0 ns, so the data
+--               is stable from before each edge, and the IDDR captures it on that edge.
 
 library ieee;
   use ieee.std_logic_1164.all;
@@ -79,43 +78,6 @@ architecture rtl of vsc8540et_mac is
     );
   end component IDDR;
 
-  -- The 7-series PLL and global clock buffer, declared for the same reason.
-  component PLLE2_BASE is
-    generic (
-      BANDWIDTH          : string := "OPTIMIZED";
-      CLKFBOUT_MULT      : integer := 5;
-      CLKFBOUT_PHASE     : real := 0.0;
-      CLKIN1_PERIOD      : real := 0.0;
-      CLKOUT0_DIVIDE     : integer := 1;
-      CLKOUT0_DUTY_CYCLE : real := 0.5;
-      CLKOUT0_PHASE      : real := 0.0;
-      DIVCLK_DIVIDE      : integer := 1;
-      REF_JITTER1        : real := 0.010;
-      STARTUP_WAIT       : string := "FALSE"
-    );
-    port (
-      CLKOUT0  : out std_logic;
-      CLKOUT1  : out std_logic;
-      CLKOUT2  : out std_logic;
-      CLKOUT3  : out std_logic;
-      CLKOUT4  : out std_logic;
-      CLKOUT5  : out std_logic;
-      CLKFBOUT : out std_logic;
-      LOCKED   : out std_logic;
-      CLKIN1   : in  std_logic;
-      PWRDWN   : in  std_logic;
-      RST      : in  std_logic;
-      CLKFBIN  : in  std_logic
-    );
-  end component PLLE2_BASE;
-
-  component BUFG is
-    port (
-      O : out std_logic;
-      I : in  std_logic
-    );
-  end component BUFG;
-
   -- The capture registers drive nothing, so they are kept for the timing reports.
   attribute dont_touch : string;
 
@@ -162,10 +124,6 @@ architecture rtl of vsc8540et_mac is
   signal w_rgmii_rx_rise     : std_logic_vector(4 downto 0);
   signal w_rgmii_rx_fall     : std_logic_vector(4 downto 0);
   signal w_rgmii_id_rx_in    : std_logic_vector(4 downto 0);
-  signal w_rgmii_id_rxc_pll      : std_logic;
-  signal w_rgmii_id_rxc_shifted  : std_logic;
-  signal w_rgmii_id_rxc_feedback : std_logic;
-  signal w_rgmii_id_rxc_feedback_buffered : std_logic;
   signal w_rgmii_id_rx_rise  : std_logic_vector(4 downto 0);
   signal w_rgmii_id_rx_fall  : std_logic_vector(4 downto 0);
 
@@ -275,7 +233,7 @@ begin
   O_RGMII_ID_TX_CTL <= q_rgmii_id_tx_ctl;
 
   ---------------------------------------------------------------------------
-  -- RGMII receive: data launched on one RXC edge is captured on the next edge, by an IDDR at each pin.
+  -- RGMII receive: the data each RXC edge is aligned with is captured on that edge, by an IDDR at each pin.
   ---------------------------------------------------------------------------
   GEN_RGMII_RX : for i in 0 to 4 generate
     attribute dont_touch of U_IDDR : label is "true";
@@ -292,43 +250,6 @@ begin
       );
   end generate GEN_RGMII_RX;
 
-  -- 25 MHz in, a 1000 MHz VCO, 25 MHz out, shifted 31.5 degrees.
-  -- The feedback runs through a BUFG so the shifted clock arrives at the IDDR aligned with the RXC pin.
-  U_RGMII_ID_PLL : PLLE2_BASE
-    generic map (
-      CLKFBOUT_MULT  => 40,
-      CLKIN1_PERIOD  => 40.0,
-      CLKOUT0_DIVIDE => 40,
-      CLKOUT0_PHASE  => 31.5,
-      DIVCLK_DIVIDE  => 1
-    )
-    port map (
-      CLKOUT0  => w_rgmii_id_rxc_pll,
-      CLKOUT1  => open,
-      CLKOUT2  => open,
-      CLKOUT3  => open,
-      CLKOUT4  => open,
-      CLKOUT5  => open,
-      CLKFBOUT => w_rgmii_id_rxc_feedback,
-      LOCKED   => open,
-      CLKIN1   => I_RGMII_ID_RXC,
-      PWRDWN   => '0',
-      RST      => '0',
-      CLKFBIN  => w_rgmii_id_rxc_feedback_buffered
-    );
-
-  U_RGMII_ID_FEEDBACK_BUFG : BUFG
-    port map (
-      O => w_rgmii_id_rxc_feedback_buffered,
-      I => w_rgmii_id_rxc_feedback
-    );
-
-  U_RGMII_ID_RXC_BUFG : BUFG
-    port map (
-      O => w_rgmii_id_rxc_shifted,
-      I => w_rgmii_id_rxc_pll
-    );
-
   GEN_RGMII_ID_RX : for i in 0 to 4 generate
     attribute dont_touch of U_IDDR : label is "true";
   begin
@@ -336,7 +257,7 @@ begin
       port map (
         Q1 => w_rgmii_id_rx_rise(i),
         Q2 => w_rgmii_id_rx_fall(i),
-        C  => w_rgmii_id_rxc_shifted,
+        C  => I_RGMII_ID_RXC,
         CE => '1',
         D  => w_rgmii_id_rx_in(i),
         R  => '0',

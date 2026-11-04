@@ -26,7 +26,7 @@ SDR_SS_O = 'SDR-SS-O'
 EDGES_PER_PERIOD = 2
 READER = config_reader.ConfigReader('interface_config', interface_config_error.InterfaceConfigError)
 TOP_LEVEL_KEYS = ['description', 'name', 'part', 'part_interface', 'traces', 'clock', 'port']
-CLOCK_KEYS = ['name', 'period', 'phase', 'port', 'idle', 'generator']
+CLOCK_KEYS = ['name', 'period', 'port', 'idle', 'generator']
 GENERATOR_KEYS = ['source', 'master_pin', 'target_pin', 'master_clock']
 PORT_KEYS = ['status', 'name', 'methodology', 'launch_clock', 'capture_clock', 'registers', 'timing_reports']
 PORT_CLOCK_KEYS = ['name', 'setup_edge', 'hold_edge']
@@ -145,8 +145,6 @@ def build_clock(dClock, iClock, sFilename):
     oClock.name = READER.get_required_string(dClock, 'name', oLocation)
     oClock.period = READER.get_required_number(dClock, 'period', oLocation)
     check_period_is_positive(oClock.period, oLocation)
-    if 'phase' in dClock:
-        oClock.phase = READER.get_required_number(dClock, 'phase', oLocation)
     if 'port' in dClock:
         oClock.port = READER.get_required_string(dClock, 'port', oLocation)
     if 'idle' in dClock:
@@ -298,7 +296,6 @@ def build_referenced_clock(dPort, sKey, sPortName, oInterface, oLocation):
     oClockPin.port = oClock.port
     oClockPin.generator = oClock.generator
     oClockPin.idle = oClock.idle
-    oClockPin.phase = oClock.phase
     oClockPin.setup_edge = read_edge(dClock, 'setup_edge', sKey, oLocation, oTableLocation)
     oClockPin.hold_edge = read_edge(dClock, 'hold_edge', sKey, oLocation, oTableLocation)
     return oClockPin

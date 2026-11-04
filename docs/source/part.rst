@@ -151,6 +151,10 @@ Pins are described from the part's point of view.
 The time between data changes is the period of the interface's clock, or half of it for double data rate.
 Each conversion is written out in the constraints file, next to the constraint it gives.
 
+A window only gives the time the data is guaranteed valid.
+A datasheet that writes the window for a faster clock leaves the data far more time to change than it really takes.
+The compensated RGMII outputs of the VSC8540ET are an example: the window is written for gigabit timing, so the part file gives the clock to out instead, worked out in its comments from the data's launch skew and the PHY's clock delay.
+
 ``setup``, ``hold``, ``cko_max``, ``cko_min`` and the window keys each have the same keys:
 
 .. list-table::

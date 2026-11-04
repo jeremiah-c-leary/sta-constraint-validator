@@ -64,8 +64,15 @@ name = "Compensated RGMII MAC Interface"
 # The datasheet names these tables by path: T for the TX path (PHY input),
 # R for the RX path (PHY output).  RGMII v2.0 uses T and R for transmitter and receiver.
 # The negative setup is real: the internal clock delay lets data arrive after the clock edge at the pin.
-# The outputs are given as a valid window: data is valid 1.4 ns before and 1.5 ns
-# after the delayed RX_CLK edge.  stacv converts the window to clock to out for the clock in use.
+# The outputs are not timed with Table 7-27.  Its window, valid 1.4 ns before and 1.5 ns after the
+# delayed RX_CLK edge, is written for gigabit timing, and at 25 MHz it would leave the data a 17 ns
+# slot to change in.  As RGMII v2.0 describes for a transmitter with an integrated delay, the PHY
+# launches the data within tSKEWT (+/-0.5 ns, Table 7-25) of its internal clock, and drives RX_CLK
+# out 2.0 ns later (register 20E2.[6:4] = 100b, Table 5-38).  Seen from the RX_CLK edge, the data
+# changes from 2.5 ns to 1.5 ns before it:
+#   cko_max = tSKEWT maximum - RX_CLK delay = 0.5 - 2.0 = -1.5 ns
+#   cko_min = tSKEWT minimum - RX_CLK delay = -0.5 - 2.0 = -2.5 ns
+# Table 5-38 gives the delay without a tolerance.  cko_max still meets RGMII v2.0 TsetupT, 1.2 ns minimum.
 
 [[interface.pin]]
 name = "TXD[3:0]"
@@ -87,16 +94,16 @@ hold = {value = 2.8, symbol = "tHOLD_T", source = "Table 7-26"}
 name = "RXD[3:0]"
 methodology = "DDR-SS-O"
 clock = {pin = "RX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
-valid_before = {value = 1.4, symbol = "tSETUP_R", source = "Table 7-27"}
-valid_after = {value = 1.5, symbol = "tHOLD_R", source = "Table 7-27"}
+cko_max = {value = -1.5, symbol = "tSKEWT - RX_CLK delay", source = "Tables 7-25, 5-38"}
+cko_min = {value = -2.5, symbol = "tSKEWT - RX_CLK delay", source = "Tables 7-25, 5-38"}
 launch_edge = "Both"
 
 [[interface.pin]]
 name = "RX_CTL"
 methodology = "DDR-SS-O"
 clock = {pin = "RX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
-valid_before = {value = 1.4, symbol = "tSETUP_R", source = "Table 7-27"}
-valid_after = {value = 1.5, symbol = "tHOLD_R", source = "Table 7-27"}
+cko_max = {value = -1.5, symbol = "tSKEWT - RX_CLK delay", source = "Tables 7-25, 5-38"}
+cko_min = {value = -2.5, symbol = "tSKEWT - RX_CLK delay", source = "Tables 7-25, 5-38"}
 launch_edge = "Both"
 
 

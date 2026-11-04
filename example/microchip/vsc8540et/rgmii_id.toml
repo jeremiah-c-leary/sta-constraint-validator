@@ -26,13 +26,6 @@ name = "rgmii_id_rxc"
 period = 40.000
 port = "I_RGMII_ID_RXC"
 
-# The PLL's copy of rgmii_id_rxc, shifted 3.5 ns, that captures RXD in the middle of the data.
-# Vivado derives it from rgmii_id_rxc and names it after the net on the PLL's CLKOUT0.
-[[clock]]
-name = "w_rgmii_id_rxc_pll"
-period = 40.000
-phase = 3.5
-
 [[port]]
 name = "O_RGMII_ID_TXD[3:0]"
 methodology = "DDR-SS-O"
@@ -56,8 +49,8 @@ timing_reports = [
 [[port]]
 name = "I_RGMII_ID_RXD[3:0]"
 methodology = "DDR-SS-I"
-launch_clock = {name = "rgmii_id_rxc", setup_edge = 0, hold_edge = 0}
-capture_clock = {name = "w_rgmii_id_rxc_pll", setup_edge = "B", hold_edge = "A"}
+launch_clock = {name = "rgmii_id_rxc", setup_edge = 2, hold_edge = 2}
+capture_clock = {name = "rgmii_id_rxc", setup_edge = "C", hold_edge = "B"}
 registers = ["GEN_RGMII_ID_RX[*].U_IDDR"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RXD_timing.rpt",
@@ -66,8 +59,8 @@ timing_reports = [
 [[port]]
 name = "I_RGMII_ID_RX_CTL"
 methodology = "DDR-SS-I"
-launch_clock = {name = "rgmii_id_rxc", setup_edge = 0, hold_edge = 0}
-capture_clock = {name = "w_rgmii_id_rxc_pll", setup_edge = "B", hold_edge = "A"}
+launch_clock = {name = "rgmii_id_rxc", setup_edge = 2, hold_edge = 2}
+capture_clock = {name = "rgmii_id_rxc", setup_edge = "C", hold_edge = "B"}
 registers = ["GEN_RGMII_ID_RX[4].U_IDDR"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_RGMII_ID_RX_CTL_timing.rpt",

@@ -108,7 +108,7 @@ class TestPartInterfaceSelection(unittest.TestCase):
         self.assertIn('set_output_delay -clock [get_clocks mii_tx_clk] -max 17.400 [get_ports {O_MII_TXD[*]}]', self.oStdout.getvalue())
 
     def test_a_pin_gives_one_form_of_its_timing(self):
-        self.sPartText = self.sPartText.replace('valid_before = {value = 1.4, symbol = "tSETUP_R", source = "Table 7-27"}', 'cko_max = {value = 1.4, symbol = "tSETUP_R", source = "Table 7-27"}', 1)
+        self.sPartText = self.sPartText.replace('cko_min = {value = -2.5, symbol = "tSKEWT - RX_CLK delay", source = "Tables 7-25, 5-38"}', 'valid_after = {value = 1.5, symbol = "tHOLD_R", source = "Table 7-27"}', 1)
         self.assertEqual(2, self.run_generate())
         self.assertIn('[part_config_010]', self.oStderr.getvalue())
         self.assertIn('timing in pin RXD[3:0] of interface Compensated RGMII MAC Interface must give cko_max and cko_min, or valid_before and valid_after', self.oStderr.getvalue())
