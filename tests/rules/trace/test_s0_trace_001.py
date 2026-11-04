@@ -68,6 +68,7 @@ def build_config_text(sPartFile, sTracesFile):
     lText.append('methodology = "SDR-SS-O"')
     lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
     lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+    lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
 

@@ -46,6 +46,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append(f'timing_reports = ["{sTimingReportFile}"]')
         return '\n' + '\n'.join(lText) + '\n'
 
@@ -57,6 +58,7 @@ class Test(unittest.TestCase):
         lText.append(f'methodology = "{sMethodology}"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append(f'timing_reports = ["{sTimingReportFile}"]')
         return '\n' + '\n'.join(lText) + '\n'
 
@@ -105,6 +107,7 @@ class Test(unittest.TestCase):
         lText.append('traces = "traces.toml"')
         lText.append('[[port]]')
         lText.append('name = "O_DAC_CSF"')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -124,6 +127,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -163,6 +167,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = "O_DAC_CSF_timing.rpt"')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -183,6 +188,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt", 5]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -236,6 +242,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -256,6 +263,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = 3')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["O_DAC_CSF_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -290,6 +298,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = []')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -310,6 +319,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["$STACV_UNSET_TEST_VARIABLE/O_DAC_CSF_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -333,6 +343,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["$STACV_UNSET_A/$STACV_UNSET_B/O_DAC_CSF_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -357,6 +368,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["${STACV_UNSET_TEST_VARIABLE}/O_DAC_CSF_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -381,6 +393,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append(f'timing_reports = ["{sMissingFile}"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -403,6 +416,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["$STACV_TEST_REPORT_DIRECTORY/O_DAC_CSF_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -426,6 +440,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append(f'timing_reports = ["{sMissingFile}"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -445,6 +460,7 @@ class Test(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["O_DAC_DATA_timing.rpt"]')
         self.write_interface_file('\n'.join(lText) + '\n')
 
@@ -564,6 +580,7 @@ class TestClockErrors(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append(f'launch_clock = {{name = "{sLaunchClock}", setup_edge = 8, hold_edge = 8}}')
         lText.append(f'capture_clock = {{name = "{sCaptureClock}", setup_edge = "D", hold_edge = "B"}}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["O_DAC_DATA_timing.rpt"]')
         with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write('\n'.join(lText) + '\n')
@@ -619,6 +636,7 @@ class TestClockErrors(unittest.TestCase):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8, hold_edge = 8}')
         lText.append('capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50, setup_edge = "D", hold_edge = "B"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append('timing_reports = ["O_DAC_DATA_timing.rpt"]')
         with open(self.sInterfaceFile, 'w') as oFile:
             oFile.write('\n'.join(lText) + '\n')
@@ -675,6 +693,7 @@ class TestPortStatus(unittest.TestCase):
         lLines.append(f'methodology = "{sMethodology}"')
         lLines.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
         lLines.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+        lLines.append('registers = ["q_spi_input_data_reg"]')
         lLines.append('timing_reports = ["I_DAC_DATA_timing.rpt"]')
         lLines.append('[[clock]]')
         lLines.append('name = "clk_100mhz"')

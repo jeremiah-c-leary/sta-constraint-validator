@@ -10,7 +10,6 @@ The report script reports every path to or from the port, not only the worst, so
 A register that is not listed means the configuration does not say everything the port times: logic before the pin, or an extra flop capturing the data.
 
 A register in ``registers`` can use ``*`` for any characters, such as ``q_txd_reg[*]`` for every bit of a bus.
-The rule passes when the port lists no registers.
 
 **Result**
 
@@ -41,9 +40,8 @@ def check(oPortProfile):
     '''
     oPort = oPortProfile.port
     lDetails = []
-    if oPort.registers is not None:
-        for oTimingReport in oPortProfile.timing_reports.reports:
-            sRegister = registers.get_register(oTimingReport, oPort)
-            if not registers.is_listed(sRegister, oPort.registers):
-                lDetails.append(rule_details.format_detail(oTimingReport.slack_line, f'register {sRegister} is not in registers of {oPort.name}'))
+    for oTimingReport in oPortProfile.timing_reports.reports:
+        sRegister = registers.get_register(oTimingReport, oPort)
+        if not registers.is_listed(sRegister, oPort.registers):
+            lDetails.append(rule_details.format_detail(oTimingReport.slack_line, f'register {sRegister} is not in registers of {oPort.name}'))
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)

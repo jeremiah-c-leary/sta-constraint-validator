@@ -245,8 +245,7 @@ def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     oPort.edge_errors = find_edge_errors(oPort, oLocation)
     oPort.timing_reports_as_written = READER.get_required_list_of_strings(dPort, 'timing_reports', oLocation)
     # The registers that drive or capture the port, which every path in its timing reports must start or end at.
-    if 'registers' in dPort:
-        oPort.registers = READER.get_required_list_of_strings(dPort, 'registers', oLocation)
+    oPort.registers = READER.get_required_list_of_strings(dPort, 'registers', oLocation)
 
 
 def set_methodology_roles(oPort):

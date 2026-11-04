@@ -29,6 +29,7 @@ def build_interface_text(lPortNames, sMissingTimingReport, sClockPort):
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_launch", setup_edge = 4, hold_edge = 4}')
         lText.append('capture_clock = {name = "clk_capture", setup_edge = "C", hold_edge = "A"}')
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append(f'timing_reports = ["{sMissingTimingReport}"]')
     return '\n'.join(lText) + '\n'
 
@@ -321,6 +322,7 @@ class TestVisualizeBlockDiagramClocks(BlockDiagramTestCase):
             lText.append('methodology = "SDR-SS-O"')
             lText.append('launch_clock = {name = "clk_launch", setup_edge = 4, hold_edge = 4}')
             lText.append(f'capture_clock = {{name = "{sCaptureClock}", setup_edge = "C", hold_edge = "A"}}')
+            lText.append('registers = ["q_spi_output_data_reg"]')
             lText.append(f'timing_reports = ["{self.sMissingTimingReport}"]')
         self.write_file('interface.toml', '\n'.join(lText) + '\n')
         lTraces = []

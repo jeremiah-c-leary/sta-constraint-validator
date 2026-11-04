@@ -52,6 +52,7 @@ def build_round_trip_port_table(sName, sLaunchClock, lSetupEdges, lHoldEdges, sT
     lText.append(f'methodology = "{ROUND_TRIP}"')
     lText.append(f'launch_clock = {{name = "{sLaunchClock}", setup_edge = {lSetupEdges[0]}, hold_edge = {lHoldEdges[0]}}}')
     lText.append(f'capture_clock = {{name = "clk_sys", setup_edge = "{lSetupEdges[1]}", hold_edge = "{lHoldEdges[1]}"}}')
+    lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
 
@@ -63,6 +64,7 @@ def build_output_port_table(sName, sCaptureClock, sTimingReport):
     lText.append('methodology = "SDR-SS-O"')
     lText.append('launch_clock = {name = "clk_sys", setup_edge = 8, hold_edge = 8}')
     lText.append(f'capture_clock = {{name = "{sCaptureClock}", setup_edge = "D", hold_edge = "B"}}')
+    lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
 

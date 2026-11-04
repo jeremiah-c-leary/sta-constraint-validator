@@ -6,7 +6,6 @@
 
 Every register the port lists must start or end at least one path in its timing reports.
 A listed register with no path is not timed: its name is wrong, or it does not drive or capture the port.
-The rule passes when the port lists no registers.
 
 **Result**
 
@@ -36,13 +35,12 @@ def check(oPortProfile):
     '''
     oPort = oPortProfile.port
     lDetails = []
-    if oPort.registers is not None:
-        lReported = []
-        for oTimingReport in oPortProfile.timing_reports.reports:
-            lReported.append(registers.get_register(oTimingReport, oPort))
-        for sPattern in oPort.registers:
-            if not has_match(lReported, sPattern):
-                lDetails.append(f'register {sPattern} of {oPort.name} is in no timing report')
+    lReported = []
+    for oTimingReport in oPortProfile.timing_reports.reports:
+        lReported.append(registers.get_register(oTimingReport, oPort))
+    for sPattern in oPort.registers:
+        if not has_match(lReported, sPattern):
+            lDetails.append(f'register {sPattern} of {oPort.name} is in no timing report')
     return rule_result.generate_rule_result(RULE_ID, lDetails, FAILURE_MESSAGE)
 
 

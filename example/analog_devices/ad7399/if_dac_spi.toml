@@ -27,6 +27,7 @@ name = "O_DAC_DATA"
 methodology = "SDR-SS-O"
 launch_clock = {name = "clk_100mhz", setup_edge = 10, hold_edge = 10}
 capture_clock = {name = "clk_10mhz", setup_edge = "C", hold_edge = "A"}
+registers = ["q_spi_output_data_reg"]
 timing_reports = [
     "$PROJ_DIR/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt",
 ]

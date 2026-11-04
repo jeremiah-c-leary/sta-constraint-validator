@@ -25,6 +25,7 @@ def build_interface(dReplacements=None):
     dLines['port'] = '[[port]]\nname = "O_DATA"\nmethodology = "SDR-SS-O"'
     dLines['launch_clock'] = 'launch_clock = {name = "clk_launch", setup_edge = 8, hold_edge = 8}'
     dLines['capture_clock'] = 'capture_clock = {name = "clk_capture", setup_edge = "D", hold_edge = "B"}'
+    dLines['registers'] = 'registers = ["q_data_reg"]'
     dLines['timing_reports'] = 'timing_reports = ["O_DATA_timing.rpt"]'
     if dReplacements is not None:
         dLines.update(dReplacements)

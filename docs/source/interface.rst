@@ -161,14 +161,13 @@ A port can have more than one table, one for each methodology, such as a bidirec
    * - ``name``
      - Yes
      - The name of the port in the timing reports.
-       A bus, written with ``[`` or ``*``, is not supported yet: give each bit its own ``[[port]]`` (interface_config_022).
+       A bus is written ``NAME[upper:lower]``, such as ``O_MII_TXD[3:0]``; any other bracket, or a wildcard, is an error (interface_config_022).
    * - ``methodology``
      - Yes
      - The :doc:`methodology <methodology>` of the port.
        An analyzed port is ``SDR-SS-O``, ``SDR-SS-O-FLC``, ``SDR-SS-RT-DI``, ``SDR-SS-I``, ``SDR-SS-RT-DO``, ``SDR-SYS-O``, ``SDR-SYS-I``, ``DDR-SS-O``, ``DDR-SS-I-SE`` or ``DDR-SS-I-NE``; a port with another methodology is deferred until stacv supports it (interface_config_011).
-       ``stacv check`` has rules for the first three only.
    * - ``registers``
-     - No
+     - Yes
      - The registers that drive the port, for an output, or capture it, for an input, such as ``["q_mdio_out_reg", "q_mdio_oe_reg"]``.
        ``*`` matches any characters, such as ``q_txd_reg[*]`` for every bit of a bus.
        Every path in the port's timing reports must start or end at one of them (s0_register_001), and each one must be in a timing report (s0_register_002).

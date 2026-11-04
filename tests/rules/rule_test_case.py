@@ -199,6 +199,7 @@ def build_round_trip_config_text(sPartFile, sTracesFile, sTimingReportFile, sPor
     lText.append('methodology = "SDR-SS-RT-DI"')
     lText.append('launch_clock = {name = "dac_sclk_rd", setup_edge = 2, hold_edge = 2}')
     lText.append('capture_clock = {name = "clk_100mhz", setup_edge = "Y", hold_edge = "I"}')
+    lText.append('registers = ["q_spi_input_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReportFile}"]')
     return '\n'.join(lText)
 

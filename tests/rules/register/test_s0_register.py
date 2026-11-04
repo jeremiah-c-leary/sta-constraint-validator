@@ -1,3 +1,4 @@
+from stacv.interface import interface_config_error
 from tests.rules import rule_test_case
 
 # Every path in this file starts at q_spi_output_data_reg; the slack of each report is on lines 14, 91, 168 and 245.
@@ -51,9 +52,11 @@ class TestListedRegisters(RegisterTestCase):
         self.execute('["q_spi_output_*"]')
         self.assert_rule_passed(self.sRuleId)
 
-    def test_passes_when_the_port_lists_no_registers(self):
-        self.execute(None)
-        self.assert_rule_passed(self.sRuleId)
+    def test_a_port_without_registers_is_an_interface_error(self):
+        with self.assertRaises(interface_config_error.InterfaceConfigError) as oContext:
+            self.execute(None)
+        self.assertIn('[interface_config_002]', str(oContext.exception))
+        self.assertIn('missing required key "registers" in port O_DAC_DATA', str(oContext.exception))
 
     def test_fails_when_a_register_in_the_reports_is_not_listed(self):
         self.assertEqual(1, self.execute('["q_spi_other_reg"]'))

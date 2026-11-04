@@ -27,6 +27,7 @@ def build_interface_text(lPorts, sMissingTimingReport):
     for sPort in lPorts:
         lText.append('')
         lText.append(remove_clock_tables(sPort))
+        lText.append('registers = ["q_spi_output_data_reg"]')
         lText.append(f'timing_reports = ["{sMissingTimingReport}"]')
     return '\n'.join(lText) + '\n'
 

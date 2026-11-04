@@ -51,6 +51,7 @@ def build_interface_text(sIdle, sMethodology, lLaunchEdges, lCaptureEdges, sTimi
     lText.append(f'methodology = "{sMethodology}"')
     lText.append(f'launch_clock = {{name = "clk_100mhz", setup_edge = {lLaunchEdges[0]}, hold_edge = {lLaunchEdges[1]}}}')
     lText.append(f'capture_clock = {{name = "dac_sclk", setup_edge = "{lCaptureEdges[0]}", hold_edge = "{lCaptureEdges[1]}"}}')
+    lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText) + '\n'
 
