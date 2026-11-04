@@ -49,5 +49,7 @@ class TestFailingExample(unittest.TestCase):
         lExpected.append(f'    {sTimingReport}:24  Calculated maximum output delay is 13.000ns while actual output delay is 12.000ns')
         lExpected.append('FAILED: [s3_output_delay_002] O_DAC_DATA.SDR-SS-O')
         lExpected.append(f'    {sTimingReport}:101  Calculated minimum output delay is -11.000ns while actual output delay is -12.000ns')
+        lExpected.append('DEFERRED: O_DAC_CSF')
+        lExpected.append('DEFERRED: I_DAC_DATA')
         lExpected.append('')
         self.assertEqual('\n'.join(lExpected), self.oStdout.getvalue())

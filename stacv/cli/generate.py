@@ -1,4 +1,5 @@
 from stacv.interface import interface_config
+from stacv.interface import part_coverage
 from stacv.generate import report_tcl_file
 from stacv.generate import xdc_file
 from stacv.part import part
@@ -19,6 +20,7 @@ def execute(oCmdLine, lArgv):
 def generate_xdc_file(sInterfaceFile, oInterface):
     oTraceList = traces.create_trace_list(oInterface)
     oPart = part.create_part(oInterface)
+    part_coverage.check_every_part_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPart)
     return xdc_file.generate_file(sInterfaceFile, oInterface, oTraceList, oPart)
 
 

@@ -15,6 +15,10 @@ The clock trace depends on where the clock comes from:
 This rule checks the trace and part TOML files for the existence of each trace.
 If the traces do not exist then further analysis can not be performed.
 
+Every pin of the part interface must have a trace and a port before any rule runs (traces_config_010 and interface_config_024),
+so a missing or miswired data trace is usually reported by those errors first.
+The rule still finds a data trace problem when the part pin has a trace to another port, and it checks the clock traces, which those errors do not.
+
 **Likely causes**
 
 * Traces do not exist in the trace TOML file

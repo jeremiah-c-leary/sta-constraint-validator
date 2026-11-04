@@ -56,7 +56,8 @@ class Test(rule_test_case.RuleTestCase):
         self.sSuiteName = f'{sPortName}.SDR-SS-O'
         rule_test_case.write_file(self.sInterfaceFile, build_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile, sPortName))
         rule_test_case.write_file(self.sPartFile, rule_test_case.build_passing_part_text())
-        rule_test_case.write_file(self.sTracesFile, rule_test_case.build_passing_traces_text())
+        # The data trace starts at the configured port, so only the timing report names another port.
+        rule_test_case.write_file(self.sTracesFile, rule_test_case.build_passing_traces_text().replace('device_pin = "O_DAC_DATA"', f'device_pin = "{sPortName}"'))
         return self.run_check()
 
     def test_passes_when_data_path_ends_at_configured_port(self):

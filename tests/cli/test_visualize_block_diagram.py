@@ -44,7 +44,7 @@ def find_port_names(lTraces, sClockPort):
     return lPortNames
 
 
-def build_part_text(sPartNumber):
+def build_part_text(sPartNumber, sPinName='SDIN'):
     lText = []
     lText.append('[properties]')
     lText.append('manufacturer = "Texas Instruments"')
@@ -59,7 +59,7 @@ def build_part_text(sPartNumber):
     lText.append('name = "Serial Interface"')
     lText.append('')
     lText.append('[[interface.pin]]')
-    lText.append('name = "SDIN"')
+    lText.append(f'name = "{sPinName}"')
     lText.append('methodology = "SDR-SS-I"')
     lText.append('clock = {pin = "SCLK", max_frequency = 25}')
     lText.append('capture_edge = "Falling"')
@@ -116,14 +116,14 @@ class BlockDiagramTestCase(unittest.TestCase):
         with open(os.path.join(self.sDirectory, sFilename), 'w') as oFile:
             oFile.write(sText)
 
-    def run_visualize_block_diagram(self, lTraces, sPartNumber='DAC81404', sClockPort='O_DAC_SCLK', lPortNames=None):
+    def run_visualize_block_diagram(self, lTraces, sPartNumber='DAC81404', sClockPort='O_DAC_SCLK', lPortNames=None, sPinName='SDIN'):
         if lPortNames is None:
             lPortNames = find_port_names(lTraces, sClockPort)
         self.write_file('interface.toml', build_interface_text(lPortNames, self.sMissingTimingReport, sClockPort))
-        return self.run_with_interface_written(lTraces, sPartNumber)
+        return self.run_with_interface_written(lTraces, sPartNumber, sPinName)
 
-    def run_with_interface_written(self, lTraces, sPartNumber='DAC81404'):
-        self.write_file('part.toml', build_part_text(sPartNumber))
+    def run_with_interface_written(self, lTraces, sPartNumber='DAC81404', sPinName='SDIN'):
+        self.write_file('part.toml', build_part_text(sPartNumber, sPinName))
         self.write_file('traces.toml', '\n\n'.join(lTraces) + '\n')
         lArgv = ['stacv', 'visualize', 'block_diagram', self.sInterfaceFile]
         self.oStdout = io.StringIO()
@@ -219,7 +219,7 @@ class TestVisualizeBlockDiagramWidths(BlockDiagramTestCase):
         lTraces = []
         lTraces.append(output_trace('data_output', 'O_DAC_DATA', 'SDIN_LONG_NAME'))
         lTraces.append(output_trace('clock', 'O_DAC_SCLK', 'SCLK'))
-        self.run_visualize_block_diagram(lTraces, 'DAC1')
+        self.run_visualize_block_diagram(lTraces, 'DAC1', sPinName='SDIN_LONG_NAME')
         lExpected = []
         lExpected.append('-' * 14 + '+' + ' ' * 23 + '+' + '-' * 18)
         lExpected.append('  Device      |' + ' ' * 23 + '|  DAC1')

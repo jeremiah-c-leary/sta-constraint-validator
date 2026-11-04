@@ -133,6 +133,6 @@ class TestTracesErrors(TracesTestCase):
         self.assert_error([build_trace(sDelays='device_to_part = {max_dealy = 3.0, min_delay = 1.0}')], 'traces_config_004', 'key "max_dealy" in device_to_part of trace clock is not a key stacv reads; the keys are max_delay, min_delay')
 
     def test_valid_traces_file_draws_the_block_diagram(self):
-        iExitCode = self.run_block_diagram([build_trace()])
+        iExitCode = self.run_block_diagram([build_trace(), build_trace('data', 'device_pin = "O_DATA"', 'part_pin = "DATA_IN"')])
         self.assertEqual('', self.oStderr.getvalue())
         self.assertEqual(0, iExitCode)

@@ -134,6 +134,7 @@ A port can have more than one table, one for each methodology, such as a bidirec
    methodology = "SDR-SS-O"
    launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
    capture_clock = {name = "clk_25mhz", setup_edge = "D", hold_edge = "B"}
+   registers = ["q_data_reg"]
    timing_reports = [
        "O_DATA_timing.rpt",
    ]
@@ -156,6 +157,9 @@ A port can have more than one table, one for each methodology, such as a bidirec
 
        ``"defer"``: the port is left for later.
        A deferred port needs only ``name`` and ``status``; any other keys are not read, except ``methodology``.
+
+       Every pin of the part interface needs a port, analyzed or deferred, through its trace (interface_config_024).
+       A deferred port is how a pin that is not timed yet is listed.
 
        Any other value is an error (interface_config_010).
    * - ``name``

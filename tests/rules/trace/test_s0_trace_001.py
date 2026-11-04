@@ -70,12 +70,17 @@ def build_config_text(sPartFile, sTracesFile):
     lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
     lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReport}"]')
+    # A deferred port with its own trace to SDIN, so every pin of the part has a port.
+    # A broken trace of O_DAC_DATA is then found by this rule, rather than by traces_config_010 or interface_config_024.
+    lText.append('[[port]]')
+    lText.append('status = "defer"')
+    lText.append('name = "O_SPARE_DATA"')
     return '\n'.join(lText)
 
 
 def build_traces_text(lTraces):
     lText = []
-    for dTrace in lTraces:
+    for dTrace in lTraces + [create_data_trace('O_SPARE_DATA', 'SDIN')]:
         lText.append('[[trace]]')
         lText.append(f'name = "{dTrace["name"]}"')
         lText.append(f'device_pin = "{dTrace["device_pin"]}"')

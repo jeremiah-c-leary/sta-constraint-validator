@@ -2,6 +2,7 @@
 import os
 
 from stacv.interface import interface_config
+from stacv.interface import part_coverage
 from stacv.interface import port
 from stacv.inputs import port_profile
 from stacv.methodology import methodology_factory
@@ -21,7 +22,7 @@ def execute(oCmdLine, oDateTime, lArgv):
     print(f'Reading interface file {build_console_path(oCmdLine.interface_file)}')
     oInterface = interface_config.read_interface_config(oCmdLine.interface_file)
     interface_config.resolve_timing_reports(oInterface, oCmdLine.interface_file)
-    oPortResults = get_port_results(oInterface)
+    oPortResults = get_port_results(oCmdLine.interface_file, oInterface)
     if oCmdLine.report is not None:
         check_report.write_check_report(oCmdLine.report, oDateTime, lArgv, oInterface, oPortResults, oCmdLine.interface_file)
     if oCmdLine.junit is not None:
@@ -32,10 +33,11 @@ def execute(oCmdLine, oDateTime, lArgv):
     return 0
 
 
-def get_port_results(oInterface):
+def get_port_results(sInterfaceFile, oInterface):
     oPortResults = port_result_list.PortResultList()
     oTraceList = traces.create_trace_list(oInterface)
     oPart = part.create_part(oInterface)
+    part_coverage.check_every_part_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPart)
     for oPort in oInterface.ports:
         oPortResult = get_port_result(oPort, oTraceList, oPart)
         oPortResults.add_result(oPortResult)

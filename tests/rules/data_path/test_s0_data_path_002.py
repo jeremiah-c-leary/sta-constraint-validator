@@ -26,7 +26,9 @@ class Test(rule_test_case.RoundTripRuleTestCase):
         self.assert_rule_passed(sRuleId)
 
     def test_fails_when_configured_port_differs(self):
-        self.execute_round_trip(sPortName='I_DAC_SDO')
+        # The data trace ends at the configured port, so only the timing report names another port.
+        sTracesText = rule_test_case.build_round_trip_traces_text().replace('device_pin = "I_DAC_DATA"', 'device_pin = "I_DAC_SDO"')
+        self.execute_round_trip(sPortName='I_DAC_SDO', sTracesText=sTracesText)
 
         self.assert_rule_failed(sRuleId)
 

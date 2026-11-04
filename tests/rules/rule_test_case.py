@@ -77,6 +77,20 @@ def build_passing_part_text():
 
 def build_part_text(sCaptureEdge, fSetup, fHold):
     lText = []
+    lText.append(build_part_header_text())
+    lText.append('[[interface.pin]]')
+    lText.append('name = "SDIN"')
+    lText.append('methodology = "SDR-SS-I"')
+    lText.append('clock = {pin = "SCLK", max_frequency = 25}')
+    lText.append(f'capture_edge = "{sCaptureEdge}"')
+    lText.append(f'setup = {{value = {fSetup}, symbol = "tSDIS", source = "Table 7.6"}}')
+    lText.append(f'hold = {{value = {fHold}, symbol = "tSDIH", source = "Table 7.6"}}')
+    return '\n'.join(lText)
+
+
+def build_part_header_text():
+    # The part and its interface, without pins: every pin needs a port in the interface file.
+    lText = []
     lText.append('[properties]')
     lText.append('manufacturer = "Texas Instruments"')
     lText.append('part_number = "DAC81404"')
@@ -86,13 +100,6 @@ def build_part_text(sCaptureEdge, fSetup, fHold):
     lText.append('version = "SLASEH2A -- November 2020 -- REVISED MAY 2021"')
     lText.append('[[interface]]')
     lText.append('name = "Serial Interface"')
-    lText.append('[[interface.pin]]')
-    lText.append('name = "SDIN"')
-    lText.append('methodology = "SDR-SS-I"')
-    lText.append('clock = {pin = "SCLK", max_frequency = 25}')
-    lText.append(f'capture_edge = "{sCaptureEdge}"')
-    lText.append(f'setup = {{value = {fSetup}, symbol = "tSDIS", source = "Table 7.6"}}')
-    lText.append(f'hold = {{value = {fHold}, symbol = "tSDIH", source = "Table 7.6"}}')
     return '\n'.join(lText)
 
 
@@ -180,7 +187,7 @@ fPassingDataInputMaxDelay = 1.0
 fPassingDataInputMinDelay = 0.0
 
 
-def build_round_trip_config_text(sPartFile, sTracesFile, sTimingReportFile, sPortName='I_DAC_DATA', sClockPort='O_DAC_SCLK'):
+def build_round_trip_config_text(sPartFile, sTracesFile, sTimingReportFile, sPortName='I_DAC_DATA', sClockPort='O_DAC_SCLK', sOtherPorts=''):
     lText = []
     lText.append('description = "SDR-SS-RT-DI rule test"')
     lText.append('name = "DAC_SPI_1"')
@@ -201,12 +208,15 @@ def build_round_trip_config_text(sPartFile, sTracesFile, sTimingReportFile, sPor
     lText.append('capture_clock = {name = "clk_100mhz", setup_edge = "Y", hold_edge = "I"}')
     lText.append('registers = ["q_spi_input_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReportFile}"]')
+    if sOtherPorts != '':
+        lText.append(sOtherPorts)
     return '\n'.join(lText)
 
 
 def build_round_trip_part_text(sLaunchEdge=sPassingLaunchEdge, fClockToOutMax=fPassingClockToOutMax, fClockToOutMin=fPassingClockToOutMin):
+    # A round trip port reads SDO only, so the part has no SDIN.
     lText = []
-    lText.append(build_passing_part_text())
+    lText.append(build_part_header_text())
     lText.append('[[interface.pin]]')
     lText.append('name = "SDO"')
     lText.append('methodology = "SDR-SS-RT-DO"')
@@ -243,13 +253,13 @@ class RoundTripRuleTestCase(RuleTestCase):
         self.sSuiteName = sRoundTripSuiteName
         self.sChangedTimingReport = os.path.join(self.oTempDir.name, 'I_DAC_DATA_timing.rpt')
 
-    def execute_round_trip(self, sTimingReportFile=sRoundTripTimingReport, sPortName='I_DAC_DATA', sClockPort='O_DAC_SCLK', sPartText=None, sTracesText=None):
+    def execute_round_trip(self, sTimingReportFile=sRoundTripTimingReport, sPortName='I_DAC_DATA', sClockPort='O_DAC_SCLK', sPartText=None, sTracesText=None, sOtherPorts=''):
         self.sSuiteName = f'{sPortName}.SDR-SS-RT-DI'
         if sPartText is None:
             sPartText = build_round_trip_part_text()
         if sTracesText is None:
             sTracesText = build_round_trip_traces_text()
-        write_file(self.sInterfaceFile, build_round_trip_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile, sPortName, sClockPort))
+        write_file(self.sInterfaceFile, build_round_trip_config_text(self.sPartFile, self.sTracesFile, sTimingReportFile, sPortName, sClockPort, sOtherPorts))
         write_file(self.sPartFile, sPartText)
         write_file(self.sTracesFile, sTracesText)
         return self.run_check()

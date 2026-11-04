@@ -175,6 +175,8 @@ class TestFirstLastClock(unittest.TestCase):
         lText = build_interface_text('low', 'SDR-SS-O-FLC', [8, 8], ['D', 'B'], sTimingReport).split('\n')
         lText[2] = f'part = "{os.path.join(sExampleDir, "part.toml")}"'
         lText[4] = f'traces = "{os.path.join(sExampleDir, "traces.toml")}"'
+        # The example part's other pins are not timed here.
+        lText.append('[[port]]\nstatus = "defer"\nname = "O_DAC_SDEN_F"\n[[port]]\nstatus = "defer"\nname = "I_DAC_DATA"\n')
         self.write_file('interface.toml', '\n'.join(lText))
         iExitCode = self.run_stacv(['check', self.sInterfaceFile, '--junit', sJunitFile])
         self.assertEqual('', self.oStderr.getvalue())

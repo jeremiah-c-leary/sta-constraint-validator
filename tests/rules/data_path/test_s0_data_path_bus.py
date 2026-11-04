@@ -15,7 +15,7 @@ class TestOutputBus(vsc8540et_rule_test_case.Vsc8540etRuleTestCase):
         self.assert_rule_passed('s0_data_path_001')
 
     def test_fails_when_a_data_path_ends_at_a_bit_outside_the_bus(self):
-        self.execute(lInterfaceChanges=[('name = "O_MII_TXD[3:0]"', 'name = "O_MII_TXD[2:0]"')])
+        self.execute(lInterfaceChanges=[('name = "O_MII_TXD[3:0]"', 'name = "O_MII_TXD[2:0]"')], lTracesChanges=[('device_pin = "O_MII_TXD[3:0]"', 'device_pin = "O_MII_TXD[2:0]"')])
         self.sSuiteName = 'O_MII_TXD[2:0].SDR-SS-RT-DO'
 
         self.assertIn('data path ends at O_MII_TXD[3], configured port O_MII_TXD[2:0]', self.get_failure_text('s0_data_path_001'))

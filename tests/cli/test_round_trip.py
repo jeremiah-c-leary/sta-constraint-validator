@@ -82,7 +82,15 @@ def build_interface_text(lTables):
     return '\n'.join(lText) + '\n'
 
 
-def build_part_text():
+def has_output_port(lTables):
+    for sTable in lTables:
+        if 'name = "O_DATA"' in sTable:
+            return True
+    return False
+
+
+def build_part_text(bWithInputPin=True):
+    # Every pin of the part needs a port, so a test without the output port has a part without SDIN.
     lText = []
     lText.append('[properties]')
     lText.append('manufacturer = "Texas Instruments"')
@@ -96,14 +104,15 @@ def build_part_text():
     lText.append('[[interface]]')
     lText.append('name = "Serial Interface"')
     lText.append('')
-    lText.append('[[interface.pin]]')
-    lText.append('name = "SDIN"')
-    lText.append('methodology = "SDR-SS-I"')
-    lText.append('clock = {pin = "SCLK", max_frequency = 25}')
-    lText.append('capture_edge = "Falling"')
-    lText.append('setup = {value = 10, symbol = "tSDIS", source = "Table 7.6"}')
-    lText.append('hold = {value = 10, symbol = "tSDIH", source = "Table 7.6"}')
-    lText.append('')
+    if bWithInputPin:
+        lText.append('[[interface.pin]]')
+        lText.append('name = "SDIN"')
+        lText.append('methodology = "SDR-SS-I"')
+        lText.append('clock = {pin = "SCLK", max_frequency = 25}')
+        lText.append('capture_edge = "Falling"')
+        lText.append('setup = {value = 10, symbol = "tSDIS", source = "Table 7.6"}')
+        lText.append('hold = {value = 10, symbol = "tSDIH", source = "Table 7.6"}')
+        lText.append('')
     lText.append('[[interface.pin]]')
     lText.append('name = "SDO"')
     lText.append('methodology = "SDR-SS-RT-DO"')
@@ -161,6 +170,7 @@ class RoundTripTestCase(unittest.TestCase):
 
     def run_stacv(self, lTables, lArguments):
         self.write_file('interface.toml', build_interface_text(lTables))
+        self.write_file('part.toml', build_part_text(has_output_port(lTables)))
         self.oStdout = io.StringIO()
         self.oStderr = io.StringIO()
         with mock.patch('sys.argv', ['stacv'] + lArguments):
@@ -313,9 +323,18 @@ class TestRoundTripConstraints(RoundTripTestCase):
         self.assertIn('# -clock_fall:          the launch edge 1 is a falling edge of clk_sclk', self.read_section('5.1:  I_DATA'))
 
     def test_reports_a_port_without_a_trace_from_the_part(self):
+        # The part's SDO pin has a trace to another port, which the interface defers, so only I_DATA has no trace.
+        self.write_file('traces.toml', build_traces_text().replace('device_pin = "I_DATA"', 'device_pin = "I_OTHER"'))
+        lTables = self.build_round_trip_tables()
+        lTables.append('[[port]]\nstatus = "defer"\nname = "I_OTHER"')
+        self.assertEqual(2, self.run_generate_xdc(lTables))
+        self.assertEqual('ERROR: [generate_007] port I_DATA has no trace from the part to the device\n', self.oStderr.getvalue())
+
+    def test_reports_a_part_pin_without_a_trace(self):
         self.write_file('traces.toml', build_traces_text(bWithDataInput=False))
         self.assertEqual(2, self.run_generate_xdc(self.build_round_trip_tables()))
-        self.assertEqual('ERROR: [generate_007] port I_DATA has no trace from the part to the device\n', self.oStderr.getvalue())
+        sExpected = f'ERROR: [traces_config_010] {os.path.join(self.sDirectory, "traces.toml")} pin SDO (SDR-SS-RT-DO) of part interface Serial Interface has no trace to a device port; add a trace for it, and a [[port]] or a deferred port in the interface file\n'
+        self.assertEqual(sExpected, self.oStderr.getvalue())
 
 
 class TestRoundTripEdges(RoundTripTestCase):

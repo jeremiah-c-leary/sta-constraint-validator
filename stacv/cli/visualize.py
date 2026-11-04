@@ -1,4 +1,5 @@
 from stacv.interface import interface_config
+from stacv.interface import part_coverage
 from stacv.methodology import methodology_factory
 from stacv.part import part
 from stacv.traces import traces
@@ -10,7 +11,7 @@ DIVIDER = '=' * 80
 
 def execute(oCmdLine):
     if oCmdLine.visualization == 'block_diagram':
-        print_block_diagram(interface_config.read_interface_config(oCmdLine.interface_file))
+        print_block_diagram(oCmdLine.interface_file, interface_config.read_interface_config(oCmdLine.interface_file))
         return 0
     return print_interface_edges(interface_config.read_interface_config_for_drawing(oCmdLine.interface_file))
 
@@ -25,9 +26,10 @@ def print_interface_edges(oInterface):
     return iExitCode
 
 
-def print_block_diagram(oInterface):
+def print_block_diagram(sInterfaceFile, oInterface):
     oTraceList = traces.create_trace_list(oInterface)
     oPart = part.create_part(oInterface)
+    part_coverage.check_every_part_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPart)
     for sLine in block_diagram.draw_block_diagram(oInterface, oTraceList, oPart):
         print(sLine)
 

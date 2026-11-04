@@ -27,6 +27,9 @@ def build_interface_text(sTimingReport):
     lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
     lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReport}"]')
+    # The part's other pins are not timed by these tests.
+    lText.append('[[port]]\nstatus = "defer"\nname = "O_DAC_SDEN_F"')
+    lText.append('[[port]]\nstatus = "defer"\nname = "I_DAC_DATA"')
     return '\n'.join(lText) + '\n'
 
 

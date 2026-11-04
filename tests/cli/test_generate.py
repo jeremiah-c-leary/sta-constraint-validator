@@ -14,6 +14,8 @@ GENERATOR = '{source = "q_sclk_reg", master_pin = "C", target_pin = "Q", master_
 FIRST_LAST_CLOCK = 'SDR-SS-O-FLC'
 
 
+DEFERRED_O_DATA = '[[port]]\nstatus = "defer"\nname = "O_DATA"'
+
 def build_interface_text(lPorts, sMissingTimingReport):
     lText = []
     lText.append('description = "generate test"')
@@ -372,14 +374,16 @@ class TestGenerateXdcInputErrors(GenerateTestCase):
         self.write_file('traces.toml', '\n'.join(lText))
 
     def test_reports_a_port_without_a_trace(self):
+        # The part's SDIN has a trace to O_DATA, which is deferred, so only O_NO_TRACE has no trace.
         sPort = build_port_text('O_NO_TRACE', 10, 40, [4, 'C'], [4, 'A'])
-        self.assertEqual(2, self.run_generate_xdc([sPort]))
+        self.assertEqual(2, self.run_generate_xdc([sPort, DEFERRED_O_DATA]))
         self.assert_error_written('generate_007')
 
     def test_reports_a_trace_to_a_pin_the_part_does_not_have(self):
-        self.write_traces([('O_DATA', 'SDIN_UNKNOWN'), ('O_SCLK', 'SCLK')])
+        # SDIN has its own trace to a deferred port, so only the trace of O_DATA reaches a pin the part does not have.
+        self.write_traces([('O_DATA', 'SDIN_UNKNOWN'), ('O_SPARE', 'SDIN'), ('O_SCLK', 'SCLK')])
         sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
-        self.assertEqual(2, self.run_generate_xdc([sPort]))
+        self.assertEqual(2, self.run_generate_xdc([sPort, '[[port]]\nstatus = "defer"\nname = "O_SPARE"']))
         self.assert_error_written('generate_008')
 
     def test_reports_a_missing_clock_trace(self):

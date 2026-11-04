@@ -32,3 +32,12 @@ registers = ["q_spi_output_data_reg"]
 timing_reports = [
     "../../../../example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt",
 ]
+
+# The part's other pins are not timed by this fixture.
+[[port]]
+status = "defer"
+name = "O_DAC_CSF"
+
+[[port]]
+status = "defer"
+name = "I_DAC_DATA"
