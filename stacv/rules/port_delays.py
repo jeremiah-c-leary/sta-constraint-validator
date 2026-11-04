@@ -44,7 +44,7 @@ def calculate_delays(oPortProfile):
     # Returns the maximum and minimum delay of the port.
     oInputs = Inputs(oPortProfile)
     sMethodology = oPortProfile.port.methodology
-    if sMethodology in ['SDR-SS-I', 'DDR-SS-I']:
+    if sMethodology in ['SDR-SS-I', 'DDR-SS-I-SE', 'DDR-SS-I-NE']:
         return calculate_input_from_part_clock(oInputs)
     if sMethodology == 'SDR-SS-RT-DO':
         return calculate_output_on_part_clock(oInputs)

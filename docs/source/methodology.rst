@@ -11,10 +11,11 @@ Identifier    Name
 ============= ==================================================================
 SDR-SS-O      Single Data Rate (SDR) Source Synchronous (SS) Output (SDR-SS-O)
 SDR-SS-O-FLC  SDR SS Output to the First and Last Clock (SDR-SS-O-FLC)
-SDR-SS-RT-DI     SDR SS Round Trip (SDR-SS-RT-DI)
+SDR-SS-RT-DI  SDR SS Round Trip, Data In (SDR-SS-RT-DI)
 SDR-SS-I      SDR SS Input (SDR-SS-I)
 DDR-SS-O      Double Data Rate (DDR) SS Output (DDR-SS-O)
-DDR-SS-I      DDR SS Input (DDR-SS-I)
+DDR-SS-I-SE   DDR SS Input, captured on the Same Edge (DDR-SS-I-SE)
+DDR-SS-I-NE   DDR SS Input, captured on the Next Edge (DDR-SS-I-NE)
 ============= ==================================================================
 
 An interface, such as SPI, could use more than one methodology.
@@ -451,8 +452,24 @@ SDR-SS-RT-DO    sends data on a clock the part sends, for the part to capture   
 SDR-SYS-O       sends data; a clock source drives the device and the part            a clock source       SDR-SYS-I
 SDR-SYS-I       captures data; a clock source drives the device and the part         a clock source       SDR-SYS-O
 DDR-SS-O        sends data on both edges of a clock it forwards                      the device           DDR-SS-I
-DDR-SS-I        captures data the part sends on both edges of its clock              the part             DDR-SS-O
+DDR-SS-I-SE     captures data the part sends on both edges of its clock,             the part             DDR-SS-O
+                each edge capturing the data it is aligned with
+DDR-SS-I-NE     captures data the part sends on both edges of its clock,             the part             DDR-SS-O
+                each edge capturing the data the edge before it launched
 ==============  ==================================================================  ===================  ===============
+
+Which edge captures a double data rate input is the device's choice, so the device's methodology names it and the part's does not: both are DDR-SS-I in the part file.
+The edges must give the requirements the name describes (interface_config_023):
+
+===========  ==================  ====================  ========================
+Methodology  Setup requirement   Hold requirement      Edges, for example
+===========  ==================  ====================  ========================
+DDR-SS-I-SE  0                   minus half a period   launch 2, capture C and B
+DDR-SS-I-NE  half a period       0                     launch 0, capture B and A
+===========  ==================  ====================  ========================
+
+A same edge capture moves the setup check to the edge the data is aligned with, with a setup multicycle of 0, and removes the checks between an edge and the other type of edge.
+A next edge capture keeps the timing tool's default setup check, and removes the checks between an edge and the next edge of the same type.
 
 A round trip is named by where its data ends: SDR-SS-RT-DI when the data comes back to whoever supplies the clock, SDR-SS-RT-DO when the clock is received and data is returned.
 Part files use the part's view and interface files the device's, so the same round trip has one name in each.

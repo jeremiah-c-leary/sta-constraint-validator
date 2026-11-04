@@ -139,6 +139,13 @@ Interface file
      - A bus is written ``NAME[upper:lower]``, such as ``O_MII_TXD[3:0]``; a single bit or a wildcard is not a port name.
        Only an analyzed port is checked.
      - Stops
+   * - interface_config_023
+     - ``the edges<location> give a setup requirement of <time> and a hold requirement of <time>; <description>, so they must be <time> and <time>``
+     - The edges do not match the edge the methodology captures on.
+       A DDR-SS-I-SE port captures each bit on the edge it is aligned with: a setup requirement of 0 ns and a hold requirement of minus half a period, such as launch edge 2 to capture edges C and B.
+       A DDR-SS-I-NE port captures each bit on the edge after the one it is launched on: a setup requirement of half a period and a hold requirement of 0 ns, such as launch edge 0 to capture edges B and A.
+       Correct the edges, or use the other methodology.
+     - Drawn
 
 Locations are ``in port <name>`` for a ``[[port]]`` table, or ``in port number <n>`` when the port has no name, ``of clock <name>`` or ``of clock number <n>`` for a ``[[clock]]`` table, ``in generator of clock <name>``, and ``in launch_clock of port <name>`` or ``in capture_clock of port <name>``.
 Unknown keys are reported before missing keys, so a misspelled key is named as such.

@@ -27,7 +27,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
-# 4310c801dc01b65a78de3b0a98edbb26  example/microchip/vsc8540et/rgmii_id.toml
+# 15af28f77ea488030aa7556d013b0556  example/microchip/vsc8540et/rgmii_id.toml
 # 8458046ee525571615288ff9e53cc36b  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #

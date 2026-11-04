@@ -29,6 +29,10 @@ class Methodology():
         self.part_pin_methodology = 'SDR-SS-I'
         # A double data rate port changes its data on both edges of the clock.
         self.double_data_rate = False
+        # For a double data rate input, the number of edges after the launch edge that the setup check captures on,
+        # with the hold check one edge earlier, and how the methodology describes it; None for any other methodology.
+        self.setup_capture_edges_after_launch = None
+        self.capture_edge_description = None
 
     def has_rules(self):
         return len(self.stages) > 0

@@ -2,6 +2,7 @@
 Provides functions to read configuration files.
 '''
 
+import math
 import os
 import pathlib
 import re
@@ -14,7 +15,9 @@ from stacv.interface import interface_location
 from stacv.interface import interface_config_error
 from stacv.methodology import methodology
 from stacv.methodology import methodology_factory
+from stacv.output import number_format
 from stacv.rules import edge_times
+from stacv.rules import requirements
 from stacv.interface import clock
 from stacv.interface import clock_pin
 from stacv.interface import clock_generator
@@ -253,6 +256,8 @@ def set_methodology_roles(oPort):
     oPort.clock_origin = oMethodology.clock_origin
     oPort.part_pin_methodology = oMethodology.part_pin_methodology
     oPort.double_data_rate = oMethodology.double_data_rate
+    oPort.setup_capture_edges_after_launch = oMethodology.setup_capture_edges_after_launch
+    oPort.capture_edge_description = oMethodology.capture_edge_description
     if oPort.forwarded_clock_key == methodology.LAUNCH_CLOCK:
         oPort.forwarded_clock = oPort.launch_clock
     else:
@@ -344,6 +349,8 @@ def format_edge(edge):
 def find_edge_errors(oPort, oLocation):
     # A double data rate port captures on both edges, so its setup and hold edges can be different types.
     lErrors = []
+    if oPort.setup_capture_edges_after_launch is not None:
+        return find_double_data_rate_input_edge_errors(oPort, oLocation)
     if oPort.double_data_rate:
         return lErrors
     if not capture_edges_are_the_same_type(oPort.capture_clock):
@@ -365,6 +372,30 @@ def find_sdr_source_synchronous_output_edge_errors(oPort, oLocation):
     if iHoldEdge != iSetupEdge - EDGES_PER_PERIOD:
         lErrors.append(READER.create_error(20, oLocation.filename, f'key "capture_clock"{oLocation.location} has setup_edge {oCaptureClock.setup_edge} and hold_edge {oCaptureClock.hold_edge}; {describe_expected_capture_hold_edge(iSetupEdge)}'))
     return lErrors
+
+
+def find_double_data_rate_input_edge_errors(oPort, oLocation):
+    # The methodology names the edge that captures each bit, so the edges must give its requirements.
+    lErrors = []
+    fEdgeTime = oPort.capture_clock.period / EDGES_PER_PERIOD
+    fExpectedSetup = oPort.setup_capture_edges_after_launch * fEdgeTime
+    fExpectedHold = fExpectedSetup - fEdgeTime
+    fSetup = requirements.calculate_configuration_setup_requirement(oPort)
+    fHold = requirements.calculate_configuration_hold_requirement(oPort)
+    if requirements_match(fSetup, fExpectedSetup) and requirements_match(fHold, fExpectedHold):
+        return lErrors
+    sRequirements = f'a setup requirement of {format_nanoseconds(fSetup)} and a hold requirement of {format_nanoseconds(fHold)}'
+    sExpected = f'{format_nanoseconds(fExpectedSetup)} and {format_nanoseconds(fExpectedHold)}'
+    lErrors.append(READER.create_error(23, oLocation.filename, f'the edges{oLocation.location} give {sRequirements}; {oPort.capture_edge_description}, so they must be {sExpected}'))
+    return lErrors
+
+
+def requirements_match(fRequirement, fExpected):
+    return math.isclose(fRequirement, fExpected, abs_tol=1e-9)
+
+
+def format_nanoseconds(fTime):
+    return f'{number_format.format_number(fTime)} ns'
 
 
 def describe_expected_capture_hold_edge(iSetupEdge):

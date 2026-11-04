@@ -48,7 +48,7 @@ timing_reports = [
 
 [[port]]
 name = "I_RGMII_RXD[3:0]"
-methodology = "DDR-SS-I"
+methodology = "DDR-SS-I-SE"
 launch_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 2}
 capture_clock = {name = "rgmii_rxc", setup_edge = "C", hold_edge = "B"}
 registers = ["GEN_RGMII_RX[*].U_IDDR"]
@@ -58,7 +58,7 @@ timing_reports = [
 
 [[port]]
 name = "I_RGMII_RX_CTL"
-methodology = "DDR-SS-I"
+methodology = "DDR-SS-I-SE"
 launch_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 2}
 capture_clock = {name = "rgmii_rxc", setup_edge = "C", hold_edge = "B"}
 registers = ["GEN_RGMII_RX[4].U_IDDR"]

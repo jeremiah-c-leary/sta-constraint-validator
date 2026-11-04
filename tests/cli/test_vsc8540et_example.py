@@ -117,3 +117,41 @@ class TestPartInterfaceSelection(unittest.TestCase):
         self.sTracesText = self.sTracesText.replace('part_pin = "RMII_CLKIN"\nsource_to_part = {max_delay = 0.6, min_delay = 0.4}\n', '')
         self.assertEqual(2, self.run_generate())
         self.assertIn('trace rmii_clk_to_part has neither source_to_device nor source_to_part', self.oStderr.getvalue())
+
+
+class TestNextEdgeDoubleDataRateInput(unittest.TestCase):
+    '''
+    No example captures on the next edge, so the compensated RGMII receive control is made a DDR-SS-I-NE port.
+    '''
+
+    run_generate = TestPartInterfaceSelection.run_generate
+
+    def setUp(self):
+        TestPartInterfaceSelection.setUp(self)
+        with open(os.path.join(sProjectDir, sExampleDir, 'rgmii_id.toml')) as oFile:
+            self.sInterfaceText = oFile.read().replace('$PROJ_DIR', self.sDirectory)
+        sSameEdge = 'methodology = "DDR-SS-I-SE"\nlaunch_clock = {name = "rgmii_id_rxc", setup_edge = 2, hold_edge = 2}\ncapture_clock = {name = "rgmii_id_rxc", setup_edge = "C", hold_edge = "B"}\nregisters = ["GEN_RGMII_ID_RX[4].U_IDDR"]'
+        sNextEdge = 'methodology = "DDR-SS-I-NE"\nlaunch_clock = {name = "rgmii_id_rxc", setup_edge = 0, hold_edge = 0}\ncapture_clock = {name = "rgmii_id_rxc", setup_edge = "B", hold_edge = "A"}\nregisters = ["GEN_RGMII_ID_RX[4].U_IDDR"]'
+        self.assertIn(sSameEdge, self.sInterfaceText)
+        self.sInterfaceText = self.sInterfaceText.replace(sSameEdge, sNextEdge)
+
+    def find_port_constraints(self):
+        lConstraints = []
+        for sLine in self.oStdout.getvalue().split('\n'):
+            if sLine.startswith('set_') and 'I_RGMII_ID_RX_CTL' in sLine:
+                lConstraints.append(sLine)
+        return lConstraints
+
+    def test_the_edge_pairs_that_do_not_capture_the_data_are_false_paths(self):
+        sThrough = '[get_clocks rgmii_id_rxc] -through [get_ports I_RGMII_ID_RX_CTL]'
+        lExpected = []
+        lExpected.append('set_input_delay -clock [get_clocks rgmii_id_rxc] -max -1.300 [get_ports I_RGMII_ID_RX_CTL]')
+        lExpected.append('set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -max -1.300 [get_ports I_RGMII_ID_RX_CTL]')
+        lExpected.append('set_input_delay -clock [get_clocks rgmii_id_rxc] -min -2.700 [get_ports I_RGMII_ID_RX_CTL]')
+        lExpected.append('set_input_delay -clock [get_clocks rgmii_id_rxc] -clock_fall -add_delay -min -2.700 [get_ports I_RGMII_ID_RX_CTL]')
+        lExpected.append(f'set_false_path -setup -rise_from {sThrough} -rise_to [get_clocks rgmii_id_rxc]')
+        lExpected.append(f'set_false_path -setup -fall_from {sThrough} -fall_to [get_clocks rgmii_id_rxc]')
+        lExpected.append(f'set_false_path -hold -rise_from {sThrough} -fall_to [get_clocks rgmii_id_rxc]')
+        lExpected.append(f'set_false_path -hold -fall_from {sThrough} -rise_to [get_clocks rgmii_id_rxc]')
+        self.assertEqual(0, self.run_generate())
+        self.assertEqual(lExpected, self.find_port_constraints())

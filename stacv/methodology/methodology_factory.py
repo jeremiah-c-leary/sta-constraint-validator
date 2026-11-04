@@ -13,7 +13,8 @@ METHODOLOGIES['SDR-SS-RT-DO'] = clock_crossing_methodologies.SdrSourceSynchronou
 METHODOLOGIES['SDR-SYS-O'] = clock_crossing_methodologies.SdrSystemSynchronousOutput
 METHODOLOGIES['SDR-SYS-I'] = clock_crossing_methodologies.SdrSystemSynchronousInput
 METHODOLOGIES['DDR-SS-O'] = clock_crossing_methodologies.DdrSourceSynchronousOutput
-METHODOLOGIES['DDR-SS-I'] = clock_crossing_methodologies.DdrSourceSynchronousInput
+METHODOLOGIES['DDR-SS-I-SE'] = clock_crossing_methodologies.DdrSourceSynchronousInputSameEdge
+METHODOLOGIES['DDR-SS-I-NE'] = clock_crossing_methodologies.DdrSourceSynchronousInputNextEdge
 SUPPORTED_METHODOLOGIES = list(METHODOLOGIES)
 
 

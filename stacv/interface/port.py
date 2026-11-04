@@ -17,6 +17,8 @@ class Port():
         self.clock_origin = None
         self.part_pin_methodology = None
         self.double_data_rate = False
+        self.setup_capture_edges_after_launch = None
+        self.capture_edge_description = None
         self.registers = None
         self.timing_reports = []
         # As written in the interface file, before environment variables are expanded.

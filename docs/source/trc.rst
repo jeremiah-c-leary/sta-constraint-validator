@@ -15,7 +15,7 @@ Each rule lists these fields:
 
 :Stage: When the rule runs (see `Stages`_).
 :Applies to: The methodology the rule checks:
-             SDR-SS-O, SDR-SS-RT-DI, SDR-SS-I, DDR-SS-O, DDR-SS-I, or all (see :doc:`methodology`).
+             SDR-SS-O, SDR-SS-RT-DI, SDR-SS-I, DDR-SS-O, DDR-SS-I-SE, DDR-SS-I-NE, or all (see :doc:`methodology`).
 :Reads: The timing report values the rule uses.
 :Depends on: Rules that must pass before this rule is checked.
 
