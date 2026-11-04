@@ -155,3 +155,19 @@ class TestNextEdgeDoubleDataRateInput(unittest.TestCase):
         lExpected.append(f'set_false_path -hold -fall_from {sThrough} -rise_to [get_clocks rgmii_id_rxc]')
         self.assertEqual(0, self.run_generate())
         self.assertEqual(lExpected, self.find_port_constraints())
+
+
+class TestVsc8540etCheck(ExampleTestCase):
+    '''
+    Every VSC8540ET interface passes stacv check on the timing reports of the Vivado run in the example.
+    '''
+
+    def test_every_port_of_every_interface_passes(self):
+        for sInterface in lInterfaces:
+            with self.subTest(interface=sInterface):
+                iExitCode = self.run_stacv(['check', f'{sExampleDir}/{sInterface}.toml'])
+                self.assertEqual('', self.oStderr.getvalue())
+                self.assertNotIn('DEFERRED', self.oStdout.getvalue())
+                self.assertNotIn('FAILED', self.oStdout.getvalue())
+                self.assertTrue(self.oStdout.getvalue().endswith('Check Passed\n'), self.oStdout.getvalue()[-300:])
+                self.assertEqual(0, iExitCode)
