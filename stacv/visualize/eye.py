@@ -10,6 +10,8 @@ The setup and hold times are the part pin's for an output, and the register's li
 Between the changes the data is stable, the eye; the setup and hold window is best centred in it, with equal slacks.
 Its offset from the centre of the eye is (setup slack - hold slack) / 2: negative when the window is early, so the capture should be later.
 
+A methodology without one setup and hold window, such as SDR-SS-O-FLC, has no eye, and says so instead.
+
 Each process corner is a row, timed from its worst setup and worst hold timing report, and the last row combines them:
 its eye is what every corner leaves.
 
@@ -21,6 +23,7 @@ What the slacks do not use of the window is how long the data takes to change, w
 '''
 
 from stacv.methodology import methodology
+from stacv.methodology import methodology_factory
 from stacv.output import number_format
 from stacv.rules import part_timing
 from stacv.rules import path_lookups
@@ -68,6 +71,9 @@ class EyeRow():
 
 
 def draw_eye(oPortProfile):
+    oMethodology = methodology_factory.create_methodology(oPortProfile.port.methodology)
+    if oMethodology.no_eye_reason is not None:
+        return [f'{oPortProfile.port.name} ({oPortProfile.port.methodology}): no eye, {oMethodology.no_eye_reason}']
     lRows = build_rows(oPortProfile)
     fLeft = find_left_extent(lRows)
     fColumnsPerNanosecond = EYE_WIDTH / (fLeft + find_right_extent(lRows))

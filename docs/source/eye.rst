@@ -4,6 +4,13 @@ Eye Diagram
 ``stacv visualize eye`` draws the eye of every analyzed port from its timing reports: the time its data is stable around the capture edge.
 It reads the timing reports, so it is drawn after timing, with the part and traces files the delays come from.
 
+SDR-SS-O-FLC has no eye: its setup and hold are against the first and last edges of the clock, so there is no one window to centre.
+Its port is listed with the reason instead of a drawing:
+
+.. code-block:: text
+
+   O_DAC_SDEN_F (SDR-SS-O-FLC): no eye, timed to the first and last clock edges
+
 .. code-block:: text
 
    stacv visualize eye interface.toml

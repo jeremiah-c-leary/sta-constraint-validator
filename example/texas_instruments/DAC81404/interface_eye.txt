@@ -5,12 +5,7 @@ O_DAC_DATA (SDR-SS-O)
     Fast  XX.......<----------|---------->.......XX     7.260 ns    7.167 ns               +0.046 ns
     All   XX.......<----------|---------->.......XX     7.260 ns    7.167 ns               +0.046 ns
 
-O_DAC_SDEN_F (SDR-SS-O-FLC)
-  setup 30 ns, hold 10 ns, 1.46 ns a character
-                                                     setup slack  hold slack  offset from eye centre
-    Slow  X.......<-------------------|------>....X     9.485 ns    6.469 ns               +1.508 ns
-    Fast  X.......<-------------------|------>....X     9.228 ns    6.195 ns               +1.516 ns
-    All   X.......<-------------------|------>....X     9.228 ns    6.195 ns               +1.516 ns
+O_DAC_SDEN_F (SDR-SS-O-FLC): no eye, timed to the first and last clock edges
 
 I_DAC_DATA (SDR-SS-RT-DI)
   setup 0.032 ns, hold 0.156 ns, 1.28 ns a character

@@ -91,3 +91,11 @@ class TestEyeDrawing(EyeTestCase):
         lExpected.append('    Fast  XXXXXXX<--------|-------->......XXXXXXXXX    -2.000 ns    7.167 ns               -4.583 ns')
         lExpected.append('    All   XXXXXXX<--------|-------->......XXXXXXXXX    -2.000 ns    7.167 ns               -4.583 ns')
         self.assertEqual(lExpected, lLines[0:6])
+
+
+class TestNoEye(EyeTestCase):
+
+    def test_a_first_and_last_clock_port_has_no_eye(self):
+        # Its setup and hold are against different edges, so there is no one window to centre.
+        self.assertEqual(0, self.run_eye('example/texas_instruments/DAC81404/interface.toml'))
+        self.assertIn('\nO_DAC_SDEN_F (SDR-SS-O-FLC): no eye, timed to the first and last clock edges\n\n', self.oStdout.getvalue())

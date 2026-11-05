@@ -33,6 +33,8 @@ class Methodology():
         # with the hold check one edge earlier, and how the methodology describes it; None for any other methodology.
         self.setup_capture_edges_after_launch = None
         self.capture_edge_description = None
+        # Why the methodology has no eye, or None when it has one: the time its data is stable around one capture edge.
+        self.no_eye_reason = None
 
     def has_rules(self):
         return len(self.stages) > 0
