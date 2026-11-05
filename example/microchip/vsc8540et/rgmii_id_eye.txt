@@ -1,0 +1,27 @@
+O_RGMII_ID_TXD[3:0] (DDR-SS-O)
+  setup -1 ns, hold 2.8 ns, 0.53 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XXX.................|.<-->............XXX    10.091 ns    6.129 ns               +1.981 ns
+    Fast  XXX.................|.<-->............XXX    10.000 ns    6.092 ns               +1.954 ns
+    All   XXX.................|.<-->............XXX    10.000 ns    6.092 ns               +1.954 ns
+
+O_RGMII_ID_TX_CTL (DDR-SS-O)
+  setup -1 ns, hold 2.8 ns, 0.53 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XXX.................|.<-->............XXX    10.175 ns    6.301 ns               +1.937 ns
+    Fast  XXX.................|.<-->............XXX    10.014 ns    6.182 ns               +1.916 ns
+    All   XXX.................|.<-->............XXX    10.014 ns    6.182 ns               +1.916 ns
+
+I_RGMII_ID_RXD[3:0] (DDR-SS-I-SE)
+  setup 0.011 ns, hold 0.191 ns, 0.55 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XX.......<|>.......................XXXXXX     4.518 ns   13.118 ns               -4.300 ns
+    Fast  XXXXXX...<|>...........................XX     2.304 ns   15.433 ns               -6.564 ns
+    All   XXXXXX...<|>.......................XXXXXX     2.304 ns   13.118 ns               -5.407 ns
+
+I_RGMII_ID_RX_CTL (DDR-SS-I-SE)
+  setup 0.011 ns, hold 0.191 ns, 0.55 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XX.......<|>.......................XXXXXX     4.515 ns   13.137 ns               -4.311 ns
+    Fast  XXXXXX...<|>...........................XX     2.304 ns   15.448 ns               -6.572 ns
+    All   XXXXXX...<|>.......................XXXXXX     2.304 ns   13.137 ns               -5.417 ns

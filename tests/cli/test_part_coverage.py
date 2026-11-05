@@ -121,7 +121,7 @@ class TestPartCoverage(unittest.TestCase):
 
     def test_every_command_that_reads_the_part_stops_on_the_error(self):
         sInterfaceText = replace_once(read_example_file('rmii.toml'), TX_EN_PORT, '')
-        for lCommand in [['generate', 'xdc'], ['visualize', 'block_diagram'], ['check']]:
+        for lCommand in [['generate', 'xdc'], ['visualize', 'block_diagram'], ['visualize', 'eye'], ['check']]:
             with self.subTest(command=' '.join(lCommand)):
                 iExitCode = self.run_stacv('rmii', sInterfaceText, lCommand)
                 self.assertEqual(2, iExitCode)

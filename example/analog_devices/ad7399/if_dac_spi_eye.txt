@@ -1,0 +1,6 @@
+O_DAC_DATA (SDR-SS-O)
+  setup 15 ns, hold 10 ns, 2.46 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  X..............<-----|--->..............X    34.487 ns   36.478 ns               -0.995 ns
+    Fast  X..............<-----|--->..............X    34.192 ns   36.236 ns               -1.022 ns
+    All   X..............<-----|--->..............X    34.192 ns   36.236 ns               -1.022 ns

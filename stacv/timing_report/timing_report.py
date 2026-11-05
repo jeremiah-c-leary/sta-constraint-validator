@@ -26,6 +26,9 @@ class TimingReport():
         self.clock_uncertainty = None
         self.slack_line = None
         self.slack = None
+        # The capturing register's own setup or hold, from its library row, such as (Setup_fdre_C_D).
+        # A path to an output port has no such row, so it is None.
+        self.library_requirement = None
 
     def get_lines(self):
         return self.text.lines

@@ -1,0 +1,41 @@
+O_RMII_TXD[1:0] (SDR-SYS-O)
+  setup 4 ns, hold 2 ns, 0.64 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XXXXXXXXXX.......<-----|-->............XX     4.102 ns    7.764 ns               -1.831 ns
+    Fast  XX...............<-----|-->....XXXXXXXXXX     9.623 ns    2.246 ns               +3.688 ns
+    All   XXXXXXXXXX.......<-----|-->....XXXXXXXXXX     4.102 ns    2.246 ns               +0.928 ns
+
+O_RMII_TX_EN (SDR-SYS-O)
+  setup 4 ns, hold 2 ns, 0.64 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XXXXXXXXXX.......<-----|-->............XX     4.211 ns    7.799 ns               -1.794 ns
+    Fast  XX...............<-----|-->....XXXXXXXXXX     9.669 ns    2.260 ns               +3.705 ns
+    All   XXXXXXXXXX.......<-----|-->....XXXXXXXXXX     4.211 ns    2.260 ns               +0.976 ns
+
+O_RMII_TX_ER (SDR-SYS-O)
+  setup 4 ns, hold 2 ns, 0.64 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XXXXXXXXXX.......<-----|-->............XX     4.197 ns    7.811 ns               -1.807 ns
+    Fast  XX...............<-----|-->....XXXXXXXXXX     9.670 ns    2.260 ns               +3.705 ns
+    All   XXXXXXXXXX.......<-----|-->....XXXXXXXXXX     4.197 ns    2.260 ns               +0.969 ns
+
+I_RMII_RXD[1:0] (SDR-SYS-I)
+  setup 0.067 ns, hold 0.289 ns, 0.20 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XXXXXXXXXXX...............<|>.XXXXXXXXXXX     3.208 ns    0.036 ns               +1.586 ns
+    Fast  XXXXXXX...................<|>.XXXXXXXXXXX     4.084 ns    0.184 ns               +1.950 ns
+    All   XXXXXXXXXXX...............<|>.XXXXXXXXXXX     3.208 ns    0.036 ns               +1.586 ns
+
+I_RMII_CRS_DV (SDR-SYS-I)
+  setup 0.067 ns, hold 0.289 ns, 0.19 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XXXXXXXXX..................<|->.XXXXXXXXX     3.524 ns    0.214 ns               +1.655 ns
+    Fast  XXXXXXX....................<|>.XXXXXXXXXX     4.015 ns    0.286 ns               +1.864 ns
+    All   XXXXXXXXX..................<|->.XXXXXXXXX     3.524 ns    0.214 ns               +1.655 ns
+
+I_RMII_RX_ER (SDR-SYS-I)
+  setup 0.067 ns, hold 0.289 ns, 0.20 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XXXXXXXXXXX...............<|>...XXXXXXXXX     3.209 ns    0.434 ns               +1.387 ns
+    Fast  XXXXXX....................<|>XXXXXXXXXXXX     4.085 ns    0.183 ns               +1.951 ns
+    All   XXXXXXXXXXX...............<|>XXXXXXXXXXXX     3.209 ns    0.183 ns               +1.513 ns

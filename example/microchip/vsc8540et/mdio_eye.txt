@@ -1,0 +1,13 @@
+IO_MDIO (SDR-SS-O)
+  setup 10 ns, hold 14 ns, 10.04 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  X..................<|>..................X   189.547 ns  183.463 ns               +3.042 ns
+    Fast  X..................<|>..................X   189.054 ns  184.174 ns               +2.440 ns
+    All   X..................<|>..................X   189.054 ns  183.463 ns               +2.796 ns
+
+IO_MDIO (SDR-SS-RT-DI)
+  setup -0.013 ns, hold 0.366 ns, 2.63 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XX..........................|<>.........X    69.141 ns   28.227 ns              +20.457 ns
+    Fast  X...........................|<>........XX    73.303 ns   24.193 ns              +24.555 ns
+    All   XX..........................|<>........XX    69.141 ns   24.193 ns              +22.474 ns

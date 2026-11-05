@@ -151,7 +151,7 @@ Interface file
      - Every pin of the part interface needs a port, so no pin is left out of the timing unseen.
        The pin's trace names the port; when a shared traces file has several traces to the pin, each device pin is named.
        A deferred port covers the pin, unless it names a methodology that times another kind of pin.
-       Reported by ``check``, ``generate xdc`` and ``visualize block_diagram``, the commands that read the part and traces files.
+       Reported by ``check``, ``generate xdc``, ``visualize block_diagram`` and ``visualize eye``, the commands that read the part and traces files.
      - Stops
 
 Locations are ``in port <name>`` for a ``[[port]]`` table, or ``in port number <n>`` when the port has no name, ``of clock <name>`` or ``of clock number <n>`` for a ``[[clock]]`` table, ``in generator of clock <name>``, and ``in launch_clock of port <name>`` or ``in capture_clock of port <name>``.
@@ -199,7 +199,7 @@ Traces file
    * - traces_config_010
      - ``pin <pin> (<methodology>) of part interface <interface> has no trace to a device port; add a trace for it, and a [[port]] or a deferred port in the interface file``
      - Every pin of the part interface needs a trace to the device, from the device for a pin the part captures, and to it for a pin the part drives.
-       Reported by ``check``, ``generate xdc`` and ``visualize block_diagram``, with interface_config_024.
+       Reported by ``check``, ``generate xdc``, ``visualize block_diagram`` and ``visualize eye``, with interface_config_024.
 
 The location is ``in trace <name>``, or ``in trace number <n>`` when the trace has no name.
 

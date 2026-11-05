@@ -63,6 +63,7 @@ def build_visualize_subparser(subparser):
     visualizations = parser.add_subparsers(dest='visualization', required=True)
     build_edges_subparser(visualizations)
     build_block_diagram_subparser(visualizations)
+    build_eye_subparser(visualizations)
 
 
 def build_edges_subparser(subparser):
@@ -72,6 +73,11 @@ def build_edges_subparser(subparser):
 
 def build_block_diagram_subparser(subparser):
     parser = subparser.add_parser('block_diagram', help='Draw the device, the part and the traces between them.')
+    parser.add_argument('interface_file', help='Interface TOML file.')
+
+
+def build_eye_subparser(subparser):
+    parser = subparser.add_parser('eye', help='Draw the eye of every port from its timing reports.')
     parser.add_argument('interface_file', help='Interface TOML file.')
 
 

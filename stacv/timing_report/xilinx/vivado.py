@@ -135,6 +135,7 @@ def populate_timing_report(oTimingReport):
     update_launch_clock_path(oTimingReport)
     update_data_path(oTimingReport)
     update_capture_clock_path(oTimingReport)
+    update_library_requirement(oTimingReport)
     update_launch_edge(oTimingReport)
     update_capture_edge(oTimingReport)
     update_requirement(oTimingReport)
@@ -439,6 +440,24 @@ def update_data_path(oTimingReport):
 def update_capture_clock_path(oTimingReport):
     lLines = extract_capture_clock_path_lines(oTimingReport.text)
     oTimingReport.capture_clock_path = create_delay_path(lLines)
+
+
+LIBRARY_ROW = re.compile(r'\((Setup|Hold)_\w+\)\s+(-?\d+\.\d+)')
+
+
+def update_library_requirement(oTimingReport):
+    # The setup row takes the setup time from the required time, so its increment is the setup time made negative;
+    # the hold row adds the hold time.
+    for oLine in extract_capture_clock_path_lines(oTimingReport.text):
+        oMatch = LIBRARY_ROW.search(oLine.text)
+        if oMatch is not None:
+            oTimingReport.library_requirement = convert_library_increment(oMatch.group(1), float(oMatch.group(2)))
+
+
+def convert_library_increment(sCheck, fIncrement):
+    if sCheck == 'Setup':
+        return -fIncrement
+    return fIncrement
 
 
 def update_launch_edge(oTimingReport):
