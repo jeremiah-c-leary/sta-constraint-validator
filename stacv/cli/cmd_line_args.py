@@ -87,6 +87,7 @@ def build_generate_subparser(subparser):
     targets = parser.add_subparsers(dest='target', required=True)
     build_xdc_subparser(targets)
     build_report_tcl_subparser(targets)
+    build_datasheet_subparser(targets)
 
 
 def build_xdc_subparser(subparser):
@@ -99,6 +100,12 @@ def build_report_tcl_subparser(subparser):
     parser = subparser.add_parser('report_tcl', help='Generate a Vivado script that writes the timing reports of every analyzed port.')
     parser.add_argument('interface_file', help='Interface TOML file.')
     parser.add_argument('--output', help='Report script file name.  The script is written to stdout without it.')
+
+
+def build_datasheet_subparser(subparser):
+    parser = subparser.add_parser('datasheet', help='Generate the datasheet of the interface from its timing reports: the timing of each port at the device\'s pins.')
+    parser.add_argument('interface_file', help='Interface TOML file.')
+    parser.add_argument('--output', help='Datasheet file name.  The datasheet is written to stdout without it.')
 
 
 def build_create_subparser(subparser):

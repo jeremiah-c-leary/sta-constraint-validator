@@ -265,6 +265,9 @@ OUTPUT_PIN = PinType(['launch_edge', 'cko_max', 'cko_min', 'valid_before', 'vali
 PIN_TYPES = {}
 PIN_TYPES['SDR-SS-I'] = INPUT_PIN
 PIN_TYPES['SDR-SS-O'] = OUTPUT_PIN
+# An output timed to the first and last edges of a clock that stops, such as a chip select from the device's datasheet:
+# valid_before is before the first edge and valid_after after the last.
+PIN_TYPES['SDR-SS-O-FLC'] = OUTPUT_PIN
 PIN_TYPES['SDR-SS-RT-DI'] = INPUT_PIN
 PIN_TYPES['SDR-SS-RT-DO'] = OUTPUT_PIN
 PIN_TYPES['SDR-SYS-I'] = INPUT_PIN

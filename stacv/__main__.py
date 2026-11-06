@@ -49,6 +49,9 @@ def main():
         except generate_error.GenerateError as oError:
             iExitCode = 2
             print(str(oError), file=sys.stderr)
+        except timing_report_parse_error.TimingReportParseError as oError:
+            iExitCode = 2
+            print(str(oError), file=sys.stderr)
 
         sys.exit(iExitCode)
 

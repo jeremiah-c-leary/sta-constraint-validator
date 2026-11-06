@@ -122,7 +122,10 @@ Pins are described from the part's point of view.
        It decides the timing keys the pin has:
 
        * inputs, ``SDR-SS-I``, ``SDR-SS-RT-DI``, ``SDR-SYS-I``, ``DDR-SS-I``: ``capture_edge``, ``setup`` and ``hold``
-       * outputs, ``SDR-SS-O``, ``SDR-SS-RT-DO``, ``SDR-SYS-O``, ``DDR-SS-O``: ``launch_edge``, and ``cko_max`` and ``cko_min``, or ``valid_before`` and ``valid_after``
+       * outputs, ``SDR-SS-O``, ``SDR-SS-O-FLC``, ``SDR-SS-RT-DO``, ``SDR-SYS-O``, ``DDR-SS-O``: ``launch_edge``, and ``cko_max`` and ``cko_min``, or ``valid_before`` and ``valid_after``
+
+       ``SDR-SS-O-FLC`` is an output timed to the first and last edges of a clock that stops, such as a chip select from a device's :doc:`datasheet <datasheet>`: ``valid_before`` is before the first edge and ``valid_after`` after the last.
+       No interface methodology times it yet, so its port is deferred.
 
        An output gives its timing in exactly one form, the form its datasheet uses (part_config_010).
        An input gives the receiver's real setup and hold; a skew window, such as RGMII v1.3's tSKEWR, is a board budget and not a requirement of the pin.

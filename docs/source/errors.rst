@@ -227,7 +227,7 @@ Part file
      - ``key "<key>"<location> is not a key stacv reads; the keys are <keys>``
      - Correct the key name.
    * - part_config_005
-     - ``key "methodology"<location> names <methodology>; a part pin is SDR-SS-I, SDR-SS-O, SDR-SS-RT-DI, SDR-SS-RT-DO, SDR-SYS-I, SDR-SYS-O, DDR-SS-I or DDR-SS-O``
+     - ``key "methodology"<location> names <methodology>; a part pin is SDR-SS-I, SDR-SS-O, SDR-SS-O-FLC, SDR-SS-RT-DI, SDR-SS-RT-DO, SDR-SYS-I, SDR-SYS-O, DDR-SS-I or DDR-SS-O``
      - Correct the methodology.
    * - part_config_006
      - ``key "<key>"<location> must be "Rising", "Falling" or "Both"``
@@ -293,6 +293,9 @@ The message starts with the port: ``ERROR: [<identifier>] port <name> <message>`
    * - generate_010
      - ``has <n> timing reports; the report script writes one file for each port``
      - Give the port one timing report for ``stacv generate report_tcl``.
+   * - generate_011
+     - ``launch edge <n> at <time> is not at an edge of <clock>; the datasheet gives the clock to out from the clock edge the data is launched with``, or ``setup launch edge <n> is at a <rising or falling> edge of <clock> and hold launch edge <n> at a <falling or rising> edge; the datasheet gives the clock to out from one edge``, for an SDR-SS-O port by ``stacv generate datasheet``
+     - Launch the data at an edge of the clock the device forwards, the same kind of edge for setup and hold.
 
 Creating templates
 ------------------

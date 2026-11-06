@@ -289,6 +289,7 @@ The clock is idle before the first edge and after the last.
 The timing tool assumes every clock runs all the time, so it times the signal as SDR-SS-O, against the edges either side of each change.
 SDR-SS-O-FLC therefore uses the SDR-SS-O constraints and checks unchanged.
 The part pin is still ``SDR-SS-I``, with the datasheet's setup and hold to the first and last clock edges, such as tCSS and tCSH.
+Seen from the other side, the device's chip select is an ``SDR-SS-O-FLC`` part pin in the device's :doc:`datasheet <datasheet>`, with the time it is valid before the first edge and after the last.
 
 Independent setup and hold edges
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

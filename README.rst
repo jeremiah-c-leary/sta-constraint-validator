@@ -71,6 +71,7 @@ The documentation is in ``docs/source``:
 * ``methodology.rst``: the methodologies stacv supports, and what is not supported yet
 * ``interface.rst``, ``traces.rst`` and ``part.rst``: the three input files
 * ``generate.rst``: the constraints file and the report script
+* ``datasheet.rst``: the interface datasheet, the timing of each port at the device's pins
 * ``trc.rst``: the rules ``check`` runs
 * ``errors.rst``: every error message, and how to correct it
 

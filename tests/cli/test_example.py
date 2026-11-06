@@ -11,6 +11,7 @@ sExampleDir = os.path.join(sProjectDir, 'example', 'texas_instruments', 'DAC8140
 sInterfaceFile = 'interface.toml'
 sConstraintsFile = 'if_dac81404.xdc'
 sReportScriptFile = 'if_dac81404_stacv_report.tcl'
+sDatasheetFile = 'datasheet.toml'
 
 
 class TestExample(unittest.TestCase):
@@ -40,6 +41,13 @@ class TestExample(unittest.TestCase):
     def test_generated_constraints_match_the_example_constraints_file(self):
         iExitCode, sOutput = self.run_stacv(['generate', 'xdc', sInterfaceFile])
         with open(sConstraintsFile) as oFile:
+            sExpected = oFile.read()
+        self.assertEqual(0, iExitCode)
+        self.assertEqual(sExpected, sOutput)
+
+    def test_generated_datasheet_matches_the_example_datasheet(self):
+        iExitCode, sOutput = self.run_stacv(['generate', 'datasheet', sInterfaceFile])
+        with open(sDatasheetFile) as oFile:
             sExpected = oFile.read()
         self.assertEqual(0, iExitCode)
         self.assertEqual(sExpected, sOutput)
