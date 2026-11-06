@@ -7,21 +7,22 @@ from unittest import mock
 from stacv import __main__
 
 sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-sInterfaceFile = 'example/texas_instruments/DAC81404/interface.toml'
-sConstraintsFile = 'example/constraints.xdc'
-sReportScriptFile = 'example/dac_spi_1_stacv_report.tcl'
+sExampleDir = os.path.join(sProjectDir, 'example', 'texas_instruments', 'DAC81404')
+sInterfaceFile = 'interface.toml'
+sConstraintsFile = 'if_dac81404.xdc'
+sReportScriptFile = 'if_dac81404_stacv_report.tcl'
 
 
 class TestExample(unittest.TestCase):
     '''
-    The DAC81404 example is run from the project directory, as a user would,
+    The DAC81404 example is run from its own directory, as a user would,
     so the paths in its constraints file match the paths written in the example.
     '''
 
     def setUp(self):
         sWorkingDir = os.getcwd()
         self.addCleanup(os.chdir, sWorkingDir)
-        os.chdir(sProjectDir)
+        os.chdir(sExampleDir)
         # The example's timing_reports start with $PROJ_DIR, as a user's flow would set it.
         oEnvironment = mock.patch.dict(os.environ, {'PROJ_DIR': sProjectDir})
         oEnvironment.start()
@@ -52,11 +53,11 @@ class TestExample(unittest.TestCase):
         iExitCode, sOutput = self.run_stacv(['check', sInterfaceFile])
         lExpected = []
         lExpected.append(f'Reading interface file {sInterfaceFile}')
-        lExpected.append('Reading timing report file example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt')
+        lExpected.append('Reading timing report file timing_reports/O_DAC_DATA_timing.rpt')
         lExpected.append('PASSED: O_DAC_DATA.SDR-SS-O')
-        lExpected.append('Reading timing report file example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt')
+        lExpected.append('Reading timing report file timing_reports/O_DAC_SDEN_F_timing.rpt')
         lExpected.append('PASSED: O_DAC_SDEN_F.SDR-SS-O-FLC')
-        lExpected.append('Reading timing report file example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt')
+        lExpected.append('Reading timing report file timing_reports/I_DAC_DATA_timing.rpt')
         lExpected.append('PASSED: I_DAC_DATA.SDR-SS-RT-DI')
         lExpected.append('Check Passed')
         lExpected.append('')

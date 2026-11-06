@@ -46,7 +46,7 @@ Example
 ``example/texas_instruments/DAC81404`` is a DAC81404 serial interface on a Xilinx Artix-7, run through Vivado 2020.2:
 
 * ``interface.toml``, ``traces.toml`` and ``part.toml`` describe the interface.
-* ``example/constraints.xdc`` and ``example/dac_spi_1_stacv_report.tcl`` are generated from them.
+* ``if_dac81404.xdc`` and ``if_dac81404_stacv_report.tcl`` are generated from them, in the example's directory.
 * ``timing_reports`` holds the Vivado reports of those constraints, which ``stacv check`` passes.
 
 .. code-block:: text

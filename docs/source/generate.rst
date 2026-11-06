@@ -25,7 +25,7 @@ The intended process is:
 
 The checks confirm the timing tool applied the constraints as intended.
 The DAC81404 example in ``example/texas_instruments/DAC81404`` goes through the whole process.
-``example/constraints.xdc`` is its generated constraints file, and ``example/dac_spi_1_stacv_report.tcl`` is its generated report script.
+``if_dac81404.xdc`` is its generated constraints file, and ``if_dac81404_stacv_report.tcl`` is its generated report script, both generated in the example's directory.
 Its timing reports are under ``$PROJ_DIR``, so run it from the project directory with ``PROJ_DIR`` set:
 
 .. code-block:: text
