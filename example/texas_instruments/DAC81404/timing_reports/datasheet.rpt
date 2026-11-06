@@ -1,0 +1,74 @@
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Thu Nov  5 21:03:44 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_datasheet -show_all_corners -file Z:/home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC81404/timing_reports/datasheet.rpt
+| Design       : dac81404_spi
+| Device       : xa7a12t-cpg238
+| Speed File   : -2I  PRODUCTION 1.16 2018-06-13
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Data Sheet Report
+
+Input Ports Setup/Hold
+
+-----------+------------+---------+-------+---------------+---------+---------------+---------+----------+
+Reference  | Input      | IO Reg  | Delay |     Setup(ns) | Process |      Hold(ns) | Process | Internal |
+Clock      | Port       | Type    | Type  | to Clk (Edge) | Corner  | to Clk (Edge) | Corner  | Clock    |
+-----------+------------+---------+-------+---------------+---------+---------------+---------+----------+
+clk_100mhz | I_DAC_CSF  | FDCE    | -     |    -1.774 (r) | SLOW    |     2.616 (r) | SLOW    |          |
+clk_100mhz | I_DAC_CSF  | FDCE    | -     |    -0.482 (r) | FAST    |     1.362 (r) | FAST    |          |
+clk_100mhz | I_DAC_DATA | FDCE    | -     |     6.380 (r) | SLOW    |    -4.779 (r) | SLOW    |          |
+clk_100mhz | I_DAC_DATA | FDCE    | -     |     3.534 (r) | FAST    |    -1.590 (r) | FAST    |          |
+clk_100mhz | I_DAC_LOAD | FDCE    | -     |    -1.930 (r) | SLOW    |     2.733 (r) | SLOW    |          |
+clk_100mhz | I_DAC_LOAD | FDCE    | -     |    -0.552 (r) | FAST    |     1.415 (r) | FAST    |          |
+clk_100mhz | I_DATA     | FDCE    | -     |    -2.053 (r) | SLOW    |     2.834 (r) | SLOW    |          |
+clk_100mhz | I_DATA     | FDCE    | -     |    -0.613 (r) | FAST    |     1.464 (r) | FAST    |          |
+clk_100mhz | I_DATA_RD  | FDCE    | -     |    -1.946 (r) | SLOW    |     2.731 (r) | SLOW    |          |
+clk_100mhz | I_DATA_RD  | FDCE    | -     |    -0.558 (r) | FAST    |     1.415 (r) | FAST    |          |
+clk_100mhz | I_DATA_WR  | FDCE    | -     |    -1.671 (r) | SLOW    |     2.536 (r) | SLOW    |          |
+clk_100mhz | I_DATA_WR  | FDCE    | -     |    -0.423 (r) | FAST    |     1.316 (r) | FAST    |          |
+clk_100mhz | I_RST_F    | FDCE    | -     |    -1.267 (r) | SLOW    |     2.142 (r) | SLOW    |          |
+clk_100mhz | I_RST_F    | FDCE    | -     |    -0.217 (r) | FAST    |     1.126 (r) | FAST    |          |
+-----------+------------+---------+-------+---------------+---------+---------------+---------+----------+
+
+
+Output Ports Clock-to-out
+
+-----------+--------------+--------+-------+----------------+---------+----------------+---------+-------------+
+Reference  | Output       | IO Reg | Delay | Max Clk (Edge) | Process | Min Clk (Edge) | Process | Internal    |
+Clock      | Port         | Type   | Type  |    to port(ns) | Corner  |    to port(ns) | Corner  | Clock       |
+-----------+--------------+--------+-------+----------------+---------+----------------+---------+-------------+
+clk_100mhz | O_DAC_CSF    | FDCE   | -     |      8.179 (r) | SLOW    |      7.426 (r) | SLOW    |             |
+clk_100mhz | O_DAC_CSF    | FDCE   | -     |      3.984 (r) | FAST    |      2.941 (r) | FAST    |             |
+clk_100mhz | O_DAC_DATA   | FDCE   | -     |      8.189 (r) | SLOW    |      7.414 (r) | SLOW    |             |
+clk_100mhz | O_DAC_DATA   | FDCE   | -     |      4.023 (r) | FAST    |      2.954 (r) | FAST    |             |
+clk_100mhz | O_DAC_LOAD   | FDCE   | -     |      8.317 (r) | SLOW    |      7.542 (r) | SLOW    |             |
+clk_100mhz | O_DAC_LOAD   | FDCE   | -     |      4.081 (r) | FAST    |      3.025 (r) | FAST    |             |
+clk_100mhz | O_DAC_SDEN_F | FDPE   | -     |      8.343 (r) | SLOW    |      7.544 (r) | SLOW    |             |
+clk_100mhz | O_DAC_SDEN_F | FDPE   | -     |      4.100 (r) | FAST    |      3.020 (r) | FAST    |             |
+clk_100mhz | O_DATA       | FDCE   | -     |      8.322 (r) | SLOW    |      7.541 (r) | SLOW    |             |
+clk_100mhz | O_DATA       | FDCE   | -     |      4.088 (r) | FAST    |      3.026 (r) | FAST    |             |
+clk_100mhz | O_DAC_SCLK   | FDCE   | -     |      8.423 (r) | SLOW    |      7.627 (r) | SLOW    | dac_sclk    |
+clk_100mhz | O_DAC_SCLK   | FDCE   | -     |      8.423 (f) | SLOW    |      7.627 (f) | SLOW    | dac_sclk    |
+clk_100mhz | O_DAC_SCLK   | FDCE   | -     |      4.132 (r) | FAST    |      3.064 (r) | FAST    | dac_sclk    |
+clk_100mhz | O_DAC_SCLK   | FDCE   | -     |      4.132 (f) | FAST    |      3.064 (f) | FAST    | dac_sclk    |
+clk_100mhz | O_DAC_SCLK   | FDCE   | -     |      8.423 (r) | SLOW    |      7.627 (r) | SLOW    | dac_sclk_rd |
+clk_100mhz | O_DAC_SCLK   | FDCE   | -     |      8.423 (f) | SLOW    |      7.627 (f) | SLOW    | dac_sclk_rd |
+clk_100mhz | O_DAC_SCLK   | FDCE   | -     |      4.132 (r) | FAST    |      3.064 (r) | FAST    | dac_sclk_rd |
+clk_100mhz | O_DAC_SCLK   | FDCE   | -     |      4.132 (f) | FAST    |      3.064 (f) | FAST    | dac_sclk_rd |
+-----------+--------------+--------+-------+----------------+---------+----------------+---------+-------------+
+
+
+Setup between Clocks
+
+-----------+-------------+---------------+---------+---------------+---------+---------------+---------+---------------+---------+
+Source     | Destination |  Src:Rise     | Process |  Src:Rise     | Process |  Src:Fall     | Process |  Src:Fall     | Process |
+Clock      | Clock       | Dest:Rise(ns) | Corner  | Dest:Fall(ns) | Corner  | Dest:Rise(ns) | Corner  | Dest:Fall(ns) | Corner  |
+-----------+-------------+---------------+---------+---------------+---------+---------------+---------+---------------+---------+
+clk_100mhz | clk_100mhz  |         1.883 | SLOW    |               |         |               |         |               |         |
+clk_100mhz | clk_100mhz  |         0.934 | FAST    |               |         |               |         |               |         |
+-----------+-------------+---------------+---------+---------------+---------+---------------+---------+---------------+---------+
+
+
