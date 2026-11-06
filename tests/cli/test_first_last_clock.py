@@ -171,7 +171,7 @@ class TestFirstLastClock(unittest.TestCase):
     def test_first_last_clock_port_runs_the_sdr_ss_o_checks(self):
         # The passing O_DAC_DATA report of the example, checked as SDR-SS-O-FLC.
         sJunitFile = os.path.join(self.sDirectory, 'junit.xml')
-        sTimingReport = os.path.join(sExampleDir, 'timing_reports', 'O_DAC_DATA_timing.rpt')
+        sTimingReport = os.path.join(sProjectDir, 'tests', 'fixtures', 'dac81404', 'timing_reports', 'O_DAC_DATA_timing.rpt')
         lText = build_interface_text('low', 'SDR-SS-O-FLC', [8, 8], ['D', 'B'], sTimingReport).split('\n')
         lText[2] = f'part = "{os.path.join(sExampleDir, "part.toml")}"'
         lText[4] = f'traces = "{os.path.join(sExampleDir, "traces.toml")}"'

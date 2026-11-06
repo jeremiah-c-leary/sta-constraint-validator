@@ -26,7 +26,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ----------------------------------------------
-# 30a85168163926fc9ae4d0ed8bb4a232  example/texas_instruments/DAC81404/interface.toml
+# 929aa008b5fe7d1929f0109985a20963  example/texas_instruments/DAC81404/interface.toml
 # c58b25e7f777af3f00e728389a614f2e  example/texas_instruments/DAC81404/part.toml
 # 258b2a541bb317ac41ff5ecd3df5e6cc  example/texas_instruments/DAC81404/traces.toml
 #
@@ -255,16 +255,16 @@ set_multicycle_path 5 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #                  0_______________________________________________1                                               2_______________________________________________3                                               4
 # dac_sclk_rd    __|                                               |_______________________________________________|                                               |_______________________________________________|
 # (12.5 MHz)
-#                                                                                                                  |---------------setup requirement-------------->|
-#                                                                  |<---------------hold requirement---------------|
+#                                                                                                                  |---------------------------setup requirement-------------------------->|
+#                                                                                          |<---hold requirement---|
 #
 #                                                                                                                                                                              A     A     A     A     A     A     A
 #                  A_____B     C_____D     E_____F     G_____H     I_____J     K_____L     M_____N     O_____P     Q_____R     S_____T     U_____V     W_____X     Y_____Z     A_____B     C_____D     E_____F     G
 # clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
 # (100 MHz)
 #
-# setup requirement:  40 ns (launch edge 2 at 80 ns -> capture edge Y at 120 ns)
-# hold requirement:  -40 ns (launch edge 2 at 80 ns -> capture edge I at 40 ns)
+# setup requirement:  60 ns (launch edge 2 at 80 ns -> capture edge AC at 140 ns)
+# hold requirement:  -20 ns (launch edge 2 at 80 ns -> capture edge M at 60 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -292,19 +292,19 @@ set_input_delay -clock [get_clocks dac_sclk_rd] -reference_pin [get_ports O_DAC_
 
 #
 # multiplier:  setup requirement / capture period
-#              40 ns / 10 ns
-#              4
+#              60 ns / 10 ns
+#              6
 # -setup:      this is the setup multicycle
 # -end:        multiplier is relative to the capturing clock
 # -from:       the port on the device that receives data from the part
 # -to:         the clock in the device that captures data
 #
 
-set_multicycle_path 4 -setup -end -from [get_ports I_DAC_DATA] -to [get_clocks clk_100mhz]
+set_multicycle_path 6 -setup -end -from [get_ports I_DAC_DATA] -to [get_clocks clk_100mhz]
 
 #
 # multiplier:  (setup requirement - hold requirement) / capture period - 1
-#              (40 ns - -40 ns) / 10 ns - 1
+#              (60 ns - -20 ns) / 10 ns - 1
 #              7
 # -hold:       this is the hold multicycle
 #

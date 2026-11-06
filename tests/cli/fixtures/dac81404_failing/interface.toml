@@ -30,7 +30,7 @@ launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
 capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
 registers = ["q_spi_output_data_reg"]
 timing_reports = [
-    "../../../../example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt",
+    "../../../fixtures/dac81404/timing_reports/O_DAC_DATA_timing.rpt",
 ]
 
 # The part's other pins are not timed by this fixture.

@@ -8,7 +8,7 @@ from stacv import __main__
 
 sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sFixtureDir = os.path.join(sProjectDir, 'tests', 'cli', 'fixtures', 'dac81404_failing')
-sTimingReport = 'example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt'
+sTimingReport = 'tests/fixtures/dac81404/timing_reports/O_DAC_DATA_timing.rpt'
 
 
 class TestFailingExample(unittest.TestCase):

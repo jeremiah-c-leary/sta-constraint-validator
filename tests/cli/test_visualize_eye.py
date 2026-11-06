@@ -65,7 +65,7 @@ class TestEyeDrawing(EyeTestCase):
         oTemporaryDirectory = tempfile.TemporaryDirectory()
         self.addCleanup(oTemporaryDirectory.cleanup)
         sReport = os.path.join(oTemporaryDirectory.name, 'O_DAC_DATA_timing.rpt')
-        with open(os.path.join(sDacDir, 'timing_reports', 'O_DAC_DATA_timing.rpt')) as oFile:
+        with open(os.path.join(sProjectDir, 'tests', 'fixtures', 'dac81404', 'timing_reports', 'O_DAC_DATA_timing.rpt')) as oFile:
             sText = oFile.read()
         sText = re.sub(r'Slack \(MET\) :\s+(\S+)ns(\s+\(required time - arrival time\)\n  Source:[^\n]*\n[^\n]*\n  Destination:[^\n]*\n[^\n]*\n  Path Group:[^\n]*\n  Path Type:\s+Max)', f'Slack (VIOLATED) :        {sSlack}ns\\2', sText)
         sInterfaceFile = os.path.join(oTemporaryDirectory.name, 'interface.toml')

@@ -9,7 +9,7 @@ from stacv import __main__
 
 sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sExampleDir = os.path.join(sProjectDir, 'example', 'texas_instruments', 'DAC81404')
-sExampleReport = os.path.join(sExampleDir, 'timing_reports', 'O_DAC_DATA_timing.rpt')
+sExampleReport = os.path.join(sProjectDir, 'tests', 'fixtures', 'dac81404', 'timing_reports', 'O_DAC_DATA_timing.rpt')
 
 
 def build_interface_text(sTimingReport):

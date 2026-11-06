@@ -21,7 +21,7 @@ DEFERRED = None
 sTestDir = os.path.dirname(os.path.abspath(__file__))
 sRuleDir = os.path.join(sTestDir, '..', 'rules', 'timing_report')
 
-sPassingReport = os.path.abspath(os.path.join(sTestDir, '..', '..', 'example', 'texas_instruments', 'DAC81404', 'timing_reports', 'O_DAC_DATA_timing.rpt'))
+sPassingReport = os.path.abspath(os.path.join(sTestDir, '..', 'fixtures', 'dac81404', 'timing_reports', 'O_DAC_DATA_timing.rpt'))
 sFailingReport = os.path.abspath(os.path.join(sRuleDir, 's0_timing_report_002.failing.rpt'))
 sOutputDelayFailingReport = os.path.abspath(os.path.join(sTestDir, '..', 'rules', 'output_delay', 's2_output_delay_001.failing.rpt'))
 

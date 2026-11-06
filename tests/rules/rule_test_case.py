@@ -12,9 +12,11 @@ from stacv.cli import check
 sSuiteName = 'O_DAC_DATA.SDR-SS-O'
 
 # The rule tests check the DAC81404 example: its timing report is a Vivado run of the constraints stacv generates for it.
+# The reports are a fixed copy, so the example can be run through Vivado again without changing the tests.
 sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sExampleDir = os.path.join(sProjectDir, 'example', 'texas_instruments', 'DAC81404')
-sTimingReport = os.path.join(sExampleDir, 'timing_reports', 'O_DAC_DATA_timing.rpt')
+sFixtureReportDir = os.path.join(sProjectDir, 'tests', 'fixtures', 'dac81404', 'timing_reports')
+sTimingReport = os.path.join(sFixtureReportDir, 'O_DAC_DATA_timing.rpt')
 
 # The example's clocks and edges.
 fLaunchPeriod = 10.0
@@ -168,7 +170,7 @@ class RuleTestCase(unittest.TestCase):
 
 
 # The SDR-SS-RT-DI rule tests check the example's I_DAC_DATA timing report, which has the same four reports, each 77 lines long.
-sRoundTripTimingReport = os.path.join(sExampleDir, 'timing_reports', 'I_DAC_DATA_timing.rpt')
+sRoundTripTimingReport = os.path.join(sFixtureReportDir, 'I_DAC_DATA_timing.rpt')
 sRoundTripSuiteName = 'I_DAC_DATA.SDR-SS-RT-DI'
 
 # Lines of the first report, the setup report at the Slow Process Corner.

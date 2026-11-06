@@ -1,0 +1,308 @@
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Sun Nov  1 15:23:23 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -setup -path full_clock_expanded -file Z:/home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt
+| Design       : dac81404_spi
+| Device       : xa7a12t-cpg238
+| Speed File   : -2I  PRODUCTION 1.16 2018-06-13
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.219ns  (required time - arrival time)
+  Source:                 I_DAC_DATA
+                            (input port clocked by dac_sclk_rd  {rise@0.000ns fall@40.000ns period=80.000ns})
+  Destination:            q_spi_input_data_reg/D
+                            (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_100mhz
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            40.000ns  (clk_100mhz rise@40.000ns - dac_sclk_rd rise@0.000ns)
+  Data Path Delay:        1.466ns  (logic 0.864ns (58.960%)  route 0.602ns (41.040%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            34.000ns
+  Clock Path Skew:        -0.488ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    3.730ns = ( 13.730 - 10.000 ) 
+    Source Clock Delay      (SCD):    4.440ns
+    Clock Pessimism Removal (CPR):    0.222ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       MultiCycle Path   Setup -end   4
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock dac_sclk_rd rise edge)     0.000     0.000 r  
+    K18                                               0.000     0.000 r  I_CLK (IN)
+                         net (fo=0)                   0.000     0.000    I_CLK
+    K18                  IBUF (Prop_ibuf_I_O)         0.863     0.863 r  I_CLK_IBUF_inst/O
+                         net (fo=1, routed)           1.687     2.550    I_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.081     2.631 r  I_CLK_IBUF_BUFG_inst/O
+                         net (fo=15, routed)          1.431     4.061    I_CLK_IBUF_BUFG
+    SLICE_X1Y6           FDCE (Prop_fdce_C_Q)         0.379     4.440 r  q_spi_output_clock_reg/Q
+                         net (fo=1, routed)           1.416     5.857    O_DAC_SCLK_OBUF
+    W17                  OBUF (Prop_obuf_I_O)         2.344     8.200 r  O_DAC_SCLK_OBUF_inst/O
+                         net (fo=0)                   0.000     8.200    O_DAC_SCLK
+  -------------------------------------------------------------------    -------------------
+                         input delay                 34.000    42.200    
+    W16                                               0.000    42.200 r  I_DAC_DATA (IN)
+                         net (fo=0)                   0.000    42.200    I_DAC_DATA
+    W16                  IBUF (Prop_ibuf_I_O)         0.864    43.065 r  I_DAC_DATA_IBUF_inst/O
+                         net (fo=1, routed)           0.602    43.666    I_DAC_DATA_IBUF
+    SLICE_X1Y1           FDCE                                         r  q_spi_input_data_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_100mhz rise edge)    40.000    40.000 r  
+    K18                                               0.000    40.000 r  I_CLK (IN)
+                         net (fo=0)                   0.000    40.000    I_CLK
+    K18                  IBUF (Prop_ibuf_I_O)         0.732    40.732 r  I_CLK_IBUF_inst/O
+                         net (fo=1, routed)           1.599    42.331    I_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.077    42.408 r  I_CLK_IBUF_BUFG_inst/O
+                         net (fo=15, routed)          1.322    43.730    I_CLK_IBUF_BUFG
+    SLICE_X1Y1           FDCE                                         r  q_spi_input_data_reg/C
+                         clock pessimism              0.222    43.952    
+                         clock uncertainty           -0.035    43.917    
+    SLICE_X1Y1           FDCE (Setup_fdce_C_D)       -0.032    43.885    q_spi_input_data_reg
+  -------------------------------------------------------------------
+                         required time                         43.885    
+                         arrival time                         -43.666    
+  -------------------------------------------------------------------
+                         slack                                  0.219    
+
+
+
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Sun Nov  1 15:23:23 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -hold -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt
+| Design       : dac81404_spi
+| Device       : xa7a12t-cpg238
+| Speed File   : -2I  PRODUCTION 1.16 2018-06-13
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             45.704ns  (arrival time - required time)
+  Source:                 I_DAC_DATA
+                            (input port clocked by dac_sclk_rd  {rise@0.000ns fall@40.000ns period=80.000ns})
+  Destination:            q_spi_input_data_reg/D
+                            (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_100mhz
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            -40.000ns  (clk_100mhz rise@-40.000ns - dac_sclk_rd rise@0.000ns)
+  Data Path Delay:        1.244ns  (logic 0.734ns (58.966%)  route 0.511ns (41.034%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            1.000ns
+  Clock Path Skew:        -0.194ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.062ns
+    Source Clock Delay      (SCD):    4.034ns
+    Clock Pessimism Removal (CPR):    0.222ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       MultiCycle Path   Setup -end   4    Hold  -end   7
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock dac_sclk_rd rise edge)     0.000     0.000 r  
+    K18                                               0.000     0.000 r  I_CLK (IN)
+                         net (fo=0)                   0.000     0.000    I_CLK
+    K18                  IBUF (Prop_ibuf_I_O)         0.732     0.732 r  I_CLK_IBUF_inst/O
+                         net (fo=1, routed)           1.599     2.331    I_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.077     2.408 r  I_CLK_IBUF_BUFG_inst/O
+                         net (fo=15, routed)          1.322     3.730    I_CLK_IBUF_BUFG
+    SLICE_X1Y6           FDCE (Prop_fdce_C_Q)         0.304     4.034 r  q_spi_output_clock_reg/Q
+                         net (fo=1, routed)           1.280     5.315    O_DAC_SCLK_OBUF
+    W17                  OBUF (Prop_obuf_I_O)         2.176     7.491 r  O_DAC_SCLK_OBUF_inst/O
+                         net (fo=0)                   0.000     7.491    O_DAC_SCLK
+  -------------------------------------------------------------------    -------------------
+                         input delay                  1.000     8.491    
+    W16                                               0.000     8.491 r  I_DAC_DATA (IN)
+                         net (fo=0)                   0.000     8.491    I_DAC_DATA
+    W16                  IBUF (Prop_ibuf_I_O)         0.734     9.225 r  I_DAC_DATA_IBUF_inst/O
+                         net (fo=1, routed)           0.511     9.735    I_DAC_DATA_IBUF
+    SLICE_X1Y1           FDCE                                         r  q_spi_input_data_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_100mhz rise edge)   -40.000   -40.000 r  
+    K18                                               0.000   -40.000 r  I_CLK (IN)
+                         net (fo=0)                   0.000   -40.000    I_CLK
+    K18                  IBUF (Prop_ibuf_I_O)         0.863   -39.137 r  I_CLK_IBUF_inst/O
+                         net (fo=1, routed)           1.687   -37.450    I_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.081   -37.369 r  I_CLK_IBUF_BUFG_inst/O
+                         net (fo=15, routed)          1.432   -35.938    I_CLK_IBUF_BUFG
+    SLICE_X1Y1           FDCE                                         r  q_spi_input_data_reg/C
+                         clock pessimism             -0.222   -36.160    
+                         clock uncertainty            0.035   -36.124    
+    SLICE_X1Y1           FDCE (Hold_fdce_C_D)         0.156   -35.968    q_spi_input_data_reg
+  -------------------------------------------------------------------
+                         required time                         35.968    
+                         arrival time                           9.735    
+  -------------------------------------------------------------------
+                         slack                                 45.704    
+
+
+
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Sun Nov  1 15:23:23 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -setup -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt
+| Design       : dac81404_spi
+| Device       : xa7a12t-cpg238
+| Speed File   : -2I  PRODUCTION 1.16 2018-06-13
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             2.917ns  (required time - arrival time)
+  Source:                 I_DAC_DATA
+                            (input port clocked by dac_sclk_rd  {rise@0.000ns fall@40.000ns period=80.000ns})
+  Destination:            q_spi_input_data_reg/D
+                            (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_100mhz
+  Path Type:              Setup (Max at Fast Process Corner)
+  Requirement:            40.000ns  (clk_100mhz rise@40.000ns - dac_sclk_rd rise@0.000ns)
+  Data Path Delay:        0.688ns  (logic 0.350ns (50.825%)  route 0.339ns (49.175%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            34.000ns
+  Clock Path Skew:        -0.445ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.409ns = ( 11.409 - 10.000 ) 
+    Source Clock Delay      (SCD):    2.099ns
+    Clock Pessimism Removal (CPR):    0.245ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       MultiCycle Path   Setup -end   4
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock dac_sclk_rd rise edge)     0.000     0.000 r  
+    K18                                               0.000     0.000 r  I_CLK (IN)
+                         net (fo=0)                   0.000     0.000    I_CLK
+    K18                  IBUF (Prop_ibuf_I_O)         0.348     0.348 r  I_CLK_IBUF_inst/O
+                         net (fo=1, routed)           0.685     1.033    I_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.029     1.062 r  I_CLK_IBUF_BUFG_inst/O
+                         net (fo=15, routed)          0.862     1.924    I_CLK_IBUF_BUFG
+    SLICE_X1Y6           FDCE (Prop_fdce_C_Q)         0.175     2.099 r  q_spi_output_clock_reg/Q
+                         net (fo=1, routed)           0.608     2.707    O_DAC_SCLK_OBUF
+    W17                  OBUF (Prop_obuf_I_O)         1.301     4.008 r  O_DAC_SCLK_OBUF_inst/O
+                         net (fo=0)                   0.000     4.008    O_DAC_SCLK
+  -------------------------------------------------------------------    -------------------
+                         input delay                 34.000    38.008    
+    W16                                               0.000    38.008 r  I_DAC_DATA (IN)
+                         net (fo=0)                   0.000    38.008    I_DAC_DATA
+    W16                  IBUF (Prop_ibuf_I_O)         0.350    38.358 r  I_DAC_DATA_IBUF_inst/O
+                         net (fo=1, routed)           0.339    38.697    I_DAC_DATA_IBUF
+    SLICE_X1Y1           FDCE                                         r  q_spi_input_data_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_100mhz rise edge)    40.000    40.000 r  
+    K18                                               0.000    40.000 r  I_CLK (IN)
+                         net (fo=0)                   0.000    40.000    I_CLK
+    K18                  IBUF (Prop_ibuf_I_O)         0.160    40.160 r  I_CLK_IBUF_inst/O
+                         net (fo=1, routed)           0.631    40.791    I_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.026    40.817 r  I_CLK_IBUF_BUFG_inst/O
+                         net (fo=15, routed)          0.592    41.409    I_CLK_IBUF_BUFG
+    SLICE_X1Y1           FDCE                                         r  q_spi_input_data_reg/C
+                         clock pessimism              0.245    41.654    
+                         clock uncertainty           -0.035    41.618    
+    SLICE_X1Y1           FDCE (Setup_fdce_C_D)       -0.005    41.613    q_spi_input_data_reg
+  -------------------------------------------------------------------
+                         required time                         41.613    
+                         arrival time                         -38.697    
+  -------------------------------------------------------------------
+                         slack                                  2.917    
+
+
+
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Sun Nov  1 15:23:23 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_ports I_DAC_DATA] -hold -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt
+| Design       : dac81404_spi
+| Device       : xa7a12t-cpg238
+| Speed File   : -2I  PRODUCTION 1.16 2018-06-13
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             42.667ns  (arrival time - required time)
+  Source:                 I_DAC_DATA
+                            (input port clocked by dac_sclk_rd  {rise@0.000ns fall@40.000ns period=80.000ns})
+  Destination:            q_spi_input_data_reg/D
+                            (rising edge-triggered cell FDCE clocked by clk_100mhz  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             clk_100mhz
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            -40.000ns  (clk_100mhz rise@-40.000ns - dac_sclk_rd rise@0.000ns)
+  Data Path Delay:        0.448ns  (logic 0.161ns (36.029%)  route 0.287ns (63.971%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            1.000ns
+  Clock Path Skew:        0.131ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.925ns
+    Source Clock Delay      (SCD):    1.549ns
+    Clock Pessimism Removal (CPR):    0.245ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Timing Exception:       MultiCycle Path   Setup -end   4    Hold  -end   7
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock dac_sclk_rd rise edge)     0.000     0.000 r  
+    K18                                               0.000     0.000 r  I_CLK (IN)
+                         net (fo=0)                   0.000     0.000    I_CLK
+    K18                  IBUF (Prop_ibuf_I_O)         0.160     0.160 r  I_CLK_IBUF_inst/O
+                         net (fo=1, routed)           0.631     0.791    I_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.026     0.817 r  I_CLK_IBUF_BUFG_inst/O
+                         net (fo=15, routed)          0.591     1.408    I_CLK_IBUF_BUFG
+    SLICE_X1Y6           FDCE (Prop_fdce_C_Q)         0.141     1.549 r  q_spi_output_clock_reg/Q
+                         net (fo=1, routed)           0.346     1.895    O_DAC_SCLK_OBUF
+    W17                  OBUF (Prop_obuf_I_O)         1.114     3.009 r  O_DAC_SCLK_OBUF_inst/O
+                         net (fo=0)                   0.000     3.009    O_DAC_SCLK
+  -------------------------------------------------------------------    -------------------
+                         input delay                  1.000     4.009    
+    W16                                               0.000     4.009 r  I_DAC_DATA (IN)
+                         net (fo=0)                   0.000     4.009    I_DAC_DATA
+    W16                  IBUF (Prop_ibuf_I_O)         0.161     4.171 r  I_DAC_DATA_IBUF_inst/O
+                         net (fo=1, routed)           0.287     4.457    I_DAC_DATA_IBUF
+    SLICE_X1Y1           FDCE                                         r  q_spi_input_data_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock clk_100mhz rise edge)   -40.000   -40.000 r  
+    K18                                               0.000   -40.000 r  I_CLK (IN)
+                         net (fo=0)                   0.000   -40.000    I_CLK
+    K18                  IBUF (Prop_ibuf_I_O)         0.348   -39.652 r  I_CLK_IBUF_inst/O
+                         net (fo=1, routed)           0.685   -38.967    I_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.029   -38.938 r  I_CLK_IBUF_BUFG_inst/O
+                         net (fo=15, routed)          0.863   -38.075    I_CLK_IBUF_BUFG
+    SLICE_X1Y1           FDCE                                         r  q_spi_input_data_reg/C
+                         clock pessimism             -0.245   -38.320    
+                         clock uncertainty            0.035   -38.285    
+    SLICE_X1Y1           FDCE (Hold_fdce_C_D)         0.075   -38.210    q_spi_input_data_reg
+  -------------------------------------------------------------------
+                         required time                         38.210    
+                         arrival time                           4.457    
+  -------------------------------------------------------------------
+                         slack                                 42.667    
+
+
+
+
