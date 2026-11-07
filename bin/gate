@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 # The checks every commit must pass: the unit tests, then the documentation build with no warnings.
-# Sphinx is run from the project's .venv.
+# Both run from the project's .venv, with its Python.
 
 set -u
 
 sProjectDir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$sProjectDir"
 
-echo "Running unit tests"
-if ! python3.11 -m unittest 2>&1 | tail -1 | grep -q "^OK"; then
-    python3.11 -m unittest 2>&1 | tail -20
-    echo "Gate failed: unit tests"
+if [ ! -x .venv/bin/python ]; then
+    echo "Gate failed: .venv/bin/python not found; create the virtual environment and install sphinx"
     exit 1
 fi
 
-if [ ! -x .venv/bin/python ]; then
-    echo "Gate failed: .venv/bin/python not found; create the virtual environment and install sphinx"
+echo "Running unit tests"
+if ! .venv/bin/python -m unittest 2>&1 | tail -1 | grep -q "^OK"; then
+    .venv/bin/python -m unittest 2>&1 | tail -20
+    echo "Gate failed: unit tests"
     exit 1
 fi
 

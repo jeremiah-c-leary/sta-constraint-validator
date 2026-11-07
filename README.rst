@@ -31,14 +31,14 @@ Commands
    It exits with 0 when every port passes, 1 when a rule fails and 2 on an input error, so it can fail a CI pipeline.
    ``--report`` writes a report file with the md5sum of every input, to keep as a record, and ``--junit`` writes a JUnit file.
 
-stacv needs Python 3.11 and only the standard library.
+stacv needs Python 3.11 or newer, and only the standard library.
 Install it from a clone, which adds the ``stacv`` command:
 
 .. code-block:: text
 
-   python3.11 -m pip install .
+   python3 -m pip install .
 
-Or run it from the clone without installing, with ``bin/stacv`` or ``python3.11 -m stacv``.
+Or run it from the clone without installing, with ``bin/stacv`` or ``python3 -m stacv``.
 
 Example
 -------
@@ -82,10 +82,10 @@ Development
 -----------
 
 Every commit must pass ``bin/gate``: the unit tests, and the documentation build with no warnings.
-The build runs Sphinx from a virtual environment in ``.venv``:
+The tests and the build run from a virtual environment in ``.venv``, with its Python:
 
 .. code-block:: text
 
-   python3.11 -m venv .venv
+   python3 -m venv .venv
    .venv/bin/pip install sphinx
    bin/gate

@@ -1,9 +1,20 @@
 import contextlib
 import io
+import re
 import unittest
 from unittest import mock
 
 from stacv import __main__
+
+
+def remove_choice_quotes(sText):
+    # Python 3.12.8 and 3.13.1 dropped the quotes around each choice in argparse's "(choose from ...)", so the tests
+    # compare the choices without them and pass on every Python stacv supports.
+    return re.sub(r'\(choose from [^)]*\)', remove_quotes, sText)
+
+
+def remove_quotes(oMatch):
+    return oMatch.group(0).replace("'", '')
 
 
 class TestUsageHelp(unittest.TestCase):
@@ -31,7 +42,7 @@ class TestUsageHelp(unittest.TestCase):
         sExpected = self.read_help(lCommand) + '\n' + ' '.join(['stacv'] + lCommand) + ': error: ' + sError + '\n'
         self.assertEqual(2, iExitCode)
         self.assertEqual('', sStdout)
-        self.assertEqual(sExpected, sStderr)
+        self.assertEqual(remove_choice_quotes(sExpected), remove_choice_quotes(sStderr))
 
     def test_unknown_command_prints_stacv_help(self):
         self.assert_help_then_error(['validate'], [], "argument {check,visualize,generate,create}: invalid choice: 'validate' (choose from 'check', 'visualize', 'generate', 'create')")
