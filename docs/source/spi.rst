@@ -32,11 +32,11 @@ The steps
 
    .. code-block:: text
 
-      stacv create template spi --wires 4 --mode 0 --type controller --clock-period 10 --sck-period 40 --output spi
+      stacv create template spi --wires 4 --mode 1 --type controller --clock-period 10 --sck-period 40 --output spi
 
    The launch and capture edges are worked out from the mode and the periods (see :doc:`create`).
 
-#. Fill in the part's setup, hold and clock to out from its datasheet, in ``part.toml``.
+#. Fill in the part's setup, hold, clock to out and fastest SCK from its datasheet, in ``part.toml``, or point ``part`` at a part file from a library that gives the SPI signals.
    stacv stops on each value still ``FROM_DATASHEET`` (part_config_011).
 #. Fill in the trace delays from the board, in ``traces.toml``, or leave ``{}`` to use the default delay.
 #. Rename the ports, clocks and registers to your design's, and ``SPI_INTERFACE_NAME`` everywhere it appears.

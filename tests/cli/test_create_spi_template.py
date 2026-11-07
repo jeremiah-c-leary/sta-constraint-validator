@@ -45,6 +45,7 @@ class SpiTemplateTestCase(unittest.TestCase):
     def fill_in_part(self):
         # The values a user fills in from the part's datasheet.
         sText = self.read_file('part.toml').replace('value = "FROM_DATASHEET"', 'value = 5').replace('source = "FROM_DATASHEET"', 'source = "Table 1"')
+        sText = sText.replace('max_frequency = "FROM_DATASHEET"', 'max_frequency = 50')
         with open(os.path.join(self.sDirectory, 'part.toml'), 'w') as oFile:
             oFile.write(sText)
 
@@ -57,8 +58,8 @@ class SpiTemplateTestCase(unittest.TestCase):
 
 class TestSpiTemplate(SpiTemplateTestCase):
 
-    def test_mode_0_controller_is_the_example(self):
-        self.assertEqual(0, self.create_spi(0))
+    def test_mode_1_controller_is_the_example(self):
+        self.assertEqual(0, self.create_spi(1))
         for sFilename in FILE_NAMES:
             with self.subTest(file=sFilename):
                 with open(os.path.join(sExampleDir, sFilename)) as oFile:
@@ -107,7 +108,7 @@ class TestSpiTemplate(SpiTemplateTestCase):
                 self.assertEqual(0, self.run_in_directory(['generate', 'xdc', 'interface.toml']))
                 self.assertEqual('', self.oStderr.getvalue())
 
-    def test_the_clock_periods_set_the_edges_and_the_frequency(self):
+    def test_the_clock_periods_set_the_edges(self):
         # SCK is 80 ns, ten 8 ns device clock periods, so each SCK edge is ten device clock edges apart.
         self.assertEqual(0, self.create_spi(0, ['--clock-period', '8', '--sck-period', '80']))
         sInterface = self.read_file('interface.toml')
@@ -115,7 +116,6 @@ class TestSpiTemplate(SpiTemplateTestCase):
         self.assertIn('period = 80.000', sInterface)
         self.assertIn('launch_clock = {name = "device_clk", setup_edge = 10, hold_edge = 10}', sInterface)
         self.assertIn('capture_clock = {name = "device_clk", setup_edge = "U", hold_edge = "A"}', sInterface)
-        self.assertIn('clock = {pin = "SCK", max_frequency = 12.5}', self.read_file('part.toml'))
         self.assertIn('# Created by:  stacv create template spi --wires 4 --mode 0 --type controller --clock-period 8 --sck-period 80', sInterface)
 
     def test_the_timing_reports_are_named_by_interface_and_signal(self):
@@ -127,7 +127,7 @@ class TestSpiTemplate(SpiTemplateTestCase):
     def test_a_value_still_to_fill_in_is_an_error(self):
         self.assertEqual(0, self.create_spi(0))
         self.assertEqual(2, self.run_in_directory(['generate', 'xdc', 'interface.toml']))
-        self.assertEqual('ERROR: [part_config_011] part.toml key "value" in setup of pin COPI of interface SPI is FROM_DATASHEET; fill it in from the part\'s datasheet\n', self.oStderr.getvalue())
+        self.assertEqual('ERROR: [part_config_011] part.toml key "max_frequency" in clock of pin COPI of interface SPI is FROM_DATASHEET; fill it in from the part\'s datasheet\n', self.oStderr.getvalue())
 
 
 class TestSpiTemplateErrors(SpiTemplateTestCase):

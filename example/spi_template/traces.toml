@@ -1,11 +1,12 @@
 # stacv traces file for a 4-wire SPI interface, with the device as the controller.
-# Created by:  stacv create template spi --wires 4 --mode 0 --type controller --clock-period 10 --sck-period 40
+# Created by:  stacv create template spi --wires 4 --mode 1 --type controller --clock-period 10 --sck-period 40
 #
 # Keys are described in:
 # https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/traces.rst
 #
 # Fill in each trace's delays from the board, or leave {} to use default_delay.
-# Keep each if_signal as it is: it links the trace to its port and its part pin.
+# Keys below each "set by stacv create template spi" line are set from the command line above;
+# create the files again to change them.
 #
 # Delays are in nanoseconds.
 
@@ -13,20 +14,24 @@ default_delay = {max_delay = 1.00, min_delay = 0.00}
 
 [[trace]]
 name = "sck"
-if_signal = "SCK"
 device_to_part = {}
+#--- set by stacv create template spi; do not change below ---
+if_signal = "SCK"
 
 [[trace]]
 name = "copi"
-if_signal = "COPI"
 device_to_part = {}
+#--- set by stacv create template spi; do not change below ---
+if_signal = "COPI"
 
 [[trace]]
 name = "cipo"
-if_signal = "CIPO"
 part_to_device = {}
+#--- set by stacv create template spi; do not change below ---
+if_signal = "CIPO"
 
 [[trace]]
 name = "cs"
-if_signal = "CS"
 device_to_part = {}
+#--- set by stacv create template spi; do not change below ---
+if_signal = "CS"

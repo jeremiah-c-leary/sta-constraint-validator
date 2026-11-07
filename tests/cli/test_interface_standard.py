@@ -176,6 +176,18 @@ class TestReaderErrors(InterfaceStandardTestCase):
         lTracesChanges = [('if_signal = "COPI"', 'if_signal = "COPI"\ndevice_pin = "O_DAC_DATA"')]
         self.assert_error('traces_config_011', 'traces.toml', 'trace data_output gives if_signal and a pin; give if_signal, or device_pin and part_pin', lTracesChanges=lTracesChanges)
 
+    def test_a_pin_can_name_its_clock_by_signal(self):
+        lPartChanges = [('if_signal = "COPI"\nclock = {pin = "SCLK", max_frequency = 25}', 'if_signal = "COPI"\nclock = {if_signal = "SCK", max_frequency = 25}')]
+        self.assertEqual(0, self.run_block_diagram(lPartChanges=lPartChanges))
+
+    def test_a_clock_named_by_pin_and_signal_is_an_error(self):
+        lPartChanges = [('if_signal = "COPI"\nclock = {pin = "SCLK", max_frequency = 25}', 'if_signal = "COPI"\nclock = {pin = "SCLK", if_signal = "SCK", max_frequency = 25}')]
+        self.assert_error('part_config_012', 'part.toml', 'key "clock" in pin SDIN of interface Serial Interface must give pin or if_signal, not both', lPartChanges=lPartChanges)
+
+    def test_a_clock_signal_no_clock_pin_gives_is_an_error(self):
+        lPartChanges = [('if_signal = "COPI"\nclock = {pin = "SCLK", max_frequency = 25}', 'if_signal = "COPI"\nclock = {if_signal = "SCLK", max_frequency = 25}')]
+        self.assert_error('part_config_013', 'part.toml', 'key "clock" in pin SDIN of interface Serial Interface gives if_signal SCLK, which no [[interface.clock_pin]] of the interface gives', lPartChanges=lPartChanges)
+
     def test_a_clock_pin_has_only_a_name_and_a_signal(self):
         lPartChanges = [('name = "SCLK"\nif_signal = "SCK"', 'name = "SCLK"\nif_signal = "SCK"\ncapture_edge = "Rising"')]
         self.assert_error('part_config_004', 'part.toml', 'key "capture_edge" in pin SCLK of interface Serial Interface is not a key stacv reads; the keys are name, if_signal', lPartChanges=lPartChanges)

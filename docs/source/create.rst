@@ -37,7 +37,7 @@ SPI
 
 .. code-block:: text
 
-   stacv create template spi --wires 4 --mode 0 --type controller --clock-period 10 --sck-period 40 --output spi
+   stacv create template spi --wires 4 --mode 1 --type controller --clock-period 10 --sck-period 40 --output spi
 
 ==================  =========================================================================================
 Option              Description
@@ -56,8 +56,12 @@ The command each was created by is at its top.
 * The mode sets the level SCK idles at, and the clock periods and the mode set every launch and capture edge, so the user only checks them with ``stacv visualize edges``.
 * The ports are named by their role: ``O_SPI_SCK``, ``O_SPI_COPI``, ``O_SPI_CS`` and ``I_SPI_CIPO``, and the part pins ``SCK``, ``COPI``, ``CS`` and ``CIPO``.
 * The timing reports are named by the interface and the signal, such as ``timing_reports/SPI_INTERFACE_NAME.COPI_timing.rpt``, so renaming ``SPI_INTERFACE_NAME`` everywhere it appears renames them too.
-* The part's values are ``FROM_DATASHEET``, which stacv stops on until they are filled in (part_config_011).
+* The part's values, and the fastest SCK each pin allows, are ``FROM_DATASHEET``, which stacv stops on until they are filled in (part_config_011).
 * The registers and the trace delays are left for the user.
+* Each table is split by a line, ``#--- set by stacv create template spi; do not change below ---``.
+  Above it is what the user fills in or renames; below it is what the command line set, such as the methodology, the signal and the edges of the part's pins.
+  To change those, create the files again.
+* Nothing below a line refers to a name the user changes: the part's pins are linked to their clock and their traces by signal.
 
 ``example/spi_template`` holds the files of the command above.
 

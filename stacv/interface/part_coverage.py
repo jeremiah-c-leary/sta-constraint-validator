@@ -18,9 +18,6 @@ def check_every_part_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPar
     if oPartInterface is None:
         return
     for oPin in oPartInterface.pins.pins:
-        # A clock pin carries no timing; the pins it clocks are the ones timed.
-        if oPin.methodology is None:
-            continue
         check_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPin, oPartInterface.name)
 
 

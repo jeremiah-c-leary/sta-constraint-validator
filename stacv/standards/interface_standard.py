@@ -137,7 +137,7 @@ def collect_device_pins(oInterface):
 
 def check_part_signals(oStandard, oInterface, oPartInterface):
     lSignals = []
-    for oPin in oPartInterface.pins.pins:
+    for oPin in collect_part_pins(oPartInterface):
         if oPin.if_signal is None:
             continue
         sDescription = f'pin {oPin.name} of part interface {oPartInterface.name}'
@@ -177,10 +177,23 @@ def link_traces(sInterfaceFile, oInterface, oTraceList, oPartInterface):
         oTrace.device_pin = find_device_pin(oInterface, oTrace.if_signal)
         if oTrace.device_pin is None:
             raise_error(7, sInterfaceFile, f'has no port or clock with if_signal {oTrace.if_signal}, which trace {oTrace.name} carries')
-        lPins = oPartInterface.pins.get_pins_with_signal(oTrace.if_signal)
-        if len(lPins) == 0:
+        oTrace.part_pin = find_part_pin(oPartInterface, oTrace.if_signal)
+        if oTrace.part_pin is None:
             raise_error(8, oInterface.part, f'part interface {oPartInterface.name} has no pin with if_signal {oTrace.if_signal}, which trace {oTrace.name} carries')
-        oTrace.part_pin = lPins[0].name
+
+
+def collect_part_pins(oPartInterface):
+    # The clock pins and the pins of the part interface, each with its name and signal.
+    lPins = list(oPartInterface.clock_pins)
+    lPins.extend(oPartInterface.pins.pins)
+    return lPins
+
+
+def find_part_pin(oPartInterface, sSignal):
+    for oPin in collect_part_pins(oPartInterface):
+        if oPin.if_signal == sSignal:
+            return oPin.name
+    return None
 
 
 def find_device_pin(oInterface, sSignal):
@@ -199,7 +212,7 @@ def check_directions(oStandard, sInterfaceFile, oInterface, oTraceList, oPartInt
         if oPort.if_signal is not None:
             check_port_direction(oStandard, sInterfaceFile, oInterface, oPort)
     for oPin in oPartInterface.pins.pins:
-        if oPin.if_signal is not None and oPin.methodology is not None:
+        if oPin.if_signal is not None:
             check_pin_direction(oStandard, oInterface, oPartInterface, oPin)
 
 
@@ -246,7 +259,7 @@ def check_edges(oStandard, sInterfaceFile, oInterface, oPartInterface):
         if oPort.if_signal is not None:
             check_port_edges(oStandard, sInterfaceFile, oInterface, oPort)
     for oPin in oPartInterface.pins.pins:
-        if oPin.if_signal is not None and oPin.methodology is not None:
+        if oPin.if_signal is not None:
             check_pin_edges(oStandard, oInterface, oPartInterface, oPin)
 
 

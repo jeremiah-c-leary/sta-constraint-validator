@@ -251,7 +251,13 @@ Part file
      - Give the pin's timing in one form, the form its datasheet uses.
    * - part_config_011
      - ``key "<key>"<location> is FROM_DATASHEET; fill it in from the part's datasheet``
-     - Fill in the ``value`` or ``source`` a template left for the part's datasheet.
+     - Fill in the ``value``, ``source`` or ``max_frequency`` a template left for the part's datasheet.
+   * - part_config_012
+     - ``key "clock"<location> must give pin or if_signal, not both``
+     - Name the clock by its pin, or by the signal of its ``[[interface.clock_pin]]``.
+   * - part_config_013
+     - ``key "clock"<location> gives if_signal <signal>, which no [[interface.clock_pin]] of the interface gives``
+     - Add the clock pin, or correct the signal.
 
 The location is ``in [properties]``, ``in [datasheet]``, ``in interface <name>``, or ``in pin <name> of interface <name>``.
 

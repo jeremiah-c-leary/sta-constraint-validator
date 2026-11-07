@@ -85,6 +85,29 @@ The interface file names the one it uses with ``part_interface`` (see :doc:`inte
 A ``part_interface`` the part does not have is an error (part_config_009).
 The VSC8540ET in ``example/microchip/vsc8540et`` is a part with five interfaces.
 
+Clock pins
+----------
+
+A clock pin of an interface can have an ``[[interface.clock_pin]]`` table, after its ``[[interface]]`` table.
+It carries no timing: it declares the pin, so the other pins can name it as their clock by its signal, and a trace can reach it by its signal (see :doc:`standards`).
+
+.. code-block:: toml
+
+   [[interface.clock_pin]]
+   name = "SCLK"
+   if_signal = "SCK"
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 80
+
+   * - Key
+     - Description
+   * - ``name``
+     - The name of the clock pin, as the datasheet names it.
+   * - ``if_signal``
+     - The signal of the interface standard the pin carries.
+
 Pins
 ----
 
@@ -125,7 +148,6 @@ Pins are described from the part's point of view.
      - Optional: the signal of the interface standard the pin carries, such as ``"COPI"`` (see :doc:`standards`).
    * - ``methodology``
      - The :doc:`methodology <methodology>` of the pin, from the part's view.
-       A pin without a methodology is a clock pin: it gives only ``name`` and ``if_signal``, carries no timing, and the other pins name it as their clock.
        It decides the timing keys the pin has:
 
        * inputs, ``SDR-SS-I``, ``SDR-SS-RT-DI``, ``SDR-SYS-I``, ``DDR-SS-I``: ``capture_edge``, ``setup`` and ``hold``
@@ -139,8 +161,10 @@ Pins are described from the part's point of view.
    * - ``clock``
      - The clock pin of the part the data is captured or launched on:
 
-       * ``pin``: the name of the clock pin.
-       * ``max_frequency``: the maximum frequency of the clock for this pin, in MHz, greater than 0 (part_config_008).
+       * ``pin``: the name of the clock pin, or
+       * ``if_signal``: the signal of an ``[[interface.clock_pin]]``, such as ``"SCK"``, so renaming the clock pin changes nothing else.
+         A clock gives ``pin`` or ``if_signal``, not both (part_config_012), and the signal must be a clock pin's (part_config_013).
+       * ``max_frequency``: the maximum frequency of the clock for this pin, from the datasheet, in MHz, greater than 0 (part_config_008).
        * ``duty_cycle``: optional, ``{min = ..., max = ...}`` in percent, for double data rate pins.
    * - ``capture_edge``
      - The clock edge the part captures the data on: ``"Rising"``, ``"Falling"``, or ``"Both"`` for double data rate (part_config_006).

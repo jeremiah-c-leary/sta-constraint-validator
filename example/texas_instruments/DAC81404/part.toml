@@ -42,6 +42,6 @@ cko_max = {value = 30, symbol = "tSDODLY", source = "Table 7.8"}
 cko_min = {value = 0, symbol = "tSDODLY", source = "Table 7.8"}
 launch_edge = "Rising"
 
-[[interface.pin]]
+[[interface.clock_pin]]
 name = "SCLK"
 if_signal = "SCK"

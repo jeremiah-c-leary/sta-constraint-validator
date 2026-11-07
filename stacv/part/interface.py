@@ -6,6 +6,7 @@ class Interface():
         # The interface standard the part interface follows, and the part's role in it.
         self.if_standard = None
         self.if_role = None
+        self.clock_pins = []
         self.pins = None
 
     def has_pin_named(self, sPinName):

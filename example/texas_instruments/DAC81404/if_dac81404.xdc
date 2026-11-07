@@ -27,7 +27,7 @@
 # md5sum                            Filename
 # --------------------------------  --------------
 # 946c1ae3c1aaf452000f886b7fe82e67  interface.toml
-# 1649894c88f07dbe5e1ffec311c50799  part.toml
+# a2b0b6c8018f96a8f254f22c2c2483d0  part.toml
 # 858a9c7d0bffa5e77a9b0930dbeda9be  traces.toml
 #
 # Part:       Texas Instruments DAC81404

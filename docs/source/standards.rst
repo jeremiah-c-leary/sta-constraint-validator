@@ -59,7 +59,8 @@ A trace that gives ``if_signal`` gives no ``device_pin`` or ``part_pin``: it run
 A trace gives ``if_signal``, or ``device_pin`` and ``part_pin``, not both (traces_config_011).
 An interface that follows no standard links its traces by pin names, as before.
 
-The clock pin of the part has its own ``[[interface.pin]]`` table, with only ``name`` and ``if_signal`` (see :doc:`part`).
+The clock pin of the part has its own ``[[interface.clock_pin]]`` table, with ``name`` and ``if_signal``, and the part's pins name it as their clock by its signal, ``clock = {if_signal = "SCK", ...}`` (see :doc:`part`).
+With the traces linked by signal too, nothing refers to a part pin's name, so a part file from a library can be used as it is.
 
 Signal names
 ------------

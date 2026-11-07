@@ -3,7 +3,6 @@ class Pin():
 
     def __init__(self):
         self.name = None
-        # A clock pin has no methodology: it carries no timing, and the other pins name it as their clock.
         self.methodology = None
         self.if_signal = None
         self.clock = None
