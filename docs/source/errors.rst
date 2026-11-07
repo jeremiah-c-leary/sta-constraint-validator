@@ -249,6 +249,9 @@ Part file
    * - part_config_010
      - ``timing<location> must give cko_max and cko_min, or valid_before and valid_after``, for an output pin
      - Give the pin's timing in one form, the form its datasheet uses.
+   * - part_config_011
+     - ``key "<key>"<location> is FROM_DATASHEET; fill it in from the part's datasheet``
+     - Fill in the ``value`` or ``source`` a template left for the part's datasheet.
 
 The location is ``in [properties]``, ``in [datasheet]``, ``in interface <name>``, or ``in pin <name> of interface <name>``.
 
@@ -363,6 +366,19 @@ Creating templates
    * - create_001
      - ``<file> already exists; the template is not written``
      - Choose another file name, or remove the file.
+       For ``spi``, no file is written when any of the three exists.
+   * - create_002
+     - ``--<option> is an option of the spi template, not of the <file type> template``
+     - Leave the SPI options out of the interface, traces and part templates.
+   * - create_003
+     - ``the spi template needs --<option>``
+     - Give ``--wires``, ``--mode`` and ``--type``.
+   * - create_004
+     - ``--wires 3 is not supported yet``, or ``--type peripheral is not supported yet``
+     - Only a 4-wire SPI controller can be created yet.
+   * - create_005
+     - ``--clock-period and --sck-period must be greater than 0``, or ``--sck-period <period> is not an even number of --clock-period <period>``
+     - Give an SCK period that is an even number of device clock periods, so each SCK edge is on a rising edge of the device clock.
 
 Timing reports
 --------------

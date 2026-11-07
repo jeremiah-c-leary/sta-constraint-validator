@@ -12,6 +12,7 @@ Each step of the process is a stacv command: a verb, then what it acts on.
 .. code-block:: text
 
    stacv create template interface --output interface.toml
+   stacv create template spi --wires 4 --mode 0 --type controller --output spi
    stacv visualize edges interface.toml
    stacv generate xdc interface.toml --output interface.xdc
    stacv generate report_tcl interface.toml --output interface_stacv_report.tcl

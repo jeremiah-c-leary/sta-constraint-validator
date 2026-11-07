@@ -24,6 +24,8 @@ CLOCK_KEYS = ['pin', 'max_frequency', 'duty_cycle']
 DUTY_CYCLE_KEYS = ['min', 'max']
 CONSTRAINT_KEYS = ['value', 'symbol', 'source']
 EDGES = ['Rising', 'Falling', 'Both']
+# A template's value that is still to be filled in from the part's datasheet.
+PLACEHOLDER = 'FROM_DATASHEET'
 
 
 class Part():
@@ -221,11 +223,18 @@ def build_clock_pin(dPin, sPinName, sInterfaceName, oPinLocation):
 def build_constraint(dPin, sTable, sPinName, sInterfaceName, oPinLocation):
     oLocation = pin_table_location(sTable, sPinName, sInterfaceName, oPinLocation.filename)
     dConstraint = read_pin_table(dPin, sTable, CONSTRAINT_KEYS, oPinLocation, oLocation)
+    check_not_placeholder(dConstraint, oLocation)
     oConstraint = constraint.Constraint()
     oConstraint.value = READER.get_required_number(dConstraint, 'value', oLocation)
     oConstraint.symbol = READER.get_required_string(dConstraint, 'symbol', oLocation)
     oConstraint.source = READER.get_required_string(dConstraint, 'source', oLocation)
     return oConstraint
+
+
+def check_not_placeholder(dConstraint, oLocation):
+    for sKey in CONSTRAINT_KEYS:
+        if dConstraint.get(sKey) == PLACEHOLDER:
+            READER.raise_error(11, oLocation.filename, f'key "{sKey}"{oLocation.location} is {PLACEHOLDER}; fill it in from the part\'s datasheet')
 
 
 def read_edge(dPin, sKey, oLocation):

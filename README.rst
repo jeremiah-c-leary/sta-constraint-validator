@@ -71,6 +71,7 @@ The documentation is in ``docs/source``:
 * ``methodology.rst``: the methodologies stacv supports, and what is not supported yet
 * ``interface.rst``, ``traces.rst`` and ``part.rst``: the three input files
 * ``standards.rst``: interface standards, such as SPI, whose signals link the three files
+* ``spi.rst``: how to time an SPI interface, from ``stacv create template spi`` to the datasheet
 * ``generate.rst``: the constraints file and the report script
 * ``datasheet.rst``: the interface datasheet, the timing of each port at the device's pins
 * ``trc.rst``: the rules ``check`` runs

@@ -116,9 +116,14 @@ def build_create_subparser(subparser):
 
 
 def build_template_subparser(subparser):
-    parser = subparser.add_parser('template', help='Create a template of an interface, traces or part file.')
-    parser.add_argument('file_type', choices=['interface', 'traces', 'part'], help='The file to create a template of.')
-    parser.add_argument('--output', help='Template file name.  The template is written to stdout without it.  An existing file is not overwritten.')
+    parser = subparser.add_parser('template', help='Create a template of an interface, traces or part file, or the three files of an interface standard.')
+    parser.add_argument('file_type', choices=['interface', 'traces', 'part', 'spi'], help='The file to create a template of, or spi for the three files of an SPI interface.')
+    parser.add_argument('--output', help='Template file name.  The template is written to stdout without it.  For spi, the directory the three files are written to, the current directory without it.  An existing file is not overwritten.')
+    parser.add_argument('--wires', type=int, choices=[3, 4], help='spi: the number of wires, 4.  3 is not supported yet.')
+    parser.add_argument('--mode', type=int, choices=[0, 1, 2, 3], help='spi: the SPI mode.')
+    parser.add_argument('--type', dest='spi_type', choices=['controller', 'peripheral'], help='spi: the role of the device.')
+    parser.add_argument('--clock-period', type=float, help='spi: the period of the device clock that generates SCK, in ns.  10 without it.')
+    parser.add_argument('--sck-period', type=float, help='spi: the period of SCK, in ns, an even number of device clock periods.  40 without it.')
 
 
 def print_help_if_no_command_line_options_given(parser):

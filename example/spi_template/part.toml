@@ -1,0 +1,57 @@
+# stacv part file for the peripheral of a 4-wire SPI interface, SPI mode 0.
+# Created by:  stacv create template spi --wires 4 --mode 0 --type controller --clock-period 10 --sck-period 40
+#
+# Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/part.rst
+#
+# Fill in each value from the part's datasheet, with its symbol and where it comes from.
+# The values are FROM_DATASHEET until then, which stacv stops on.
+# Rename the pins to the datasheet's.  Keep each if_signal as it is: it links the pin to its trace and its port.
+#
+# All delays are in nanoseconds.
+# All frequencies are in MHz.
+
+[properties]
+manufacturer = "MANUFACTURER"
+part_number = "PART_NUMBER"
+
+[datasheet]
+name = "DATASHEET_NAME"
+url = "DATASHEET_URL"
+version = "DATASHEET_VERSION"
+
+[[interface]]
+name = "SPI"
+if_standard = "SPI mode 0"
+if_role = "peripheral"
+
+[[interface.pin]]
+name = "SCK"
+if_signal = "SCK"
+
+[[interface.pin]]
+name = "COPI"
+methodology = "SDR-SS-I"
+if_signal = "COPI"
+clock = {pin = "SCK", max_frequency = 25}
+capture_edge = "Rising"
+setup = {value = "FROM_DATASHEET", symbol = "tSU", source = "FROM_DATASHEET"}
+hold = {value = "FROM_DATASHEET", symbol = "tH", source = "FROM_DATASHEET"}
+
+[[interface.pin]]
+name = "CS"
+methodology = "SDR-SS-I"
+if_signal = "CS"
+clock = {pin = "SCK", max_frequency = 25}
+capture_edge = "Rising"
+setup = {value = "FROM_DATASHEET", symbol = "tCSS", source = "FROM_DATASHEET"}
+hold = {value = "FROM_DATASHEET", symbol = "tCSH", source = "FROM_DATASHEET"}
+
+[[interface.pin]]
+name = "CIPO"
+methodology = "SDR-SS-RT-DO"
+if_signal = "CIPO"
+clock = {pin = "SCK", max_frequency = 25}
+launch_edge = "Falling"
+cko_max = {value = "FROM_DATASHEET", symbol = "tCO", source = "FROM_DATASHEET"}
+cko_min = {value = "FROM_DATASHEET", symbol = "tCO", source = "FROM_DATASHEET"}
