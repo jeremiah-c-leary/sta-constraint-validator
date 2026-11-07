@@ -70,6 +70,7 @@ The documentation is in ``docs/source``:
 * ``process.rst``: the commands and the check output
 * ``methodology.rst``: the methodologies stacv supports, and what is not supported yet
 * ``interface.rst``, ``traces.rst`` and ``part.rst``: the three input files
+* ``standards.rst``: interface standards, such as SPI, whose signals link the three files
 * ``generate.rst``: the constraints file and the report script
 * ``datasheet.rst``: the interface datasheet, the timing of each port at the device's pins
 * ``trc.rst``: the rules ``check`` runs

@@ -7,8 +7,8 @@ from unittest import mock
 
 from stacv import __main__
 
-CLOCK_KEYS = 'name, period, port, idle, generator'
-PORT_KEYS = 'status, name, methodology, launch_clock, capture_clock, registers, timing_reports'
+CLOCK_KEYS = 'name, period, port, idle, if_signal, generator'
+PORT_KEYS = 'status, name, methodology, if_signal, launch_clock, capture_clock, registers, timing_reports'
 
 
 def build_interface(dReplacements=None):
@@ -79,7 +79,7 @@ class TestInterfaceKeys(InterfaceTestCase):
         self.assertEqual(0, iExitCode)
 
     def test_unknown_top_level_key_is_an_error(self):
-        self.assert_error({'traces': 'tracess = "traces.toml"\ntraces = "traces.toml"'}, 'interface_config_004', 'key "tracess" is not a key stacv reads; the keys are description, name, part, part_interface, traces, clock, port')
+        self.assert_error({'traces': 'tracess = "traces.toml"\ntraces = "traces.toml"'}, 'interface_config_004', 'key "tracess" is not a key stacv reads; the keys are description, name, part, part_interface, traces, if_standard, if_role, clock, port')
 
     def test_unknown_clock_key_is_an_error(self):
         self.assert_error({'generator': 'idel = "low"'}, 'interface_config_004', f'key "idel" of clock clk_capture is not a key stacv reads; the keys are {CLOCK_KEYS}')

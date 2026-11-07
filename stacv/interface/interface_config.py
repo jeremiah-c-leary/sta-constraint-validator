@@ -28,10 +28,10 @@ SDR_SS_O = 'SDR-SS-O'
 # The previous edge of the same type is one clock period, two edges, earlier.
 EDGES_PER_PERIOD = 2
 READER = config_reader.ConfigReader('interface_config', interface_config_error.InterfaceConfigError)
-TOP_LEVEL_KEYS = ['description', 'name', 'part', 'part_interface', 'traces', 'clock', 'port']
-CLOCK_KEYS = ['name', 'period', 'port', 'idle', 'generator']
+TOP_LEVEL_KEYS = ['description', 'name', 'part', 'part_interface', 'traces', 'if_standard', 'if_role', 'clock', 'port']
+CLOCK_KEYS = ['name', 'period', 'port', 'idle', 'if_signal', 'generator']
 GENERATOR_KEYS = ['source', 'master_pin', 'target_pin', 'master_clock']
-PORT_KEYS = ['status', 'name', 'methodology', 'launch_clock', 'capture_clock', 'registers', 'timing_reports']
+PORT_KEYS = ['status', 'name', 'methodology', 'if_signal', 'launch_clock', 'capture_clock', 'registers', 'timing_reports']
 PORT_CLOCK_KEYS = ['name', 'setup_edge', 'hold_edge']
 
 
@@ -112,6 +112,8 @@ def create_interface_config(dConfig, sInterfaceFile):
     # The interface of the part this file times; the user names it, so the part's other modes are never used by mistake.
     oInterface.part_interface = READER.get_required_string(dConfig, 'part_interface', oLocation)
     oInterface.traces_as_written = READER.get_required_string(dConfig, 'traces', oLocation)
+    oInterface.if_standard = read_optional_string(dConfig, 'if_standard', oLocation)
+    oInterface.if_role = read_optional_string(dConfig, 'if_role', oLocation)
     create_clocks(dConfig, oInterface, oLocation)
     oInterface.ports = create_ports(dConfig, oLocation, oInterface)
     return oInterface
@@ -152,6 +154,7 @@ def build_clock(dClock, iClock, sFilename):
         oClock.port = READER.get_required_string(dClock, 'port', oLocation)
     if 'idle' in dClock:
         oClock.idle = read_idle(dClock, oClock.name, oLocation)
+    oClock.if_signal = read_optional_string(dClock, 'if_signal', oLocation)
     if 'generator' in dClock:
         oClock.generator = build_clock_generator(READER.get_required_table(dClock, 'generator', oLocation), oClock.name, sFilename)
     return oClock
@@ -232,12 +235,20 @@ def read_deferred_port(dPort, oPort, oLocation):
     # A deferred port may name a methodology stacv does not support yet.
     if 'methodology' in dPort:
         oPort.methodology = READER.get_required_string(dPort, 'methodology', oLocation)
+    oPort.if_signal = read_optional_string(dPort, 'if_signal', oLocation)
+
+
+def read_optional_string(dTable, sKey, oLocation):
+    if sKey not in dTable:
+        return None
+    return READER.get_required_string(dTable, sKey, oLocation)
 
 
 def read_analyzed_port(dPort, oPort, oInterface, oLocation):
     # A deferred port needs only its name and status, so only analyzed ports read the rest.
     oPort.methodology = READER.get_required_string(dPort, 'methodology', oLocation)
     check_methodology_is_supported(oPort.methodology, oLocation)
+    oPort.if_signal = read_optional_string(dPort, 'if_signal', oLocation)
     oPort.capture_clock = build_referenced_clock(dPort, 'capture_clock', oPort.name, oInterface, oLocation)
     check_capture_clock_stops_if_needed(oPort, oLocation)
     oPort.launch_clock = build_referenced_clock(dPort, 'launch_clock', oPort.name, oInterface, oLocation)

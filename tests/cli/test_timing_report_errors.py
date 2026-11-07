@@ -9,16 +9,17 @@ from stacv import __main__
 
 sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sExampleDir = os.path.join(sProjectDir, 'example', 'texas_instruments', 'DAC81404')
-sExampleReport = os.path.join(sProjectDir, 'tests', 'fixtures', 'dac81404', 'timing_reports', 'O_DAC_DATA_timing.rpt')
+sFixtureDir = os.path.join(sProjectDir, 'tests', 'fixtures', 'dac81404')
+sExampleReport = os.path.join(sFixtureDir, 'timing_reports', 'O_DAC_DATA_timing.rpt')
 
 
 def build_interface_text(sTimingReport):
     lText = []
     lText.append('description = "timing report errors test"')
     lText.append('name = "DAC_SPI_1"')
-    lText.append(f'part = "{os.path.join(sExampleDir, "part.toml")}"')
+    lText.append(f'part = "{os.path.join(sFixtureDir, "part.toml")}"')
     lText.append('part_interface = "Serial Interface"')
-    lText.append(f'traces = "{os.path.join(sExampleDir, "traces.toml")}"')
+    lText.append(f'traces = "{os.path.join(sFixtureDir, "traces.toml")}"')
     lText.append('[[clock]]\nname = "clk_100mhz"\nperiod = 10.000')
     lText.append('[[clock]]\nname = "dac_sclk"\nperiod = 40.000\nport = "O_DAC_SCLK"')
     lText.append('generator = {source = "q_spi_output_clock_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_100mhz"}')

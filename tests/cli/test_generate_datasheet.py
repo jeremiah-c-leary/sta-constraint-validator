@@ -11,18 +11,18 @@ from stacv.generate import datasheet_drawing
 from stacv.part import part
 
 sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-sExampleDir = os.path.join(sProjectDir, 'example', 'texas_instruments', 'DAC81404')
-sFixtureReportDir = os.path.join(sProjectDir, 'tests', 'fixtures', 'dac81404', 'timing_reports')
+sFixtureDir = os.path.join(sProjectDir, 'tests', 'fixtures', 'dac81404')
+sFixtureReportDir = os.path.join(sFixtureDir, 'timing_reports')
 
 
 def build_fixture_interface_text():
     # The DAC81404 example with the edges and timing reports of the fixed reports: I_DAC_DATA captured on Y and I.
-    with open(os.path.join(sExampleDir, 'interface.toml')) as oFile:
+    with open(os.path.join(sFixtureDir, 'interface.toml')) as oFile:
         sText = oFile.read()
     sText = sText.replace('setup_edge = "AC", hold_edge = "M"', 'setup_edge = "Y", hold_edge = "I"')
     sText = sText.replace('$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports', sFixtureReportDir)
-    sText = sText.replace('part = "part.toml"', f'part = "{os.path.join(sExampleDir, "part.toml")}"')
-    sText = sText.replace('traces = "traces.toml"', f'traces = "{os.path.join(sExampleDir, "traces.toml")}"')
+    sText = sText.replace('part = "part.toml"', f'part = "{os.path.join(sFixtureDir, "part.toml")}"')
+    sText = sText.replace('traces = "traces.toml"', f'traces = "{os.path.join(sFixtureDir, "traces.toml")}"')
     return sText
 
 

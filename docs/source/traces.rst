@@ -60,11 +60,16 @@ Each trace has a ``[[trace]]`` table.
    * - ``name``
      - Yes
      - The unique name of the trace.
+   * - ``if_signal``
+     - No
+     - The signal of the interface standard the trace carries, such as ``"COPI"``, in place of ``device_pin`` and ``part_pin`` (see :doc:`standards`).
+       The trace then runs from the port, or the clock's port, with that signal to the part pin with that signal.
+       A trace gives ``if_signal``, or ``device_pin`` and ``part_pin``, not both (traces_config_011).
    * - ``device_pin``
-     - Yes
+     - Without ``if_signal``
      - The device port the trace connects to: a port name in the interface file, or the ``port`` of a clock.
    * - ``part_pin``
-     - Yes
+     - Without ``if_signal``
      - The part pin the trace connects to: the name of a pin, or of a clock pin, in the part file.
    * - ``device_to_part``
      - See below

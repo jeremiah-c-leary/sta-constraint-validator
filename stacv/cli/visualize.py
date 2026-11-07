@@ -3,6 +3,7 @@ from stacv.interface import interface_config
 from stacv.interface import part_coverage
 from stacv.methodology import methodology_factory
 from stacv.part import part
+from stacv.standards import interface_standard
 from stacv.timing_report import timing_report_file
 from stacv.timing_report import timing_report_list
 from stacv.timing_report.xilinx import vivado
@@ -37,6 +38,7 @@ def print_interface_edges(oInterface):
 def print_block_diagram(sInterfaceFile, oInterface):
     oTraceList = traces.create_trace_list(oInterface)
     oPart = part.create_part(oInterface)
+    interface_standard.link_and_check(sInterfaceFile, oInterface, oTraceList, oPart)
     part_coverage.check_every_part_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPart)
     for sLine in block_diagram.draw_block_diagram(oInterface, oTraceList, oPart):
         print(sLine)
@@ -68,6 +70,7 @@ def print_interface_eyes(sInterfaceFile):
     interface_config.resolve_timing_reports(oInterface, sInterfaceFile)
     oTraceList = traces.create_trace_list(oInterface)
     oPart = part.create_part(oInterface)
+    interface_standard.link_and_check(sInterfaceFile, oInterface, oTraceList, oPart)
     part_coverage.check_every_part_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPart)
     lLines = []
     for oPort in oInterface.get_analyzed_ports():

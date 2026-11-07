@@ -7,6 +7,8 @@ class Port():
         self.name = None
         self.status = ANALYZE
         self.methodology = None
+        # The signal of the interface standard the port carries, such as COPI.
+        self.if_signal = None
         self.capture_clock = None
         self.launch_clock = None
         # The port clock the device forwards to the part: the capture clock of an output, the launch clock of a round trip.

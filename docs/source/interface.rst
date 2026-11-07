@@ -49,6 +49,12 @@ Top level
    * - ``traces``
      - Yes
      - The path of the :doc:`traces file <traces>` that describes the connections between the device and the part.
+   * - ``if_standard``
+     - No
+     - The interface standard the interface follows, such as ``"SPI mode 1"`` (see :doc:`standards`).
+   * - ``if_role``
+     - With ``if_standard``
+     - The device's role in the standard: ``"controller"`` or ``"peripheral"``.
 
 A missing key is an error (interface_config_002), and so is a path to a file that does not exist (interface_config_006).
 
@@ -96,6 +102,10 @@ Ports refer to clocks by name.
      - The level of a clock that stops between transfers, such as an SPI clock: ``"low"`` or ``"high"`` (interface_config_012).
        Not used for a clock that runs all the time.
        An ``SDR-SS-O-FLC`` port needs it on its capture clock (interface_config_013).
+   * - ``if_signal``
+     - No
+     - The signal of the interface standard the clock's port carries, such as ``"SCK"`` (see :doc:`standards`).
+       Clocks of one port may share a signal; a clock inside the device gives none.
    * - ``generator``
      - No
      - The element in the device that generates the clock.
@@ -170,6 +180,10 @@ A port can have more than one table, one for each methodology, such as a bidirec
      - Yes
      - The :doc:`methodology <methodology>` of the port.
        An analyzed port is ``SDR-SS-O``, ``SDR-SS-O-FLC``, ``SDR-SS-RT-DI``, ``SDR-SS-I``, ``SDR-SS-RT-DO``, ``SDR-SYS-O``, ``SDR-SYS-I``, ``DDR-SS-O``, ``DDR-SS-I-SE`` or ``DDR-SS-I-NE``; a port with another methodology is deferred until stacv supports it (interface_config_011).
+   * - ``if_signal``
+     - No
+     - The signal of the interface standard the port carries, such as ``"COPI"`` (see :doc:`standards`).
+       A deferred port can give it too.
    * - ``registers``
      - Yes
      - The registers that drive the port, for an output, or capture it, for an input, such as ``["q_mdio_out_reg", "q_mdio_oe_reg"]``.

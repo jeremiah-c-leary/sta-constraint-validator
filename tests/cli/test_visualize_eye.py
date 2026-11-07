@@ -69,9 +69,10 @@ class TestEyeDrawing(EyeTestCase):
             sText = oFile.read()
         sText = re.sub(r'Slack \(MET\) :\s+(\S+)ns(\s+\(required time - arrival time\)\n  Source:[^\n]*\n[^\n]*\n  Destination:[^\n]*\n[^\n]*\n  Path Group:[^\n]*\n  Path Type:\s+Max)', f'Slack (VIOLATED) :        {sSlack}ns\\2', sText)
         sInterfaceFile = os.path.join(oTemporaryDirectory.name, 'interface.toml')
-        with open(os.path.join(sDacDir, 'interface.toml')) as oFile:
+        with open(os.path.join(sProjectDir, 'tests', 'fixtures', 'dac81404', 'interface.toml')) as oFile:
             sInterface = oFile.read()
-        sInterface = sInterface.replace('"part.toml"', f'"{os.path.join(sDacDir, "part.toml")}"').replace('"traces.toml"', f'"{os.path.join(sDacDir, "traces.toml")}"')
+        sFixtureDir = os.path.join(sProjectDir, 'tests', 'fixtures', 'dac81404')
+        sInterface = sInterface.replace('"part.toml"', f'"{os.path.join(sFixtureDir, "part.toml")}"').replace('"traces.toml"', f'"{os.path.join(sFixtureDir, "traces.toml")}"')
         sInterface = sInterface.replace('$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt', sReport)
         with open(sInterfaceFile, 'w') as oFile:
             oFile.write(sInterface)

@@ -75,6 +75,10 @@ Each interface of the part, as the manufacturer names it, has an ``[[interface]]
      - Description
    * - ``name``
      - The name of the interface, as the manufacturer names it.
+   * - ``if_standard``
+     - Optional: the interface standard the part interface follows, such as ``"SPI mode 1"`` (see :doc:`standards`).
+   * - ``if_role``
+     - With ``if_standard``: the part's role in the standard, ``"controller"`` or ``"peripheral"``.
 
 A part with modes, such as a PHY with MII, RMII and RGMII, has one ``[[interface]]`` for each mode.
 The interface file names the one it uses with ``part_interface`` (see :doc:`interface`), and pins are looked up in that interface only.
@@ -117,8 +121,11 @@ Pins are described from the part's point of view.
      - The name of the pin, as the datasheet names it in the interface's mode.
        A bus is written ``NAME[upper:lower]``, such as ``TXD[3:0]``.
        Interfaces may share pin names; within an interface a pin is used once for each methodology (part_config_007), so a bidirectional pin, such as MDIO, has a table for each direction.
+   * - ``if_signal``
+     - Optional: the signal of the interface standard the pin carries, such as ``"COPI"`` (see :doc:`standards`).
    * - ``methodology``
      - The :doc:`methodology <methodology>` of the pin, from the part's view.
+       A pin without a methodology is a clock pin: it gives only ``name`` and ``if_signal``, carries no timing, and the other pins name it as their clock.
        It decides the timing keys the pin has:
 
        * inputs, ``SDR-SS-I``, ``SDR-SS-RT-DI``, ``SDR-SYS-I``, ``DDR-SS-I``: ``capture_edge``, ``setup`` and ``hold``

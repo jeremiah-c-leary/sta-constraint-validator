@@ -4,26 +4,22 @@ default_delay = {max_delay = 1.0, min_delay = 0.0}
 
 [[trace]]
 name = "data_output"
-device_pin = "O_DAC_DATA"
-part_pin = "SDIN"
+if_signal = "COPI"
 device_to_part = {max_delay = 3.00, min_delay = 1.00}
 
 [[trace]]
 name = "data_input"
-device_pin = "I_DAC_DATA"
-part_pin = "SDO"
+if_signal = "CIPO"
 part_to_device = {}
 
 [[trace]]
 name = "chip_select"
-part_pin = "CSF"
-device_pin = "O_DAC_SDEN_F"
+if_signal = "CS"
 device_to_part = {}
 
 [[trace]]
 name = "clock"
-device_pin = "O_DAC_SCLK"
-part_pin = "SCLK"
+if_signal = "SCK"
 device_to_part = {max_delay = 3.00, min_delay = 1.00}
 
 # This is for an example three wire SPI interface

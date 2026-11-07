@@ -12,6 +12,7 @@ from stacv.part import part
 from stacv.results import deferred_port_result
 from stacv.results import port_result
 from stacv.results import port_result_list
+from stacv.standards import interface_standard
 from stacv.timing_report import timing_report_file
 from stacv.timing_report import timing_report_list
 from stacv.timing_report.xilinx import vivado
@@ -37,6 +38,7 @@ def get_port_results(sInterfaceFile, oInterface):
     oPortResults = port_result_list.PortResultList()
     oTraceList = traces.create_trace_list(oInterface)
     oPart = part.create_part(oInterface)
+    interface_standard.link_and_check(sInterfaceFile, oInterface, oTraceList, oPart)
     part_coverage.check_every_part_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPart)
     for oPort in oInterface.ports:
         oPortResult = get_port_result(oPort, oTraceList, oPart)

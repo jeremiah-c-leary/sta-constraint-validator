@@ -225,7 +225,7 @@ class Test(unittest.TestCase):
         self.write_interface_file('\n'.join(lText) + '\n')
 
         # The old key is reported as unknown before the missing name, which tells the user more.
-        sError = self.build_error_pattern('interface_config_004', 'key "interface" is not a key stacv reads; the keys are description, name, part, part_interface, traces, clock, port$')
+        sError = self.build_error_pattern('interface_config_004', 'key "interface" is not a key stacv reads; the keys are description, name, part, part_interface, traces, if_standard, if_role, clock, port$')
         with self.assertRaisesRegex(interface_config_error.InterfaceConfigError, sError):
             interface_config.read_interface_config(self.sInterfaceFile)
 

@@ -26,9 +26,9 @@
 #
 # md5sum                            Filename
 # --------------------------------  --------------
-# 929aa008b5fe7d1929f0109985a20963  interface.toml
-# c58b25e7f777af3f00e728389a614f2e  part.toml
-# 258b2a541bb317ac41ff5ecd3df5e6cc  traces.toml
+# 946c1ae3c1aaf452000f886b7fe82e67  interface.toml
+# 1649894c88f07dbe5e1ffec311c50799  part.toml
+# 858a9c7d0bffa5e77a9b0930dbeda9be  traces.toml
 #
 # Part:       Texas Instruments DAC81404
 # Datasheet:  DACx1401 Quad, 16-Bit and 12-Bit, High-Voltage-Output DACs With Internal Reference

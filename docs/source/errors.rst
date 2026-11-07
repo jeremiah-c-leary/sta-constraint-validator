@@ -200,6 +200,9 @@ Traces file
      - ``pin <pin> (<methodology>) of part interface <interface> has no trace to a device port; add a trace for it, and a [[port]] or a deferred port in the interface file``
      - Every pin of the part interface needs a trace to the device, from the device for a pin the part captures, and to it for a pin the part drives.
        Reported by ``check``, ``generate xdc``, ``visualize block_diagram`` and ``visualize eye``, with interface_config_024.
+   * - traces_config_011
+     - ``trace <name> gives if_signal and a pin; give if_signal, or device_pin and part_pin``, or ``trace <name> from a clock source gives if_signal; a trace from a clock source names its pin``
+     - A trace names its ends with ``device_pin`` and ``part_pin``, or with the ``if_signal`` that links them (see :doc:`standards`).
 
 The location is ``in trace <name>``, or ``in trace number <n>`` when the trace has no name.
 
@@ -248,6 +251,56 @@ Part file
      - Give the pin's timing in one form, the form its datasheet uses.
 
 The location is ``in [properties]``, ``in [datasheet]``, ``in interface <name>``, or ``in pin <name> of interface <name>``.
+
+Interface standards
+-------------------
+
+These are checked by ``check``, ``generate xdc``, ``visualize block_diagram`` and ``visualize eye``, after the interface, traces and part files are read (see :doc:`standards`).
+The file named is the one to correct.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 18 52 30
+
+   * - Identifier
+     - Message
+     - Correction
+   * - if_standard_001
+     - ``<clock, port or trace> gives if_signal <signal>, but the interface file names no if_standard``
+     - Give ``if_standard`` in the interface file, or remove the signal.
+   * - if_standard_002
+     - ``key "if_standard" names <standard>; the standards are <standards>``
+     - Correct the standard, in the interface file or the part interface.
+   * - if_standard_003
+     - ``<file> names if_standard <standard> but no if_role``, or ``key "if_role" names <role>; the roles of <standard> are <roles>``
+     - Give the role of the device, or of the part.
+   * - if_standard_004
+     - ``<item> gives if_signal <signal>, which is not a signal of <standard>``, or ``... but <signal> does not repeat, so it is not numbered``
+     - Correct the signal; only a signal that repeats, such as CS, is numbered: ``CS.1``.
+   * - if_standard_005
+     - ``<item> and <item> both give if_signal <signal>``, or ``... which another pin (trace) gives``
+     - Give each port, part pin and trace its own signal; only clocks of one port share one.
+   * - if_standard_006
+     - ``part interface <name> names no if_standard``, ``follows <standard>, but the interface file follows <standard>``, or ``is the <role>, as is the device``
+     - The part interface follows the interface file's standard, in the other role.
+   * - if_standard_007
+     - ``has no port or clock with if_signal <signal>, which trace <name> carries``, or ``clock <name> gives if_signal <signal> but no port``
+     - Give the port or the clock the trace's signal, and the clock its port.
+   * - if_standard_008
+     - ``part interface <name> has no pin with if_signal <signal>, which trace <name> carries``
+     - Give the part pin the trace's signal.
+   * - if_standard_009
+     - ``<file> has no <port or clock, pin, trace> with if_signal <signal>, a signal of <standard>``
+     - Every signal of the standard needs a port or clock, a part pin and a trace; defer a port that is not timed yet.
+   * - if_standard_010
+     - ``trace <name> carries <signal>, which the <role> drives, and the device is the <role>, so the trace gives <direction> and not <direction>``
+     - Give the trace the direction its signal goes.
+   * - if_standard_011
+     - ``port <name> carries <signal> ... so the port is an <input or output>; methodology <methodology> times an <output or input>``, or the same for a part pin
+     - Correct the signal, or the methodology.
+   * - if_standard_012
+     - ``clock <name> idles <level>, but the clock of <standard> idles <level>``, ``port <name> uses <edge> edges of <clock>, but <standard> <samples or changes> data on <edge> edges``, or the same for a part pin's ``capture_edge`` or ``launch_edge``
+     - Correct the mode, or the edges.
 
 Generating constraints
 ----------------------

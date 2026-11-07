@@ -7,6 +7,7 @@ from stacv.generate import datasheet_pin
 from stacv.generate import report_tcl_file
 from stacv.generate import xdc_file
 from stacv.part import part
+from stacv.standards import interface_standard
 from stacv.timing_report import timing_report_file
 from stacv.timing_report.xilinx import vivado
 from stacv.traces import traces
@@ -30,6 +31,7 @@ def execute(oCmdLine, lArgv):
 def generate_xdc_file(sInterfaceFile, oInterface):
     oTraceList = traces.create_trace_list(oInterface)
     oPart = part.create_part(oInterface)
+    interface_standard.link_and_check(sInterfaceFile, oInterface, oTraceList, oPart)
     part_coverage.check_every_part_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPart)
     return xdc_file.generate_file(sInterfaceFile, oInterface, oTraceList, oPart)
 

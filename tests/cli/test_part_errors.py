@@ -7,7 +7,7 @@ from unittest import mock
 
 from stacv import __main__
 
-SDR_SS_I_KEYS = 'name, methodology, clock, capture_edge, setup, hold'
+SDR_SS_I_KEYS = 'name, methodology, if_signal, clock, capture_edge, setup, hold'
 
 INTERFACE_TEXT = '''description = "part errors test"
 name = "DAC_SPI_1"

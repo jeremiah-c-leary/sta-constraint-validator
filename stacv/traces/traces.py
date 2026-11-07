@@ -9,7 +9,7 @@ from stacv.traces import traces_location
 
 READER = config_reader.ConfigReader('traces_config', traces_config_error.TracesConfigError)
 TOP_LEVEL_KEYS = ['default_delay', 'trace']
-TRACE_KEYS = ['name', 'device_pin', 'part_pin', 'device_to_part', 'part_to_device', 'source', 'source_to_device', 'source_to_part']
+TRACE_KEYS = ['name', 'if_signal', 'device_pin', 'part_pin', 'device_to_part', 'part_to_device', 'source', 'source_to_device', 'source_to_part']
 DELAY_KEYS = ['max_delay', 'min_delay']
 
 
@@ -68,9 +68,9 @@ def build_trace(dTrace, iTrace, oDefaultDelay, oLocation):
     oTrace.name = READER.get_required_string(dTrace, 'name', oLocation)
     oLocation.set_trace_name(oTrace.name)
     if 'source' in dTrace:
+        check_source_trace_has_no_signal(dTrace, oTrace.name, oLocation)
         return build_source_trace(dTrace, oTrace, oDefaultDelay, oLocation)
-    oTrace.device_pin = READER.get_required_string(dTrace, 'device_pin', oLocation)
-    oTrace.part_pin = READER.get_required_string(dTrace, 'part_pin', oLocation)
+    read_trace_ends(dTrace, oTrace, oLocation)
     if 'device_to_part' in dTrace:
         oTrace.device_to_part = build_trace_delay(dTrace, oTrace.name, 'device_to_part', oDefaultDelay, oLocation)
     if 'part_to_device' in dTrace:
@@ -78,6 +78,23 @@ def build_trace(dTrace, iTrace, oDefaultDelay, oLocation):
     if oTrace.device_to_part is None and oTrace.part_to_device is None:
         READER.raise_error(7, oLocation.filename, f'trace {oTrace.name} has neither device_to_part nor part_to_device')
     return oTrace
+
+
+def read_trace_ends(dTrace, oTrace, oLocation):
+    # A trace names its ends, or the signal of the interface standard it carries, which names them; not both.
+    bHasPins = 'device_pin' in dTrace or 'part_pin' in dTrace
+    if 'if_signal' in dTrace and bHasPins:
+        READER.raise_error(11, oLocation.filename, f'trace {oTrace.name} gives if_signal and a pin; give if_signal, or device_pin and part_pin')
+    if 'if_signal' in dTrace:
+        oTrace.if_signal = READER.get_required_string(dTrace, 'if_signal', oLocation)
+        return
+    oTrace.device_pin = READER.get_required_string(dTrace, 'device_pin', oLocation)
+    oTrace.part_pin = READER.get_required_string(dTrace, 'part_pin', oLocation)
+
+
+def check_source_trace_has_no_signal(dTrace, sTraceName, oLocation):
+    if 'if_signal' in dTrace:
+        READER.raise_error(11, oLocation.filename, f'trace {sTraceName} from a clock source gives if_signal; a trace from a clock source names its pin')
 
 
 def build_source_trace(dTrace, oTrace, oDefaultDelay, oLocation):

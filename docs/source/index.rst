@@ -12,6 +12,7 @@ Welcome to sta-constraint-validator's documentation!
 
    process
    methodology
+   standards
    create
    interface
    traces

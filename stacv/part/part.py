@@ -16,8 +16,10 @@ READER = config_reader.ConfigReader('part_config', part_config_error.PartConfigE
 TOP_LEVEL_KEYS = ['properties', 'datasheet', 'interface']
 PROPERTIES_KEYS = ['manufacturer', 'part_number']
 DATASHEET_KEYS = ['name', 'url', 'version']
-INTERFACE_KEYS = ['name', 'pin']
-PIN_KEYS = ['name', 'methodology', 'clock']
+INTERFACE_KEYS = ['name', 'if_standard', 'if_role', 'pin']
+PIN_KEYS = ['name', 'methodology', 'if_signal', 'clock']
+# A pin without a methodology is a clock pin: it carries no timing, and the other pins name it as their clock.
+CLOCK_PIN_KEYS = ['name', 'if_signal']
 CLOCK_KEYS = ['pin', 'max_frequency', 'duty_cycle']
 DUTY_CYCLE_KEYS = ['min', 'max']
 CONSTRAINT_KEYS = ['value', 'symbol', 'source']
@@ -108,7 +110,7 @@ def check_pins_are_defined_once(oInterfaceList, sFilename):
     for oInterface in oInterfaceList.interfaces:
         lKeys = []
         for oPin in oInterface.pins.pins:
-            sKey = oPin.name + '.' + oPin.methodology
+            sKey = oPin.name + '.' + str(oPin.methodology)
             if sKey in lKeys:
                 READER.raise_error(7, sFilename, f'pin {oPin.name} with methodology {oPin.methodology} is defined by more than one [[interface.pin]] table in interface {oInterface.name}')
             lKeys.append(sKey)
@@ -122,6 +124,8 @@ def build_interface(dInterface, iInterface, sFilename):
     READER.check_keys(dInterface, INTERFACE_KEYS, oLocation)
     oInterface = interface.Interface()
     oInterface.name = READER.get_required_string(dInterface, 'name', oLocation)
+    oInterface.if_standard = read_optional_string(dInterface, 'if_standard', oLocation)
+    oInterface.if_role = read_optional_string(dInterface, 'if_role', oLocation)
     oInterface.pins = build_pin_list(READER.get_required_array_of_tables(dInterface, 'pin', oLocation), oInterface.name, sFilename)
     return oInterface
 
@@ -144,6 +148,8 @@ def build_pin(dPin, iPin, sInterfaceName, sFilename):
     oLocation.set_pin_number(iPin, sInterfaceName)
     if has_valid_name(dPin):
         oLocation.set_pin_name(dPin['name'], sInterfaceName)
+    if 'methodology' not in dPin:
+        return build_clock_pin_table(dPin, sInterfaceName, oLocation)
     # The methodology decides the keys a pin has, so it is read before the keys are checked.
     sMethodology = READER.get_required_string(dPin, 'methodology', oLocation)
     oPinType = find_pin_type(sMethodology, oLocation)
@@ -152,9 +158,25 @@ def build_pin(dPin, iPin, sInterfaceName, sFilename):
     oPin.name = READER.get_required_string(dPin, 'name', oLocation)
     oLocation.set_pin_name(oPin.name, sInterfaceName)
     oPin.methodology = sMethodology
+    oPin.if_signal = read_optional_string(dPin, 'if_signal', oLocation)
     oPin.clock = build_clock_pin(dPin, oPin.name, sInterfaceName, oLocation)
     oPinType.build(oPin, dPin, sInterfaceName, oLocation)
     return oPin
+
+
+def build_clock_pin_table(dPin, sInterfaceName, oLocation):
+    READER.check_keys(dPin, CLOCK_PIN_KEYS, oLocation)
+    oPin = pin.Pin()
+    oPin.name = READER.get_required_string(dPin, 'name', oLocation)
+    oLocation.set_pin_name(oPin.name, sInterfaceName)
+    oPin.if_signal = read_optional_string(dPin, 'if_signal', oLocation)
+    return oPin
+
+
+def read_optional_string(dTable, sKey, oLocation):
+    if sKey not in dTable:
+        return None
+    return READER.get_required_string(dTable, sKey, oLocation)
 
 
 def find_pin_type(sMethodology, oLocation):
