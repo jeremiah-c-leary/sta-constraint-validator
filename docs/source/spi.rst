@@ -16,7 +16,7 @@ Signal  Direction            Methodology       Why
 SCK     device to part       generated clock   The device divides it from its own clock and forwards it with the data.
 COPI    device to part       SDR-SS-O          The device sends data and the clock that captures it, together (see :doc:`methodology/sdr_ss_o`).
 CS      device to part       SDR-SS-O-FLC      Timed to the first and last edges of SCK, which stops between transfers (see :doc:`methodology/sdr_ss_o_flc`).
-CIPO    part to device       SDR-SS-RT-DI      The part launches on the SCK it receives; the device captures with its own clock, so the timing makes a round trip.
+CIPO    part to device       SDR-SS-RT-DI      The part launches on the SCK it receives; the device captures with its own clock, so the timing makes a round trip (see :doc:`methodology/sdr_ss_rt_di`).
 ======  ===================  ================  ====================================================================
 
 The mode sets which SCK edge data changes on and which it is sampled on:

@@ -27,6 +27,7 @@ any timing tool, with a worked example of how stacv and Vivado do each step:
    methodology/sdr_ss_o
    methodology/sdr_ss_o_example
    methodology/sdr_ss_o_flc
+   methodology/sdr_ss_rt_di
 
 An interface, such as SPI, could use more than one methodology.
 For example, an SPI interface to a DAC could use:
