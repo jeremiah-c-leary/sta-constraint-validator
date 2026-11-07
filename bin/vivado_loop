@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# Runs a design through Vivado and the results back through stacv:
+#
+#   1. synthesis, place and route (non-project flow, bin/vivado_loop.tcl),
+#      with the interface constraints file if one is given
+#   2. the stacv report script, which writes the interface timing reports
+#   3. stacv check on the interface file
+#
+# Usage:
+#   bin/vivado_loop DESIGN_TCL [--xdc FILE] [--report-tcl FILE] [--interface FILE] [--out DIR]
+#
+#   DESIGN_TCL        design description (top, part, sources); see
+#                     example/texas_instruments/DAC39RF20/design/design.tcl
+#   --xdc FILE        interface constraints, e.g. from stacv generate xdc
+#   --report-tcl FILE report script, from stacv generate report_tcl
+#   --interface FILE  interface file to check once the reports are written
+#   --out DIR         build directory (default: build/ next to DESIGN_TCL)
+#
+# Vivado must be on the PATH, or VIVADO_SETTINGS must name its settings64.sh.
+# PROJ_DIR defaults to this repository, for report scripts that use it.
+# Stops at the first step that fails, with the log of that step.
+
+set -u
+
+sProjectDir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+usage() {
+    sed -n '2,22p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    exit 2
+}
+
+sDesignTcl=""
+sXdc=""
+sReportTcl=""
+sInterface=""
+sOutDir=""
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --xdc)        sXdc="$(realpath "$2")"; shift 2 ;;
+        --report-tcl) sReportTcl="$(realpath "$2")"; shift 2 ;;
+        --interface)  sInterface="$(realpath "$2")"; shift 2 ;;
+        --out)        sOutDir="$2"; shift 2 ;;
+        -h|--help)    usage ;;
+        -*)           echo "vivado_loop: unknown option $1"; usage ;;
+        *)            sDesignTcl="$(realpath "$1")"; shift ;;
+    esac
+done
+
+if [ -z "$sDesignTcl" ]; then
+    usage
+fi
+if [ ! -f "$sDesignTcl" ]; then
+    echo "vivado_loop: design file not found: $sDesignTcl"
+    exit 2
+fi
+for sFile in "$sXdc" "$sReportTcl" "$sInterface"; do
+    if [ -n "$sFile" ] && [ ! -f "$sFile" ]; then
+        echo "vivado_loop: file not found: $sFile"
+        exit 2
+    fi
+done
+
+if [ -z "$sOutDir" ]; then
+    sOutDir="$(dirname "$sDesignTcl")/build"
+fi
+mkdir -p "$sOutDir"
+sOutDir="$(realpath "$sOutDir")"
+
+if ! command -v vivado > /dev/null; then
+    if [ -n "${VIVADO_SETTINGS:-}" ] && [ -f "$VIVADO_SETTINGS" ]; then
+        # shellcheck disable=SC1090
+        source "$VIVADO_SETTINGS"
+    fi
+fi
+if ! command -v vivado > /dev/null; then
+    echo "vivado_loop: vivado is not on the PATH; source settings64.sh or set VIVADO_SETTINGS"
+    exit 2
+fi
+
+export PROJ_DIR="${PROJ_DIR:-$sProjectDir}"
+
+echo "vivado_loop: Vivado: synthesis, place and route, reports  (log: $sOutDir/vivado.log)"
+( cd "$sOutDir" && vivado -mode batch -nojournal -log vivado.log \
+      -source "$sProjectDir/bin/vivado_loop.tcl" \
+      -tclargs "$sDesignTcl" "$sOutDir" "$sXdc" "$sReportTcl" > /dev/null )
+if [ $? -ne 0 ] || ! grep -q "vivado_loop: Vivado steps finished" "$sOutDir/vivado.log"; then
+    echo "vivado_loop: Vivado failed; errors from $sOutDir/vivado.log:"
+    grep -E "^(ERROR|CRITICAL WARNING)" "$sOutDir/vivado.log" | head -20
+    exit 1
+fi
+grep -E "^CRITICAL WARNING" "$sOutDir/vivado.log" | head -20
+
+echo "vivado_loop: timing summary: $sOutDir/timing_summary.rpt"
+grep -A 3 "WNS(ns)" "$sOutDir/timing_summary.rpt" | head -4
+
+if [ -z "$sInterface" ]; then
+    exit 0
+fi
+
+echo "vivado_loop: stacv check $sInterface"
+( cd "$(dirname "$sInterface")" && "$sProjectDir/bin/stacv" check "$(basename "$sInterface")" )
