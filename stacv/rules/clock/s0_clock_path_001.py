@@ -31,6 +31,8 @@ When the rule fails, it lists each timing report whose capture clock path ends s
 
 * The clock port in the configuration is wrong.
 * The output delay constraint refers to a clock that is not forwarded on the clock port.
+* The output delay is not measured at the clock port: in Vivado, a set_output_delay without ``-reference_pin`` ends the
+  capture clock path at the element that generates the clock, such as ``q_spi_output_clock_reg/Q``.
 * The wrong timing report is listed under the port.
 '''
 

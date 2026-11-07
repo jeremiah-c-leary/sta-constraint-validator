@@ -18,6 +18,15 @@ DDR-SS-I-SE   DDR SS Input, captured on the Same Edge (DDR-SS-I-SE)
 DDR-SS-I-NE   DDR SS Input, captured on the Next Edge (DDR-SS-I-NE)
 ============= ==================================================================
 
+Each methodology is being written up on a page of its own, which explains it step by step, independent of stacv and of
+any timing tool, with a worked example of how stacv and Vivado do each step:
+
+.. toctree::
+   :maxdepth: 1
+
+   methodology/sdr_ss_o
+   methodology/sdr_ss_o_example
+
 An interface, such as SPI, could use more than one methodology.
 For example, an SPI interface to a DAC could use:
 

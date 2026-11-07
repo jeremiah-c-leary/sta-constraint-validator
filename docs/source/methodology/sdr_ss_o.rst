@@ -1,6 +1,4 @@
-:orphan:
-
-.. DRAFT - not for publishing yet.  The concept only, independent of stacv's commands and file formats and of any
+.. The concept only, independent of stacv's commands and file formats and of any
    timing tool's commands; the worked example (sdr_ss_o_example.rst) shows how stacv and the timing tool do each step.
    Sections marked (DID) are the ones the DID repeats for each port, with that port's values.
    Tabled: an Assumptions section (the rules, generated from the methodology class, and what the reports cannot show).
