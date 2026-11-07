@@ -226,7 +226,7 @@ The constraints file is written for a reader who has to review the constraints o
 Every number in a constraint is shown with the calculation and the inputs it comes from.
 
 :Section 1, References: The md5sum of the interface, part and traces files, and the datasheet of the part.
-:Section 2, Block Diagram: The device, the part and the traces between them.
+:Section 2, Block Diagram: The device, the part and the traces between them, with the registers of each port and their clocks (see :doc:`block_diagram`).
 :Section 3, Inputs: The delay of each trace, marking default delays, and the timing of each part pin the traces reach.
 :Section 4, Clocks: One section for each clock that crosses the board: generated where the device generates it, or created on the port it enters the device on.
 :Section 5, Ports: One section for each port of the interface.

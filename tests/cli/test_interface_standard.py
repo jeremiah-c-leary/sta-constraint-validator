@@ -67,11 +67,12 @@ class TestLinking(InterfaceStandardTestCase):
 
     def test_traces_are_linked_by_their_signals(self):
         self.assertEqual(0, self.run_block_diagram())
-        lLines = self.oStdout.getvalue().split('\n')
-        self.assertIn('  O_DAC_DATA   [X] --- data_output --> [X] SDIN', lLines)
-        self.assertIn('  O_DAC_SDEN_F [X] --- chip_select --> [X] CSF', lLines)
-        self.assertIn('  I_DAC_DATA   [X] <-- data_input ---- [X] SDO', lLines)
-        self.assertIn('  O_DAC_SCLK   [X] --- clock --------> [X] SCLK', lLines)
+        # Each trace reaches the port and the part pin that carry its signal.
+        sOutput = self.oStdout.getvalue()
+        self.assertIn(' O_DAC_DATA   [X] --- data_output --> [X] SDIN', sOutput)
+        self.assertIn(' O_DAC_SDEN_F [X] --- chip_select --> [X] CSF', sOutput)
+        self.assertIn(' I_DAC_DATA   [X] <-- data_input ---- [X] SDO', sOutput)
+        self.assertIn(' O_DAC_SCLK   [X] --- clock --------> [X] SCLK', sOutput)
 
     def test_a_repeated_signal_is_numbered(self):
         lInterfaceChanges = [('if_signal = "CS"', 'if_signal = "CS.1"')]

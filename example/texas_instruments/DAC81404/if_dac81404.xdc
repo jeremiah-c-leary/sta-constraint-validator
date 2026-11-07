@@ -39,18 +39,18 @@
 #  Section 2:  Block Diagram
 ###############################################################################
 #
-# ----------------+                       +------------
-#   Device        |                       |  DAC81404
-#                 |                       |
-#   O_DAC_DATA   [X] --- data_output --> [X] SDIN
-#                 |                       |
-#   O_DAC_SDEN_F [X] --- chip_select --> [X] CSF
-#                 |                       |
-#   I_DAC_DATA   [X] <-- data_input ---- [X] SDO
-#                 |                       |
-#   O_DAC_SCLK   [X] --- clock --------> [X] SCLK
-#                 |                       |
-# ----------------+                       +------------
+# ---------------------------------------------------------------+                       +------------
+#   Device                                                       |                       |  DAC81404
+#                                                                |                       |
+#   clk_100mhz --+--> [q_spi_output_data_reg] ---> O_DAC_DATA   [X] --- data_output --> [X] SDIN
+#                |                                               |                       |
+#                +--> [q_spi_sden_f_reg] --------> O_DAC_SDEN_F [X] --- chip_select --> [X] CSF
+#                |                                               |                       |
+#                +--> [q_spi_input_data_reg] <---- I_DAC_DATA   [X] <-- data_input ---- [X] SDO
+#                |                                               |                       |
+#                +--> [q_spi_output_clock_reg] --> O_DAC_SCLK   [X] --- clock --------> [X] SCLK
+#                                                                |                       |
+# ---------------------------------------------------------------+                       +------------
 #
 ###############################################################################
 #  Section 3.1:  Trace Delays

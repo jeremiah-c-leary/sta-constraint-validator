@@ -24,24 +24,24 @@ File                Describes                                            Written
 ``interface.toml``  The device's clocks and ports                        the designer's clock plan
 ==================  ===================================================  ==============================
 
-``stacv visualize block_diagram interface.toml`` draws how they connect:
+``stacv visualize block_diagram interface.toml`` draws how they connect, with the registers that drive and capture each port, and their clock:
 
 .. code-block:: text
 
-   ----------------+                       +------------
-     Device        |                       |  DAC81404
-                   |                       |
-     O_DAC_DATA   [X] --- data_output --> [X] SDIN
-                   |                       |
-     O_DAC_SDEN_F [X] --- chip_select --> [X] CSF
-                   |                       |
-     I_DAC_DATA   [X] <-- data_input ---- [X] SDO
-                   |                       |
-     O_DAC_SCLK   [X] --- clock --------> [X] SCLK
-                   |                       |
-   ----------------+                       +------------
+   ---------------------------------------------------------------+                       +------------
+     Device                                                       |                       |  DAC81404
+                                                                  |                       |
+     clk_100mhz --+--> [q_spi_output_data_reg] ---> O_DAC_DATA   [X] --- data_output --> [X] SDIN
+                  |                                               |                       |
+                  +--> [q_spi_sden_f_reg] --------> O_DAC_SDEN_F [X] --- chip_select --> [X] CSF
+                  |                                               |                       |
+                  +--> [q_spi_input_data_reg] <---- I_DAC_DATA   [X] <-- data_input ---- [X] SDO
+                  |                                               |                       |
+                  +--> [q_spi_output_clock_reg] --> O_DAC_SCLK   [X] --- clock --------> [X] SCLK
+                                                                  |                       |
+   ---------------------------------------------------------------+                       +------------
 
-This page times the first row, O_DAC_DATA to SDIN, and its clock, O_DAC_SCLK to SCLK.
+This page times the first row, from q_spi_output_data_reg through O_DAC_DATA to SDIN, and its clock, from q_spi_output_clock_reg through O_DAC_SCLK to SCLK.
 
 Where the information goes
 --------------------------

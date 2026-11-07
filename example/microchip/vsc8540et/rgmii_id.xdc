@@ -40,22 +40,22 @@
 #  Section 2:  Block Diagram
 ###############################################################################
 #
-# -----------------------+                           +-------------
-#   Device               |                           |  VSC8540ET
-#                        |                           |
-#   O_RGMII_ID_TXD[3:0] [X] --- rgmii_id_txd -----> [X] TXD[3:0]
-#                        |                           |
-#   O_RGMII_ID_TX_CTL   [X] --- rgmii_id_tx_ctl --> [X] TX_CTL
-#                        |                           |
-#   I_RGMII_ID_RXD[3:0] [X] <-- rgmii_id_rxd ------ [X] RXD[3:0]
-#                        |                           |
-#   I_RGMII_ID_RX_CTL   [X] <-- rgmii_id_rx_ctl --- [X] RX_CTL
-#                        |                           |
-#   O_RGMII_ID_TXC      [X] --- rgmii_id_txc -----> [X] TX_CLK
-#                        |                           |
-#   I_RGMII_ID_RXC      [X] <-- rgmii_id_rxc ------ [X] RX_CLK
-#                        |                           |
-# -----------------------+                           +-------------
+# ---------------------------------------------------------------------------+                           +-------------
+#   Device                                                                   |                           |  VSC8540ET
+#                                                                            |                           |
+#   clk_100mhz ----+--> [q_rgmii_id_txd_reg[*]] ------> O_RGMII_ID_TXD[3:0] [X] --- rgmii_id_txd -----> [X] TXD[3:0]
+#                  |                                                         |                           |
+#                  +--> [q_rgmii_id_tx_ctl_reg] ------> O_RGMII_ID_TX_CTL   [X] --- rgmii_id_tx_ctl --> [X] TX_CTL
+#                  |                                                         |                           |
+#                  +--> [q_rgmii_id_txc_reg] ---------> O_RGMII_ID_TXC      [X] --- rgmii_id_txc -----> [X] TX_CLK
+#                                                                            |                           |
+#   rgmii_id_rxc <-+----------------------------------- I_RGMII_ID_RXC      [X] <-- rgmii_id_rxc ------ [X] RX_CLK
+#                  |                                                         |                           |
+#                  +--> [GEN_RGMII_ID_RX[*].U_IDDR] <-- I_RGMII_ID_RXD[3:0] [X] <-- rgmii_id_rxd ------ [X] RXD[3:0]
+#                  |                                                         |                           |
+#                  +--> [GEN_RGMII_ID_RX[4].U_IDDR] <-- I_RGMII_ID_RX_CTL   [X] <-- rgmii_id_rx_ctl --- [X] RX_CTL
+#                                                                            |                           |
+# ---------------------------------------------------------------------------+                           +-------------
 #
 ###############################################################################
 #  Section 3.1:  Trace Delays

@@ -41,26 +41,24 @@
 #  Section 2:  Block Diagram
 ###############################################################################
 #
-# ---------------------+                              +---------------------
-#   Device             |                              |  VSC8540ET
-#                      |                              |
-#   O_RMII_TXD[1:0]   [X] --- rmii_txd ------------> [X] TXD[1:0]
-#                      |                              |
-#   O_RMII_TX_EN      [X] --- rmii_tx_en ----------> [X] TX_EN
-#                      |                              |
-#   O_RMII_TX_ER      [X] --- rmii_tx_er ----------> [X] TX_ER
-#                      |                              |
-#   I_RMII_RXD[1:0]   [X] <-- rmii_rxd ------------- [X] RXD[1:0]
-#                      |                              |
-#   I_RMII_CRS_DV     [X] <-- rmii_crs_dv ---------- [X] CRS_DV
-#                      |                              |
-#   I_RMII_RX_ER      [X] <-- rmii_rx_er ----------- [X] RX_ER
-#                      |                              |
-#   I_RMII_REF_CLK    [X] <-- rmii_clk_to_device --- [X] (phy_rmii_clkout)
-#                      |                              |
-#   (phy_rmii_clkout) [X] --- rmii_clk_to_part ----> [X] RMII_CLKIN
-#                      |                              |
-# ---------------------+                              +---------------------
+# ---------------------------------------------------------------+                    (phy_rmii_clkout)                  +---------------------
+#   Device                                                       |                            v                          |  VSC8540ET
+#                                                                |                            |                          |
+#   rmii_ref_clk <-+--------------------------- I_RMII_REF_CLK  [X] <-- rmii_clk_to_device ---+--- rmii_clk_to_part --> [X] RMII_CLKIN
+#                  |                                             |                                                       |
+#                  +--> [q_rmii_txd_reg[*]] --> O_RMII_TXD[1:0] [X] --- rmii_txd -------------------------------------> [X] TXD[1:0]
+#                  |                                             |                                                       |
+#                  +--> [q_rmii_tx_en_reg] ---> O_RMII_TX_EN    [X] --- rmii_tx_en -----------------------------------> [X] TX_EN
+#                  |                                             |                                                       |
+#                  +--> [q_rmii_tx_er_reg] ---> O_RMII_TX_ER    [X] --- rmii_tx_er -----------------------------------> [X] TX_ER
+#                  |                                             |                                                       |
+#                  +--> [q_rmii_rxd_reg[*]] <-- I_RMII_RXD[1:0] [X] <-- rmii_rxd -------------------------------------- [X] RXD[1:0]
+#                  |                                             |                                                       |
+#                  +--> [q_rmii_crs_dv_reg] <-- I_RMII_CRS_DV   [X] <-- rmii_crs_dv ----------------------------------- [X] CRS_DV
+#                  |                                             |                                                       |
+#                  +--> [q_rmii_rx_er_reg] <--- I_RMII_RX_ER    [X] <-- rmii_rx_er ------------------------------------ [X] RX_ER
+#                                                                |                                                       |
+# ---------------------------------------------------------------+                                                       +---------------------
 #
 ###############################################################################
 #  Section 3.1:  Trace Delays

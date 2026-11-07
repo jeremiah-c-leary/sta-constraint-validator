@@ -19,6 +19,7 @@ Welcome to sta-constraint-validator's documentation!
    traces
    part
    trc
+   block_diagram
    eye
    generate
    datasheet

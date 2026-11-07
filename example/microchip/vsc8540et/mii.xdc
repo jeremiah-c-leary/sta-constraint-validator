@@ -42,26 +42,26 @@
 #  Section 2:  Block Diagram
 ###############################################################################
 #
-# ------------------+                      +-------------
-#   Device          |                      |  VSC8540ET
-#                   |                      |
-#   O_MII_TXD[3:0] [X] --- mii_txd -----> [X] TXD[3:0]
-#                   |                      |
-#   O_MII_TX_EN    [X] --- mii_tx_en ---> [X] TX_EN
-#                   |                      |
-#   O_MII_TX_ER    [X] --- mii_tx_er ---> [X] TX_ER
-#                   |                      |
-#   I_MII_RXD[3:0] [X] <-- mii_rxd ------ [X] RXD[3:0]
-#                   |                      |
-#   I_MII_RX_DV    [X] <-- mii_rx_dv ---- [X] RX_DV
-#                   |                      |
-#   I_MII_RX_ER    [X] <-- mii_rx_er ---- [X] RX_ER
-#                   |                      |
-#   I_MII_TX_CLK   [X] <-- mii_tx_clk --- [X] MII_TXCLK
-#                   |                      |
-#   I_MII_RX_CLK   [X] <-- mii_rx_clk --- [X] RX_CLK
-#                   |                      |
-# ------------------+                      +-------------
+# -----------------------------------------------------------+                      +-------------
+#   Device                                                   |                      |  VSC8540ET
+#                                                            |                      |
+#   mii_tx_clk <-+-------------------------- I_MII_TX_CLK   [X] <-- mii_tx_clk --- [X] MII_TXCLK
+#                |                                           |                      |
+#                +--> [q_mii_txd_reg[*]] --> O_MII_TXD[3:0] [X] --- mii_txd -----> [X] TXD[3:0]
+#                |                                           |                      |
+#                +--> [q_mii_tx_en_reg] ---> O_MII_TX_EN    [X] --- mii_tx_en ---> [X] TX_EN
+#                |                                           |                      |
+#                +--> [q_mii_tx_er_reg] ---> O_MII_TX_ER    [X] --- mii_tx_er ---> [X] TX_ER
+#                                                            |                      |
+#   mii_rx_clk <-+-------------------------- I_MII_RX_CLK   [X] <-- mii_rx_clk --- [X] RX_CLK
+#                |                                           |                      |
+#                +--> [q_mii_rxd_reg[*]] <-- I_MII_RXD[3:0] [X] <-- mii_rxd ------ [X] RXD[3:0]
+#                |                                           |                      |
+#                +--> [q_mii_rx_dv_reg] <--- I_MII_RX_DV    [X] <-- mii_rx_dv ---- [X] RX_DV
+#                |                                           |                      |
+#                +--> [q_mii_rx_er_reg] <--- I_MII_RX_ER    [X] <-- mii_rx_er ---- [X] RX_ER
+#                                                            |                      |
+# -----------------------------------------------------------+                      +-------------
 #
 ###############################################################################
 #  Section 3.1:  Trace Delays

@@ -12,7 +12,7 @@
 #    Section 3:  Inputs
 #    Section 3.1:  Trace Delays
 #    Section 3.2:  Part Timing
-#    Section 4:  Generated Clocks
+#    Section 4:  Clocks
 #    Section 4.1:  clk_10mhz Generated Clock
 #    Section 5:  Ports
 #    Section 5.1:  O_DAC_DATA
@@ -24,7 +24,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  -------------------
-# ce73276d013b5066b2f90136c444cdf6  if_dac_spi.toml
+# 45ef036ae8db3e8882580e620af0af83  if_dac_spi.toml
 # 0323617f7f710e853f8de6e4ae7a03be  ad7399.toml
 # 94a5942882184e7266286ad29d23cce5  dac_spi_traces.toml
 #
@@ -37,16 +37,16 @@
 #  Section 2:  Block Diagram
 ###############################################################################
 #
-# ----------------+                       +----------
-#   Device        |                       |  AD7399
-#                 |                       |
-#   O_DAC_DATA   [X] --- data_output --> [X] SDI
-#                 |                       |
-#   O_DAC_SDEN_F [X] --- chip_select --> [X] CSF
-#                 |                       |
-#   O_DAC_SCLK   [X] --- clock --------> [X] CLK
-#                 |                       |
-# ----------------+                       +----------
+# ---------------------------------------------------------------+                       +----------
+#   Device                                                       |                       |  AD7399
+#                                                                |                       |
+#   clk_100mhz --+--> [q_spi_output_data_reg] ---> O_DAC_DATA   [X] --- data_output --> [X] SDI
+#                |                                               |                       |
+#                +--> [q_spi_output_clock_reg] --> O_DAC_SCLK   [X] --- clock --------> [X] CLK
+#                                                                |                       |
+#                                                  O_DAC_SDEN_F [X] --- chip_select --> [X] CSF
+#                                                                |                       |
+# ---------------------------------------------------------------+                       +----------
 #
 ###############################################################################
 #  Section 3.1:  Trace Delays

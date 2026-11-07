@@ -72,7 +72,7 @@ def build_edges_subparser(subparser):
 
 
 def build_block_diagram_subparser(subparser):
-    parser = subparser.add_parser('block_diagram', help='Draw the device, the part and the traces between them.')
+    parser = subparser.add_parser('block_diagram', help='Draw the device, the part and the traces between them, with the registers of each port and their clocks.')
     parser.add_argument('interface_file', help='Interface TOML file.')
 
 
