@@ -26,6 +26,7 @@ any timing tool, with a worked example of how stacv and Vivado do each step:
 
    methodology/sdr_ss_o
    methodology/sdr_ss_o_example
+   methodology/sdr_ss_o_flc
 
 An interface, such as SPI, could use more than one methodology.
 For example, an SPI interface to a DAC could use:
@@ -331,8 +332,8 @@ Edges diagram
 What also differs is the edges diagram, in ``stacv visualize edges`` and in the constraints file.
 It is drawn in two windows, so it can be compared with the datasheet figure:
 
-* The setup window, with the clock idle up to its first pulse, and the first clock edge marked.
-* The hold window, with the clock idle after its last pulse, and the last clock edge marked.
+* The setup window, with the clock idle up to its first pulse, and where the clock starts marked.
+* The hold window, with the clock idle after its last pulse, and where the clock stops marked.
 
 Each window shows whole clock pulses, so the capture clock of an SDR-SS-O-FLC port needs its ``idle`` level (see :doc:`interface`).
 A clock that idles low pulses high, rising then falling; a clock that idles high pulses low.
@@ -345,7 +346,7 @@ The DAC81404 chip select, with the passing edges above, captured on the falling 
    clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
    (100 MHz)
                                             |---------------setup requirement-------------->|
-                                              first clock edge ---->|
+                                                  clock starts ---->|
 
                                                                     C_______________________D
    dac_sclk       __________________________________________________|                       |
@@ -358,7 +359,7 @@ The DAC81404 chip select, with the passing edges above, captured on the falling 
    clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
    (100 MHz)
                                             |<---hold requirement---|
-                       last clock edge ---->|
+                           clock stops ---->|
 
                     A_______________________B
    dac_sclk       __|                       |________________________________________________

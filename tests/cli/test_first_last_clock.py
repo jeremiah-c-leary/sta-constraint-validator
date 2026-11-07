@@ -100,18 +100,18 @@ class TestFirstLastClock(unittest.TestCase):
         return '\n'.join(lLines) + '\n'
 
     def test_idle_low_clock_draws_a_window_for_the_first_and_the_last_clock(self):
-        # The DAC81404 chip select: captured on falling edges, so the first clock edge is the rising edge before it.
+        # The DAC81404 chip select: captured on falling edges, so the clock starts on the rising edge before it.
         self.write_interface('low', 'SDR-SS-O-FLC', [8, 8], ['D', 'B'])
         lSetupWindow = list(LAUNCH_CLOCK_TO_EDGE_12)
         lSetupWindow.append(' ' * 65 + '|---setup requirement-->|')
-        lSetupWindow.append(' ' * 43 + 'first clock edge ---->|')
+        lSetupWindow.append(' ' * 47 + 'clock starts ---->|')
         lSetupWindow.append('')
         lSetupWindow.append(' ' * 65 + 'C_______________________D')
         lSetupWindow.append('dac_sclk       ' + '_' * 50 + '|                       |')
         lSetupWindow.append('(25 MHz)')
         lHoldWindow = list(LAUNCH_CLOCK_TO_EDGE_12)
         lHoldWindow.append(' ' * 41 + '|<---hold requirement---|')
-        lHoldWindow.append(' ' * 20 + 'last clock edge ---->|')
+        lHoldWindow.append(' ' * 24 + 'clock stops ---->|')
         lHoldWindow.append('')
         lHoldWindow.append(' ' * 17 + 'A_______________________B')
         lHoldWindow.append('dac_sclk       __|                       |' + '_' * 48)
@@ -122,20 +122,20 @@ class TestFirstLastClock(unittest.TestCase):
         sExpected = self.build_expected_edges(lSetupWindow, 'setup requirement = 20 ns', lHoldWindow, 'hold requirement = -20 ns')
         self.assertEqual(sExpected, self.oStdout.getvalue())
 
-    def test_idle_high_clock_draws_low_pulses_and_a_label_on_the_right_when_the_left_has_no_room(self):
+    def test_idle_high_clock_draws_low_pulses(self):
         # Captured on rising edges with the clock idle high: each pulse falls, then rises.
-        # The last clock edge is A, which has no room on its left for its label.
+        # The clock stops at A, whose label just fits on its left.
         self.write_interface('high', 'SDR-SS-O-FLC', [4, 4], ['C', 'A'])
         lSetupWindow = list(LAUNCH_CLOCK_TO_EDGE_8)
         lSetupWindow.append(' ' * 41 + '|---setup requirement-->|')
-        lSetupWindow.append(' ' * 19 + 'first clock edge ---->|')
+        lSetupWindow.append(' ' * 23 + 'clock starts ---->|')
         lSetupWindow.append('')
         lSetupWindow.append(' ' * 15 + '_' * 26 + 'B' + ' ' * 23 + 'C')
         lSetupWindow.append('dac_sclk' + ' ' * 33 + '|' + '_' * 23 + '|')
         lSetupWindow.append('(25 MHz)')
         lHoldWindow = list(LAUNCH_CLOCK_TO_EDGE_8)
         lHoldWindow.append(' ' * 17 + '|<---hold requirement---|')
-        lHoldWindow.append(' ' * 17 + '|<---- last clock edge')
+        lHoldWindow.append('clock stops ---->|')
         lHoldWindow.append('')
         lHoldWindow.append(' ' * 17 + 'A' + '_' * 48)
         lHoldWindow.append('dac_sclk       __|')
@@ -146,13 +146,40 @@ class TestFirstLastClock(unittest.TestCase):
         sExpected = self.build_expected_edges(lSetupWindow, 'setup requirement = 20 ns', lHoldWindow, 'hold requirement = -20 ns')
         self.assertEqual(sExpected, self.oStdout.getvalue())
 
+    def test_draws_a_label_on_the_right_when_the_left_has_no_room(self):
+        # The clock starts at A, the first edge drawn, which has no room on its left for its label.
+        self.write_interface('low', 'SDR-SS-O-FLC', [0, 4], ['B', 'B'])
+        lLaunchClock = []
+        lLaunchClock.append('                 0_____1     2_____3     4')
+        lLaunchClock.append('clk_100mhz     __|     |_____|     |_____|')
+        lLaunchClock.append('(100 MHz)')
+        lSetupWindow = list(lLaunchClock)
+        lSetupWindow.append(' ' * 17 + '|---setup requirement-->|')
+        lSetupWindow.append(' ' * 17 + '|<---- clock starts')
+        lSetupWindow.append('')
+        lSetupWindow.append(' ' * 17 + 'A' + '_' * 23 + 'B')
+        lSetupWindow.append('dac_sclk       __|' + ' ' * 23 + '|')
+        lSetupWindow.append('(25 MHz)')
+        lHoldWindow = list(lLaunchClock)
+        lHoldWindow.append(' ' * 41 + '| hold requirement')
+        lHoldWindow.append(' ' * 24 + 'clock stops ---->|')
+        lHoldWindow.append('')
+        lHoldWindow.append(' ' * 17 + 'A' + '_' * 23 + 'B')
+        lHoldWindow.append('dac_sclk       __|' + ' ' * 23 + '|')
+        lHoldWindow.append('(25 MHz)')
+        iExitCode = self.run_stacv(['visualize', 'edges', self.sInterfaceFile])
+        self.assertEqual('', self.oStderr.getvalue())
+        self.assertEqual(0, iExitCode)
+        sExpected = self.build_expected_edges(lSetupWindow, 'setup requirement = 20 ns', lHoldWindow, 'hold requirement = 0 ns')
+        self.assertEqual(sExpected, self.oStdout.getvalue())
+
     def test_sdr_ss_o_port_on_an_idle_clock_is_still_drawn_as_a_continuous_clock(self):
         self.write_interface('low', 'SDR-SS-O', [8, 8], ['D', 'B'])
         iExitCode = self.run_stacv(['visualize', 'edges', self.sInterfaceFile])
         self.assertEqual(0, iExitCode)
         self.assertIn('                                                                 |---setup requirement-->|', self.oStdout.getvalue().split('\n'))
         self.assertIn('                                         |<---hold requirement---|', self.oStdout.getvalue().split('\n'))
-        self.assertNotIn('first clock edge', self.oStdout.getvalue())
+        self.assertNotIn('clock starts', self.oStdout.getvalue())
 
     def test_first_last_clock_port_needs_an_idle_capture_clock(self):
         self.write_interface(None, 'SDR-SS-O-FLC', [8, 8], ['D', 'B'])

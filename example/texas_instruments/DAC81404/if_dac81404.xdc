@@ -181,7 +181,7 @@ set_multicycle_path 3 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 # clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
 # (100 MHz)
 #                                          |---------------setup requirement-------------->|
-#                                            first clock edge ---->|
+#                                                clock starts ---->|
 #
 #                                                                  C_______________________D
 # dac_sclk       __________________________________________________|                       |
@@ -194,7 +194,7 @@ set_multicycle_path 3 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 # clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
 # (100 MHz)
 #                                          |<---hold requirement---|
-#                     last clock edge ---->|
+#                         clock stops ---->|
 #
 #                  A_______________________B
 # dac_sclk       __|                       |________________________________________________
