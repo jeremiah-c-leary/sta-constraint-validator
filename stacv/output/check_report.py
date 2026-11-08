@@ -4,6 +4,7 @@ import os
 from stacv import version
 from stacv.output import md5sum_table
 from stacv.output import text_table
+from stacv.results import port_result
 
 
 REPORT_WIDTH = 80
@@ -121,7 +122,7 @@ def build_table(oPortResults):
 
 def build_unformatted_table(oPortResults):
     lTable = []
-    lTable.append(['Port', 'Methodology', 'Report Key', 'Section', 'Result'])
+    lTable.append(['Port', 'Methodology', 'Report Key', 'Section', 'Result', 'Setup Slack', 'Hold Slack'])
     iPortResult = 0
     for oPortResult in oPortResults.results:
         if oPortResult.is_deferred():
@@ -133,7 +134,7 @@ def build_unformatted_table(oPortResults):
 
 
 def build_deferred_row(oPortResult):
-    return [oPortResult.port.name, oPortResult.get_methodology(), oPortResult.get_identifier(), '-', 'Deferred']
+    return [oPortResult.port.name, oPortResult.get_methodology(), oPortResult.get_identifier(), '-', 'Deferred', '-', '-']
 
 
 def build_analyzed_row(iPortResult, oPortResult):
@@ -142,10 +143,19 @@ def build_analyzed_row(iPortResult, oPortResult):
     lRow.append(oPortResult.get_identifier())
     lRow.append(build_port_section_number(iPortResult))
     if oPortResult.has_failures():
-        lRow.append('Failed')
+        lRow.extend(['Failed', '-', '-'])
     else:
         lRow.append('Passed')
+        lRow.append(format_slack_cell(oPortResult.setup_slack))
+        lRow.append(format_slack_cell(oPortResult.hold_slack))
     return lRow
+
+
+def format_slack_cell(fSlack):
+    # A failed port's slack is not shown, as a failing rule can mean the timing tool's slack is wrong.
+    if fSlack is None:
+        return '-'
+    return port_result.format_slack(fSlack)
 
 
 def build_section_2(oPortResults, sInterfaceFile):

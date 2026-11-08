@@ -56,8 +56,18 @@ def get_port_result(oPort, oTraceList, oPart):
     oMethodology = create_methodology(oPort)
     oMethodologyResults = oMethodology.check(oPortProfile)
     oPortResult = port_result.PortResult(oPort, oMethodologyResults)
+    oPortResult.setup_slack = find_worst_slack(oTimingReports.get_setup_reports())
+    oPortResult.hold_slack = find_worst_slack(oTimingReports.get_hold_reports())
     print_port_result(oPortResult, oPort.timing_reports)
     return oPortResult
+
+
+def find_worst_slack(lTimingReports):
+    fWorstSlack = None
+    for oTimingReport in lTimingReports:
+        if fWorstSlack is None or oTimingReport.slack < fWorstSlack:
+            fWorstSlack = oTimingReport.slack
+    return fWorstSlack
 
 
 def create_methodology(oPort):
@@ -95,11 +105,19 @@ def merge_timing_reports(oTimingReportList, oParsedTimingReportList):
 def print_port_result(oPortResult, lTimingReports):
     oMethodologyResults = oPortResult.methodology_results
     if not oMethodologyResults.has_failures():
-        print(f'PASSED: {oPortResult.get_identifier()}')
+        print(build_passed_line(oPortResult))
         return
     for oRuleResult in oMethodologyResults.get_failing_results():
         print(f'FAILED: [{oRuleResult.rule_id}] {oPortResult.get_identifier()}')
         print_details(oRuleResult.details, lTimingReports)
+
+
+def build_passed_line(oPortResult):
+    sLine = f'PASSED: {oPortResult.get_identifier()}'
+    sSlack = oPortResult.describe_slack()
+    if sSlack == '':
+        return sLine
+    return f'{sLine}  {sSlack}'
 
 
 def print_details(lDetails, lTimingReports):

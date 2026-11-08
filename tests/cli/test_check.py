@@ -377,10 +377,10 @@ class TestExecuteReportSummary(unittest.TestCase):
         lExpected.append('Interface:    DAC_SPI_1')
         lExpected.append('Description:  This interface is a summary test')
         lExpected.append('')
-        lExpected.append('Port   Methodology   Report Key    Section   Result')
-        lExpected.append('----   -----------   -----------   -------   ------')
-        lExpected.append('P1     SDR-SS-O      P1.SDR-SS-O   3.1       Failed')
-        lExpected.append('P2     SDR-SS-O      P2.SDR-SS-O   3.2       Passed')
+        lExpected.append('Port   Methodology   Report Key    Section   Result   Setup Slack   Hold Slack')
+        lExpected.append('----   -----------   -----------   -------   ------   -----------   ----------')
+        lExpected.append('P1     SDR-SS-O      P1.SDR-SS-O   3.1       Failed   -             -')
+        lExpected.append('P2     SDR-SS-O      P2.SDR-SS-O   3.2       Passed   7.260 ns      7.167 ns')
         self.assertEqual(lExpected, self.read_summary_section())
 
     def test_summary_columns_widen_to_the_longest_value(self):
@@ -391,10 +391,10 @@ class TestExecuteReportSummary(unittest.TestCase):
         self.execute_with_config_text(build_named_ports_config_text('Long port names', lPorts, self.sTracesFile, self.sPartFile), get_port_names(lPorts))
 
         lExpected = []
-        lExpected.append('Port         Methodology   Report Key            Section   Result')
-        lExpected.append('----------   -----------   -------------------   -------   ------')
-        lExpected.append('O_DAC_DATA   SDR-SS-O      O_DAC_DATA.SDR-SS-O   3.1       Failed')
-        lExpected.append('O_DAC_CSF    SDR-SS-O      O_DAC_CSF.SDR-SS-O    3.2       Passed')
+        lExpected.append('Port         Methodology   Report Key            Section   Result   Setup Slack   Hold Slack')
+        lExpected.append('----------   -----------   -------------------   -------   ------   -----------   ----------')
+        lExpected.append('O_DAC_DATA   SDR-SS-O      O_DAC_DATA.SDR-SS-O   3.1       Failed   -             -')
+        lExpected.append('O_DAC_CSF    SDR-SS-O      O_DAC_CSF.SDR-SS-O    3.2       Passed   7.260 ns      7.167 ns')
         self.assertEqual(lExpected, self.read_summary_section()[7:])
 
 
@@ -414,11 +414,11 @@ class TestExecuteReportSummary(unittest.TestCase):
     def test_summary_lists_a_deferred_port_without_a_section(self):
         self.execute_with_a_deferred_port()
         lExpected = []
-        lExpected.append('Port   Methodology   Report Key    Section   Result')
-        lExpected.append('----   -----------   -----------   -------   --------')
-        lExpected.append('P1     SDR-SS-O      P1.SDR-SS-O   3.1       Passed')
-        lExpected.append('P2' + ' ' * 19 + 'P2' + ' ' * 12 + '-' + ' ' * 9 + 'Deferred')
-        lExpected.append('P3     SDR-SS-O      P3.SDR-SS-O   3.2       Failed')
+        lExpected.append('Port   Methodology   Report Key    Section   Result     Setup Slack   Hold Slack')
+        lExpected.append('----   -----------   -----------   -------   --------   -----------   ----------')
+        lExpected.append('P1     SDR-SS-O      P1.SDR-SS-O   3.1       Passed     7.260 ns      7.167 ns')
+        lExpected.append('P2' + ' ' * 19 + 'P2' + ' ' * 12 + '-' + ' ' * 9 + 'Deferred   -             -')
+        lExpected.append('P3     SDR-SS-O      P3.SDR-SS-O   3.2       Failed     -             -')
         self.assertEqual(lExpected, self.read_summary_section()[7:])
 
     def test_summary_shows_the_methodology_a_deferred_port_names(self):
@@ -429,10 +429,10 @@ class TestExecuteReportSummary(unittest.TestCase):
         sConfigText += '\n[[port]]\nname = "P2"\nstatus = "defer"\nmethodology = "SDR-SS-RT-DI"\n'
         self.execute_with_config_text(sConfigText, get_port_names(lPorts))
         lExpected = []
-        lExpected.append('Port   Methodology    Report Key        Section   Result')
-        lExpected.append('----   ------------   ---------------   -------   --------')
-        lExpected.append('P1     SDR-SS-O       P1.SDR-SS-O       3.1       Passed')
-        lExpected.append('P2     SDR-SS-RT-DI   P2.SDR-SS-RT-DI   -         Deferred')
+        lExpected.append('Port   Methodology    Report Key        Section   Result     Setup Slack   Hold Slack')
+        lExpected.append('----   ------------   ---------------   -------   --------   -----------   ----------')
+        lExpected.append('P1     SDR-SS-O       P1.SDR-SS-O       3.1       Passed     7.260 ns      7.167 ns')
+        lExpected.append('P2     SDR-SS-RT-DI   P2.SDR-SS-RT-DI   -         Deferred   -             -')
         self.assertEqual(lExpected, self.read_summary_section()[7:])
 
     def test_rule_check_sections_number_only_the_analyzed_ports(self):

@@ -32,13 +32,14 @@ Check output
 
    Reading interface file interface.toml
    Reading timing report file timing_reports/O_DAC_DATA_timing.rpt
-   PASSED: O_DAC_DATA.SDR-SS-O
+   PASSED: O_DAC_DATA.SDR-SS-O  setup slack 7.311 ns, hold slack 7.092 ns
    Reading timing report file timing_reports/O_DAC_SDEN_F_timing.rpt
    FAILED: [s5_slack_001] O_DAC_SDEN_F.SDR-SS-O-FLC
        timing_reports/O_DAC_SDEN_F_timing.rpt:14  setup slack -10.295ns
    DEFERRED: O_DAC_LDAC
 
-* ``PASSED:`` every rule of the port passed.
+* ``PASSED:`` every rule of the port passed, followed by the worst setup and hold slack of all the port's paths, in every corner its reports give.
+  A failed port's slack is not shown, as a failing rule can mean the timing tool's slack is wrong.
 * ``FAILED:`` one line for each failing rule, followed by its details, each indented four spaces with the file and line it comes from.
   Rules skipped because an earlier stage failed are not printed.
 * ``DEFERRED:`` the port has ``status = "defer"``, or its methodology has no rules yet, and is not checked; its timing reports are not read.

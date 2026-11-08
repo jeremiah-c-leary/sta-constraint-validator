@@ -71,8 +71,9 @@ class TestSpiConfig(SpiConfigTestCase):
     def test_check_passes_on_the_timing_reports_of_the_design(self):
         self.assertEqual(0, self.run_stacv(['check', 'spi_config.toml']))
         sOutput = self.oStdout.getvalue()
-        for sPort in ['dac_sdi.SDR-SS-O', 'dac_scs_n.SDR-SS-O-FLC', 'dac_sdo.SDR-SS-RT-DI']:
-            self.assertIn(f'PASSED: {sPort}\n', sOutput)
+        self.assertIn('PASSED: dac_sdi.SDR-SS-O  setup slack 32.553 ns, hold slack 35.154 ns\n', sOutput)
+        self.assertIn('PASSED: dac_scs_n.SDR-SS-O-FLC  setup slack 35.538 ns, hold slack 74.670 ns\n', sOutput)
+        self.assertIn('PASSED: dac_sdo.SDR-SS-RT-DI  setup slack 20.949 ns, hold slack 43.099 ns\n', sOutput)
         self.assertIn('Check Passed', sOutput)
 
     def test_the_interface_uses_the_names_in_the_design(self):

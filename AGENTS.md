@@ -110,13 +110,14 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
    bin/stacv check spi_config.toml
    ```
 
-   One line per port, `PASSED: <port>.<methodology>` or `FAILED: [<rule>] <port>.<methodology>` with the
-   file and line of each finding; `Check Passed` when all pass.  Exit code 0 when all pass, 1 when a rule
+   One line per port: `PASSED: <port>.<methodology>` with its worst setup and hold slack, or
+   `FAILED: [<rule>] <port>.<methodology>` with the file and line of each finding; `Check Passed` when
+   all pass.  Exit code 0 when all pass, 1 when a rule
    fails, 2 on an input error.  Fix a failure in the TOML files or the design, never in the XDC, and run
    steps 6 to 8 again.
 
-   For the margin, `bin/stacv visualize eye spi_config.toml` prints each data port's setup and hold slack
-   in each corner, and where the data sits in its eye.  CS has no eye; its slacks are in its timing report.
+   For the margin in each corner, and where the data sits in its eye, `bin/stacv visualize eye
+   spi_config.toml` prints it for each data port.
 
 ## Errors
 

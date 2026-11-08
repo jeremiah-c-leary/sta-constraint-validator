@@ -276,6 +276,7 @@ Results
 
 ``stacv check`` prints a result for each port (see :doc:`process`).
 With ``--report``, it also writes a report file with a summary, the md5sum of every input, and each rule's result and details.
+The summary gives each passed port's worst setup and hold slack, as the console does.
 With ``--junit``, it writes a JUnit file with one testsuite for each port, named ``<port>.<methodology>``, and one testcase for each rule.
 A failing rule is a failure in its testcase and names the timing report file and line.
 

@@ -55,11 +55,11 @@ Example
    $ bin/stacv check example/texas_instruments/DAC81404/interface.toml
    Reading interface file example/texas_instruments/DAC81404/interface.toml
    Reading timing report file example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt
-   PASSED: O_DAC_DATA.SDR-SS-O
+   PASSED: O_DAC_DATA.SDR-SS-O  setup slack 7.311 ns, hold slack 7.092 ns
    Reading timing report file example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt
-   PASSED: O_DAC_SDEN_F.SDR-SS-O-FLC
+   PASSED: O_DAC_SDEN_F.SDR-SS-O-FLC  setup slack 9.234 ns, hold slack 6.158 ns
    Reading timing report file example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt
-   PASSED: I_DAC_DATA.SDR-SS-RT-DI
+   PASSED: I_DAC_DATA.SDR-SS-RT-DI  setup slack 19.842 ns, hold slack 22.835 ns
    Check Passed
 
 Documentation
