@@ -43,20 +43,31 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
 4. **Fill in `traces.toml`** from the board: `{max_delay = ..., min_delay = ...}` in ns for each trace, or
    leave `{}` to use `default_delay`.
 
-5. **Set the edges.**  Each signal is launched and captured on the edges the SPI mode defines.  When the
-   HDL launches a signal on a different device clock edge, move it with an adjust key, a whole number of
-   device clock edges (+1 is one edge later, +2 one device clock period):
-   - `[copi] adjust`: the launch of COPI.  Default: the SCK change edge before the sample edge.
-   - `[cs] setup_adjust`: when CS is asserted.  Default: one SCK period before the first sample edge.
-   - `[cs] hold_adjust`: when CS is deasserted.  Default: the SCK change edge after the last sample edge.
-   - `[cipo] adjust`: the device's capture of CIPO.  Default: at the time of the next SCK sample edge.
+5. **Set the edges.**  Each edge in `spi_config.toml` says when the HDL launches or captures a signal, in
+   device clock periods from a named edge of SCK, with where in the HDL it comes from:
 
-   Read the state machine to find the real edges, then check with:
+   ```
+   assert = {sck_edge = "first sample", clocks = -4, source = "spi_master.vhd: IDLE clears scs_n_q 4 clocks before sclk_q rises"}
+   ```
+
+   - `[copi] launch`, from `"change"`: the SCK change edge before the sample edge that captures the bit.
+   - `[cipo] capture`, from `"sample"`: the SCK sample edge after the change edge the part launches on;
+     0 is the device clock edge that makes that SCK edge.
+   - `[cs] assert`, from `"first sample"`: the first SCK sample edge of the transfer.
+   - `[cs] deassert`, from `"last change"` or `"last sample"`: the last SCK edge of that kind.
+
+   `clocks` counts as the state machine does: -4 is four device clock periods before the SCK edge, 0.5 half a
+   period after it (a falling-edge register).  The template's values are the usual ones for the mode, and
+   the comments give each edge's time in ns; trace the state machine for one access and correct them.
+   Every `source` must be filled in.  Then check:
 
    ```
    bin/stacv visualize edges spi_config.toml          # launch and capture edges, setup and hold requirements
    bin/stacv visualize block_diagram spi_config.toml  # ports, registers and traces, to catch swapped names
    ```
+
+   A negative hold requirement means the signal changes after the edge that captures it; for CS it is the
+   time from the last SCK edge to CS deasserting.
 
 6. **Generate** the constraints and the report script, from the folder holding `spi_config.toml`:
 
@@ -68,9 +79,18 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
    The XDC explains every constraint.  Do not edit it; change the TOML files and generate it again.
 
 7. **Run Vivado.**  Read `interface.xdc` after the board constraints and after `synth_design`
-   (synthesis does not use I/O timing and warns about each `-reference_pin`), implement, then, after routing,
-   `cd` to the folder holding `spi_config.toml` and `source report.tcl`.  The report paths are relative to
-   that folder; the script creates the report folder.
+   (synthesis does not use I/O timing and warns about each `-reference_pin`).  After routing, `cd` to the
+   folder holding `spi_config.toml` and `source report.tcl`: the report paths are relative to that folder,
+   and the script creates the report folder.  A non-project run, from the folder holding `spi_config.toml`:
+
+   ```
+   foreach f [glob <hdl folder>/*.vhd] { read_vhdl -vhdl2008 $f }
+   read_xdc <board constraints>.xdc
+   synth_design -top <top> -part <part>
+   read_xdc interface.xdc
+   opt_design; place_design; route_design
+   source report.tcl
+   ```
 
 8. **Check the reports:**
 

@@ -74,7 +74,7 @@ def create_interface_from_configuration(sConfigFile):
     # An interface configuration file is expanded into an interface file, so every command reads it the same way.
     oSpiConfig = spi_config.read_spi_config(sConfigFile)
     oInterface = create_interface_config(spi_interface.build_interface_dictionary(oSpiConfig), sConfigFile)
-    oInterface.edges_description = spi_config.describe_edges(oSpiConfig)
+    oInterface.edge_lines = spi_config.build_edge_lines(oSpiConfig)
     return oInterface
 
 

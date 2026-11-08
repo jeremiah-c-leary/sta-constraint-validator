@@ -46,7 +46,9 @@ def build_header(oConfig):
     lLines.append('# Keys are described in:')
     lLines.append(f'# {DOCS_URL}/interface.rst')
     lLines.append('#')
-    lLines.append(f'# Edges:  {spi_config.describe_edges(oConfig)}')
+    lLines.append(f'# Edges:  {spi_config.EDGES_HEADING}')
+    for sLine in spi_config.build_edge_lines(oConfig):
+        lLines.append(f'#         {sLine}')
     lLines.append('#')
     lLines.append(f'# Paths are relative to the folder of {sConfigFile}.')
     lLines.append('#')

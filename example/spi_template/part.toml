@@ -6,7 +6,8 @@
 #
 # Fill in each value from the part's datasheet, with its symbol and where it comes from.
 # The values are FROM_DATASHEET until then, which stacv stops on.
-# Rename the pins to the datasheet's.
+# Rename the pins to the datasheet's; the traces file keeps its trace names, as the
+# files are linked by signal, not by name.
 # Keys below each "set by stacv create template spi" line are set from the command line above;
 # create the files again to change them.
 #
@@ -33,30 +34,33 @@ name = "SCK"
 #--- set by stacv create template spi; do not change below ---
 if_signal = "SCK"
 
+# COPI: setup and hold, measured to the SCK sample edge (falling), such as tSU and tH.
 [[interface.pin]]
 name = "COPI"
-setup = {value = "FROM_DATASHEET", symbol = "tSU", source = "FROM_DATASHEET"}
-hold = {value = "FROM_DATASHEET", symbol = "tH", source = "FROM_DATASHEET"}
+setup = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
+hold = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
 clock = {if_signal = "SCK", max_frequency = "FROM_DATASHEET"}
 #--- set by stacv create template spi; do not change below ---
 methodology = "SDR-SS-I"
 if_signal = "COPI"
 capture_edge = "Falling"
 
+# CS: setup to the first SCK sample edge (falling) and hold after the last, such as tCSS and tCSH.
 [[interface.pin]]
 name = "CS"
-setup = {value = "FROM_DATASHEET", symbol = "tCSS", source = "FROM_DATASHEET"}
-hold = {value = "FROM_DATASHEET", symbol = "tCSH", source = "FROM_DATASHEET"}
+setup = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
+hold = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
 clock = {if_signal = "SCK", max_frequency = "FROM_DATASHEET"}
 #--- set by stacv create template spi; do not change below ---
 methodology = "SDR-SS-I"
 if_signal = "CS"
 capture_edge = "Falling"
 
+# CIPO: clock to out, measured from the SCK change edge (rising) to CIPO valid, such as tOD or tCO.
 [[interface.pin]]
 name = "CIPO"
-cko_max = {value = "FROM_DATASHEET", symbol = "tCO", source = "FROM_DATASHEET"}
-cko_min = {value = "FROM_DATASHEET", symbol = "tCO", source = "FROM_DATASHEET"}
+cko_max = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
+cko_min = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
 clock = {if_signal = "SCK", max_frequency = "FROM_DATASHEET"}
 #--- set by stacv create template spi; do not change below ---
 methodology = "SDR-SS-RT-DO"

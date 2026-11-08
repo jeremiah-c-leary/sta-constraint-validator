@@ -19,6 +19,7 @@ from stacv.rules import output_delays
 from stacv.rules import path_lookups
 from stacv.rules import port_delays
 from stacv.rules import requirements
+from stacv.spi import spi_config
 from stacv.visualize import block_diagram
 from stacv.visualize import edge_window
 from stacv.visualize import edges
@@ -61,9 +62,18 @@ def build_references(sInterfaceFile, oInterface, oPart):
     lLines.append(f'# Datasheet:  {oPart.datasheet.name}')
     lLines.append(f'# Revision:   {oPart.datasheet.version}')
     lLines.append(f'# URL:        {oPart.datasheet.url}')
-    if oInterface.edges_description is not None:
-        lLines.append(f'# Edges:      {oInterface.edges_description}')
+    lLines.extend(build_edge_lines(oInterface))
     lLines.append('#')
+    return lLines
+
+
+def build_edge_lines(oInterface):
+    # An interface configuration file gives each edge with where in the design it comes from.
+    if len(oInterface.edge_lines) == 0:
+        return []
+    lLines = [f'# Edges:      {spi_config.EDGES_HEADING}']
+    for sLine in oInterface.edge_lines:
+        lLines.append(f'#             {sLine}')
     return lLines
 
 

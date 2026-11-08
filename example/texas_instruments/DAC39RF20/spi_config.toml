@@ -7,11 +7,10 @@
 # SPI mode 0:  SCK idles low, data changes on the falling edge of SCK and is
 #              sampled on the rising edge.
 #
-# Edges:       each signal is launched and captured on the edges SPI mode 0
-#              defines.  When the design launches a signal on another device
-#              clock edge, the adjust keys move it: +1 is one edge later, -1
-#              one edge earlier, so +2 is one device clock period.  Check the
-#              result with:  stacv visualize edges spi_config.toml
+# Edges:       each launch and capture is counted in device clocks from a
+#              named edge of SCK, as the HDL counts them, with the line of
+#              the HDL it comes from.  Check them with:
+#                  stacv visualize edges spi_config.toml
 #
 # Periods are in nanoseconds.  Paths are relative to this file.
 
@@ -40,18 +39,17 @@ period   = 80.0
 [copi]
 port     = "dac_sdi"
 register = "u_spi/sdi_q_reg"
+launch   = {sck_edge = "change", clocks = 0, source = "spi_master.vhd: SCLK_HIGH sets sdi_q with sclk_q low"}
 
 # CIPO: data from the part into the device.
 [cipo]
 port     = "dac_sdo"
 register = "u_spi/rx_shift_reg[0]"
+capture  = {sck_edge = "sample", clocks = 0, source = "spi_master.vhd: SCLK_LOW shifts sdo into rx_shift with sclk_q high"}
 
 # CS: selects the part.  Timed to the first and last rising edges of SCK.
-# This design drops CS with the first COPI bit, 8 edges after the mode 0
-# default, and raises it half an SCK period after the last falling edge,
-# 8 edges after the default.
 [cs]
-port         = "dac_scs_n"
-register     = "u_spi/scs_n_q_reg"
-setup_adjust = 8
-hold_adjust  = 8
+port     = "dac_scs_n"
+register = "u_spi/scs_n_q_reg"
+assert   = {sck_edge = "first sample", clocks = -4, source = "spi_master.vhd: IDLE clears scs_n_q with the first bit, HALF_PERIOD before sclk_q rises"}
+deassert = {sck_edge = "last change", clocks = 4, source = "spi_master.vhd: TRAIL sets scs_n_q HALF_PERIOD after the last sclk_q fall"}

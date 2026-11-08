@@ -55,7 +55,8 @@ The command each was created by is at its top.
 
 * ``spi_config.toml`` holds the mode, the role and the periods from the command line, and ``FROM_DESIGN`` for each name in the design, which stacv stops on until it is filled in (spi_config_006).
   The interface file is not written: stacv expands the SPI configuration into it whenever a command runs.
-* The mode and the clock periods set every launch and capture edge, so the user only checks them with ``stacv visualize edges spi_config.toml``, and moves them with the adjust keys when the design launches on other edges.
+* Each launch and capture is written with the usual value for the mode, in device clocks from an edge of SCK, and ``FROM_DESIGN`` for its source: the user corrects it from the HDL, says where it comes from, and checks it with ``stacv visualize edges spi_config.toml``.
+  The comments give each edge's time for the periods on the command line.
 * The timing reports are named by the interface and the signal, such as ``timing_reports/SPI.COPI_timing.rpt``.
 * The part's values, and the fastest SCK each pin allows, are ``FROM_DATASHEET``, which stacv stops on until they are filled in (part_config_011).
   The part pins are named ``SCK``, ``COPI``, ``CS`` and ``CIPO``; rename them to the datasheet's.

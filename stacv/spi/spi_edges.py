@@ -1,16 +1,16 @@
 '''
-The launch and capture edges of each SPI signal: the edges the SPI mode defines, moved by the adjust keys.
+The launch and capture edges of each SPI signal, from the SCK edge and the device clocks the configuration gives.
 
 SCK is divided from the device clock, so each edge of SCK is a whole number of device clock edges apart, and every
-edge is numbered on the device clock, edge 0 at SCK's edge A.  The mode defines, with SCK's first sample edge after
-edge A:
+edge is numbered on the device clock, edge 0 at SCK's edge A.  The SPI mode sets which SCK edges are change and sample
+edges; the first sample edge is the first after edge A, so there is a change edge before it to launch on:
 
-    COPI   launched on the change edge before the first sample edge, captured on the sample edges either side of it
-    CS     set one SCK period before the first sample edge, cleared at the change edge after the last
-    CIPO   launched by the part on SCK's change edge, captured by the device at the sample edges either side of it
+    COPI launch    counted from the change edge before the sample edge that captures it
+    CIPO capture   counted from the sample edge after the change edge the part launches it on
+    CS assert      counted from the first sample edge
+    CS deassert    counted from the last change edge, or the last sample edge
 
-An adjust moves a launch, or for CIPO the device's captures, by a number of device clock edges: +1 is one edge later,
-+2 one device clock period.
+A device clock has two edges, so each clock counted is two edges, and half a clock is a falling edge.
 '''
 
 from stacv.rules import edge_times
@@ -34,10 +34,19 @@ class SpiEdges():
         # COPI and CS are captured on SCK, so their capture edges are SCK's letters.
         self.sck_setup_capture = edge_times.convert_edge_number_to_letter(iFirstSample)
         self.sck_hold_capture = edge_times.convert_edge_number_to_letter(iFirstSample - 2)
-        self.copi_launch = self.change_edge + oConfig.copi.adjust
-        self.cs_setup_launch = self.previous_sample_edge + oConfig.cs.setup_adjust
-        self.cs_hold_launch = self.change_edge + oConfig.cs.hold_adjust
+        oChipSelectDeassert = oConfig.cs.edges['deassert']
+        self.copi_launch = self.change_edge + oConfig.copi.edges['launch'].count_device_clock_edges()
+        self.cs_setup_launch = self.first_sample_edge + oConfig.cs.edges['assert'].count_device_clock_edges()
+        self.cs_hold_launch = find_last_sck_edge(self, oChipSelectDeassert) + oChipSelectDeassert.count_device_clock_edges()
         # CIPO is launched on SCK, so its launch edge is SCK's number, and captured on the device clock.
+        iCaptureEdges = oConfig.cipo.edges['capture'].count_device_clock_edges()
         self.cipo_launch = iChange
-        self.cipo_setup_capture = self.first_sample_edge + oConfig.cipo.adjust
-        self.cipo_hold_capture = self.previous_sample_edge + oConfig.cipo.adjust
+        self.cipo_setup_capture = self.first_sample_edge + iCaptureEdges
+        self.cipo_hold_capture = self.previous_sample_edge + iCaptureEdges
+
+
+def find_last_sck_edge(oEdges, oChipSelectDeassert):
+    # CS is timed to the last sample edge at edge A, so the last change edge is the one after it.
+    if oChipSelectDeassert.sck_edge == 'last sample':
+        return oEdges.previous_sample_edge
+    return oEdges.change_edge

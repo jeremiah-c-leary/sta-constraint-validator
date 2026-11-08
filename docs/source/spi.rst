@@ -42,7 +42,7 @@ The steps
 #. Fill in the trace delays from the board, in ``traces.toml``, or leave ``{}`` to use the default delay.
 #. Fill in the names in your design, the device clock, and the port and register of each signal, in ``spi_config.toml``.
    stacv stops on each name still ``FROM_DESIGN`` (spi_config_006).
-#. Check the edges against the part's datasheet, and against when the design launches each signal; move them with the adjust keys:
+#. Set when the design launches and captures each signal, in device clocks from an edge of SCK, with the line of the HDL it comes from, and check the edges against the part's datasheet:
 
    .. code-block:: text
 
@@ -56,7 +56,7 @@ The steps
       stacv check spi_config.toml
       stacv visualize eye spi_config.toml
 
-#. Move CIPO's capture edges with its adjust key to centre its eye, if the slacks are uneven, and go round again.
+#. Move CIPO's capture to centre its eye, if the slacks are uneven, and go round again.
 #. Generate the datasheet of the interface, for whoever connects a part to the device (see :doc:`datasheet`).
 
 The DAC39RF20 example in ``example/texas_instruments/DAC39RF20`` is an SPI mode 0 interface timed this way.

@@ -11,7 +11,7 @@ sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'
 sExampleDir = os.path.join(sProjectDir, 'example', 'spi_template')
 FILE_NAMES = ['spi_config.toml', 'part.toml', 'traces.toml']
 # The names a user fills in, in the order the SPI configuration asks for them.
-DESIGN_NAMES = ['device_clk', 'O_SPI_SCK', 'q_spi_sck_reg', 'O_SPI_COPI', 'q_spi_copi_reg', 'I_SPI_CIPO', 'q_spi_cipo_reg', 'O_SPI_CS', 'q_spi_cs_reg']
+DESIGN_NAMES = ['device_clk', 'O_SPI_SCK', 'q_spi_sck_reg', 'O_SPI_COPI', 'q_spi_copi_reg', 'spi.vhd COPI', 'I_SPI_CIPO', 'q_spi_cipo_reg', 'spi.vhd CIPO', 'O_SPI_CS', 'q_spi_cs_reg', 'spi.vhd CS assert', 'spi.vhd CS deassert']
 
 
 class SpiTemplateTestCase(unittest.TestCase):
@@ -47,6 +47,7 @@ class SpiTemplateTestCase(unittest.TestCase):
     def fill_in_part(self):
         # The values a user fills in from the part's datasheet.
         sText = self.read_file('part.toml').replace('value = "FROM_DATASHEET"', 'value = 5').replace('source = "FROM_DATASHEET"', 'source = "Table 1"')
+        sText = sText.replace('symbol = "FROM_DATASHEET"', 'symbol = "tX"')
         sText = sText.replace('max_frequency = "FROM_DATASHEET"', 'max_frequency = 50')
         with open(os.path.join(self.sDirectory, 'part.toml'), 'w') as oFile:
             oFile.write(sText)
@@ -147,7 +148,7 @@ class TestSpiTemplate(SpiTemplateTestCase):
     def test_a_name_still_to_fill_in_is_an_error(self):
         self.assertEqual(0, self.create_spi(0))
         self.assertEqual(2, self.run_in_directory(['generate', 'xdc', 'spi_config.toml']))
-        self.assertEqual('ERROR: [spi_config_006] spi_config.toml key "name" in [device_clock] (line 36) is FROM_DESIGN; replace it with the name in your design\n', self.oStderr.getvalue())
+        self.assertEqual('ERROR: [spi_config_006] spi_config.toml key "name" in [device_clock] (line 39) is FROM_DESIGN; replace it with the name in your design\n', self.oStderr.getvalue())
 
     def test_a_value_still_to_fill_in_is_an_error(self):
         self.assertEqual(0, self.create_spi(0))

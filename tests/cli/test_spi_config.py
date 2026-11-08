@@ -13,6 +13,12 @@ sFixtureDir = os.path.join(os.path.dirname(__file__), 'fixtures', 'dac39rf20_spi
 sDac81404Interface = os.path.join(sProjectDir, 'example', 'texas_instruments', 'DAC81404', 'interface.toml')
 COPI_REGISTER = 'register = "u_spi/sdi_q_reg"'
 CIPO_REGISTER = 'register = "u_spi/rx_shift_reg[0]"'
+# The edges of the fixture, as the keys write them.
+EDGES = {}
+EDGES['launch'] = ('{sck_edge = "change", clocks = 0, ', 'launch   = ')
+EDGES['capture'] = ('{sck_edge = "sample", clocks = 0, ', 'capture  = ')
+EDGES['assert'] = ('{sck_edge = "first sample", clocks = -4, ', 'assert   = ')
+EDGES['deassert'] = ('{sck_edge = "last change", clocks = 4, ', 'deassert = ')
 
 
 class SpiConfigTestCase(unittest.TestCase):
@@ -50,6 +56,11 @@ class SpiConfigTestCase(unittest.TestCase):
     def edit_config(self, sOld, sNew):
         self.edit_file('spi_config.toml', sOld, sNew)
 
+    def set_edge(self, sKey, sSckEdge, sClocks):
+        # Changes where an edge is counted from, and how many device clocks, keeping its source.
+        sOldStart, sKeyText = EDGES[sKey]
+        self.edit_config(sKeyText + sOldStart, f'{sKeyText}{{sck_edge = "{sSckEdge}", clocks = {sClocks}, ')
+
     def generate_interface(self):
         self.assertEqual(0, self.run_stacv(['generate', 'interface', 'spi_config.toml']))
         return self.oStdout.getvalue()
@@ -76,26 +87,32 @@ class TestSpiConfig(SpiConfigTestCase):
         self.assertIn('name = "dac_sdo"\nmethodology = "SDR-SS-RT-DI"\n', sInterface)
         self.assertIn('registers = ["u_spi/rx_shift_reg[0]"]\n', sInterface)
 
-    def test_the_mode_sets_the_edges_and_the_adjusts_move_them(self):
-        # CS is set at edge 0 and cleared at edge 8 in mode 0; the design moves both 8 edges later.
+    def test_the_edges_are_counted_from_the_sck_edges_they_name(self):
+        # CS is asserted 4 clocks, 8 edges, before the first sample edge at 16, and deasserted 8 edges after the last
+        # change edge at 8.
         sInterface = self.generate_interface()
         self.assertIn('launch_clock = {name = "sys_clk", setup_edge = 8, hold_edge = 8}\ncapture_clock = {name = "dac_sclk_clk", setup_edge = "C", hold_edge = "A"}\nregisters = ["u_spi/sdi_q_reg"]', sInterface)
         self.assertIn('launch_clock = {name = "sys_clk", setup_edge = 8, hold_edge = 16}\ncapture_clock = {name = "dac_sclk_clk", setup_edge = "C", hold_edge = "A"}\nregisters = ["u_spi/scs_n_q_reg"]', sInterface)
         self.assertIn('launch_clock = {name = "dac_sclk_clk", setup_edge = 1, hold_edge = 1}\ncapture_clock = {name = "sys_clk", setup_edge = "Q", hold_edge = "A"}\nregisters = ["u_spi/rx_shift_reg[0]"]', sInterface)
 
-    def test_the_copi_adjust_moves_its_launch(self):
-        self.edit_config(COPI_REGISTER, COPI_REGISTER + '\nadjust = 2')
+    def test_copi_launch_counts_device_clocks_from_the_change_edge(self):
+        self.set_edge('launch', 'change', '1')
         self.assertIn('launch_clock = {name = "sys_clk", setup_edge = 10, hold_edge = 10}', self.generate_interface())
 
-    def test_the_cipo_adjust_moves_its_captures(self):
-        # CIPO is captured on the device clock, so its adjust moves the captures and not the part's launch.
-        self.edit_config(CIPO_REGISTER, CIPO_REGISTER + '\nadjust = 2')
+    def test_cipo_capture_counts_device_clocks_from_the_sample_edge(self):
+        # CIPO is captured on the device clock, so its edge moves the captures and not the part's launch.
+        self.set_edge('capture', 'sample', '1')
         sInterface = self.generate_interface()
         self.assertIn('launch_clock = {name = "dac_sclk_clk", setup_edge = 1, hold_edge = 1}\ncapture_clock = {name = "sys_clk", setup_edge = "S", hold_edge = "C"}', sInterface)
 
-    def test_the_cs_adjusts_left_out_are_the_mode_edges(self):
-        self.edit_config('setup_adjust = 8\nhold_adjust  = 8\n', '')
-        self.assertIn('launch_clock = {name = "sys_clk", setup_edge = 0, hold_edge = 8}', self.generate_interface())
+    def test_cs_deassert_can_count_from_the_last_sample_edge(self):
+        # 8 clocks after the last sample edge at edge 0 is the same edge 16 as 4 clocks after the last change edge.
+        self.set_edge('deassert', 'last sample', '8')
+        self.assertIn('launch_clock = {name = "sys_clk", setup_edge = 8, hold_edge = 16}', self.generate_interface())
+
+    def test_half_a_clock_is_a_falling_edge_of_the_device_clock(self):
+        self.set_edge('launch', 'change', '0.5')
+        self.assertIn('setup_edge = 9, hold_edge = 9', self.generate_interface())
 
     def test_the_timing_reports_are_named_by_interface_and_signal_in_the_folder_given(self):
         sInterface = self.generate_interface()
@@ -105,7 +122,13 @@ class TestSpiConfig(SpiConfigTestCase):
     def test_the_interface_file_says_where_the_edges_come_from(self):
         sInterface = self.generate_interface()
         self.assertIn('# Generated from spi_config.toml by:  stacv generate interface spi_config.toml\n', sInterface)
-        self.assertIn('# Edges:  SPI mode 0 defaults; CS setup +8, hold +8; not verified against simulation\n', sInterface)
+        lExpected = []
+        lExpected.append('# Edges:  set in the SPI configuration, not verified against simulation')
+        lExpected.append('#         COPI launch   at the SCK change edge                     spi_master.vhd: SCLK_HIGH sets sdi_q with sclk_q low')
+        lExpected.append('#         CIPO capture  at the SCK sample edge                     spi_master.vhd: SCLK_LOW shifts sdo into rx_shift with sclk_q high')
+        lExpected.append('#         CS assert     4 clocks before the first SCK sample edge  spi_master.vhd: IDLE clears scs_n_q with the first bit, HALF_PERIOD before sclk_q rises')
+        lExpected.append('#         CS deassert   4 clocks after the last SCK change edge    spi_master.vhd: TRAIL sets scs_n_q HALF_PERIOD after the last sclk_q fall')
+        self.assertIn('\n'.join(lExpected) + '\n', sInterface)
 
     def test_the_interface_file_is_written_to_the_output(self):
         self.assertEqual(0, self.run_stacv(['generate', 'interface', 'spi_config.toml', '--output', 'interface.toml']))
@@ -123,19 +146,17 @@ class TestSpiConfig(SpiConfigTestCase):
         self.assertEqual(0, self.run_stacv(['generate', 'xdc', 'spi_config.toml']))
         sXdc = self.oStdout.getvalue()
         self.assertRegex(sXdc, r'\n# [0-9a-f]{32}  spi_config.toml\n')
-        self.assertIn('\n# Edges:      SPI mode 0 defaults; CS setup +8, hold +8; not verified against simulation\n', sXdc)
+        lExpected = []
+        lExpected.append('# Edges:      set in the SPI configuration, not verified against simulation')
+        lExpected.append('#             COPI launch   at the SCK change edge                     spi_master.vhd: SCLK_HIGH sets sdi_q with sclk_q low')
+        lExpected.append('#             CIPO capture  at the SCK sample edge                     spi_master.vhd: SCLK_LOW shifts sdo into rx_shift with sclk_q high')
+        lExpected.append('#             CS assert     4 clocks before the first SCK sample edge  spi_master.vhd: IDLE clears scs_n_q with the first bit, HALF_PERIOD before sclk_q rises')
+        lExpected.append('#             CS deassert   4 clocks after the last SCK change edge    spi_master.vhd: TRAIL sets scs_n_q HALF_PERIOD after the last sclk_q fall')
+        self.assertIn('\n' + '\n'.join(lExpected) + '\n', sXdc)
 
-    def test_the_edges_line_lists_each_adjust_given(self):
-        self.edit_config(COPI_REGISTER, COPI_REGISTER + '\nadjust = 2')
-        self.edit_config(CIPO_REGISTER, CIPO_REGISTER + '\nadjust = -0')
-        self.edit_config('setup_adjust = 8', 'setup_adjust = 0')
-        self.assertEqual(0, self.run_stacv(['generate', 'xdc', 'spi_config.toml']))
-        self.assertIn('\n# Edges:      SPI mode 0 defaults; COPI +2; CS hold +8; not verified against simulation\n', self.oStdout.getvalue())
-
-    def test_the_edges_line_without_adjusts_names_the_defaults_only(self):
-        self.edit_config('setup_adjust = 8\nhold_adjust  = 8\n', '')
-        self.assertEqual(0, self.run_stacv(['generate', 'xdc', 'spi_config.toml']))
-        self.assertIn('\n# Edges:      SPI mode 0 defaults; not verified against simulation\n', self.oStdout.getvalue())
+    def test_one_clock_is_written_in_the_singular(self):
+        self.set_edge('launch', 'change', '-1')
+        self.assertIn('COPI launch   1 clock before the SCK change edge', self.generate_interface())
 
     def test_the_report_script_writes_the_reports_check_reads(self):
         self.assertEqual(0, self.run_stacv(['generate', 'report_tcl', 'spi_config.toml']))
@@ -162,23 +183,43 @@ class TestSpiConfigErrors(SpiConfigTestCase):
 
     def test_a_missing_key_is_reported_at_its_table(self):
         self.edit_config(COPI_REGISTER + '\n', '')
-        self.assert_error('spi_config_002', 'missing required key "register" in [copi] (line 40)')
+        self.assert_error('spi_config_002', 'missing required key "register" in [copi] (line 39)')
 
     def test_a_missing_table_is_an_error(self):
-        self.edit_config('[cipo]\nport     = "dac_sdo"\nregister = "u_spi/rx_shift_reg[0]"\n', '')
+        self.edit_config('[cipo]\nport     = "dac_sdo"\nregister = "u_spi/rx_shift_reg[0]"\ncapture  = {sck_edge = "sample", clocks = 0, source = "spi_master.vhd: SCLK_LOW shifts sdo into rx_shift with sclk_q high"}\n', '')
         self.assert_error('spi_config_002', 'missing required key "cipo"')
 
-    def test_an_adjust_that_is_not_a_whole_number_is_an_error(self):
-        self.edit_config('setup_adjust = 8', 'setup_adjust = 1.5')
-        self.assert_error('spi_config_003', 'key "setup_adjust" in [cs] (line 56) must be a whole number')
+    def test_an_edge_that_is_not_a_table_is_an_error(self):
+        self.edit_config('assert   = {sck_edge = "first sample", clocks = -4, source = "spi_master.vhd: IDLE clears scs_n_q with the first bit, HALF_PERIOD before sclk_q rises"}', 'assert   = -4')
+        self.assert_error('spi_config_003', 'key "assert" in [cs] (line 54) must be a table')
 
     def test_a_misspelled_key_is_an_error(self):
-        self.edit_config('hold_adjust  = 8', 'hold_ajust  = 8')
-        self.assert_error('spi_config_004', 'key "hold_ajust" in [cs] (line 53) is not a key stacv reads; the keys are port, register, setup_adjust, hold_adjust')
+        self.edit_config('deassert = {', 'dessert = {')
+        self.assert_error('spi_config_004', 'key "dessert" in [cs] (line 51) is not a key stacv reads; the keys are port, register, assert, deassert')
+
+    def test_a_misspelled_key_of_an_edge_is_an_error(self):
+        self.edit_config('{sck_edge = "change", clocks = 0, ', '{sck_edge = "change", clock = 0, ')
+        self.assert_error('spi_config_004', 'key "clock" in [copi] (line 42) is not a key stacv reads; the keys are sck_edge, clocks, source')
+
+    def test_an_edge_without_a_source_is_an_error(self):
+        self.edit_config(', source = "spi_master.vhd: SCLK_HIGH sets sdi_q with sclk_q low"}', '}')
+        self.assert_error('spi_config_002', 'missing required key "source" in [copi] (line 42)')
+
+    def test_an_edge_whose_source_is_still_to_fill_in_is_an_error(self):
+        self.edit_config('source = "spi_master.vhd: SCLK_HIGH sets sdi_q with sclk_q low"', 'source = "FROM_DESIGN"')
+        self.assert_error('spi_config_006', 'key "launch" in [copi] (line 42) has source FROM_DESIGN; say where in the design the edge comes from')
+
+    def test_an_sck_edge_the_key_is_not_counted_from_is_an_error(self):
+        self.set_edge('deassert', 'first sample', '4')
+        self.assert_error('spi_config_014', 'key "deassert" in [cs] (line 55) has sck_edge "first sample"; it must be "last change" or "last sample"')
+
+    def test_clocks_that_are_not_a_whole_or_half_number_is_an_error(self):
+        self.set_edge('launch', 'change', '0.25')
+        self.assert_error('spi_config_015', 'key "launch" in [copi] (line 42) has clocks 0.25; an edge is on a device clock edge, so clocks is a whole or half number')
 
     def test_an_interface_stacv_has_no_configuration_for_is_an_error(self):
         self.edit_config('interface = "spi"', 'interface = "i2c"')
-        self.assert_error('spi_config_005', 'key "interface" (line 18) names i2c, which stacv has no configuration for; the configurations are spi')
+        self.assert_error('spi_config_005', 'key "interface" (line 17) names i2c, which stacv has no configuration for; the configurations are spi')
 
     def test_a_name_still_to_fill_in_is_an_error(self):
         self.edit_config('port     = "dac_sdo"', 'port     = "FROM_DESIGN"')
@@ -186,73 +227,68 @@ class TestSpiConfigErrors(SpiConfigTestCase):
 
     def test_a_mode_that_is_not_an_spi_mode_is_an_error(self):
         self.edit_config('mode      = 0', 'mode      = 4')
-        self.assert_error('spi_config_007', 'key "mode" (line 20) must be 0, 1, 2 or 3')
+        self.assert_error('spi_config_007', 'key "mode" (line 19) must be 0, 1, 2 or 3')
 
     def test_a_peripheral_is_not_supported_yet(self):
         self.edit_config('role      = "controller"', 'role      = "peripheral"')
-        self.assert_error('spi_config_008', 'key "role" (line 21) must be "controller"; a peripheral is not supported yet')
+        self.assert_error('spi_config_008', 'key "role" (line 20) must be "controller"; a peripheral is not supported yet')
 
     def test_a_period_that_is_not_greater_than_0_is_an_error(self):
         self.edit_config('period = 10.0', 'period = 0')
-        self.assert_error('spi_config_009', 'key "period" in [device_clock] (line 31) must be greater than 0')
+        self.assert_error('spi_config_009', 'key "period" in [device_clock] (line 30) must be greater than 0')
 
     def test_sck_that_is_not_an_even_number_of_device_clock_periods_is_an_error(self):
         self.edit_config('period   = 80.0', 'period   = 30.0')
-        self.assert_error('spi_config_010', 'key "period" in [sck] (line 37) is 30 ns, which is not an even number of device clock periods of 10 ns; each edge of SCK is launched from a rising edge of the device clock')
+        self.assert_error('spi_config_010', 'key "period" in [sck] (line 36) is 30 ns, which is not an even number of device clock periods of 10 ns; each edge of SCK is launched from a rising edge of the device clock')
 
     def test_copi_launched_at_or_after_the_edge_that_samples_it_is_an_error(self):
-        self.edit_config(COPI_REGISTER, COPI_REGISTER + '\nadjust = 8')
-        self.assert_error('spi_config_011', 'key "adjust" in [copi] (line 43) moves the launch to edge 16, at or after the rising edge of SCK at edge 16 that samples it')
+        self.set_edge('launch', 'change', '4')
+        self.assert_error('spi_config_011', 'key "launch" in [copi] (line 42) puts the launch at edge 16, at or after the rising edge of SCK at edge 16 that samples it')
 
     def test_copi_launched_before_the_edge_that_samples_the_bit_before_it_is_an_error(self):
-        self.edit_config(COPI_REGISTER, COPI_REGISTER + '\nadjust = -9')
-        self.assert_error('spi_config_011', 'key "adjust" in [copi] (line 43) moves the launch to edge -1, before the rising edge of SCK at edge 0 that samples the bit before it')
+        self.set_edge('launch', 'change', '-4.5')
+        self.assert_error('spi_config_011', 'key "launch" in [copi] (line 42) puts the launch at edge -1, before the rising edge of SCK at edge 0 that samples the bit before it')
 
-    def test_cs_set_before_edge_0_is_an_error(self):
-        self.edit_config('setup_adjust = 8', 'setup_adjust = -1')
-        self.assert_error('spi_config_011', 'key "setup_adjust" in [cs] (line 56) moves the launch to edge -1, before edge 0')
+    def test_cs_asserted_before_edge_0_is_an_error(self):
+        self.set_edge('assert', 'first sample', '-8.5')
+        self.assert_error('spi_config_011', 'key "assert" in [cs] (line 54) puts the launch at edge -1, before edge 0')
 
-    def test_cs_set_at_or_after_the_first_sample_edge_is_an_error(self):
-        self.edit_config('setup_adjust = 8', 'setup_adjust = 16')
-        self.assert_error('spi_config_011', 'key "setup_adjust" in [cs] (line 56) moves the launch to edge 16, at or after the first rising edge of SCK at edge 16')
+    def test_cs_asserted_at_or_after_the_first_sample_edge_is_an_error(self):
+        self.set_edge('assert', 'first sample', '0')
+        self.assert_error('spi_config_011', 'key "assert" in [cs] (line 54) puts the launch at edge 16, at or after the first rising edge of SCK at edge 16')
 
-    def test_cs_cleared_before_the_last_sample_edge_is_an_error(self):
-        self.edit_config('hold_adjust  = 8', 'hold_adjust  = -9')
-        self.assert_error('spi_config_011', 'key "hold_adjust" in [cs] (line 57) moves the launch to edge -1, before the last rising edge of SCK at edge 0')
+    def test_cs_deasserted_before_the_last_sample_edge_is_an_error(self):
+        self.set_edge('deassert', 'last change', '-4.5')
+        self.assert_error('spi_config_011', 'key "deassert" in [cs] (line 55) puts the launch at edge -1, before the last rising edge of SCK at edge 0')
 
-    def test_cs_cleared_long_after_the_last_sample_edge_is_not_an_error(self):
-        # SCK has stopped, so nothing limits how late CS is cleared.
-        self.edit_config('hold_adjust  = 8', 'hold_adjust  = 1000')
+    def test_cs_deasserted_long_after_the_last_sample_edge_is_not_an_error(self):
+        # SCK has stopped, so nothing limits how late CS is deasserted.
+        self.set_edge('deassert', 'last change', '500')
         self.assertIn('setup_edge = 8, hold_edge = 1008', self.generate_interface())
 
-    def test_an_odd_adjust_is_not_an_error(self):
-        # A design can launch on the falling edge of the device clock.
-        self.edit_config(COPI_REGISTER, COPI_REGISTER + '\nadjust = 1')
-        self.assertIn('setup_edge = 9, hold_edge = 9', self.generate_interface())
-
     def test_cipo_captured_before_edge_a_is_an_error(self):
-        self.edit_config(CIPO_REGISTER, CIPO_REGISTER + '\nadjust = -1')
-        self.assert_error('spi_config_011', 'key "adjust" in [cipo] (line 48) moves the hold capture before edge A, the first edge')
+        self.set_edge('capture', 'sample', '-0.5')
+        self.assert_error('spi_config_011', 'key "capture" in [cipo] (line 48) puts the hold capture before edge A, the first edge')
 
     def test_cipo_held_after_the_edge_that_launches_it_is_an_error(self):
-        self.edit_config(CIPO_REGISTER, CIPO_REGISTER + '\nadjust = 9')
-        self.assert_error('spi_config_011', 'key "adjust" in [cipo] (line 48) moves the hold capture to edge J, after the falling edge of SCK at edge I that launches CIPO')
+        self.set_edge('capture', 'sample', '4.5')
+        self.assert_error('spi_config_011', 'key "capture" in [cipo] (line 48) puts the hold capture at edge J, after the falling edge of SCK at edge I that launches CIPO')
 
     def test_cipo_set_up_at_or_before_the_edge_that_launches_it_is_an_error(self):
         # In mode 1 the part launches CIPO on the rising edge at edge 16, and the device captures it at edge 24.
         self.edit_file('part.toml', 'if_standard = "SPI mode 0"', 'if_standard = "SPI mode 1"')
         self.edit_config('mode      = 0', 'mode      = 1')
-        self.edit_config(CIPO_REGISTER, CIPO_REGISTER + '\nadjust = -8')
-        self.assert_error('spi_config_011', 'key "adjust" in [cipo] (line 48) moves the setup capture to edge Q, at or before the rising edge of SCK at edge Q that launches CIPO')
+        self.set_edge('capture', 'sample', '-4')
+        self.assert_error('spi_config_011', 'key "capture" in [cipo] (line 48) puts the setup capture at edge Q, at or before the rising edge of SCK at edge Q that launches CIPO')
 
     def test_a_part_without_the_spi_interface_of_the_mode_is_an_error(self):
         self.edit_file('part.toml', 'if_standard = "SPI mode 0"', 'if_standard = "SPI mode 1"')
-        self.assert_error('spi_config_012', 'key "part" (line 23) names part.toml, which has no [[interface]] with if_standard "SPI mode 0" and if_role "peripheral"')
+        self.assert_error('spi_config_012', 'key "part" (line 22) names part.toml, which has no [[interface]] with if_standard "SPI mode 0" and if_role "peripheral"')
 
     def test_a_part_with_two_spi_interfaces_of_the_mode_is_an_error(self):
         with open('part.toml', 'a') as oFile:
             oFile.write('\n[[interface]]\nname = "Second SPI"\nif_standard = "SPI mode 0"\nif_role = "peripheral"\n')
-        self.assert_error('spi_config_013', 'key "part" (line 23) names part.toml, which has more than one [[interface]] with if_standard "SPI mode 0" and if_role "peripheral": Serial Programming Interface, Second SPI')
+        self.assert_error('spi_config_013', 'key "part" (line 22) names part.toml, which has more than one [[interface]] with if_standard "SPI mode 0" and if_role "peripheral": Serial Programming Interface, Second SPI')
 
     def test_an_interface_file_does_not_generate_an_interface_file(self):
         self.assertEqual(2, self.run_stacv(['generate', 'interface', sDac81404Interface]))

@@ -1,5 +1,6 @@
 '''
-Reads an SPI configuration file: the names in the design, the SPI mode and the edges the design moves from it.
+Reads an SPI configuration file: the names in the design, the SPI mode, and the edges the design launches and captures
+each signal on, counted in device clocks from an edge of SCK.
 
 stacv expands the file into an interface file, so a user times an SPI interface without writing the methodologies,
 signals and edges that the mode already fixes.  A file with the key "interface" and no ports is an interface
@@ -26,8 +27,18 @@ MODES = [0, 1, 2, 3]
 TOP_LEVEL_KEYS = ['interface', 'name', 'mode', 'role', 'part', 'traces', 'timing_reports_dir', 'device_clock', 'sck', 'copi', 'cipo', 'cs']
 DEVICE_CLOCK_KEYS = ['name', 'period']
 SCK_KEYS = ['port', 'register', 'period']
-DATA_KEYS = ['port', 'register', 'adjust']
-CS_KEYS = ['port', 'register', 'setup_adjust', 'hold_adjust']
+COPI_KEYS = ['port', 'register', 'launch']
+CIPO_KEYS = ['port', 'register', 'capture']
+CS_KEYS = ['port', 'register', 'assert', 'deassert']
+EDGE_KEYS = ['sck_edge', 'clocks', 'source']
+# The SCK edge each edge key is counted from, in the order the template offers them.
+SCK_EDGES = {}
+SCK_EDGES['launch'] = ['change']
+SCK_EDGES['capture'] = ['sample']
+SCK_EDGES['assert'] = ['first sample']
+SCK_EDGES['deassert'] = ['last change', 'last sample']
+# A device clock period has two edges, so an edge is half a clock.
+EDGES_PER_CLOCK = 2
 # The interface of a part template, used until the part file can be read.
 DEFAULT_PART_INTERFACE = 'SPI'
 
@@ -68,14 +79,25 @@ class Sck():
 
 
 class Signal():
-    # COPI, CIPO and CS: a port and the register that drives or captures it, with the edges the design moves.
+    # COPI, CIPO and CS: a port, the register that drives or captures it, and the edges it is launched or captured on.
 
     def __init__(self):
         self.port = None
         self.register = None
-        self.adjust = 0
-        self.setup_adjust = 0
-        self.hold_adjust = 0
+        self.edges = {}
+
+
+class Edge():
+    # Where the design launches or captures a signal: a number of device clocks from an edge of SCK, and why.
+
+    def __init__(self):
+        self.key = None
+        self.sck_edge = None
+        self.clocks = None
+        self.source = None
+
+    def count_device_clock_edges(self):
+        return round(self.clocks * EDGES_PER_CLOCK)
 
 
 def is_interface_configuration(dConfig):
@@ -109,9 +131,9 @@ def create_spi_config(dConfig, oLocation):
     oConfig.device_clock = read_device_clock(dConfig, oLocation)
     oConfig.sck = read_sck(dConfig, oLocation)
     check_sck_period(oConfig, oLocation)
-    oConfig.copi = read_data_signal(dConfig, 'copi', oLocation)
-    oConfig.cipo = read_data_signal(dConfig, 'cipo', oLocation)
-    oConfig.cs = read_chip_select(dConfig, oLocation)
+    oConfig.copi = read_signal(dConfig, 'copi', COPI_KEYS, oLocation)
+    oConfig.cipo = read_signal(dConfig, 'cipo', CIPO_KEYS, oLocation)
+    oConfig.cs = read_signal(dConfig, 'cs', CS_KEYS, oLocation)
     oConfig.standard = standards.get_standard(f'SPI mode {oConfig.mode}')
     oConfig.edges = spi_edges.SpiEdges(oConfig, oConfig.standard)
     check_edges(oConfig, oLocation)
@@ -163,14 +185,6 @@ def read_period(dTable, sTable, oLocation):
     return fPeriod
 
 
-def read_adjust(dTable, sTable, sKey, oLocation):
-    # The mode's edges are the default, so an adjust left out is 0.
-    if sKey not in dTable:
-        return 0
-    oLocation.set_key(sTable, sKey)
-    return READER.get_required_value_of_type(dTable, sKey, value_type.INTEGER, oLocation)
-
-
 def read_device_clock(dConfig, oLocation):
     dTable = read_table(dConfig, 'device_clock', DEVICE_CLOCK_KEYS, oLocation)
     oDeviceClock = DeviceClock()
@@ -188,23 +202,59 @@ def read_sck(dConfig, oLocation):
     return oSck
 
 
-def read_data_signal(dConfig, sTable, oLocation):
-    dTable = read_table(dConfig, sTable, DATA_KEYS, oLocation)
+def read_signal(dConfig, sTable, lKeys, oLocation):
+    # The keys after port and register are the signal's edges.
+    dTable = read_table(dConfig, sTable, lKeys, oLocation)
     oSignal = Signal()
     oSignal.port = read_string(dTable, sTable, 'port', oLocation)
     oSignal.register = read_string(dTable, sTable, 'register', oLocation)
-    oSignal.adjust = read_adjust(dTable, sTable, 'adjust', oLocation)
+    for sKey in lKeys[2:]:
+        oSignal.edges[sKey] = read_edge(dTable, sTable, sKey, oLocation)
     return oSignal
 
 
-def read_chip_select(dConfig, oLocation):
-    dTable = read_table(dConfig, 'cs', CS_KEYS, oLocation)
-    oSignal = Signal()
-    oSignal.port = read_string(dTable, 'cs', 'port', oLocation)
-    oSignal.register = read_string(dTable, 'cs', 'register', oLocation)
-    oSignal.setup_adjust = read_adjust(dTable, 'cs', 'setup_adjust', oLocation)
-    oSignal.hold_adjust = read_adjust(dTable, 'cs', 'hold_adjust', oLocation)
-    return oSignal
+def read_edge(dTable, sTable, sKey, oLocation):
+    oLocation.set_key(sTable, sKey)
+    dEdge = READER.get_required_table(dTable, sKey, oLocation)
+    READER.check_keys(dEdge, EDGE_KEYS, oLocation)
+    oEdge = Edge()
+    oEdge.key = sKey
+    oEdge.sck_edge = read_sck_edge(dEdge, sKey, oLocation)
+    oEdge.clocks = read_clocks(dEdge, sKey, oLocation)
+    oEdge.source = read_edge_source(dEdge, sKey, oLocation)
+    return oEdge
+
+
+def read_sck_edge(dEdge, sKey, oLocation):
+    sSckEdge = READER.get_required_string(dEdge, 'sck_edge', oLocation)
+    lSckEdges = SCK_EDGES[sKey]
+    if sSckEdge not in lSckEdges:
+        READER.raise_error(14, oLocation.filename, f'key "{sKey}"{oLocation.location} has sck_edge "{sSckEdge}"; it must be {describe_choices(lSckEdges)}')
+    return sSckEdge
+
+
+def describe_choices(lChoices):
+    lQuoted = []
+    for sChoice in lChoices:
+        lQuoted.append(f'"{sChoice}"')
+    return ' or '.join(lQuoted)
+
+
+def read_clocks(dEdge, sKey, oLocation):
+    # A design can launch on the falling edge of the device clock, half a clock from a rising edge.
+    fClocks = READER.get_required_number(dEdge, 'clocks', oLocation)
+    fEdges = fClocks * EDGES_PER_CLOCK
+    if abs(fEdges - round(fEdges)) > 1e-9:
+        READER.raise_error(15, oLocation.filename, f'key "{sKey}"{oLocation.location} has clocks {number_format.format_number(fClocks)}; an edge is on a device clock edge, so clocks is a whole or half number')
+    return fClocks
+
+
+def read_edge_source(dEdge, sKey, oLocation):
+    # The edges are the judgement in the file, so each one says where in the design it comes from.
+    sSource = READER.get_required_string(dEdge, 'source', oLocation)
+    if sSource == PLACEHOLDER:
+        READER.raise_error(6, oLocation.filename, f'key "{sKey}"{oLocation.location} has source {PLACEHOLDER}; say where in the design the edge comes from')
+    return sSource
 
 
 def check_sck_period(oConfig, oLocation):
@@ -227,25 +277,25 @@ def check_edges(oConfig, oLocation):
 def check_copi_edges(oConfig, oLocation):
     oEdges = oConfig.edges
     sSample = oConfig.standard.sample_edge.lower()
-    oLocation.set_key('copi', 'adjust')
+    oLocation.set_key('copi', 'launch')
     if oEdges.copi_launch < oEdges.previous_sample_edge:
-        raise_edge_error(oLocation, 'adjust', f'moves the launch to edge {oEdges.copi_launch}, before the {sSample} edge of SCK at edge {oEdges.previous_sample_edge} that samples the bit before it')
+        raise_edge_error(oLocation, 'launch', f'puts the launch at edge {oEdges.copi_launch}, before the {sSample} edge of SCK at edge {oEdges.previous_sample_edge} that samples the bit before it')
     if oEdges.copi_launch >= oEdges.first_sample_edge:
-        raise_edge_error(oLocation, 'adjust', f'moves the launch to edge {oEdges.copi_launch}, at or after the {sSample} edge of SCK at edge {oEdges.first_sample_edge} that samples it')
+        raise_edge_error(oLocation, 'launch', f'puts the launch at edge {oEdges.copi_launch}, at or after the {sSample} edge of SCK at edge {oEdges.first_sample_edge} that samples it')
 
 
 def check_cs_edges(oConfig, oLocation):
     oEdges = oConfig.edges
     sSample = oConfig.standard.sample_edge.lower()
-    oLocation.set_key('cs', 'setup_adjust')
+    oLocation.set_key('cs', 'assert')
     if oEdges.cs_setup_launch < 0:
-        raise_edge_error(oLocation, 'setup_adjust', f'moves the launch to edge {oEdges.cs_setup_launch}, before edge 0')
+        raise_edge_error(oLocation, 'assert', f'puts the launch at edge {oEdges.cs_setup_launch}, before edge 0')
     if oEdges.cs_setup_launch >= oEdges.first_sample_edge:
-        raise_edge_error(oLocation, 'setup_adjust', f'moves the launch to edge {oEdges.cs_setup_launch}, at or after the first {sSample} edge of SCK at edge {oEdges.first_sample_edge}')
+        raise_edge_error(oLocation, 'assert', f'puts the launch at edge {oEdges.cs_setup_launch}, at or after the first {sSample} edge of SCK at edge {oEdges.first_sample_edge}')
     # CS is cleared after SCK stops, so only the last sample edge limits its hold launch.
-    oLocation.set_key('cs', 'hold_adjust')
+    oLocation.set_key('cs', 'deassert')
     if oEdges.cs_hold_launch < oEdges.previous_sample_edge:
-        raise_edge_error(oLocation, 'hold_adjust', f'moves the launch to edge {oEdges.cs_hold_launch}, before the last {sSample} edge of SCK at edge {oEdges.previous_sample_edge}')
+        raise_edge_error(oLocation, 'deassert', f'puts the launch at edge {oEdges.cs_hold_launch}, before the last {sSample} edge of SCK at edge {oEdges.previous_sample_edge}')
 
 
 def check_cipo_edges(oConfig, oLocation):
@@ -253,13 +303,13 @@ def check_cipo_edges(oConfig, oLocation):
     oEdges = oConfig.edges
     sChange = oConfig.standard.change_edge.lower()
     sLaunch = edge_times.convert_edge_number_to_letter(oEdges.change_edge)
-    oLocation.set_key('cipo', 'adjust')
+    oLocation.set_key('cipo', 'capture')
     if oEdges.cipo_hold_capture < 0:
-        raise_edge_error(oLocation, 'adjust', 'moves the hold capture before edge A, the first edge')
+        raise_edge_error(oLocation, 'capture', 'puts the hold capture before edge A, the first edge')
     if oEdges.cipo_setup_capture <= oEdges.change_edge:
-        raise_edge_error(oLocation, 'adjust', f'moves the setup capture to edge {edge_times.convert_edge_number_to_letter(oEdges.cipo_setup_capture)}, at or before the {sChange} edge of SCK at edge {sLaunch} that launches CIPO')
+        raise_edge_error(oLocation, 'capture', f'puts the setup capture at edge {edge_times.convert_edge_number_to_letter(oEdges.cipo_setup_capture)}, at or before the {sChange} edge of SCK at edge {sLaunch} that launches CIPO')
     if oEdges.cipo_hold_capture > oEdges.change_edge:
-        raise_edge_error(oLocation, 'adjust', f'moves the hold capture to edge {edge_times.convert_edge_number_to_letter(oEdges.cipo_hold_capture)}, after the {sChange} edge of SCK at edge {sLaunch} that launches CIPO')
+        raise_edge_error(oLocation, 'capture', f'puts the hold capture at edge {edge_times.convert_edge_number_to_letter(oEdges.cipo_hold_capture)}, after the {sChange} edge of SCK at edge {sLaunch} that launches CIPO')
 
 
 def raise_edge_error(oLocation, sKey, sMessage):
@@ -318,25 +368,50 @@ def is_matching_part_interface(dInterface, oConfig):
     return dInterface.get('if_role') == standards.PERIPHERAL
 
 
-def describe_edges(oConfig):
-    # Until a simulation checks them, the edges are the mode's defaults moved by the adjusts the user gave.
-    lParts = [f'SPI mode {oConfig.mode} defaults']
-    lParts.extend(describe_adjusts(oConfig))
-    lParts.append('not verified against simulation')
-    return '; '.join(lParts)
+EDGE_ROWS = [('COPI launch', 'copi', 'launch'), ('CIPO capture', 'cipo', 'capture'), ('CS assert', 'cs', 'assert'), ('CS deassert', 'cs', 'deassert')]
+# How each SCK edge reads in a sentence.
+SCK_EDGE_NAMES = {}
+SCK_EDGE_NAMES['change'] = 'the SCK change edge'
+SCK_EDGE_NAMES['sample'] = 'the SCK sample edge'
+SCK_EDGE_NAMES['first sample'] = 'the first SCK sample edge'
+SCK_EDGE_NAMES['last change'] = 'the last SCK change edge'
+SCK_EDGE_NAMES['last sample'] = 'the last SCK sample edge'
+EDGES_HEADING = 'set in the SPI configuration, not verified against simulation'
 
 
-def describe_adjusts(oConfig):
-    lAdjusts = []
-    if oConfig.copi.adjust != 0:
-        lAdjusts.append(f'COPI {oConfig.copi.adjust:+d}')
-    lChipSelect = []
-    if oConfig.cs.setup_adjust != 0:
-        lChipSelect.append(f'setup {oConfig.cs.setup_adjust:+d}')
-    if oConfig.cs.hold_adjust != 0:
-        lChipSelect.append(f'hold {oConfig.cs.hold_adjust:+d}')
-    if len(lChipSelect) > 0:
-        lAdjusts.append('CS ' + ', '.join(lChipSelect))
-    if oConfig.cipo.adjust != 0:
-        lAdjusts.append(f'CIPO {oConfig.cipo.adjust:+d}')
-    return lAdjusts
+def build_edge_lines(oConfig):
+    # Until a simulation checks them, the edges are the ones the configuration gives, each with its source.
+    lRows = []
+    for sName, sTable, sKey in EDGE_ROWS:
+        oEdge = getattr(oConfig, sTable).edges[sKey]
+        lRows.append((sName, describe_edge(oEdge), oEdge.source))
+    iNameWidth = find_column_width(lRows, 0)
+    iWhereWidth = find_column_width(lRows, 1)
+    lLines = []
+    for sName, sWhere, sSource in lRows:
+        lLines.append(f'{sName.ljust(iNameWidth)}  {sWhere.ljust(iWhereWidth)}  {sSource}')
+    return lLines
+
+
+def find_column_width(lRows, iColumn):
+    iWidth = 0
+    for tRow in lRows:
+        iWidth = max(iWidth, len(tRow[iColumn]))
+    return iWidth
+
+
+def describe_edge(oEdge):
+    sSckEdge = SCK_EDGE_NAMES[oEdge.sck_edge]
+    if oEdge.clocks == 0:
+        return f'at {sSckEdge}'
+    sClocks = describe_clocks(abs(oEdge.clocks))
+    if oEdge.clocks < 0:
+        return f'{sClocks} before {sSckEdge}'
+    return f'{sClocks} after {sSckEdge}'
+
+
+def describe_clocks(fClocks):
+    sNumber = number_format.format_number(fClocks)
+    if fClocks == 1:
+        return f'{sNumber} clock'
+    return f'{sNumber} clocks'

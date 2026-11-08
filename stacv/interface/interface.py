@@ -15,8 +15,8 @@ class Interface():
         # The interface standard the file follows, such as "SPI mode 1", and the device's role in it; None when it follows none.
         self.if_standard = None
         self.if_role = None
-        # Where the edges come from, for an interface expanded from an interface configuration file; None otherwise.
-        self.edges_description = None
+        # The edges an interface configuration file gives, one line each with its source; empty for an interface file.
+        self.edge_lines = []
         self.clocks = []
         self.ports = []
 

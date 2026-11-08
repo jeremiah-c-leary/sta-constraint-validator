@@ -266,7 +266,7 @@ SPI configuration file
 ----------------------
 
 These are checked by every command that reads an SPI configuration file (see :doc:`spi_config`).
-The location names the table and the line of the key, such as ``in [cs] (line 56)``; a missing key is given the line of its table.
+The location names the table and the line of the key, such as ``in [cs] (line 54)``; a missing key is given the line of its table.
 A file that is not valid TOML, or does not exist, is reported as interface_config_001 or interface_config_007, as stacv reads it before it knows its kind.
 
 .. list-table::
@@ -289,8 +289,8 @@ A file that is not valid TOML, or does not exist, is reported as interface_confi
      - ``key "interface"<location> names <name>, which stacv has no configuration for; the configurations are <names>``
      - Correct the name, or time the interface with an interface file.
    * - spi_config_006
-     - ``key "<key>"<location> is FROM_DESIGN; replace it with the name in your design``
-     - Fill in the name.
+     - ``key "<key>"<location> is FROM_DESIGN; replace it with the name in your design``, or ``key "<edge>"<location> has source FROM_DESIGN; say where in the design the edge comes from``
+     - Fill in the name, or the place in the HDL the edge comes from.
    * - spi_config_007
      - ``key "mode"<location> must be 0, 1, 2 or 3``
      - Give the SPI mode.
@@ -304,7 +304,7 @@ A file that is not valid TOML, or does not exist, is reported as interface_confi
      - ``key "period" in [sck]<line> is <time> ns, which is not an even number of device clock periods of <time> ns``
      - Give an SCK period that is an even number of device clock periods, so each SCK edge is on a rising edge of the device clock.
    * - spi_config_011
-     - ``key "<adjust>"<location> moves the launch to edge <n>, ...``, or ``moves the setup capture`` or ``the hold capture``, and the edge it passes
+     - ``key "<edge>"<location> puts the launch at edge <n>, ...``, or ``puts the setup capture`` or ``the hold capture``, and the edge it passes
      - Keep the edge in its range (see :doc:`spi_config`); check it with ``stacv visualize edges``.
    * - spi_config_012
      - ``key "part"<location> names <file>, which has no [[interface]] with if_standard "SPI mode <mode>" and if_role "peripheral"``
@@ -312,6 +312,12 @@ A file that is not valid TOML, or does not exist, is reported as interface_confi
    * - spi_config_013
      - ``key "part"<location> names <file>, which has more than one [[interface]] with ...: <names>``
      - Keep one SPI interface of the mode in the part file.
+   * - spi_config_014
+     - ``key "<edge>"<location> has sck_edge "<name>"; it must be <names>``
+     - Count the edge from an SCK edge the key allows (see :doc:`spi_config`).
+   * - spi_config_015
+     - ``key "<edge>"<location> has clocks <n>; an edge is on a device clock edge, so clocks is a whole or half number``
+     - Give the device clocks from the SCK edge; a half is a falling edge of the device clock.
 
 Interface standards
 -------------------

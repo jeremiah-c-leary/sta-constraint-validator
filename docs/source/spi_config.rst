@@ -49,10 +49,11 @@ Table               Keys                                Value
 ==================  ==================================  ================================================================
 ``[device_clock]``  ``name``, ``period``                The device clock the SPI logic runs on, as the constraints name it, and its period in ns.
 ``[sck]``           ``port``, ``register``, ``period``  The port SCK leaves the device on, the register that generates it, and its period in ns, an even number of device clock periods.
-``[copi]``          ``port``, ``register``, ``adjust``  The port COPI, the data from the device into the part, leaves on, and the register that drives it.
-``[cipo]``          ``port``, ``register``, ``adjust``  The port CIPO, the data from the part into the device, arrives on, and the register that captures it.
-``[cs]``            ``port``, ``register``,             The port CS leaves on, and the register that drives it.
-                    ``setup_adjust``, ``hold_adjust``
+``[copi]``          ``port``, ``register``, ``launch``  The port COPI, the data from the device into the part, leaves on, the register that drives it, and when it launches.
+``[cipo]``          ``port``, ``register``,             The port CIPO, the data from the part into the device, arrives on, the register that captures it, and when.
+                    ``capture``
+``[cs]``            ``port``, ``register``,             The port CS leaves on, the register that drives it, and when it is asserted and deasserted.
+                    ``assert``, ``deassert``
 ==================  ==================================  ================================================================
 
 Registers are named as Vivado names them: the hierarchy separated by ``/``, with ``_reg`` added, and a bit of a bus in brackets, such as ``u_spi/rx_shift_reg[0]``.
@@ -61,36 +62,46 @@ A name still ``FROM_DESIGN``, as the template writes it, stops every command (sp
 Edges
 -----
 
-Each signal is launched and captured on the edges the mode defines, numbered on the device clock from SCK's edge A:
+Each edge says when the design launches or captures a signal, the way the HDL counts it: a number of device clocks from a named edge of SCK, and where in the design it comes from.
 
-* COPI is launched on the change edge before the first sample edge, and captured on the sample edges either side of it.
-* CS is set one SCK period before the first sample edge, and cleared at the change edge after the last.
-* CIPO is launched by the part on SCK's change edge, and captured by the device at the sample edges either side of it.
+.. code-block:: toml
 
-When the design launches a signal on another device clock edge, the adjust keys move it.
-An adjust is a whole number of device clock edges: ``+1`` is one edge later, ``-1`` one edge earlier, so ``+2`` is one device clock period.
-An odd adjust moves a launch to a falling edge of the device clock, for a design that launches on it.
+   launch   = {sck_edge = "change", clocks = 0, source = "spi_master.vhd: SCLK_HIGH sets sdi_q with sclk_q low"}
 
-=================  ====================================  ==============================================================
-Key                Moves                                 Must stay
-=================  ====================================  ==============================================================
-``adjust`` of      The launch of COPI                    At or after the sample edge of the bit before it, and before
-``[copi]``                                               the sample edge that samples it.
-``setup_adjust``   The launch that sets CS               At or after edge 0, and before the first sample edge.
-``hold_adjust``    The launch that clears CS             At or after the last sample edge.  SCK has stopped, so there
-                                                         is no later limit.
-``adjust`` of      Both captures of CIPO by the device   The hold capture at or after edge A, and at or before the edge
-``[cipo]``                                               that launches CIPO, and the setup capture after it.
-=================  ====================================  ==============================================================
+* ``sck_edge`` names the edge of SCK it is counted from.
+  The mode sets which SCK edges are change edges and which are sample edges.
+* ``clocks`` counts device clock periods from that edge: ``-4`` is four periods before it, ``0`` the device clock edge that makes the SCK edge, ``0.5`` half a period after it, for a register on the falling edge of the device clock.
+  It is a whole or half number (spi_config_015).
+* ``source`` says where in the design the edge comes from.
+  It is required, and ``FROM_DESIGN``, as the template writes it, stops every command (spi_config_006), as the edges are the judgement in the file.
 
-An adjust left out is ``0``.
-An adjust that moves an edge outside its range stops every command (spi_config_011).
-Check the edges with ``stacv visualize edges spi_config.toml``.
+============  =================================  ===========================================================  ====================================================
+Key           ``sck_edge``                       Counted from                                                 Must stay
+============  =================================  ===========================================================  ====================================================
+``launch``    ``"change"``                       The SCK change edge before the sample edge that captures     At or after the sample edge of the bit before it,
+of [copi]                                        the bit                                                      and before the sample edge that captures it
+``capture``   ``"sample"``                       The SCK sample edge after the change edge the part           The hold capture at or after edge A and at or before
+of [cipo]                                        launches the bit on                                          the launching edge, the setup capture after it
+``assert``    ``"first sample"``                 The first SCK sample edge of the transfer                    At or after edge 0, and before the first sample edge
+of [cs]
+``deassert``  ``"last change"`` or               The last SCK change edge, or the last sample edge, of the    At or after the last sample edge.  SCK has stopped,
+of [cs]       ``"last sample"``                  transfer                                                     so there is no later limit.
+============  =================================  ===========================================================  ====================================================
 
-Until the design is simulated against them, the edges are the mode's, moved by the adjusts the user gave.
-The constraints file says so in its references, such as::
+The template writes the usual values for the mode: COPI launched and CIPO captured at their SCK edges, CS asserted one SCK period before the first sample edge and deasserted at the last change edge.
+Read the HDL, correct them, and check them with ``stacv visualize edges spi_config.toml``.
+An edge outside its range stops every command (spi_config_011), and an ``sck_edge`` the key is not counted from is spi_config_014.
 
-   # Edges:      SPI mode 0 defaults; CS setup +8, hold +8; not verified against simulation
+Until the design is simulated against them, the edges are the ones the configuration gives.
+The constraints file lists each one with its source, in its references:
+
+.. code-block:: text
+
+   # Edges:      set in the SPI configuration, not verified against simulation
+   #             COPI launch   at the SCK change edge                     spi_master.vhd: SCLK_HIGH sets sdi_q with sclk_q low
+   #             CIPO capture  at the SCK sample edge                     spi_master.vhd: SCLK_LOW shifts sdo into rx_shift with sclk_q high
+   #             CS assert     4 clocks before the first SCK sample edge  spi_master.vhd: IDLE clears scs_n_q with the first bit, HALF_PERIOD before sclk_q rises
+   #             CS deassert   4 clocks after the last SCK change edge    spi_master.vhd: TRAIL sets scs_n_q HALF_PERIOD after the last sclk_q fall
 
 The interface it expands to
 ---------------------------
