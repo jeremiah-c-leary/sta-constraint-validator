@@ -1,0 +1,64 @@
+# stacv part file for the peripheral of a 4-wire SPI interface, SPI mode 0.
+# Created by:  stacv create template spi --wires 4 --mode 0 --type controller --clock-period 10 --sck-period 80
+#
+# Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/part.rst
+#
+# Fill in each value from the part's datasheet, with its symbol and where it comes from.
+# The values are FROM_DATASHEET until then, which stacv stops on.
+# Rename the pins to the datasheet's.
+# Keys below each "set by stacv create template spi" line are set from the command line above;
+# create the files again to change them.
+#
+# All delays are in nanoseconds.
+# All frequencies are in MHz.
+
+[properties]
+manufacturer = "Texas Instruments"
+part_number = "DAC39RF20"
+
+[datasheet]
+name = "DAC39RF20: 22GSPS or 44GSPS, 16-Bit, Single and Dual Channel, Multi-Nyquist Digital-to-Analog Converter (DAC) with JESD204C Interface"
+url = "https://www.ti.com/lit/ds/symlink/dac39rf20.pdf?ts=1794083739032&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FDAC39RF20"
+version = "SBASAO8A – JUNE 2025 – REVISED APRIL 2026"
+
+[[interface]]
+name = "Serial Programming Interface"
+#--- set by stacv create template spi; do not change below ---
+if_standard = "SPI mode 0"
+if_role = "peripheral"
+
+[[interface.clock_pin]]
+name = "SCLK"
+#--- set by stacv create template spi; do not change below ---
+if_signal = "SCK"
+
+[[interface.pin]]
+name = "SDI"
+setup = {value = 3.2, symbol = "tSU", source = "Table 6.9"}
+hold = {value = 1.0, symbol = "tH", source = "Table 6.9"}
+clock = {if_signal = "SCK", max_frequency = 15}
+#--- set by stacv create template spi; do not change below ---
+methodology = "SDR-SS-I"
+if_signal = "COPI"
+capture_edge = "Rising"
+
+[[interface.pin]]
+name = "SCSF"
+setup = {value = 3.2, symbol = "tCSS", source = "Table 6.9"}
+hold = {value = 1.0, symbol = "tCSH", source = "Table 6.9"}
+clock = {if_signal = "SCK", max_frequency = 15}
+#--- set by stacv create template spi; do not change below ---
+methodology = "SDR-SS-I"
+if_signal = "CS"
+capture_edge = "Rising"
+
+[[interface.pin]]
+name = "SDO"
+cko_max = {value = 6.4, symbol = "tOD", source = "Table 6.9"}
+cko_min = {value = 0, symbol = "tOD", source = "Table 6.9"}
+clock = {if_signal = "SCK", max_frequency = 15}
+#--- set by stacv create template spi; do not change below ---
+methodology = "SDR-SS-RT-DO"
+if_signal = "CIPO"
+launch_edge = "Falling"
