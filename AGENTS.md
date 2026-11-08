@@ -36,7 +36,11 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
    - `name`: any name for the interface; it names the timing reports.
    - `timing_reports_dir`: where the report script writes the reports, relative to `spi_config.toml`.
 
-3. **Fill in `part.toml`** from the part's datasheet.  Replace every `FROM_DATASHEET`: each `value` with a
+   The pin and port tables of the templates repeat the same placeholder lines, so a search-and-replace
+   cannot tell them apart: write each filled-in file whole.
+
+3. **Fill in `part.toml`** from the part's datasheet.  The interface timing table is often split across
+   two pages; read both.  Replace every `FROM_DATASHEET`: each `value` with a
    number (ns, or MHz for `max_frequency`), its `symbol` with the datasheet's (such as `"tOD"`), and its
    `source` with where it is (such as `"Table 6.9"`).  Rename the pins to the datasheet's names; the traces
    file keeps its own.  Do not change the keys below the `#--- set by stacv ...` lines.
@@ -55,6 +59,8 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
    ```
 
    - `[copi] launch`, from `"change"`: the SCK change edge before the sample edge that captures the bit.
+     Count it from the bits between the first and the last; the first bit is often set earlier, with CS,
+     which the CS edges cover.
    - `[cipo] capture`, from `"sample"`: the SCK sample edge after the change edge the part launches on;
      0 is the device clock edge that makes that SCK edge.
    - `[cs] assert`, from `"first sample"`: the first SCK sample edge of the transfer.
