@@ -273,7 +273,7 @@ Stage    Rule                   Checks
 Results
 ^^^^^^^
 
-``stacv check`` prints a result for each port (see :doc:`process`).
+``stacv check`` prints a result for each port (see :doc:`check_output`).
 With ``--report``, it also writes a report file with a summary, the md5sum of every input, and each rule's result and details.
 The summary gives each passed port's worst setup and hold slack, as the console does.
 With ``--junit``, it writes a JUnit file with one testsuite for each port, named ``<port>.<methodology>``, and one testcase for each rule.

@@ -1,0 +1,11 @@
+flowchart LR
+    t1[/part template/] --> up[Update Part]
+    d[/part datasheet/] --> up
+    up --> o1[/part file/]
+    d --> ui[Update Interface]
+    t2[/interface template/] --> ui
+    h[/HDL/] --> ui
+    ui --> o2[/interface file/]
+    t3[/traces template/] --> ut[Update Traces]
+    tr[/trace delays/] --> ut
+    ut --> o3[/traces file/]
