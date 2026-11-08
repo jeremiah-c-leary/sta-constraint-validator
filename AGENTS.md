@@ -39,8 +39,9 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
    The pin and port tables of the templates repeat the same placeholder lines, so a search-and-replace
    cannot tell them apart: write each filled-in file whole.
 
-3. **Fill in `part.toml`** from the part's datasheet.  The interface timing table is often split across
-   two pages; read both.  Replace every `FROM_DATASHEET`: each `value` with a
+3. **Fill in `part.toml`** from the part's datasheet.  Read it as text with `pdftotext -layout <file>.pdf -`,
+   which keeps table columns aligned; `-f` and `-l` pick the first and last page.  The interface timing
+   table is often split across two pages; read both.  Replace every `FROM_DATASHEET`: each `value` with a
    number (ns, or MHz for `max_frequency`), its `symbol` with the datasheet's (such as `"tOD"`), and its
    `source` with where it is (such as `"Table 6.9"`).  Rename the pins to the datasheet's names; the traces
    file keeps its own.  Do not change the keys below the `#--- set by stacv ...` lines.
