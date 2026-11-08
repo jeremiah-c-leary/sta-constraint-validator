@@ -32,6 +32,10 @@ From the repository root, with Vivado on the PATH (or ``VIVADO_SETTINGS`` naming
 
 Without the options it only builds the design.  The build goes to ``design/build/``.
 
+With ``--interface``, the report script runs in the interface file's folder, so its relative
+``timing_reports`` paths mean the same to Vivado as to ``stacv check``: generate the report script
+from that folder.  The report folders are created before Vivado runs.
+
 Simulate
 --------
 

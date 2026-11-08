@@ -16,16 +16,21 @@
 #   --interface FILE  interface file to check once the reports are written
 #   --out DIR         build directory (default: build/ next to DESIGN_TCL)
 #
+# With --interface, the report script runs in the interface file's folder,
+# so its relative paths mean what they mean to stacv check; generate it from
+# that folder.  The folders named by the interface's timing_reports are
+# created first.
+#
 # Vivado must be on the PATH, or VIVADO_SETTINGS must name its settings64.sh.
 # PROJ_DIR defaults to this repository, for report scripts that use it.
-# Stops at the first step that fails, with the log of that step.
+# Stops at the first step that fails, with the reason.
 
 set -u
 
 sProjectDir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 usage() {
-    sed -n '2,22p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+    sed -n '2,26p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
     exit 2
 }
 
@@ -80,13 +85,45 @@ fi
 
 export PROJ_DIR="${PROJ_DIR:-$sProjectDir}"
 
+sReportDir=""
+if [ -n "$sInterface" ]; then
+    sReportDir="$(dirname "$sInterface")"
+    # The report script stops on a missing report folder, as Vivado does not create one.
+    if ! python3 - "$sInterface" <<'EOF'
+import os
+import sys
+import tomllib
+
+sInterface = sys.argv[1]
+with open(sInterface, 'rb') as oFile:
+    dInterface = tomllib.load(oFile)
+for dPort in dInterface.get('port', []):
+    for sReport in dPort.get('timing_reports', []):
+        sPath = os.path.join(os.path.dirname(sInterface), os.path.expandvars(sReport))
+        sFolder = os.path.dirname(sPath)
+        if '$' in sFolder:
+            print(f'vivado_loop: environment variable not set in timing_reports path: {sReport}')
+            sys.exit(1)
+        if not os.path.isdir(sFolder):
+            print(f'vivado_loop: creating report folder {os.path.normpath(sFolder)}')
+            os.makedirs(sFolder)
+EOF
+    then
+        exit 1
+    fi
+fi
+
 echo "vivado_loop: Vivado: synthesis, place and route, reports  (log: $sOutDir/vivado.log)"
 ( cd "$sOutDir" && vivado -mode batch -nojournal -log vivado.log \
       -source "$sProjectDir/bin/vivado_loop.tcl" \
-      -tclargs "$sDesignTcl" "$sOutDir" "$sXdc" "$sReportTcl" > /dev/null )
+      -tclargs "$sDesignTcl" "$sOutDir" "$sXdc" "$sReportTcl" "$sReportDir" > /dev/null )
 if [ $? -ne 0 ] || ! grep -q "vivado_loop: Vivado steps finished" "$sOutDir/vivado.log"; then
     echo "vivado_loop: Vivado failed; errors from $sOutDir/vivado.log:"
-    grep -E "^(ERROR|CRITICAL WARNING)" "$sOutDir/vivado.log" | head -20
+    if grep -qE "^(ERROR|CRITICAL WARNING)" "$sOutDir/vivado.log"; then
+        grep -E "^(ERROR|CRITICAL WARNING)" "$sOutDir/vivado.log" | head -20
+    else
+        tail -20 "$sOutDir/vivado.log"
+    fi
     exit 1
 fi
 grep -E "^CRITICAL WARNING" "$sOutDir/vivado.log" | head -20
@@ -99,4 +136,4 @@ if [ -z "$sInterface" ]; then
 fi
 
 echo "vivado_loop: stacv check $sInterface"
-( cd "$(dirname "$sInterface")" && "$sProjectDir/bin/stacv" check "$(basename "$sInterface")" )
+( cd "$sReportDir" && "$sProjectDir/bin/stacv" check "$(basename "$sInterface")" )
