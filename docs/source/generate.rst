@@ -291,15 +291,17 @@ Every path is quoted, so paths with spaces work.
 ``stacv check`` accepts any number of timing reports for a port, so reports from other scripts can be used.
 The report script writes one file for each port.
 
-Path checks
-^^^^^^^^^^^
+Paths
+^^^^^
 
-Vivado does not create directories, and an environment variable that is not set, or set to the wrong directory, only shows up as an error partway through the reports.
-So the script checks its paths first, and stops with an error before it changes the corners:
+An environment variable that is not set only shows up as an error partway through the reports, and Vivado does not create directories.
+So the script sets up its paths first, before it changes the corners:
 
 * **Verify Environment Variables Exist**: one check for each variable the report paths use, in the order they first appear.
+  It stops with an error when one is not set.
   The section is left out when no path uses a variable.
-* **Verify Report Directories Exist**: one check for each analyzed port, that the directory of its report exists.
+* **Create Report Directories**: creates the directory of each analyzed port's report, once for each directory, with the ports that use it.
+  ``file mkdir`` does nothing when the directory exists.
 
 .. code-block:: tcl
 
@@ -311,12 +313,10 @@ So the script checks its paths first, and stops with an error before it changes 
    }
 
    ###############################################################################
-   # Verify Report Directories Exist
+   # Create Report Directories
    ###############################################################################
-   # O_DAC_DATA
-   if {![file isdirectory "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"]} {
-       error "stacv: O_DAC_DATA report directory does not exist: $env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
-   }
+   # O_DAC_DATA, O_DAC_SDEN_F, I_DAC_DATA
+   file mkdir "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
 
 When the timing tool runs on another computer than stacv, such as Vivado on Windows, set the variables in its Tcl console with forward slashes.
 Tcl reads a backslash as an escape, so ``"Z:\projects"`` loses its separators:

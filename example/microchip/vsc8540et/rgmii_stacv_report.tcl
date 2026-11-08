@@ -24,24 +24,10 @@ if {![info exists env(PROJ_DIR)]} {
 }
 
 ###############################################################################
-# Verify Report Directories Exist
+# Create Report Directories
 ###############################################################################
-# O_RGMII_TXD[3:0]
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: O_RGMII_TXD[3:0] report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
-# O_RGMII_TX_CTL
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: O_RGMII_TX_CTL report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
-# I_RGMII_RXD[3:0]
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: I_RGMII_RXD[3:0] report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
-# I_RGMII_RX_CTL
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: I_RGMII_RX_CTL report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
+# O_RGMII_TXD[3:0], O_RGMII_TX_CTL, I_RGMII_RXD[3:0], I_RGMII_RX_CTL
+file mkdir "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
 
 ###############################################################################
 # Slow Corner

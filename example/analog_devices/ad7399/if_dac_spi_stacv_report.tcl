@@ -24,12 +24,10 @@ if {![info exists env(PROJ_DIR)]} {
 }
 
 ###############################################################################
-# Verify Report Directories Exist
+# Create Report Directories
 ###############################################################################
 # O_DAC_DATA
-if {![file isdirectory "$env(PROJ_DIR)/example/analog_devices/ad7399"]} {
-    error "stacv: O_DAC_DATA report directory does not exist: $env(PROJ_DIR)/example/analog_devices/ad7399"
-}
+file mkdir "$env(PROJ_DIR)/example/analog_devices/ad7399"
 
 ###############################################################################
 # Slow Corner
@@ -38,8 +36,8 @@ config_timing_corners -corner Slow -delay_type min_max
 config_timing_corners -corner Fast -delay_type none
 
 # O_DAC_DATA
-report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
-report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks clk_10mhz] -through [get_ports O_DAC_DATA] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks clk_10mhz] -through [get_ports O_DAC_DATA] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
 
 # O_DAC_SDEN_F
 # Deferred
@@ -51,8 +49,8 @@ config_timing_corners -corner Fast -delay_type min_max
 config_timing_corners -corner Slow -delay_type none
 
 # O_DAC_DATA
-report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -setup -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
-report_timing -column_style variable_width -to [get_ports O_DAC_DATA] -hold -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks clk_10mhz] -through [get_ports O_DAC_DATA] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
+report_timing -column_style variable_width -to [get_clocks clk_10mhz] -through [get_ports O_DAC_DATA] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file "$env(PROJ_DIR)/example/analog_devices/ad7399/O_DAC_DATA_timing.rpt"
 
 # O_DAC_SDEN_F
 # Deferred

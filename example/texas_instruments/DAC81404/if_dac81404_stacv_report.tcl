@@ -24,20 +24,10 @@ if {![info exists env(PROJ_DIR)]} {
 }
 
 ###############################################################################
-# Verify Report Directories Exist
+# Create Report Directories
 ###############################################################################
-# O_DAC_DATA
-if {![file isdirectory "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"]} {
-    error "stacv: O_DAC_DATA report directory does not exist: $env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
-}
-# O_DAC_SDEN_F
-if {![file isdirectory "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"]} {
-    error "stacv: O_DAC_SDEN_F report directory does not exist: $env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
-}
-# I_DAC_DATA
-if {![file isdirectory "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"]} {
-    error "stacv: I_DAC_DATA report directory does not exist: $env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
-}
+# O_DAC_DATA, O_DAC_SDEN_F, I_DAC_DATA
+file mkdir "$env(PROJ_DIR)/example/texas_instruments/DAC81404/timing_reports"
 
 ###############################################################################
 # Slow Corner

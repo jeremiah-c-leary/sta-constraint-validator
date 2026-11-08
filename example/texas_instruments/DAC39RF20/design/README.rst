@@ -40,7 +40,7 @@ Without the options it only builds the design.  The build goes to ``design/build
 
 With ``--interface``, the report script runs in the folder of the interface file, or of the SPI
 configuration, so its relative report paths mean the same to Vivado as to ``stacv check``: generate
-the report script from that folder.  The report folders are created before Vivado runs.
+the report script from that folder.  The report script creates its report folder.
 
 Simulate
 --------

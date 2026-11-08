@@ -51,12 +51,10 @@ def build_variable_check(sVariable):
     return lLines
 
 
-def build_directory_check(sPort, sDirectory):
+def build_directory_creation(sPorts, sDirectory):
     lLines = []
-    lLines.append(f'# {sPort}')
-    lLines.append(f'if {{![file isdirectory "{sDirectory}"]}} {{')
-    lLines.append(f'    error "stacv: {sPort} report directory does not exist: {sDirectory}"')
-    lLines.append('}')
+    lLines.append(f'# {sPorts}')
+    lLines.append(f'file mkdir "{sDirectory}"')
     return lLines
 
 
@@ -117,8 +115,8 @@ class TestReportTclPathChecks(unittest.TestCase):
         lExpected.extend(build_banner('Verify Environment Variables Exist'))
         lExpected.extend(build_variable_check('REPORT_DIR'))
         lExpected.append('')
-        lExpected.extend(build_banner('Verify Report Directories Exist'))
-        lExpected.extend(build_directory_check('O_DATA', '$env(REPORT_DIR)/vivado'))
+        lExpected.extend(build_banner('Create Report Directories'))
+        lExpected.extend(build_directory_creation('O_DATA', '$env(REPORT_DIR)/vivado'))
         lExpected.append('')
         self.assertEqual(lExpected, self.get_checks())
 
@@ -133,9 +131,9 @@ class TestReportTclPathChecks(unittest.TestCase):
         lExpected.extend(build_variable_check('SCRATCH_DIR'))
         lExpected.extend(build_variable_check('REPORT_DIR'))
         lExpected.append('')
-        lExpected.extend(build_banner('Verify Report Directories Exist'))
-        lExpected.extend(build_directory_check('O_DATA', '$env(SCRATCH_DIR)/$env(REPORT_DIR)'))
-        lExpected.extend(build_directory_check('O_CS', '$env(REPORT_DIR)'))
+        lExpected.extend(build_banner('Create Report Directories'))
+        lExpected.extend(build_directory_creation('O_DATA', '$env(SCRATCH_DIR)/$env(REPORT_DIR)'))
+        lExpected.extend(build_directory_creation('O_CS', '$env(REPORT_DIR)'))
         lExpected.append('')
         self.assertEqual(lExpected, self.get_checks())
 
@@ -143,20 +141,20 @@ class TestReportTclPathChecks(unittest.TestCase):
         self.run_generate_report_tcl([('O_DATA', 'analyze', '["/reports/O_DATA_timing.rpt"]')])
         self.assertEqual(['#', BANNER], self.get_header_tail())
         lExpected = ['']
-        lExpected.extend(build_banner('Verify Report Directories Exist'))
-        lExpected.extend(build_directory_check('O_DATA', '/reports'))
+        lExpected.extend(build_banner('Create Report Directories'))
+        lExpected.extend(build_directory_creation('O_DATA', '/reports'))
         lExpected.append('')
         self.assertEqual(lExpected, self.get_checks())
 
     def test_relative_path_directory_is_written_from_the_directory_stacv_runs_in(self):
         self.run_generate_report_tcl([('O_DATA', 'analyze', '["timing_reports/O_DATA_timing.rpt"]')])
         lExpected = ['']
-        lExpected.extend(build_banner('Verify Report Directories Exist'))
-        lExpected.extend(build_directory_check('O_DATA', 'interfaces/timing_reports'))
+        lExpected.extend(build_banner('Create Report Directories'))
+        lExpected.extend(build_directory_creation('O_DATA', 'interfaces/timing_reports'))
         lExpected.append('')
         self.assertEqual(lExpected, self.get_checks())
 
-    def test_each_analyzed_port_is_checked_and_deferred_ports_are_not(self):
+    def test_a_directory_shared_by_analyzed_ports_is_created_once_and_deferred_ports_are_left_out(self):
         lPorts = []
         lPorts.append(('O_DATA', 'analyze', '["/reports/O_DATA_timing.rpt"]'))
         lPorts.append(('O_CS', 'defer', '["$SCRATCH_DIR/O_CS_timing.rpt"]'))
@@ -164,13 +162,12 @@ class TestReportTclPathChecks(unittest.TestCase):
         self.run_generate_report_tcl(lPorts)
         self.assertEqual(['#', BANNER], self.get_header_tail())
         lExpected = ['']
-        lExpected.extend(build_banner('Verify Report Directories Exist'))
-        lExpected.extend(build_directory_check('O_DATA', '/reports'))
-        lExpected.extend(build_directory_check('O_LDAC', '/reports'))
+        lExpected.extend(build_banner('Create Report Directories'))
+        lExpected.extend(build_directory_creation('O_DATA, O_LDAC', '/reports'))
         lExpected.append('')
         self.assertEqual(lExpected, self.get_checks())
 
-    def test_every_port_deferred_has_no_checks(self):
+    def test_every_port_deferred_creates_no_directories(self):
         self.run_generate_report_tcl([('O_DATA', 'defer', '["$REPORT_DIR/O_DATA_timing.rpt"]')])
         self.assertEqual(['#', BANNER], self.get_header_tail())
         self.assertEqual([''], self.get_checks())

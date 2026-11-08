@@ -24,16 +24,10 @@ if {![info exists env(PROJ_DIR)]} {
 }
 
 ###############################################################################
-# Verify Report Directories Exist
+# Create Report Directories
 ###############################################################################
-# IO_MDIO
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: IO_MDIO report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
-# IO_MDIO
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: IO_MDIO report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
+# IO_MDIO, IO_MDIO
+file mkdir "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
 
 ###############################################################################
 # Slow Corner

@@ -99,25 +99,27 @@ def build_variable_checks(lVariables):
 
 
 def build_directory_checks(oInterface, sInterfaceFile):
-    # Vivado does not create directories, so they are checked before the corners are changed.
-    lPorts = oInterface.get_analyzed_ports()
-    if len(lPorts) == 0:
+    # Vivado does not create directories, so the script creates each one before the corners are changed.
+    dPortsByDirectory = group_ports_by_report_directory(oInterface.get_analyzed_ports(), sInterfaceFile)
+    if len(dPortsByDirectory) == 0:
         return []
     lLines = ['']
-    lLines.extend(build_banner('Verify Report Directories Exist'))
+    lLines.extend(build_banner('Create Report Directories'))
+    for sDirectory, lPortNames in dPortsByDirectory.items():
+        lLines.append(f'# {", ".join(lPortNames)}')
+        lLines.append(f'file mkdir "{sDirectory}"')
+    return lLines
+
+
+def group_ports_by_report_directory(lPorts, sInterfaceFile):
+    # Ports that share a directory create it once; the directories keep the order of their first port.
+    dPortsByDirectory = {}
     for oPort in lPorts:
-        lLines.extend(build_directory_check(oPort, sInterfaceFile))
-    return lLines
-
-
-def build_directory_check(oPort, sInterfaceFile):
-    sDirectory = find_report_directory(oPort, sInterfaceFile)
-    lLines = []
-    lLines.append(f'# {oPort.name}')
-    lLines.append(f'if {{![file isdirectory "{sDirectory}"]}} {{')
-    lLines.append(f'    error "stacv: {oPort.name} report directory does not exist: {sDirectory}"')
-    lLines.append('}')
-    return lLines
+        sDirectory = find_report_directory(oPort, sInterfaceFile)
+        if sDirectory not in dPortsByDirectory:
+            dPortsByDirectory[sDirectory] = []
+        dPortsByDirectory[sDirectory].append(oPort.name)
+    return dPortsByDirectory
 
 
 def find_report_directory(oPort, sInterfaceFile):

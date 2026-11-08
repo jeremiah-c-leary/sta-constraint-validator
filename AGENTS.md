@@ -70,7 +70,7 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
 7. **Run Vivado.**  Read `interface.xdc` after the board constraints and after `synth_design`
    (synthesis does not use I/O timing and warns about each `-reference_pin`), implement, then, after routing,
    `cd` to the folder holding `spi_config.toml` and `source report.tcl`.  The report paths are relative to
-   that folder, and the report folder must exist before the script runs.
+   that folder; the script creates the report folder.
 
 8. **Check the reports:**
 

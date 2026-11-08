@@ -24,32 +24,10 @@ if {![info exists env(PROJ_DIR)]} {
 }
 
 ###############################################################################
-# Verify Report Directories Exist
+# Create Report Directories
 ###############################################################################
-# O_RMII_TXD[1:0]
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: O_RMII_TXD[1:0] report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
-# O_RMII_TX_EN
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: O_RMII_TX_EN report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
-# O_RMII_TX_ER
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: O_RMII_TX_ER report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
-# I_RMII_RXD[1:0]
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: I_RMII_RXD[1:0] report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
-# I_RMII_CRS_DV
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: I_RMII_CRS_DV report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
-# I_RMII_RX_ER
-if {![file isdirectory "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"]} {
-    error "stacv: I_RMII_RX_ER report directory does not exist: $env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
-}
+# O_RMII_TXD[1:0], O_RMII_TX_EN, O_RMII_TX_ER, I_RMII_RXD[1:0], I_RMII_CRS_DV, I_RMII_RX_ER
+file mkdir "$env(PROJ_DIR)/example/microchip/vsc8540et/timing_reports"
 
 ###############################################################################
 # Slow Corner
