@@ -1,0 +1,82 @@
+# stacv interface file for a 4-wire SPI interface, SPI mode 0, with the device as the controller.
+# Created by:  stacv create template spi --wires 4 --mode 0 --type controller --clock-period 10 --sck-period 80
+#
+# Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/interface.rst
+# The SPI signals and modes are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/standards.rst
+#
+# Rename the clocks, ports and registers to your design's, and DAC_SPI everywhere it appears.
+# Keys below each "set by stacv create template spi" line are set from the command line above;
+# create the files again to change them.
+# Check the edges against the part's datasheet with:  stacv visualize edges interface.toml
+#
+# SPI mode 0:  SCK idles low, data changes on the falling edge and is sampled on the rising edge.
+#
+# Paths are relative to this file.
+#
+# All periods are in nanoseconds.
+
+description = "This interface provides status and control for the DAC."
+name = "DAC_SPI"
+part = "part.toml"
+part_interface = "Serial Programming Interface"
+traces = "traces.toml"
+#--- set by stacv create template spi; do not change below ---
+if_standard = "SPI mode 0"
+if_role = "controller"
+
+# The device clock the SPI logic runs on.
+[[clock]]
+name = "sys_clk"
+#--- set by stacv create template spi; do not change below ---
+period = 10.000
+
+# SCK, generated from device_clk and forwarded to the part.
+[[clock]]
+name = "dac_sclk_clk"
+port = "dac_sclk"
+generator = {source = "u_spi/sclk_q_reg", master_pin = "C", target_pin = "Q", master_clock = "sys_clk"}
+#--- set by stacv create template spi; do not change below ---
+period = 80.000
+idle = "low"
+if_signal = "SCK"
+
+# COPI changes on the falling edge of SCK, and the part samples it on the next rising edge.
+[[port]]
+name = "dac_sdi"
+registers = ["u_spi/sdi_q_reg"]
+launch_clock = {name = "sys_clk", setup_edge = 8, hold_edge = 8}
+capture_clock = {name = "dac_sclk_clk", setup_edge = "C", hold_edge = "A"}
+timing_reports = [
+    "$PROJ_DIR/design/build/timing_reports/DAC_SDO.COPI_timing.rpt",
+]
+#--- set by stacv create template spi; do not change below ---
+methodology = "SDR-SS-O"
+if_signal = "COPI"
+
+# CS is timed to the first and last rising edges of SCK.
+[[port]]
+name = "dac_scs_n"
+registers = ["u_spi/scs_n_q_reg"]
+launch_clock = {name = "sys_clk", setup_edge = 14, hold_edge = 2}
+capture_clock = {name = "dac_sclk_clk", setup_edge = "C", hold_edge = "A"}
+timing_reports = [
+    "$PROJ_DIR/design/build/timing_reports/DAC_SCS_N.CS_timing.rpt",
+]
+#--- set by stacv create template spi; do not change below ---
+methodology = "SDR-SS-O-FLC"
+if_signal = "CS"
+
+# The part changes CIPO on the falling edge of SCK, and the device captures it on device_clk at the next rising edge.
+[[port]]
+name = "dac_sdo"
+registers = ["u_spi/rx_shift_reg[0]"]
+launch_clock = {name = "dac_sclk_clk", setup_edge = 1, hold_edge = 1}
+capture_clock = {name = "sys_clk", setup_edge = "Q", hold_edge = "A"}
+timing_reports = [
+    "$PROJ_DIR/design/build/timing_reports/DAC_SDO.CIPO_timing.rpt",
+]
+#--- set by stacv create template spi; do not change below ---
+methodology = "SDR-SS-RT-DI"
+if_signal = "CIPO"

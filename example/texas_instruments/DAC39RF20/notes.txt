@@ -1,0 +1,213 @@
+Notes for Vivado Loop.
+
+3:06 pm.
+
+I have been handed a design in VHDL that has been simulated and runs through Vivado.
+
+Now I have to create timing constraints for the SPI interface using stacv.
+
+Where is the documentation for it?
+
+since it isn't on RTD, I need to build it.
+
+
+
+ 3:12  I just built the doc, but I need to take a break.
+
+[2026-11-07 15:20:08] figured out how to auto timestamp in vim.
+[2026-11-07 15:20:30] its not perfect, but it will work.
+[2026-11-07 15:20:44] 
+[2026-11-07 15:20:46] taking my break now
+
+[2026-11-07 16:15:58] I'm back.  I am pretending to be someone who knows what they are doing, but doesn't know how to use stacv
+[2026-11-07 16:16:32] The landing page is just a table of contents.  I would hope there is some overview that tells me what this program is and how it works.
+[2026-11-07 16:17:15] I do see a process page
+[2026-11-07 16:17:20] the process page shows me a decent overview of the process.  The diagram could be updated.  It is in Visio, so maybe it could be text based to be easier to updated?
+[2026-11-07 16:18:28] The process page doesn't really show a process.  I think we need to re-write this to show the actual steps.  The diagram just shows what goes into and out of stacv.
+[2026-11-07 16:20:02] I see there is a "Timing an SPI Interface" in the contents.  I will click on it.
+[2026-11-07 16:21:14] Maybe we need links to the methodology pages in the "The signals" table.
+[2026-11-07 16:22:13] The steps should follow the process steps we need to define in the process documentation.  That way everything is consistent.
+[2026-11-07 16:23:48] Not really sold on spi being at the same level as the interface, traces, and part arguments.
+[2026-11-07 16:24:57] Where is the mode argument documented?  I see it in the creating templates SPI page, but the --mode description does not tell me what 0, 1, 2, or 3 mean?
+[2026-11-07 16:27:45] I think we need to reword the SPI template.  The bullets are not the best way to convey how to fill out the template.
+[2026-11-07 16:28:23] I think we need to break up step 4 into invidual sub steps. So we guide the user on each key they need to update.
+[2026-11-07 16:30:37] step 6 needs to be sub divided
+[2026-11-07 16:30:56] step 7 needs to be sub divided
+[2026-11-07 16:31:02] The visualize command in step 7 needs to be moved to another set of QOR documentation.  Same with 8.  Step 9 is a validation step with HW that should be documented on another sheet.
+[2026-11-07 16:32:11] Okay, I think I have an understanding of what to do (we wrote it, but I think it will be confusing to a new user).  I will assume we have updated this section so I will follow the commands.
+[2026-11-07 16:33:11] although I don't know what mode to use....
+[2026-11-07 16:33:28] I will find the datasheet for the part
+[2026-11-07 16:33:46] The README.rst file tells me which device to use.  I will download the datasheet.
+[2026-11-07 16:35:06] The README.rst tells me the spi mode.  I will assume stacv matches that mode and didn't come up with its own numbering scheme.
+[2026-11-07 16:35:53] The README.rst also includes the frequencies of the two clocks.  So I can use that on the command line.  I normally would have had to ask the designer in person, so this is an improvement.
+[2026-11-07 16:37:02] 12.5 MHz is 80 ns period
+[2026-11-07 16:38:18] I issued this command:
+[2026-11-07 16:39:54] bin/stacv create template spi --wires 4 --mode 0 --type controller --clock-period 10 --sck-period 80 --output example/texas_instruments/DAC39RF20
+[2026-11-07 16:39:58] I see three files were created
+[2026-11-07 16:40:22] I will update the part TOML first because it is the second step listed
+
+[2026-11-07 16:44:02] Ran into my first set by stacv file.  I am just going top to bottom filling things out.  The break is a good and stopped me from questioning anything below the break.  Moving on to the clock pin
+[2026-11-07 16:45:14] The .clock_pin is helpful because it tells me I need to put the clock pin information here.  I see I just need a name though.
+[2026-11-07 16:45:41] I need to translate COPI into SDI...I wonder if we need a comment to say that this pin is data into the part.
+[2026-11-07 16:48:59] I can't find the timing table in the datasheet
+[2026-11-07 16:49:08] Found it in section 6.8
+[2026-11-07 16:49:49] Hmm...the value is "FROM_DATASHEET"...I guess I need to put a number and not a string here?
+[2026-11-07 16:53:08] I eventually found out what I should put in for source on the part file descriptions.  Only because I thought it would be there.
+[2026-11-07 16:53:49] Pausing
+
+[2026-11-07 17:33:32] I'm back
+[2026-11-07 17:33:35] I think I want work instructions that go through every key and tell the user what and how to input the information.  Then the user does not have to guess what to do or go look in other pages for the information.
+[2026-11-07 17:34:27] The if_signal in the clock def makes me think i need to do something.  maybe we split it from the key since the part is built per methodology?
+[2026-11-07 17:37:28] hmmm...for the max_frequency of the clock I put in a string "15"
+[2026-11-07 17:40:58] part.toml is filled out.  I am going to work on the traces file
+[2026-11-07 17:43:02] copi and cipo are not helping me.  I think a comment saying that this trace is for input data or output data?
+[2026-11-07 17:44:08] I didn't even read the header.  Maybe that is just me and the user actually would.
+[2026-11-07 17:46:35] traces.toml is done.
+[2026-11-07 17:46:44] working on the interface.toml file
+[2026-11-07 17:47:27] I opened the interface.toml file and top level HDL file.
+[2026-11-07 17:47:42] Wow, there is a lot in the interface file
+[2026-11-07 17:47:54] hmmm... the part key is not intuitive.
+
+[2026-11-07 17:50:30] On to the [[clock]]....I need to find the name of the internal clock...hmm...I can either build the design in vivado to find it or I can check the constraints.
+[2026-11-07 17:51:20] Pausing
+[2026-11-07 17:51:26] 
+
+[2026-11-07 18:49:28] I'm back
+[2026-11-07 18:49:31] I found the constraint file dac39rf20_board.xdc.  It looks like the clock name is sys_clk
+
+[2026-11-07 18:51:37] On to the generated clock
+[2026-11-07 18:51:43] I can pick the name so I will see what the clock port name is first
+[2026-11-07 18:53:13] We could do better describing how to fill out the generator.
+[2026-11-07 18:53:46] I need to find the register for the generated clock.  I think I will try the source code.  I was able to trace the top level port to the register.  I will need to ensure I put the hierarchy in correctly.  I think Vivado likes ``|`` to indicate hierarchy
+[2026-11-07 18:58:18] Maybe we leave the status key off for the protocol templates.  We can analyze everything.
+[2026-11-07 19:01:27] I need to find the register driving data
+[2026-11-07 19:04:55] editing the timing report name seems superflous
+[2026-11-07 19:05:34] Editing the timing report location would be helpful though
+[2026-11-07 19:08:16] I'm sure Vivado appends `_reg` to registers so I am going to just add them
+
+
+[2026-11-07 19:10:24] Ended up missing changing `device_clk` to `sys_clk`  I suppose I should have searched and replaced.  Maybe there is a different way so I only have to change the name in one place?
+[2026-11-07 19:11:44] I wonder if having place holders for clock names threw me off.  it looked like soemthing was there already so I missed that I had to update them?
+[2026-11-07 19:12:38] I also missed filling out the the timing report names
+[2026-11-07 19:13:29] Done with interface.toml file.
+[2026-11-07 19:14:38] I had to maximize my screen to see the edges using visualize edges
+[2026-11-07 19:15:12] I'm checking the edges against the timing requirements in the datasheet
+[2026-11-07 19:16:38] hmm....the setup for SCS is 3.2 ns and the hold is 1 ns.  The setup requirement is 80 ns, the hold requirement is -40 ns.  Of course I do not know what the design is doing.  I will check the README.rst file
+[2026-11-07 19:19:00] I do not see anything about the time.  This is where I would ask the designer when chip select is being launched.
+[2026-11-07 19:19:29] Meanwhile I will just make it the tighest possible
+[2026-11-07 19:21:22] I changed setup from 8 (or 0)?->C to 14 -> C
+[2026-11-07 19:22:14] I changed hold from 8 -> A to 2 -> A
+[2026-11-07 19:23:24] I messed up the setup edge, but was able to verify using edges.  Fixed it and edges visualization confirms.
+[2026-11-07 19:24:24] I am going to try the new block_diagram
+[2026-11-07 19:24:36] I had an error in the part.toml because I copied the name from the PDF.  It added a \n and I got this error:  ERROR: [part_config_001] part.toml is not valid TOML: Illegal character '\n' (at line 21, column 84)
+[2026-11-07 19:26:34] Bizzare, the block diagram came back with this:
+[2026-11-07 19:26:48] ----------------------------------------------------------+                        +-------------
+  Device                                                  |                        |  DAC39RF20
+                                                          |                        |
+  sys_clk ---+--> [u_spi|sdi_q_reg] -----+--> DAC_SDO    [X] --- dac_data_in ---> [X] SDI
+             |                           |                |                        |
+             +--> [u_spi|rx_shift_reg] <-+                |                        |
+             |                                            |                        |
+             +--> [u_spi|sdi_q_reg] -----+--> DAC_SDO    [X] <-- dac_data_out --- [X] SDO
+             |                           |                |                        |
+             +--> [u_spi|rx_shift_reg] <-+                |                        |
+             |                                            |                        |
+             +--> [u_spi|scs_n_q_reg] -------> DAC_SCS_N [X] --- dac_csf -------> [X] SCSF
+                                                          |                        |
+  dac_sclk --+--> [u_spi|sclk_q_reg] --------> DAC_SCLK  [X] --- dac_sck -------> [X] SCLK
+                                                          |                        |
+----------------------------------------------------------+                        +-------------
+[2026-11-07 19:26:58] I must have messed something up in the interface.toml file.
+[2026-11-07 19:28:44] Yes...I had SDO and SDI mixed because the hdl code is not controller centric but part centric.
+[2026-11-07 19:29:38] ------------------------------------------------------+                        +-------------
+  Device                                              |                        |  DAC39RF20
+                                                      |                        |
+  sys_clk ---+--> [u_spi|sdi_q_reg] -----> DAC_SDI   [X] --- dac_data_in ---> [X] SDI
+             |                                        |                        |
+             +--> [u_spi|scs_n_q_reg] ---> DAC_SCS_N [X] --- dac_csf -------> [X] SCSF
+             |                                        |                        |
+             +--> [u_spi|rx_shift_reg] <-- DAC_SDO   [X] <-- dac_data_out --- [X] SDO
+                                                      |                        |
+  dac_sclk --+--> [u_spi|sclk_q_reg] ----> DAC_SCLK  [X] --- dac_sck -------> [X] SCLK
+                                                      |                        |
+------------------------------------------------------+                        +-------------
+[2026-11-07 19:29:41] It is fixed now
+[2026-11-07 19:29:45] Step 6 needs show which commands to run.  I do not want to go to another page.
+[2026-11-07 19:32:46] I am on the generating constraints page and the commands are there which is helpful.  However, the generate datasheet command is there and it should not be.
+[2026-11-07 19:33:26] constraints and report_tcl generated.
+[2026-11-07 19:33:36] I am not going to look at them at all and trust they are correct
+[2026-11-07 19:35:06] Trying to follow your commands to urn vivado
+[2026-11-07 19:36:59] running with this command:  bin/vivado_loop example/texas_instruments/DAC39RF20/design/design.tcl --xdc example/texas_instruments/DAC39RF20/if_dac39rf20.xdc --report-tcl example/texas_instruments/DAC39RF20/if_dac39rf20_stacv_report.xdc --interface example/texas_instruments/DAC39RF20/interface.toml
+[2026-11-07 19:38:49] Had some errors finding ports and the clock register.  Investigating
+[2026-11-07 19:42:10] I think Vivado is case sensitive on the ports.  I used the wrong master_clock for the generated clock.  Trying again
+[2026-11-07 19:44:21] Nope, same failures....I will need to review the XDC file now
+[2026-11-07 19:46:33] oh...my output argument was not pushing the files to the correct directory
+[2026-11-07 19:47:13] I will need to read the design.tcl file to figure out where I should put the files and what to name them
+[2026-11-07 19:50:57] take it back, that wasn't the issue
+[2026-11-07 19:52:10] I first generated the xdc and report_file in the DAC39... directory.  The second time I created it at the project directory.  So the xdc and report_tcl files were not updated.
+[2026-11-07 19:53:08] Still have an issue with the generated clock though
+[2026-11-07 19:55:34] I will need to bring up the Vivado GUI
+[2026-11-07 19:59:28] I think the divider is a / instead of |
+[2026-11-07 20:01:47] well, it built but had errors:  bin/vivado_loop example/texas_instruments/DAC39RF20/design/design.tcl --xdc example/texas_instruments/DAC39RF20/if_dac39rf20.xdc --report-tcl example/texas_instruments/DAC39RF20/if_dac39rf20_stacv_report.xdc --interface example/texas_instruments/DAC39RF20/interface.toml
+vivado_loop: Vivado: synthesis, place and route, reports  (log: /home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC39RF20/design/build/vivado.log)
+vivado_loop: Vivado failed; errors from /home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC39RF20/design/build/vivado.log:
+[2026-11-07 20:02:11] checking vivado.log
+[2026-11-07 20:04:01] Found these warnings
+[2026-11-07 20:04:49] Can't paste, but the -reference pin is not supported for synthesis.  The constraint will not be passed to synthesis.  
+[2026-11-07 20:07:11] oh...the timing_reports directory did not exist so the report_tcl file errored out.  I can fix that
+[2026-11-07 20:10:04] It finished but failed stacv with this error:  ERROR: [interface_config_006] interface.toml key "timing_reports" in port dac_sdi names a file that does not exist: timing_reports/DAC_SDO.COPI_timing.rpt
+[2026-11-07 20:10:40] Not sure where that is being searched for.
+[2026-11-07 20:13:54] k, I did not have the correct path to timing reports relative to the interface.toml file
+[2026-11-07 20:14:26] I have some stacv errors:
+[2026-11-07 20:14:35] 
+./../../bin/stacv check interface.toml
+Reading interface file interface.toml
+Reading timing report file design/build/timing_reports/DAC_SDO.COPI_timing.rpt
+PASSED: dac_sdi.SDR-SS-O
+Reading timing report file design/build/timing_reports/DAC_SCS_N.CS_timing.rpt
+PASSED: dac_scs_n.SDR-SS-O-FLC
+Reading timing report file design/build/timing_reports/DAC_SDO.CIPO_timing.rpt
+FAILED: [s0_register_001] dac_sdo.SDR-SS-RT-DI
+    design/build/timing_reports/DAC_SDO.CIPO_timing.rpt:15  register u_spi/rx_shift_reg[0] is not in registers of dac_sdo
+    design/build/timing_reports/DAC_SDO.CIPO_timing.rpt:76  register u_spi/rx_shift_reg[0] is not in registers of dac_sdo
+    design/build/timing_reports/DAC_SDO.CIPO_timing.rpt:154  register u_spi/rx_shift_reg[0] is not in registers of dac_sdo
+    design/build/timing_reports/DAC_SDO.CIPO_timing.rpt:215  register u_spi/rx_shift_reg[0] is not in registers of dac_sdo
+    design/build/timing_reports/DAC_SDO.CIPO_timing.rpt:293  register u_spi/rx_shift_reg[0] is not in registers of dac_sdo
+    design/build/timing_reports/DAC_SDO.CIPO_timing.rpt:354  register u_spi/rx_shift_reg[0] is not in registers of dac_sdo
+    design/build/timing_reports/DAC_SDO.CIPO_timing.rpt:432  register u_spi/rx_shift_reg[0] is not in registers of dac_sdo
+    design/build/timing_reports/DAC_SDO.CIPO_timing.rpt:493  register u_spi/rx_shift_reg[0] is not in registers of dac_sdo
+FAILED: [s0_register_002] dac_sdo.SDR-SS-RT-DI
+    register u_spi/rx_shift_reg of dac_sdo is in no timing report
+[2026-11-07 20:14:53] There is a single bit of the rx_shift_reg being used.  I will try rx_shift_reg[0] and re-run
+[2026-11-07 20:18:33] re-running now
+[2026-11-07 20:19:27] Vivado failed again because stacv could not find the design/build/timing_reports directory
+2026-11-07 20:20:41] The relative paths are killing me
+[2026-11-07 20:24:16] I decided to use an environment variable to pin an absolution location
+[2026-11-07 20:25:51] success:
+vivado_loop: stacv check /home/jcleary/projects/sta-constraint-validator/example/texas_instruments/DAC39RF20/interface.toml
+Reading interface file interface.toml
+Reading timing report file design/build/timing_reports/DAC_SDO.COPI_timing.rpt
+PASSED: dac_sdi.SDR-SS-O
+Reading timing report file design/build/timing_reports/DAC_SCS_N.CS_timing.rpt
+PASSED: dac_scs_n.SDR-SS-O-FLC
+Reading timing report file design/build/timing_reports/DAC_SDO.CIPO_timing.rpt
+PASSED: dac_sdo.SDR-SS-RT-DI
+Check Passed
+[2026-11-07 20:26:03] The eye looks pretty good:
+./../../bin/stacv visualize eye interface.toml
+dac_sdi (SDR-SS-O)
+  setup 3.2 ns, hold 1 ns, 1.88 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  X.................<-|>..................X    32.803 ns   35.427 ns               -1.312 ns
+    Fast  X.................<-|>..................X    32.553 ns   35.154 ns               -1.301 ns
+    All   X.................<-|>..................X    32.553 ns   35.154 ns               -1.301 ns
+
+dac_scs_n (SDR-SS-O-FLC): no eye, timed to the first and last clock edges
+
+dac_sdo (SDR-SS-RT-DI)
+  setup 0.075 ns, hold 0.136 ns, 1.82 ns a character
+                                                     setup slack  hold slack  offset from eye centre
+    Slow  XX...........<|>........................X    20.949 ns   46.255 ns              -12.653 ns
+    Fast  X............<|>.......................XX    23.805 ns   43.099 ns               -9.647 ns
+    All   XX...........<|>.......................XX    20.949 ns   43.099 ns              -11.075 ns
+[2026-11-07 20:27:14] I am done
