@@ -79,8 +79,10 @@ def build_part(dPart, sFilename):
 
 
 def read_table(dPart, sTable, lKeys, sFilename):
+    # The part's name and its datasheet are datasheet values too, so a template's placeholder stops stacv here.
     dTable = READER.get_required_table(dPart, sTable, part_location.PartLocation(sFilename))
     READER.check_keys(dTable, lKeys, table_location(sFilename, sTable))
+    check_not_placeholder(dTable, table_location(sFilename, sTable))
     return dTable
 
 

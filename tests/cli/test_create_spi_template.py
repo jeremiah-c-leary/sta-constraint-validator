@@ -49,6 +49,7 @@ class SpiTemplateTestCase(unittest.TestCase):
         sText = self.read_file('part.toml').replace('value = "FROM_DATASHEET"', 'value = 5').replace('source = "FROM_DATASHEET"', 'source = "Table 1"')
         sText = sText.replace('symbol = "FROM_DATASHEET"', 'symbol = "tX"')
         sText = sText.replace('max_frequency = "FROM_DATASHEET"', 'max_frequency = 50')
+        sText = sText.replace('"FROM_DATASHEET"', '"From the datasheet"')
         with open(os.path.join(self.sDirectory, 'part.toml'), 'w') as oFile:
             oFile.write(sText)
 
@@ -154,7 +155,7 @@ class TestSpiTemplate(SpiTemplateTestCase):
         self.assertEqual(0, self.create_spi(0))
         self.fill_in_design()
         self.assertEqual(2, self.run_in_directory(['generate', 'xdc', 'spi_config.toml']))
-        self.assertEqual('ERROR: [part_config_011] part.toml key "max_frequency" in clock of pin COPI of interface SPI is FROM_DATASHEET; fill it in from the part\'s datasheet\n', self.oStderr.getvalue())
+        self.assertEqual('ERROR: [part_config_011] part.toml key "manufacturer" in [properties] is FROM_DATASHEET; fill it in from the part\'s datasheet\n', self.oStderr.getvalue())
 
 
 class TestSpiTemplateErrors(SpiTemplateTestCase):

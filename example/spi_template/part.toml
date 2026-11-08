@@ -15,13 +15,13 @@
 # All frequencies are in MHz.
 
 [properties]
-manufacturer = "MANUFACTURER"
-part_number = "PART_NUMBER"
+manufacturer = "FROM_DATASHEET"
+part_number = "FROM_DATASHEET"
 
 [datasheet]
-name = "DATASHEET_NAME"
-url = "DATASHEET_URL"
-version = "DATASHEET_VERSION"
+name = "FROM_DATASHEET"
+url = "FROM_DATASHEET"
+version = "FROM_DATASHEET"
 
 [[interface]]
 name = "SPI"

@@ -29,7 +29,8 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
      data out of it.
    - `register`: the register that drives the port (SCK, COPI, CS) or captures it (CIPO), named as Vivado
      names it after synthesis: hierarchy separated by `/`, `_reg` added, a bus bit in brackets, such as
-     `u_spi/rx_shift_reg[0]`.  Exactly the bit the design uses.
+     `u_spi/rx_shift_reg[0]`.  Exactly the bit the design uses: for a receive shift register, the bit the
+     port shifts into, which is the only one with a path from the port.
    - `[sck] read_period`: only when the design reads at a slower SCK than it writes (the part's CIPO allows
      a lower frequency); CIPO is then timed on that read clock.
    - `name`: any name for the interface; it names the timing reports.
@@ -69,8 +70,9 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
    bin/stacv visualize block_diagram spi_config.toml  # ports, registers and traces, to catch swapped names
    ```
 
-   A negative hold requirement means the signal changes after the edge that captures it; for CS it is the
-   time from the last SCK edge to CS deasserting.
+   A negative hold requirement means the signal changes after the edge that captures it.  For CS, the
+   drawing measures it from the last sample edge, whichever edge `deassert` counts from: CS deasserted 4
+   clocks after the last change edge of an 80 ns SCK shows as -80 ns (40 ns + 40 ns).
 
 6. **Generate** the constraints and the report script, from the folder holding `spi_config.toml`:
 
