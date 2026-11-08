@@ -125,6 +125,7 @@ def build_spi_config(oOptions, oStandard):
     lLines.append(f'port     = "{DESIGN_PLACEHOLDER}"')
     lLines.append(f'register = "{DESIGN_PLACEHOLDER}"')
     lLines.append(f'period   = {format_config_period(oOptions.sck_period)}')
+    lLines.append('# read_period = <ns>   # a slower SCK for reads, when the part\'s CIPO needs one')
     lLines.append('')
     lLines.extend(build_copi(oOptions, oStandard))
     lLines.append('')

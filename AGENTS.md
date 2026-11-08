@@ -30,6 +30,8 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
    - `register`: the register that drives the port (SCK, COPI, CS) or captures it (CIPO), named as Vivado
      names it after synthesis: hierarchy separated by `/`, `_reg` added, a bus bit in brackets, such as
      `u_spi/rx_shift_reg[0]`.  Exactly the bit the design uses.
+   - `[sck] read_period`: only when the design reads at a slower SCK than it writes (the part's CIPO allows
+     a lower frequency); CIPO is then timed on that read clock.
    - `name`: any name for the interface; it names the timing reports.
    - `timing_reports_dir`: where the report script writes the reports, relative to `spi_config.toml`.
 

@@ -44,6 +44,7 @@ period = 10.0
 port     = "FROM_DESIGN"
 register = "FROM_DESIGN"
 period   = 40.0
+# read_period = <ns>   # a slower SCK for reads, when the part's CIPO needs one
 
 # COPI: data from the device into the part.
 #   launch:   when the design changes COPI, from the SCK change edge (rising)

@@ -1,0 +1,31 @@
+# Delays are in nanoseconds
+
+default_delay = {max_delay = 1.0, min_delay = 0.0}
+
+[[trace]]
+name = "data_output"
+if_signal = "COPI"
+device_to_part = {max_delay = 3.00, min_delay = 1.00}
+
+[[trace]]
+name = "data_input"
+if_signal = "CIPO"
+part_to_device = {}
+
+[[trace]]
+name = "chip_select"
+if_signal = "CS"
+device_to_part = {}
+
+[[trace]]
+name = "clock"
+if_signal = "SCK"
+device_to_part = {max_delay = 3.00, min_delay = 1.00}
+
+# This is for an example three wire SPI interface
+#[[trace]]
+#name = "spi data"
+#device_pin = "IO_SPI_DATA"
+#part_pin = "SPI_DATA"
+#device_to_part = {max_delay = 3.00, min_delay = 1.00}
+#part_to_device = {max_delay = 2.50, min_delay = 0.50}

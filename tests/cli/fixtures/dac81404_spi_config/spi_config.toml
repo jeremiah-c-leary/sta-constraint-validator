@@ -1,0 +1,37 @@
+# The DAC81404 example's SPI interface as an SPI configuration, with the slower SCK it reads at.
+
+interface = "spi"
+name      = "DAC_SPI_1"
+mode      = 1
+role      = "controller"
+
+part    = "part.toml"
+traces  = "traces.toml"
+
+timing_reports_dir = "timing_reports"
+
+[device_clock]
+name   = "clk_100mhz"
+period = 10.0
+
+[sck]
+port        = "O_DAC_SCLK"
+register    = "q_spi_output_clock_reg"
+period      = 40.0
+read_period = 80.0
+
+[copi]
+port     = "O_DAC_DATA"
+register = "q_spi_output_data_reg"
+launch   = {sck_edge = "change", clocks = 0, source = "DAC81404 example interface.toml: launch edge 8"}
+
+[cipo]
+port     = "I_DAC_DATA"
+register = "q_spi_input_data_reg"
+capture  = {sck_edge = "sample", clocks = 2, source = "DAC81404 example interface.toml: capture edges AC and M, centred in the eye"}
+
+[cs]
+port     = "O_DAC_SDEN_F"
+register = "q_spi_sden_f_reg"
+assert   = {sck_edge = "first sample", clocks = -4, source = "DAC81404 example interface.toml: setup launch edge 4"}
+deassert = {sck_edge = "last change", clocks = 0, source = "DAC81404 example interface.toml: hold launch edge 8"}

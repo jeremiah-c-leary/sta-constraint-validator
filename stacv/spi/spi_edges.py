@@ -38,11 +38,14 @@ class SpiEdges():
         self.copi_launch = self.change_edge + oConfig.copi.edges['launch'].count_device_clock_edges()
         self.cs_setup_launch = self.first_sample_edge + oConfig.cs.edges['assert'].count_device_clock_edges()
         self.cs_hold_launch = find_last_sck_edge(self, oChipSelectDeassert) + oChipSelectDeassert.count_device_clock_edges()
-        # CIPO is launched on SCK, so its launch edge is SCK's number, and captured on the device clock.
+        # CIPO is launched on SCK, or on the slower read SCK, so its launch edge is that clock's number, and captured
+        # on the device clock.
+        iReadEdgesPerSckEdge = round(oConfig.sck.find_read_period() / oConfig.device_clock.period)
         iCaptureEdges = oConfig.cipo.edges['capture'].count_device_clock_edges()
         self.cipo_launch = iChange
-        self.cipo_setup_capture = self.first_sample_edge + iCaptureEdges
-        self.cipo_hold_capture = self.previous_sample_edge + iCaptureEdges
+        self.cipo_change_edge = iChange * iReadEdgesPerSckEdge
+        self.cipo_setup_capture = iFirstSample * iReadEdgesPerSckEdge + iCaptureEdges
+        self.cipo_hold_capture = (iFirstSample - 2) * iReadEdgesPerSckEdge + iCaptureEdges
 
 
 def find_last_sck_edge(oEdges, oChipSelectDeassert):

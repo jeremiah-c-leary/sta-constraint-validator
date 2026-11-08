@@ -26,7 +26,7 @@ PLACEHOLDER = 'FROM_DESIGN'
 MODES = [0, 1, 2, 3]
 TOP_LEVEL_KEYS = ['interface', 'name', 'mode', 'role', 'part', 'traces', 'timing_reports_dir', 'device_clock', 'sck', 'copi', 'cipo', 'cs']
 DEVICE_CLOCK_KEYS = ['name', 'period']
-SCK_KEYS = ['port', 'register', 'period']
+SCK_KEYS = ['port', 'register', 'period', 'read_period']
 COPI_KEYS = ['port', 'register', 'launch']
 CIPO_KEYS = ['port', 'register', 'capture']
 CS_KEYS = ['port', 'register', 'assert', 'deassert']
@@ -76,6 +76,13 @@ class Sck():
         self.port = None
         self.register = None
         self.period = None
+        # A slower SCK for reads, which CIPO is timed on; None when reads run at the same period.
+        self.read_period = None
+
+    def find_read_period(self):
+        if self.read_period is None:
+            return self.period
+        return self.read_period
 
 
 class Signal():
@@ -177,11 +184,11 @@ def read_table(dConfig, sTable, lKeys, oLocation):
     return dTable
 
 
-def read_period(dTable, sTable, oLocation):
-    oLocation.set_key(sTable, 'period')
-    fPeriod = READER.get_required_number(dTable, 'period', oLocation)
+def read_period(dTable, sTable, sKey, oLocation):
+    oLocation.set_key(sTable, sKey)
+    fPeriod = READER.get_required_number(dTable, sKey, oLocation)
     if fPeriod <= 0:
-        READER.raise_error(9, oLocation.filename, f'key "period"{oLocation.location} must be greater than 0')
+        READER.raise_error(9, oLocation.filename, f'key "{sKey}"{oLocation.location} must be greater than 0')
     return fPeriod
 
 
@@ -189,7 +196,7 @@ def read_device_clock(dConfig, oLocation):
     dTable = read_table(dConfig, 'device_clock', DEVICE_CLOCK_KEYS, oLocation)
     oDeviceClock = DeviceClock()
     oDeviceClock.name = read_string(dTable, 'device_clock', 'name', oLocation)
-    oDeviceClock.period = read_period(dTable, 'device_clock', oLocation)
+    oDeviceClock.period = read_period(dTable, 'device_clock', 'period', oLocation)
     return oDeviceClock
 
 
@@ -198,7 +205,9 @@ def read_sck(dConfig, oLocation):
     oSck = Sck()
     oSck.port = read_string(dTable, 'sck', 'port', oLocation)
     oSck.register = read_string(dTable, 'sck', 'register', oLocation)
-    oSck.period = read_period(dTable, 'sck', oLocation)
+    oSck.period = read_period(dTable, 'sck', 'period', oLocation)
+    if 'read_period' in dTable:
+        oSck.read_period = read_period(dTable, 'sck', 'read_period', oLocation)
     return oSck
 
 
@@ -258,14 +267,20 @@ def read_edge_source(dEdge, sKey, oLocation):
 
 
 def check_sck_period(oConfig, oLocation):
+    check_even_number_of_device_clocks(oConfig, 'period', oConfig.sck.period, oLocation)
+    if oConfig.sck.read_period is not None:
+        check_even_number_of_device_clocks(oConfig, 'read_period', oConfig.sck.read_period, oLocation)
+
+
+def check_even_number_of_device_clocks(oConfig, sKey, fPeriod, oLocation):
     # Each edge of SCK is launched from a rising edge of the device clock, so SCK is an even number of its periods.
-    fRatio = oConfig.sck.period / oConfig.device_clock.period
+    fRatio = fPeriod / oConfig.device_clock.period
     if abs(fRatio - round(fRatio)) <= 1e-9 and round(fRatio) % 2 == 0:
         return
-    oLocation.set_key('sck', 'period')
-    sSck = number_format.format_number(oConfig.sck.period)
+    oLocation.set_key('sck', sKey)
+    sSck = number_format.format_number(fPeriod)
     sDeviceClock = number_format.format_number(oConfig.device_clock.period)
-    READER.raise_error(10, oLocation.filename, f'key "period"{oLocation.location} is {sSck} ns, which is not an even number of device clock periods of {sDeviceClock} ns; each edge of SCK is launched from a rising edge of the device clock')
+    READER.raise_error(10, oLocation.filename, f'key "{sKey}"{oLocation.location} is {sSck} ns, which is not an even number of device clock periods of {sDeviceClock} ns; each edge of SCK is launched from a rising edge of the device clock')
 
 
 def check_edges(oConfig, oLocation):
@@ -302,13 +317,13 @@ def check_cipo_edges(oConfig, oLocation):
     # The captures are on the device clock, so they are its letters, and so is the edge of SCK that launches CIPO.
     oEdges = oConfig.edges
     sChange = oConfig.standard.change_edge.lower()
-    sLaunch = edge_times.convert_edge_number_to_letter(oEdges.change_edge)
+    sLaunch = edge_times.convert_edge_number_to_letter(oEdges.cipo_change_edge)
     oLocation.set_key('cipo', 'capture')
     if oEdges.cipo_hold_capture < 0:
         raise_edge_error(oLocation, 'capture', 'puts the hold capture before edge A, the first edge')
-    if oEdges.cipo_setup_capture <= oEdges.change_edge:
+    if oEdges.cipo_setup_capture <= oEdges.cipo_change_edge:
         raise_edge_error(oLocation, 'capture', f'puts the setup capture at edge {edge_times.convert_edge_number_to_letter(oEdges.cipo_setup_capture)}, at or before the {sChange} edge of SCK at edge {sLaunch} that launches CIPO')
-    if oEdges.cipo_hold_capture > oEdges.change_edge:
+    if oEdges.cipo_hold_capture > oEdges.cipo_change_edge:
         raise_edge_error(oLocation, 'capture', f'puts the hold capture at edge {edge_times.convert_edge_number_to_letter(oEdges.cipo_hold_capture)}, after the {sChange} edge of SCK at edge {sLaunch} that launches CIPO')
 
 

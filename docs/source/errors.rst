@@ -301,7 +301,7 @@ A file that is not valid TOML, or does not exist, is reported as interface_confi
      - ``key "period"<location> must be greater than 0``
      - Give the period in ns.
    * - spi_config_010
-     - ``key "period" in [sck]<line> is <time> ns, which is not an even number of device clock periods of <time> ns``
+     - ``key "period" in [sck]<line> is <time> ns, which is not an even number of device clock periods of <time> ns``, or the same for ``read_period``
      - Give an SCK period that is an even number of device clock periods, so each SCK edge is on a rising edge of the device clock.
    * - spi_config_011
      - ``key "<edge>"<location> puts the launch at edge <n>, ...``, or ``puts the setup capture`` or ``the hold capture``, and the edge it passes

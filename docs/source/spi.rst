@@ -60,7 +60,7 @@ The steps
 #. Generate the datasheet of the interface, for whoever connects a part to the device (see :doc:`datasheet`).
 
 The DAC39RF20 example in ``example/texas_instruments/DAC39RF20`` is an SPI mode 0 interface timed this way.
-The DAC81404 example in ``example/texas_instruments/DAC81404`` is an SPI mode 1 interface with a slower SCK for reads, which an SPI configuration cannot give yet, so it is timed with an interface file.
+The DAC81404 example in ``example/texas_instruments/DAC81404`` is an SPI mode 1 interface with a slower SCK for reads, timed with a hand-written interface file; an SPI configuration gives the same interface with ``read_period``.
 
 Not supported yet
 -----------------

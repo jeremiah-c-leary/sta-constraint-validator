@@ -293,3 +293,49 @@ class TestSpiConfigErrors(SpiConfigTestCase):
     def test_an_interface_file_does_not_generate_an_interface_file(self):
         self.assertEqual(2, self.run_stacv(['generate', 'interface', sDac81404Interface]))
         self.assertEqual(f'ERROR: [generate_012] {sDac81404Interface} is an interface file, not an interface configuration file; only an interface configuration file, such as spi_config.toml, generates an interface file\n', self.oStderr.getvalue())
+
+
+class TestSpiConfigReadClock(SpiConfigTestCase):
+    '''
+    The DAC81404 example, SPI mode 1 with SCK 40 ns for writes and 80 ns for reads, as an SPI configuration.  Its
+    expansion is compared with the example's hand-written interface file.
+    '''
+
+    def setUp(self):
+        oTemporaryDirectory = tempfile.TemporaryDirectory()
+        self.addCleanup(oTemporaryDirectory.cleanup)
+        self.sDirectory = os.path.join(oTemporaryDirectory.name, 'dac81404')
+        shutil.copytree(os.path.join(os.path.dirname(__file__), 'fixtures', 'dac81404_spi_config'), self.sDirectory)
+        sWorkingDir = os.getcwd()
+        self.addCleanup(os.chdir, sWorkingDir)
+        os.chdir(self.sDirectory)
+
+    def test_the_read_period_adds_a_read_clock_on_the_sck_port(self):
+        sInterface = self.generate_interface()
+        self.assertIn('[[clock]]\nname = "O_DAC_SCLK_rd_clk"\nport = "O_DAC_SCLK"\ngenerator = {source = "q_spi_output_clock_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_100mhz"}\nperiod = 80.000\n', sInterface)
+
+    def test_the_edges_are_those_of_the_hand_written_interface_file(self):
+        sInterface = self.generate_interface()
+        self.assertIn('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}\ncapture_clock = {name = "O_DAC_SCLK_clk", setup_edge = "D", hold_edge = "B"}\nregisters = ["q_spi_output_data_reg"]', sInterface)
+        self.assertIn('launch_clock = {name = "clk_100mhz", setup_edge = 4, hold_edge = 8}\ncapture_clock = {name = "O_DAC_SCLK_clk", setup_edge = "D", hold_edge = "B"}\nregisters = ["q_spi_sden_f_reg"]', sInterface)
+
+    def test_cipo_is_launched_on_the_read_clock_and_captured_from_its_edges(self):
+        sInterface = self.generate_interface()
+        self.assertIn('launch_clock = {name = "O_DAC_SCLK_rd_clk", setup_edge = 2, hold_edge = 2}\ncapture_clock = {name = "clk_100mhz", setup_edge = "AC", hold_edge = "M"}', sInterface)
+
+    def test_the_constraints_add_the_read_clock_to_the_sck_register(self):
+        self.assertEqual(0, self.run_stacv(['generate', 'xdc', 'spi_config.toml']))
+        sXdc = self.oStdout.getvalue()
+        self.assertIn('create_generated_clock -add -master_clock [get_clocks clk_100mhz] -name O_DAC_SCLK_rd_clk -source [get_pins q_spi_output_clock_reg/C] -divide_by 8 [get_pins q_spi_output_clock_reg/Q]', sXdc)
+        self.assertIn('set_multicycle_path 6 -setup -end -from [get_ports I_DAC_DATA] -to [get_clocks clk_100mhz]', sXdc)
+
+    def test_a_read_period_that_is_not_an_even_number_of_device_clock_periods_is_an_error(self):
+        self.edit_config('read_period = 80.0', 'read_period = 70.0')
+        self.assertEqual(2, self.run_stacv(['generate', 'interface', 'spi_config.toml']))
+        self.assertEqual('ERROR: [spi_config_010] spi_config.toml key "read_period" in [sck] (line 21) is 70 ns, which is not an even number of device clock periods of 10 ns; each edge of SCK is launched from a rising edge of the device clock\n', self.oStderr.getvalue())
+
+    def test_a_cipo_capture_at_the_read_clock_edge_that_launches_it_is_an_error(self):
+        # The read SCK's change edge, which launches CIPO, is at device clock edge 16, Q; the write SCK's is at 8.
+        self.edit_config('clocks = 2, source = "DAC81404', 'clocks = -4, source = "DAC81404')
+        self.assertEqual(2, self.run_stacv(['generate', 'interface', 'spi_config.toml']))
+        self.assertEqual('ERROR: [spi_config_011] spi_config.toml key "capture" in [cipo] (line 31) puts the setup capture at edge Q, at or before the rising edge of SCK at edge Q that launches CIPO\n', self.oStderr.getvalue())
