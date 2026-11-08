@@ -99,7 +99,41 @@ semicolon, how to correct it.  Read it and correct the file; do not work around 
 An interface that is not SPI is described by hand with an interface file, a part file and a traces file:
 `bin/stacv create template interface|part|traces` writes each template.  Every command takes the interface
 file in place of `spi_config.toml`.  `bin/stacv generate interface spi_config.toml` shows the interface
-file an SPI configuration expands to.
+file an SPI configuration expands to, as a worked example.
+
+### Choosing the methodology
+
+Each signal is timed by a methodology, and has one at each end.  **A methodology is named from the view of
+the file it is in:** the device's view in the interface file (`[[port]] methodology`), the part's view in
+the part file (`[[interface.pin]] methodology`).  So the same signal is `SDR-SS-RT-DI` at the device and
+`SDR-SS-RT-DO` at the part: the device receives the data, the part sends it.
+
+Answer four questions for each signal, then read its row:
+
+1. Which way does the data go?
+2. Where does the clock come from: the device forwards it, the part sends it, or one clock source drives
+   both?
+3. Is the data launched on a clock that came from the other end (a round trip)?
+4. Is it timed on one clock edge per bit, on both edges, or to the first and last edges of a clock that
+   stops?
+
+| Data | Clock | Timing | Interface file (device) | Part file (part pin) |
+|---|---|---|---|---|
+| device to part | the device forwards it | one edge per bit | `SDR-SS-O` | `SDR-SS-I` |
+| device to part | the device forwards it, and it stops between transfers | first and last edges, such as a chip select | `SDR-SS-O-FLC` | `SDR-SS-I` |
+| device to part | the device forwards it | both edges | `DDR-SS-O` | `DDR-SS-I` |
+| device to part | the part sends it; the device launches on it | one edge, round trip | `SDR-SS-RT-DO` | `SDR-SS-RT-DI` |
+| part to device | the device forwards it; the part launches on it | one edge, round trip | `SDR-SS-RT-DI` | `SDR-SS-RT-DO` |
+| part to device | the part sends it with the data | one edge per bit | `SDR-SS-I` | `SDR-SS-O` |
+| part to device | the part sends it with the data | both edges; each edge captures the data aligned with it | `DDR-SS-I-SE` | `DDR-SS-O` |
+| part to device | the part sends it with the data | both edges; each edge captures the data the edge before it launched | `DDR-SS-I-NE` | `DDR-SS-O` |
+| device to part | one source drives both | one edge per bit | `SDR-SYS-O` | `SDR-SYS-I` |
+| part to device | one source drives both | one edge per bit | `SDR-SYS-I` | `SDR-SYS-O` |
+
+A part pin that receives data (`-I`, `RT-DI`) takes `capture_edge`, `setup` and `hold` from the datasheet; a
+part pin that sends data (`-O`, `RT-DO`) takes `launch_edge` and either `cko_max`/`cko_min` or
+`valid_before`/`valid_after`.  For SPI: COPI is `SDR-SS-O` / `SDR-SS-I`, CS is `SDR-SS-O-FLC` / `SDR-SS-I`,
+CIPO is `SDR-SS-RT-DI` / `SDR-SS-RT-DO`.
 
 ## Development
 

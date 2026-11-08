@@ -88,7 +88,7 @@ class SdrSourceSynchronousInput(methodology.Methodology):
 
 class SdrSourceSynchronousRoundTripDataOut(methodology.Methodology):
     '''
-    The part sends a clock, the device launches its data on that clock, and the part captures the data on it.
+    The device launches its data on a clock it receives from the part, and the part captures the data on that clock.
     '''
 
     def __init__(self):
