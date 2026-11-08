@@ -35,9 +35,10 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
    - `name`: any name for the interface; it names the timing reports.
    - `timing_reports_dir`: where the report script writes the reports, relative to `spi_config.toml`.
 
-3. **Fill in `part.toml`** from the part's datasheet.  Replace every `FROM_DATASHEET` with a number (ns, or
-   MHz for `max_frequency`) and its `source`, such as `"Table 6.9"`.  Rename the pins to the datasheet's
-   names.  Do not change the keys below the `#--- set by stacv ...` lines.
+3. **Fill in `part.toml`** from the part's datasheet.  Replace every `FROM_DATASHEET`: each `value` with a
+   number (ns, or MHz for `max_frequency`), its `symbol` with the datasheet's (such as `"tOD"`), and its
+   `source` with where it is (such as `"Table 6.9"`).  Rename the pins to the datasheet's names; the traces
+   file keeps its own.  Do not change the keys below the `#--- set by stacv ...` lines.
    - COPI pin: `setup` and `hold` to the SCK sample edge.
    - CS pin: chip-select setup and hold (tCSS, tCSH).
    - CIPO pin: `cko_max` and `cko_min`, the clock-to-out from the SCK change edge.
@@ -104,6 +105,9 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
    file and line of each finding; `Check Passed` when all pass.  Exit code 0 when all pass, 1 when a rule
    fails, 2 on an input error.  Fix a failure in the TOML files or the design, never in the XDC, and run
    steps 6 to 8 again.
+
+   For the margin, `bin/stacv visualize eye spi_config.toml` prints each data port's setup and hold slack
+   in each corner, and where the data sits in its eye.  CS has no eye; its slacks are in its timing report.
 
 ## Errors
 
