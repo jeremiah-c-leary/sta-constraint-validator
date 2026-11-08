@@ -30,7 +30,7 @@ port = "I_RGMII_RXC"
 name = "O_RGMII_TXD[3:0]"
 methodology = "DDR-SS-O"
 launch_clock = {name = "clk_100mhz", setup_edge = 6, hold_edge = 6}
-capture_clock = {name = "rgmii_txc", setup_edge = "C", hold_edge = "B"}
+capture_clock = {name = "rgmii_txc", setup_edge = 2, hold_edge = 1}
 registers = ["q_rgmii_txd_reg[*]"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/O_RGMII_TXD_timing.rpt",
@@ -40,7 +40,7 @@ timing_reports = [
 name = "O_RGMII_TX_CTL"
 methodology = "DDR-SS-O"
 launch_clock = {name = "clk_100mhz", setup_edge = 6, hold_edge = 6}
-capture_clock = {name = "rgmii_txc", setup_edge = "C", hold_edge = "B"}
+capture_clock = {name = "rgmii_txc", setup_edge = 2, hold_edge = 1}
 registers = ["q_rgmii_tx_ctl_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/O_RGMII_TX_CTL_timing.rpt",
@@ -50,7 +50,7 @@ timing_reports = [
 name = "I_RGMII_RXD[3:0]"
 methodology = "DDR-SS-I-SE"
 launch_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 2}
-capture_clock = {name = "rgmii_rxc", setup_edge = "C", hold_edge = "B"}
+capture_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 1}
 registers = ["GEN_RGMII_RX[*].U_IDDR"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_RGMII_RXD_timing.rpt",
@@ -60,7 +60,7 @@ timing_reports = [
 name = "I_RGMII_RX_CTL"
 methodology = "DDR-SS-I-SE"
 launch_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 2}
-capture_clock = {name = "rgmii_rxc", setup_edge = "C", hold_edge = "B"}
+capture_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 1}
 registers = ["GEN_RGMII_RX[4].U_IDDR"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_RGMII_RX_CTL_timing.rpt",

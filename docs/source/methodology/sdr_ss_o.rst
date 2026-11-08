@@ -84,7 +84,7 @@ I5     The edge of its clock the part captures on                             pa
 I6     The part's setup and hold                                              part datasheet  10 ns, 10 ns
 I7     The data trace's maximum and minimum delay                             HW engineer     3 ns, 1 ns
 I8     The clock trace's maximum and minimum delay                            HW engineer     3 ns, 1 ns
-I9     The launch and capture edges, for setup and for hold                   designer        setup 8 to D, hold 8 to B
+I9     The launch and capture edges, for setup and for hold                   designer        setup 8 to 3, hold 8 to 1
 =====  =====================================================================  ==============  ===============================
 
 Steps  (DID)
@@ -94,8 +94,8 @@ Steps  (DID)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Every edge of each clock is counted from 0 ns, rising and falling in turn.
-The launch clock's edges are numbered, 0, 1, 2, ..., and the capture clock's are lettered, A, B, C, ....
-Even numbers, and A, C, E, ..., are rising edges.
+Each clock's edges are numbered from 0 on that clock: 0, 1, 2, ..., the even ones rising and the odd ones falling.
+Even numbers are rising edges.
 
 The setup check times the data launched on one edge against the capture edge that should capture it.
 The hold check times the same data against the capture edge before it, the one that captured the previous data, which the new data must not disturb.
@@ -110,16 +110,16 @@ That edge is the capture edge of the same kind before the setup capture edge: th
                                                                     |---setup requirement-->|
                                             |<---hold requirement---|
 
-                    A_______________________B                       C_______________________D                       E
+                    0_______________________1                       2_______________________3                       4
    dac_sclk       __|                       |_______________________|                       |_______________________|
    (25 MHz)
 
 The setup requirement is the time from the setup launch edge to the setup capture edge, and the hold requirement the time from the hold launch edge to the hold capture edge.
 
-For O_DAC_DATA, the data is launched on edge 8, at 40 ns, at the same time as the rising edge C of the forwarded clock:
+For O_DAC_DATA, the data is launched on edge 8, at 40 ns, at the same time as the rising edge 2 of the forwarded clock:
 
-* setup: launch 8 at 40 ns, capture D at 60 ns, a setup requirement of 20 ns;
-* hold: launch 8 at 40 ns, capture B at 20 ns, a hold requirement of -20 ns.
+* setup: launch 8 at 40 ns, capture 3 at 60 ns, a setup requirement of 20 ns;
+* hold: launch 8 at 40 ns, capture 1 at 20 ns, a hold requirement of -20 ns.
 
 2. Create the forwarded clock  (I1, I3, I4)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -165,13 +165,13 @@ For O_DAC_DATA:
 
 Left to itself, a timing tool times each path on the closest edges: for setup, the launch edge closest before a capture edge, and for hold, the edges that check the setup's capture edge is not disturbed by the next launch.
 These are rarely the edges intended.
-The data register is clocked by the launch clock, but the data changes only once in each period of the forwarded clock: of the four launch edges in each period of dac_sclk, only edge 8, with C, launches data.
+The data register is clocked by the launch clock, but the data changes only once in each period of the forwarded clock: of the four launch edges in each period of dac_sclk, only edge 8, with edge 2, launches data.
 So the setup and hold requirements can be moved to the edges that time the data as it is launched.
 
-The part captures on the falling edges of dac_sclk, B and D (I5), so every capture edge below is one of them.
+The part captures on the falling edges of dac_sclk, 1 and 3 (I5), so every capture edge below is one of them.
 
-**The default edges.**  For setup, the closest launch edge before the capture edge D is 10, at 50 ns: a setup requirement of 10 ns.
-For hold, the next launch edge, 12 at 60 ns, against the same D: a hold requirement of 0 ns.
+**The default edges.**  For setup, the closest launch edge before the capture edge 3 is 10, at 50 ns: a setup requirement of 10 ns.
+For hold, the next launch edge, 12 at 60 ns, against the same 3: a hold requirement of 0 ns.
 
 .. code-block:: text
 
@@ -182,7 +182,7 @@ For hold, the next launch edge, 12 at 60 ns, against the same D: a hold requirem
                                                                                 |---------->| setup requirement
                                                                                             | hold requirement
 
-                    A_______________________B                       C_______________________D                       E
+                    0_______________________1                       2_______________________3                       4
    dac_sclk       __|                       |_______________________|                       |_______________________|
    (25 MHz)
 
@@ -191,7 +191,7 @@ For hold, the next launch edge, 12 at 60 ns, against the same D: a hold requirem
    hold requirement = 0 ns
 
 **Moving the setup edge.**  A setup multicycle path of 2, counted in launch clock periods, moves the setup launch one period earlier, to edge 8: a setup requirement of 20 ns.
-The hold check moves with it, to the launch edge after the new setup launch edge, 10 to D: a hold requirement of 10 ns.
+The hold check moves with it, to the launch edge after the new setup launch edge, 10 to 3: a hold requirement of 10 ns.
 That hold check times data launched on edge 10, which does not launch data, so it is not the intended check.
 
 .. code-block:: text
@@ -203,7 +203,7 @@ That hold check times data launched on edge 10, which does not launch data, so i
                                                                     |---setup requirement-->|
                                                                                 |---------->| hold requirement
 
-                    A_______________________B                       C_______________________D                       E
+                    0_______________________1                       2_______________________3                       4
    dac_sclk       __|                       |_______________________|                       |_______________________|
    (25 MHz)
 
@@ -212,7 +212,7 @@ That hold check times data launched on edge 10, which does not launch data, so i
    hold requirement = 10 ns
 
 **Moving the hold edge back.**  The hold check belongs on the capture edge before the setup capture edge, the falling edge that captured the previous data.
-With the setup check now from edge 8 to D, the hold check is from edge 8 to B.
+With the setup check now from edge 8 to 3, the hold check is from edge 8 to 1.
 A hold multicycle path of 3 moves the hold check back three launch periods, 30 ns: its requirement goes from 10 ns to -20 ns.
 
 .. code-block:: text
@@ -224,7 +224,7 @@ A hold multicycle path of 3 moves the hold check back three launch periods, 30 n
                                                                     |---setup requirement-->|
                                             |<---hold requirement---|
 
-                    A_______________________B                       C_______________________D                       E
+                    0_______________________1                       2_______________________3                       4
    dac_sclk       __|                       |_______________________|                       |_______________________|
    (25 MHz)
 

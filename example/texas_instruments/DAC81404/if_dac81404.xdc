@@ -26,7 +26,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  --------------
-# 946c1ae3c1aaf452000f886b7fe82e67  interface.toml
+# 53efaf7dc2d8f3825b488d74e7866fde  interface.toml
 # a2b0b6c8018f96a8f254f22c2c2483d0  part.toml
 # 858a9c7d0bffa5e77a9b0930dbeda9be  traces.toml
 #
@@ -119,17 +119,17 @@ create_generated_clock -add -master_clock [get_clocks clk_100mhz] -name dac_sclk
 #                                                                  |---setup requirement-->|
 #                                          |<---hold requirement---|
 #
-#                  A_______________________B                       C_______________________D                       E
+#                  0_______________________1                       2_______________________3                       4
 # dac_sclk       __|                       |_______________________|                       |_______________________|
 # (25 MHz)
 #
-# setup requirement:  20 ns (launch edge 8 at 40 ns -> capture edge D at 60 ns)
-# hold requirement:  -20 ns (launch edge 8 at 40 ns -> capture edge B at 20 ns)
+# setup requirement:  20 ns (launch edge 8 at 40 ns -> capture edge 3 at 60 ns)
+# hold requirement:  -20 ns (launch edge 8 at 40 ns -> capture edge 1 at 20 ns)
 #
 #------------------------------------------------------------------------------
 #
 # -clock:                the capture clock
-# -clock_fall:           the capture edges D and B are falling edges of dac_sclk
+# -clock_fall:           the capture edges 3 and 1 are falling edges of dac_sclk
 # -reference_pin:        dac_sclk is generated at q_spi_output_clock_reg/Q.  Without the reference pin,
 #                        the delay from Q to O_DAC_SCLK is left out of the clock path and the timing
 #                        report is wrong without any warning.
@@ -183,11 +183,11 @@ set_multicycle_path 3 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #                                          |---------------setup requirement-------------->|
 #                                                clock starts ---->|
 #
-#                                                                  C_______________________D
+#                                                                  2_______________________3
 # dac_sclk       __________________________________________________|                       |
 # (25 MHz)
 #
-# setup requirement:  40 ns (launch edge 4 at 20 ns -> capture edge D at 60 ns)
+# setup requirement:  40 ns (launch edge 4 at 20 ns -> capture edge 3 at 60 ns)
 #
 #                                                                              1     1     1
 #                  0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2
@@ -196,16 +196,16 @@ set_multicycle_path 3 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #                                          |<---hold requirement---|
 #                         clock stops ---->|
 #
-#                  A_______________________B
+#                  0_______________________1
 # dac_sclk       __|                       |________________________________________________
 # (25 MHz)
 #
-# hold requirement:  -20 ns (launch edge 8 at 40 ns -> capture edge B at 20 ns)
+# hold requirement:  -20 ns (launch edge 8 at 40 ns -> capture edge 1 at 20 ns)
 #
 #------------------------------------------------------------------------------
 #
 # -clock:                the capture clock
-# -clock_fall:           the capture edges D and B are falling edges of dac_sclk
+# -clock_fall:           the capture edges 3 and 1 are falling edges of dac_sclk
 # -reference_pin:        dac_sclk is generated at q_spi_output_clock_reg/Q.  Without the reference pin,
 #                        the delay from Q to O_DAC_SCLK is left out of the clock path and the timing
 #                        report is wrong without any warning.
@@ -258,13 +258,13 @@ set_multicycle_path 5 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #                                                                                                                  |---------------------------setup requirement-------------------------->|
 #                                                                                          |<---hold requirement---|
 #
-#                                                                                                                                                                              A     A     A     A     A     A     A
-#                  A_____B     C_____D     E_____F     G_____H     I_____J     K_____L     M_____N     O_____P     Q_____R     S_____T     U_____V     W_____X     Y_____Z     A_____B     C_____D     E_____F     G
+#                                                                              1     1     1     1     1     1     1     1     1     1     2     2     2     2     2     2     2     2     2     2     3     3     3
+#                  0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2
 # clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
 # (100 MHz)
 #
-# setup requirement:  60 ns (launch edge 2 at 80 ns -> capture edge AC at 140 ns)
-# hold requirement:  -20 ns (launch edge 2 at 80 ns -> capture edge M at 60 ns)
+# setup requirement:  60 ns (launch edge 2 at 80 ns -> capture edge 28 at 140 ns)
+# hold requirement:  -20 ns (launch edge 2 at 80 ns -> capture edge 12 at 60 ns)
 #
 #------------------------------------------------------------------------------
 #

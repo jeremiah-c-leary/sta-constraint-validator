@@ -41,7 +41,7 @@ name = "O_DAC_DATA"
 methodology = "SDR-SS-O"
 if_signal = "COPI"
 launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
-capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
+capture_clock = {name = "dac_sclk", setup_edge = 3, hold_edge = 1}
 registers = ["q_spi_output_data_reg"]
 timing_reports = [
     "$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports/O_DAC_DATA_timing.rpt",
@@ -53,7 +53,7 @@ name = "O_DAC_SDEN_F"
 methodology = "SDR-SS-O-FLC"
 if_signal = "CS"
 launch_clock = {name = "clk_100mhz", setup_edge = 4, hold_edge = 8}
-capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
+capture_clock = {name = "dac_sclk", setup_edge = 3, hold_edge = 1}
 registers = ["q_spi_sden_f_reg"]
 timing_reports = [
     "$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports/O_DAC_SDEN_F_timing.rpt",
@@ -65,7 +65,7 @@ name = "I_DAC_DATA"
 methodology = "SDR-SS-RT-DI"
 if_signal = "CIPO"
 launch_clock = {name = "dac_sclk_rd", setup_edge = 2, hold_edge = 2}
-capture_clock = {name = "clk_100mhz", setup_edge = "AC", hold_edge = "M"}
+capture_clock = {name = "clk_100mhz", setup_edge = 28, hold_edge = 12}
 registers = ["q_spi_input_data_reg"]
 timing_reports = [
     "$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports/I_DAC_DATA_timing.rpt",

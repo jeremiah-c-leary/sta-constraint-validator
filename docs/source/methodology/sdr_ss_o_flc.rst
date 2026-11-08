@@ -88,7 +88,7 @@ I6     The edge of its clock the part captures on                               
 I7     The part's setup to the first edge, and hold from the last edge                 part datasheet  tCSS 30 ns, tCSH 10 ns
 I8     The chip select trace's maximum and minimum delay                               HW engineer     1 ns, 0 ns
 I9     The clock trace's maximum and minimum delay                                     HW engineer     3 ns, 1 ns
-I10    The launch and capture edges for setup, and the launch and capture edges        designer        setup 4 to D, hold 8 to B
+I10    The launch and capture edges for setup, and the launch and capture edges        designer        setup 4 to 3, hold 8 to 1
        for hold
 =====  ==============================================================================  ==============  =================================
 
@@ -99,8 +99,8 @@ Steps  (DID)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Every edge of each clock is counted from 0 ns, rising and falling in turn.
-The launch clock's edges are numbered, 0, 1, 2, ..., and the capture clock's are lettered, A, B, C, ....
-Even numbers, and A, C, E, ..., are rising edges.
+Each clock's edges are numbered from 0 on that clock: 0, 1, 2, ..., the even ones rising and the odd ones falling.
+Even numbers are rising edges.
 
 The chip select changes twice: once when it is set, before the transfer, and once when it is cleared, after it.
 Its setup comes from the launch edge that sets it, and its hold from the launch edge that clears it, so the two launch edges are independent: each can be moved without moving the other.
@@ -122,7 +122,7 @@ For O_DAC_SDEN_F, captured on the falling edges of dac_sclk, which idles low:
                                             |---------------setup requirement-------------->|
                                                   clock starts ---->|
 
-                                                                    C_______________________D
+                                                                    2_______________________3
    dac_sclk       __________________________________________________|                       |
    (25 MHz)
 
@@ -135,17 +135,17 @@ For O_DAC_SDEN_F, captured on the falling edges of dac_sclk, which idles low:
                                             |<---hold requirement---|
                            clock stops ---->|
 
-                    A_______________________B
+                    0_______________________1
    dac_sclk       __|                       |________________________________________________
    (25 MHz)
 
    hold requirement = -20 ns
 
-* setup: launch 4 at 20 ns, capture D at 60 ns, the first falling edge, a setup requirement of 40 ns;
-* hold: launch 8 at 40 ns, capture B at 20 ns, the last falling edge before it, a hold requirement of -20 ns.
+* setup: launch 4 at 20 ns, capture 3 at 60 ns, the first falling edge, a setup requirement of 40 ns;
+* hold: launch 8 at 40 ns, capture 1 at 20 ns, the last falling edge before it, a hold requirement of -20 ns.
 
 "clock starts" marks the edge the clock starts running on, the first edge of its first pulse, and "clock stops" the edge it stops on, the last edge of its last pulse.
-The setup and hold are to the capture edges, D and B: the clock starts on C, and the first edge the part captures on is D.
+The setup and hold are to the capture edges, 3 and 1: the clock starts on 2, and the first edge the part captures on is 3.
 
 2. Create the forwarded clock  (I1, I3, I4, I5)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -195,10 +195,10 @@ Left to itself, a timing tool times each path on the closest edges: for setup, t
 These are not the edges intended.
 The chip select register is clocked by the launch clock, but the chip select changes only twice in a transfer, so the setup and hold requirements can be moved to the edges that set and clear it.
 
-The part captures on the falling edges of dac_sclk, B and D (I6), so every capture edge below is one of them.
+The part captures on the falling edges of dac_sclk, 1 and 3 (I6), so every capture edge below is one of them.
 
-**The default edges.**  For setup, the closest launch edge before the first capture edge D is 10, at 50 ns: a setup requirement of 10 ns.
-For hold, the next launch edge, 12 at 60 ns, against the same D: a hold requirement of 0 ns.
+**The default edges.**  For setup, the closest launch edge before the first capture edge 3 is 10, at 50 ns: a setup requirement of 10 ns.
+For hold, the next launch edge, 12 at 60 ns, against the same 3: a hold requirement of 0 ns.
 
 .. code-block:: text
 
@@ -209,7 +209,7 @@ For hold, the next launch edge, 12 at 60 ns, against the same D: a hold requirem
                                                                                 |---------->| setup requirement
                                                   clock starts ---->|
 
-                                                                    C_______________________D
+                                                                    2_______________________3
    dac_sclk       __________________________________________________|                       |
    (25 MHz)
 
@@ -222,14 +222,14 @@ For hold, the next launch edge, 12 at 60 ns, against the same D: a hold requirem
                                                                                             | hold requirement
                                                                            clock stops ---->|
 
-                    A_______________________B                       C_______________________D
+                    0_______________________1                       2_______________________3
    dac_sclk       __|                       |_______________________|                       |
    (25 MHz)
 
    hold requirement = 0 ns
 
 **Moving the setup edge.**  A setup multicycle path of 4, counted in launch clock periods, moves the setup launch three periods earlier, to edge 4, which sets the chip select: a setup requirement of 40 ns.
-The hold check moves with it, to the launch edge after the new setup launch edge, 6 to D: a hold requirement of 30 ns.
+The hold check moves with it, to the launch edge after the new setup launch edge, 6 to 3: a hold requirement of 30 ns.
 That hold check times the chip select launched on edge 6, which does not change it, so it is not the intended check.
 
 .. code-block:: text
@@ -241,7 +241,7 @@ That hold check times the chip select launched on edge 6, which does not change 
                                             |---------------setup requirement-------------->|
                                                   clock starts ---->|
 
-                                                                    C_______________________D
+                                                                    2_______________________3
    dac_sclk       __________________________________________________|                       |
    (25 MHz)
 
@@ -254,13 +254,13 @@ That hold check times the chip select launched on edge 6, which does not change 
                                                         |---------hold requirement--------->|
                                                                            clock stops ---->|
 
-                    A_______________________B                       C_______________________D
+                    0_______________________1                       2_______________________3
    dac_sclk       __|                       |_______________________|                       |
    (25 MHz)
 
    hold requirement = 30 ns
 
-**Moving the hold edge back.**  The hold check belongs on the last capture edge before the chip select is cleared, B, from the launch edge that clears it, 8.
+**Moving the hold edge back.**  The hold check belongs on the last capture edge before the chip select is cleared, 1, from the launch edge that clears it, 8.
 A hold multicycle path of 5 moves the hold check back five launch periods, 50 ns: its requirement goes from 30 ns to -20 ns.
 
 .. code-block:: text
@@ -272,7 +272,7 @@ A hold multicycle path of 5 moves the hold check back five launch periods, 50 ns
                                             |---------------setup requirement-------------->|
                                                   clock starts ---->|
 
-                                                                    C_______________________D
+                                                                    2_______________________3
    dac_sclk       __________________________________________________|                       |
    (25 MHz)
 
@@ -285,7 +285,7 @@ A hold multicycle path of 5 moves the hold check back five launch periods, 50 ns
                                             |<---hold requirement---|
                            clock stops ---->|
 
-                    A_______________________B
+                    0_______________________1
    dac_sclk       __|                       |________________________________________________
    (25 MHz)
 

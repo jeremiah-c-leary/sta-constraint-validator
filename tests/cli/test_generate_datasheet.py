@@ -19,7 +19,7 @@ def build_fixture_interface_text():
     # The DAC81404 example with the edges and timing reports of the fixed reports: I_DAC_DATA captured on Y and I.
     with open(os.path.join(sFixtureDir, 'interface.toml')) as oFile:
         sText = oFile.read()
-    sText = sText.replace('setup_edge = "AC", hold_edge = "M"', 'setup_edge = "Y", hold_edge = "I"')
+    sText = sText.replace('setup_edge = 28, hold_edge = 12', 'setup_edge = 24, hold_edge = 8')
     sText = sText.replace('$PROJ_DIR/example/texas_instruments/DAC81404/timing_reports', sFixtureReportDir)
     sText = sText.replace('part = "part.toml"', f'part = "{os.path.join(sFixtureDir, "part.toml")}"')
     sText = sText.replace('traces = "traces.toml"', f'traces = "{os.path.join(sFixtureDir, "traces.toml")}"')
@@ -34,7 +34,7 @@ def build_second_output_port():
     lText.append('name = "O_DAC_DATA_2"')
     lText.append('methodology = "SDR-SS-O"')
     lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
-    lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+    lText.append('capture_clock = {name = "dac_sclk", setup_edge = 3, hold_edge = 1}')
     lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{os.path.join(sFixtureReportDir, "O_DAC_DATA_timing.rpt")}"]')
     return '\n'.join(lText) + '\n'
@@ -203,7 +203,7 @@ class TestDatasheetErrors(DatasheetTestCase):
 
     def test_launch_off_the_forwarded_clock_edges_is_an_error(self):
         # Edge 7 is at 35 ns, between the edges of dac_sclk at 20 and 40 ns.
-        sText = build_fixture_interface_text().replace('setup_edge = 8, hold_edge = 8}\ncapture_clock = {name = "dac_sclk", setup_edge = "D"', 'setup_edge = 7, hold_edge = 7}\ncapture_clock = {name = "dac_sclk", setup_edge = "D"')
+        sText = build_fixture_interface_text().replace('setup_edge = 8, hold_edge = 8}\ncapture_clock = {name = "dac_sclk", setup_edge = 3', 'setup_edge = 7, hold_edge = 7}\ncapture_clock = {name = "dac_sclk", setup_edge = 3')
         self.assertEqual(2, self.run_datasheet(self.write_interface(sText)))
         self.assertEqual('ERROR: [generate_011] port O_DAC_DATA launch edge 7 at 35 ns is not at an edge of dac_sclk; the datasheet gives the clock to out from the clock edge the data is launched with\n', self.oStderr.getvalue())
 

@@ -70,7 +70,7 @@ class TestEdgePairs(InputTestCase):
 
     def test_next_edge_port_fails_on_same_edge_reports(self):
         # The edges are changed to a next edge capture, so the interface is valid, but the reports still time the same edge.
-        lNextEdge = [('methodology = "DDR-SS-I-SE"\nlaunch_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 2}\ncapture_clock = {name = "rgmii_rxc", setup_edge = "C", hold_edge = "B"}\nregisters = ["GEN_RGMII_RX[4].U_IDDR"]', 'methodology = "DDR-SS-I-NE"\nlaunch_clock = {name = "rgmii_rxc", setup_edge = 0, hold_edge = 0}\ncapture_clock = {name = "rgmii_rxc", setup_edge = "B", hold_edge = "A"}\nregisters = ["GEN_RGMII_RX[4].U_IDDR"]')]
+        lNextEdge = [('methodology = "DDR-SS-I-SE"\nlaunch_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 2}\ncapture_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 1}\nregisters = ["GEN_RGMII_RX[4].U_IDDR"]', 'methodology = "DDR-SS-I-NE"\nlaunch_clock = {name = "rgmii_rxc", setup_edge = 0, hold_edge = 0}\ncapture_clock = {name = "rgmii_rxc", setup_edge = 1, hold_edge = 0}\nregisters = ["GEN_RGMII_RX[4].U_IDDR"]')]
         self.sSuiteName = 'I_RGMII_RX_CTL.DDR-SS-I-NE'
         self.execute(lInterfaceChanges=lNextEdge)
 

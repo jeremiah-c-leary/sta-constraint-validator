@@ -6,7 +6,7 @@
 
 The hold requirement in every hold timing report must match the time between the configured hold edges.
 Every hold timing report is checked, at every process corner.
-The time of an edge is (period / 2) * n, where n is the edge number for the launch clock, and the position of the edge letter for the capture clock, starting at 0 for A.
+The time of an edge is (period / 2) * n, where n is the edge number on its clock, starting at 0.
 The expected hold requirement is the time of the capture hold edge minus the time of the launch hold edge.
 It is negative when the capture hold edge comes before the launch hold edge, which is common for an interface clocked by a divided down clock.
 Only the difference is compared, because the timing tool can time a later pair of edges with the same relationship.
@@ -16,8 +16,8 @@ If the requirement differs, the timing report does not time the edges the analys
 
 **Violation**
 
-The port is configured with ``launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8, hold_edge = 8}`` and ``capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50.000, setup_edge = "D", hold_edge = "B"}``.
-Edge 8 is at 40.000 ns and edge B is at 25.000 ns, an expected hold requirement of -15.000 ns, but the timing report gives 0.000 ns:
+The port is configured with ``launch_clock = {name = "clk_100mhz", period = 10.000, setup_edge = 8, hold_edge = 8}`` and ``capture_clock = {port = "O_DAC_SCLK", name = "dac_sclk", period = 50.000, setup_edge = 3, hold_edge = 1}``.
+Edge 8 is at 40.000 ns and capture edge 1 is at 25.000 ns, an expected hold requirement of -15.000 ns, but the timing report gives 0.000 ns:
 
 .. code-block:: text
    :emphasize-lines: 2

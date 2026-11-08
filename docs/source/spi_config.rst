@@ -81,7 +81,7 @@ Key           ``sck_edge``                       Counted from                   
 ============  =================================  ===========================================================  ====================================================
 ``launch``    ``"change"``                       The SCK change edge before the sample edge that captures     At or after the sample edge of the bit before it,
 of [copi]                                        the bit                                                      and before the sample edge that captures it
-``capture``   ``"sample"``                       The SCK sample edge after the change edge the part           The hold capture at or after edge A and at or before
+``capture``   ``"sample"``                       The SCK sample edge after the change edge the part           The hold capture at or after edge 0 and at or before
 of [cipo]                                        launches the bit on                                          the launching edge, the setup capture after it
 ``assert``    ``"first sample"``                 The first SCK sample edge of the transfer                    At or after edge 0, and before the first sample edge
 of [cs]

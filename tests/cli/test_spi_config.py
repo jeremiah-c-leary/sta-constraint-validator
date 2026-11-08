@@ -92,9 +92,9 @@ class TestSpiConfig(SpiConfigTestCase):
         # CS is asserted 4 clocks, 8 edges, before the first sample edge at 16, and deasserted 8 edges after the last
         # change edge at 8.
         sInterface = self.generate_interface()
-        self.assertIn('launch_clock = {name = "sys_clk", setup_edge = 8, hold_edge = 8}\ncapture_clock = {name = "dac_sclk_clk", setup_edge = "C", hold_edge = "A"}\nregisters = ["u_spi/sdi_q_reg"]', sInterface)
-        self.assertIn('launch_clock = {name = "sys_clk", setup_edge = 8, hold_edge = 16}\ncapture_clock = {name = "dac_sclk_clk", setup_edge = "C", hold_edge = "A"}\nregisters = ["u_spi/scs_n_q_reg"]', sInterface)
-        self.assertIn('launch_clock = {name = "dac_sclk_clk", setup_edge = 1, hold_edge = 1}\ncapture_clock = {name = "sys_clk", setup_edge = "Q", hold_edge = "A"}\nregisters = ["u_spi/rx_shift_reg[0]"]', sInterface)
+        self.assertIn('launch_clock = {name = "sys_clk", setup_edge = 8, hold_edge = 8}\ncapture_clock = {name = "dac_sclk_clk", setup_edge = 2, hold_edge = 0}\nregisters = ["u_spi/sdi_q_reg"]', sInterface)
+        self.assertIn('launch_clock = {name = "sys_clk", setup_edge = 8, hold_edge = 16}\ncapture_clock = {name = "dac_sclk_clk", setup_edge = 2, hold_edge = 0}\nregisters = ["u_spi/scs_n_q_reg"]', sInterface)
+        self.assertIn('launch_clock = {name = "dac_sclk_clk", setup_edge = 1, hold_edge = 1}\ncapture_clock = {name = "sys_clk", setup_edge = 16, hold_edge = 0}\nregisters = ["u_spi/rx_shift_reg[0]"]', sInterface)
 
     def test_copi_launch_counts_device_clocks_from_the_change_edge(self):
         self.set_edge('launch', 'change', '1')
@@ -104,7 +104,7 @@ class TestSpiConfig(SpiConfigTestCase):
         # CIPO is captured on the device clock, so its edge moves the captures and not the part's launch.
         self.set_edge('capture', 'sample', '1')
         sInterface = self.generate_interface()
-        self.assertIn('launch_clock = {name = "dac_sclk_clk", setup_edge = 1, hold_edge = 1}\ncapture_clock = {name = "sys_clk", setup_edge = "S", hold_edge = "C"}', sInterface)
+        self.assertIn('launch_clock = {name = "dac_sclk_clk", setup_edge = 1, hold_edge = 1}\ncapture_clock = {name = "sys_clk", setup_edge = 18, hold_edge = 2}', sInterface)
 
     def test_cs_deassert_can_count_from_the_last_sample_edge(self):
         # 8 clocks after the last sample edge at edge 0 is the same edge 16 as 4 clocks after the last change edge.
@@ -267,20 +267,20 @@ class TestSpiConfigErrors(SpiConfigTestCase):
         self.set_edge('deassert', 'last change', '500')
         self.assertIn('setup_edge = 8, hold_edge = 1008', self.generate_interface())
 
-    def test_cipo_captured_before_edge_a_is_an_error(self):
+    def test_cipo_captured_before_edge_0_is_an_error(self):
         self.set_edge('capture', 'sample', '-0.5')
-        self.assert_error('spi_config_011', 'key "capture" in [cipo] (line 48) puts the hold capture before edge A, the first edge')
+        self.assert_error('spi_config_011', 'key "capture" in [cipo] (line 48) puts the hold capture before edge 0, the first edge')
 
     def test_cipo_held_after_the_edge_that_launches_it_is_an_error(self):
         self.set_edge('capture', 'sample', '4.5')
-        self.assert_error('spi_config_011', 'key "capture" in [cipo] (line 48) puts the hold capture at edge J, after the falling edge of SCK at edge I that launches CIPO')
+        self.assert_error('spi_config_011', 'key "capture" in [cipo] (line 48) puts the hold capture at edge 9, after the falling edge of SCK at edge 8 that launches CIPO')
 
     def test_cipo_set_up_at_or_before_the_edge_that_launches_it_is_an_error(self):
         # In mode 1 the part launches CIPO on the rising edge at edge 16, and the device captures it at edge 24.
         self.edit_file('part.toml', 'if_standard = "SPI mode 0"', 'if_standard = "SPI mode 1"')
         self.edit_config('mode      = 0', 'mode      = 1')
         self.set_edge('capture', 'sample', '-4')
-        self.assert_error('spi_config_011', 'key "capture" in [cipo] (line 48) puts the setup capture at edge Q, at or before the rising edge of SCK at edge Q that launches CIPO')
+        self.assert_error('spi_config_011', 'key "capture" in [cipo] (line 48) puts the setup capture at edge 16, at or before the rising edge of SCK at edge 16 that launches CIPO')
 
     def test_a_part_without_the_spi_interface_of_the_mode_is_an_error(self):
         self.edit_file('part.toml', 'if_standard = "SPI mode 0"', 'if_standard = "SPI mode 1"')
@@ -317,12 +317,12 @@ class TestSpiConfigReadClock(SpiConfigTestCase):
 
     def test_the_edges_are_those_of_the_hand_written_interface_file(self):
         sInterface = self.generate_interface()
-        self.assertIn('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}\ncapture_clock = {name = "O_DAC_SCLK_clk", setup_edge = "D", hold_edge = "B"}\nregisters = ["q_spi_output_data_reg"]', sInterface)
-        self.assertIn('launch_clock = {name = "clk_100mhz", setup_edge = 4, hold_edge = 8}\ncapture_clock = {name = "O_DAC_SCLK_clk", setup_edge = "D", hold_edge = "B"}\nregisters = ["q_spi_sden_f_reg"]', sInterface)
+        self.assertIn('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}\ncapture_clock = {name = "O_DAC_SCLK_clk", setup_edge = 3, hold_edge = 1}\nregisters = ["q_spi_output_data_reg"]', sInterface)
+        self.assertIn('launch_clock = {name = "clk_100mhz", setup_edge = 4, hold_edge = 8}\ncapture_clock = {name = "O_DAC_SCLK_clk", setup_edge = 3, hold_edge = 1}\nregisters = ["q_spi_sden_f_reg"]', sInterface)
 
     def test_cipo_is_launched_on_the_read_clock_and_captured_from_its_edges(self):
         sInterface = self.generate_interface()
-        self.assertIn('launch_clock = {name = "O_DAC_SCLK_rd_clk", setup_edge = 2, hold_edge = 2}\ncapture_clock = {name = "clk_100mhz", setup_edge = "AC", hold_edge = "M"}', sInterface)
+        self.assertIn('launch_clock = {name = "O_DAC_SCLK_rd_clk", setup_edge = 2, hold_edge = 2}\ncapture_clock = {name = "clk_100mhz", setup_edge = 28, hold_edge = 12}', sInterface)
 
     def test_the_constraints_add_the_read_clock_to_the_sck_register(self):
         self.assertEqual(0, self.run_stacv(['generate', 'xdc', 'spi_config.toml']))
@@ -336,7 +336,7 @@ class TestSpiConfigReadClock(SpiConfigTestCase):
         self.assertEqual('ERROR: [spi_config_010] spi_config.toml key "read_period" in [sck] (line 21) is 70 ns, which is not an even number of device clock periods of 10 ns; each edge of SCK is launched from a rising edge of the device clock\n', self.oStderr.getvalue())
 
     def test_a_cipo_capture_at_the_read_clock_edge_that_launches_it_is_an_error(self):
-        # The read SCK's change edge, which launches CIPO, is at device clock edge 16, Q; the write SCK's is at 8.
+        # The read SCK's change edge, which launches CIPO, is at device clock edge 16; the write SCK's is at 8.
         self.edit_config('clocks = 2, source = "DAC81404', 'clocks = -4, source = "DAC81404')
         self.assertEqual(2, self.run_stacv(['generate', 'interface', 'spi_config.toml']))
-        self.assertEqual('ERROR: [spi_config_011] spi_config.toml key "capture" in [cipo] (line 31) puts the setup capture at edge Q, at or before the rising edge of SCK at edge Q that launches CIPO\n', self.oStderr.getvalue())
+        self.assertEqual('ERROR: [spi_config_011] spi_config.toml key "capture" in [cipo] (line 31) puts the setup capture at edge 16, at or before the rising edge of SCK at edge 16 that launches CIPO\n', self.oStderr.getvalue())

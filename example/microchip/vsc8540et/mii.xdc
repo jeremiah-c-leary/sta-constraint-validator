@@ -29,7 +29,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
-# 8f3289ec5d52777e167f698d0678fd6c  example/microchip/vsc8540et/mii.toml
+# 6ff646eb88a14cf5fca3f0224cba7921  example/microchip/vsc8540et/mii.toml
 # 8458046ee525571615288ff9e53cc36b  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #
@@ -134,12 +134,12 @@ create_clock -name mii_rx_clk -period 40.000 [get_ports I_MII_RX_CLK]
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # mii_tx_clk     __|     |_____|     |
 # (25 MHz)
 #
-# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge C at 40 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge 2 at 40 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -172,12 +172,12 @@ set_output_delay -clock [get_clocks mii_tx_clk] -min 1.600 [get_ports {O_MII_TXD
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # mii_tx_clk     __|     |_____|     |
 # (25 MHz)
 #
-# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge C at 40 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge 2 at 40 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -210,12 +210,12 @@ set_output_delay -clock [get_clocks mii_tx_clk] -min 1.600 [get_ports O_MII_TX_E
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # mii_tx_clk     __|     |_____|     |
 # (25 MHz)
 #
-# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge C at 40 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge 2 at 40 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -248,12 +248,12 @@ set_output_delay -clock [get_clocks mii_tx_clk] -min 1.600 [get_ports O_MII_TX_E
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # mii_rx_clk     __|     |_____|     |
 # (25 MHz)
 #
-# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge C at 40 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge 2 at 40 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -286,12 +286,12 @@ set_input_delay -clock [get_clocks mii_rx_clk] -min 9.600 [get_ports {I_MII_RXD[
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # mii_rx_clk     __|     |_____|     |
 # (25 MHz)
 #
-# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge C at 40 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge 2 at 40 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -324,12 +324,12 @@ set_input_delay -clock [get_clocks mii_rx_clk] -min 9.600 [get_ports I_MII_RX_DV
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # mii_rx_clk     __|     |_____|     |
 # (25 MHz)
 #
-# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge C at 40 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  40 ns (launch edge 0 at 0 ns -> capture edge 2 at 40 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #

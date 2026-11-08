@@ -93,10 +93,10 @@ class TestSpiTemplate(SpiTemplateTestCase):
     def test_each_mode_sets_the_idle_level_and_the_edges(self):
         # Mode 1 gives the edges of the DAC81404 example.
         lModes = []
-        lModes.append((0, 'low', 'device_clk", setup_edge = 4, hold_edge = 4', '"C", hold_edge = "A"', 'setup_edge = 1, hold_edge = 1', '"I", hold_edge = "A"', 'Rising', 'Falling'))
-        lModes.append((1, 'low', 'device_clk", setup_edge = 8, hold_edge = 8', '"D", hold_edge = "B"', 'setup_edge = 2, hold_edge = 2', '"M", hold_edge = "E"', 'Falling', 'Rising'))
-        lModes.append((2, 'high', 'device_clk", setup_edge = 8, hold_edge = 8', '"D", hold_edge = "B"', 'setup_edge = 2, hold_edge = 2', '"M", hold_edge = "E"', 'Falling', 'Rising'))
-        lModes.append((3, 'high', 'device_clk", setup_edge = 4, hold_edge = 4', '"C", hold_edge = "A"', 'setup_edge = 1, hold_edge = 1', '"I", hold_edge = "A"', 'Rising', 'Falling'))
+        lModes.append((0, 'low', 'device_clk", setup_edge = 4, hold_edge = 4', '2, hold_edge = 0', 'setup_edge = 1, hold_edge = 1', '8, hold_edge = 0', 'Rising', 'Falling'))
+        lModes.append((1, 'low', 'device_clk", setup_edge = 8, hold_edge = 8', '3, hold_edge = 1', 'setup_edge = 2, hold_edge = 2', '12, hold_edge = 4', 'Falling', 'Rising'))
+        lModes.append((2, 'high', 'device_clk", setup_edge = 8, hold_edge = 8', '3, hold_edge = 1', 'setup_edge = 2, hold_edge = 2', '12, hold_edge = 4', 'Falling', 'Rising'))
+        lModes.append((3, 'high', 'device_clk", setup_edge = 4, hold_edge = 4', '2, hold_edge = 0', 'setup_edge = 1, hold_edge = 1', '8, hold_edge = 0', 'Rising', 'Falling'))
         for iMode, sIdle, sCopiLaunch, sCopiCapture, sCipoLaunch, sCipoCapture, sCaptureEdge, sLaunchEdge in lModes:
             with self.subTest(mode=iMode):
                 oDirectory = tempfile.TemporaryDirectory()
@@ -137,7 +137,7 @@ class TestSpiTemplate(SpiTemplateTestCase):
         self.fill_in_design()
         sInterface = self.generate_interface()
         self.assertIn('launch_clock = {name = "device_clk", setup_edge = 10, hold_edge = 10}', sInterface)
-        self.assertIn('capture_clock = {name = "device_clk", setup_edge = "U", hold_edge = "A"}', sInterface)
+        self.assertIn('capture_clock = {name = "device_clk", setup_edge = 20, hold_edge = 0}', sInterface)
 
     def test_the_timing_reports_are_named_by_interface_and_signal(self):
         self.assertEqual(0, self.create_spi(0))

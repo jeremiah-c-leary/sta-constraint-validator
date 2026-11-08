@@ -12,11 +12,11 @@ sRuleId = 's4_requirement_001'
 # An SDR-SS-O port launches on one edge, and its capture hold edge is the capture edge before its setup edge.
 # With a launch clock period of 10.000ns and a capture clock period of 40.000ns:
 #    launch edge 8   is at (10.000 / 2) * 8 = 40.000ns
-#    capture edge D  is at (40.000 / 2) * 3 = 60.000ns
+#    capture edge 3  is at (40.000 / 2) * 3 = 60.000ns
 # which gives a setup requirement of 60.000 - 40.000 = 20.000ns.
 iPassingLaunchEdge = 8
-sPassingCaptureSetupEdge = 'D'
-sPassingCaptureHoldEdge = 'B'
+sPassingCaptureSetupEdge = 3
+sPassingCaptureHoldEdge = 1
 fPassingCapturePeriod = 40.0
 
 
@@ -38,7 +38,7 @@ def build_config_text(sPartFile, sTracesFile, sTimingReportFile, oEdges):
     lText.append('name = "O_DAC_DATA"')
     lText.append('methodology = "SDR-SS-O"')
     lText.append(f'launch_clock = {{name = "clk_100mhz", setup_edge = {oEdges.launch_edge}, hold_edge = {oEdges.launch_edge}}}')
-    lText.append(f'capture_clock = {{name = "dac_sclk", setup_edge = "{oEdges.capture_setup_edge}", hold_edge = "{oEdges.capture_hold_edge}"}}')
+    lText.append(f'capture_clock = {{name = "dac_sclk", setup_edge = {oEdges.capture_setup_edge}, hold_edge = {oEdges.capture_hold_edge}}}')
     lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReportFile}"]')
     return '\n'.join(lText)
@@ -101,13 +101,13 @@ class Test(rule_test_case.RuleTestCase):
 
     def test_fails_when_capture_setup_edge_differs(self):
         # (40.000 / 2) * 5 - (10.000 / 2) * 8 = 100.000 - 40.000 = 60.000
-        self.execute_with_edges(iPassingLaunchEdge, 'F', 'D')
+        self.execute_with_edges(iPassingLaunchEdge, 5, 3)
 
         self.assert_rule_failed(sRuleId)
 
     def test_passes_when_a_later_pair_of_edges_has_the_same_setup_requirement(self):
         # (40.000 / 2) * 5 - (10.000 / 2) * 16 = 100.000 - 80.000 = 20.000
-        self.execute_with_edges(16, 'F', 'D')
+        self.execute_with_edges(16, 5, 3)
 
         self.assert_rule_passed(sRuleId)
 
@@ -146,7 +146,7 @@ class Test(rule_test_case.RuleTestCase):
         self.assert_rule_passed(sRuleId)
 
     def test_failure_lists_each_setup_timing_report_with_a_different_requirement(self):
-        self.execute_with_edges(iPassingLaunchEdge, 'F', 'D')
+        self.execute_with_edges(iPassingLaunchEdge, 5, 3)
 
         lExpected = []
         for iLineNumber in lSetupRequirementLines:

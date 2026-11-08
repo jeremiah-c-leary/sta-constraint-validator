@@ -68,7 +68,7 @@ Each clock of the interface is defined once, in a ``[[clock]]`` table, and ports
    name = "O_DAC_DATA"
    methodology = "SDR-SS-O"
    launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
-   capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
+   capture_clock = {name = "dac_sclk", setup_edge = 3, hold_edge = 1}
 
 ``generator`` names the element that generates the clock: the register that forwards the clock, a clock manager, or anything else that drives the clock port.
 It also tells a reviewer where the forwarded clock comes from.
@@ -157,7 +157,7 @@ The output delays use the clock port as their reference pin.
 The generated clock is defined at the target pin of its generator, so without the reference pin, the delay from the target pin to the clock port is left out of the clock path.
 The timing report is then wrong without any warning.
 
-When the capture edges are falling edges (B, D, F, ...), the output delays are applied to the falling edge of the capture clock.
+When the capture edges are falling edges (1, 3, 5, ...), the output delays are applied to the falling edge of the capture clock.
 
 Input delays
 ^^^^^^^^^^^^
@@ -196,9 +196,9 @@ Each multicycle path applies from the launch clock to an output port, or from an
 For example, a 10 ns launch clock and a 40 ns capture clock, with ``setup_edge = 4`` to ``"C"`` and ``hold_edge = 4`` to ``"A"``:
 
 * The setup requirement is 40 - 20 = 20 ns, a setup multicycle of 20 / 10 = 2.
-  The timing tool's default setup check is from launch edge 6 to C, one launch cycle; the multicycle moves it back to edge 4.
-* After the setup multicycle, the timing tool checks the hold at the setup capture edge, from the next launch edge: 6 to C.
-  The configured hold check, 4 to A, is the same check as 12 to C, three launch cycles later.
+  The timing tool's default setup check is from launch edge 6 to 2, one launch cycle; the multicycle moves it back to edge 4.
+* After the setup multicycle, the timing tool checks the hold at the setup capture edge, from the next launch edge: 6 to 2.
+  The configured hold check, 4 to 0, is the same check as 12 to 2, three launch cycles later.
   The hold requirement is 0 - 20 = -20 ns, a hold multicycle of (20 - -20) / 10 - 1 = 3.
 
 Capture on the launching edge

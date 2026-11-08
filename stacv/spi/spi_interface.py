@@ -9,7 +9,6 @@ user takes over is the interface stacv used.
 import os
 import tomllib
 
-from stacv.rules import edge_times
 from stacv.spi import spi_config
 
 DOCS_URL = 'https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source'
@@ -133,7 +132,7 @@ def build_copi_port(oConfig):
     lLines.append('methodology = "SDR-SS-O"')
     lLines.append('if_signal = "COPI"')
     lLines.append(f'launch_clock = {{name = {quote(oConfig.device_clock.name)}, setup_edge = {oEdges.copi_launch}, hold_edge = {oEdges.copi_launch}}}')
-    lLines.append(f'capture_clock = {{name = {quote(find_sck_clock_name(oConfig))}, setup_edge = "{oEdges.sck_setup_capture}", hold_edge = "{oEdges.sck_hold_capture}"}}')
+    lLines.append(f'capture_clock = {{name = {quote(find_sck_clock_name(oConfig))}, setup_edge = {oEdges.sck_setup_capture}, hold_edge = {oEdges.sck_hold_capture}}}')
     lLines.extend(build_registers_and_reports(oConfig, oConfig.copi.register, 'COPI'))
     return lLines
 
@@ -147,15 +146,13 @@ def build_cs_port(oConfig):
     lLines.append('methodology = "SDR-SS-O-FLC"')
     lLines.append('if_signal = "CS"')
     lLines.append(f'launch_clock = {{name = {quote(oConfig.device_clock.name)}, setup_edge = {oEdges.cs_setup_launch}, hold_edge = {oEdges.cs_hold_launch}}}')
-    lLines.append(f'capture_clock = {{name = {quote(find_sck_clock_name(oConfig))}, setup_edge = "{oEdges.sck_setup_capture}", hold_edge = "{oEdges.sck_hold_capture}"}}')
+    lLines.append(f'capture_clock = {{name = {quote(find_sck_clock_name(oConfig))}, setup_edge = {oEdges.sck_setup_capture}, hold_edge = {oEdges.sck_hold_capture}}}')
     lLines.extend(build_registers_and_reports(oConfig, oConfig.cs.register, 'CS'))
     return lLines
 
 
 def build_cipo_port(oConfig):
     oEdges = oConfig.edges
-    sSetupCapture = edge_times.convert_edge_number_to_letter(oEdges.cipo_setup_capture)
-    sHoldCapture = edge_times.convert_edge_number_to_letter(oEdges.cipo_hold_capture)
     lLines = []
     lLines.append(f'# The part changes CIPO on the {describe_change_edge(oConfig)} edge of SCK, and the device captures it on {oConfig.device_clock.name}.')
     lLines.append('[[port]]')
@@ -163,7 +160,7 @@ def build_cipo_port(oConfig):
     lLines.append('methodology = "SDR-SS-RT-DI"')
     lLines.append('if_signal = "CIPO"')
     lLines.append(f'launch_clock = {{name = {quote(find_cipo_launch_clock_name(oConfig))}, setup_edge = {oEdges.cipo_launch}, hold_edge = {oEdges.cipo_launch}}}')
-    lLines.append(f'capture_clock = {{name = {quote(oConfig.device_clock.name)}, setup_edge = "{sSetupCapture}", hold_edge = "{sHoldCapture}"}}')
+    lLines.append(f'capture_clock = {{name = {quote(oConfig.device_clock.name)}, setup_edge = {oEdges.cipo_setup_capture}, hold_edge = {oEdges.cipo_hold_capture}}}')
     lLines.extend(build_registers_and_reports(oConfig, oConfig.cipo.register, 'CIPO'))
     return lLines
 

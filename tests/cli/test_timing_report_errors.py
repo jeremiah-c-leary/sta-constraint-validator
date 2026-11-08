@@ -25,7 +25,7 @@ def build_interface_text(sTimingReport):
     lText.append('generator = {source = "q_spi_output_clock_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_100mhz"}')
     lText.append('[[port]]\nname = "O_DAC_DATA"\nmethodology = "SDR-SS-O"')
     lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
-    lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+    lText.append('capture_clock = {name = "dac_sclk", setup_edge = 3, hold_edge = 1}')
     lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReport}"]')
     # The part's other pins are not timed by these tests.

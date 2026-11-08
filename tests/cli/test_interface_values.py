@@ -16,16 +16,16 @@ class TestInterfaceValues(test_interface_keys.InterfaceTestCase):
         sLaunchClock = 'launch_clock = {name = "clk_launch", setup_edge = 8, hold_edge = -2}'
         self.assert_error({'launch_clock': sLaunchClock}, 'interface_config_014', 'key "launch_clock" in port O_DATA has hold_edge -2; launch edges are numbers: 0, 1, 2, ...')
 
-    def test_capture_edge_written_as_a_number_is_an_error(self):
+    def test_capture_edge_written_as_a_letter_is_an_error(self):
         sCaptureClock = 'capture_clock = {name = "clk_capture", setup_edge = "D", hold_edge = 1}'
-        self.assert_error({'capture_clock': sCaptureClock}, 'interface_config_015', 'key "capture_clock" in port O_DATA has hold_edge 1; capture edges are letters: A, B, C, ...')
+        self.assert_error({'capture_clock': sCaptureClock}, 'interface_config_015', 'key "capture_clock" in port O_DATA has setup_edge "D"; capture edges are numbers: 0, 1, 2, ...')
 
-    def test_lower_case_capture_edge_is_an_error(self):
-        sCaptureClock = 'capture_clock = {name = "clk_capture", setup_edge = "d", hold_edge = "B"}'
-        self.assert_error({'capture_clock': sCaptureClock}, 'interface_config_015', 'key "capture_clock" in port O_DATA has setup_edge "d"; capture edges are letters: A, B, C, ...')
+    def test_negative_capture_edge_is_an_error(self):
+        sCaptureClock = 'capture_clock = {name = "clk_capture", setup_edge = 3, hold_edge = -1}'
+        self.assert_error({'capture_clock': sCaptureClock}, 'interface_config_015', 'key "capture_clock" in port O_DATA has hold_edge -1; capture edges are numbers: 0, 1, 2, ...')
 
-    def test_capture_edge_after_z_is_accepted(self):
-        sCaptureClock = 'capture_clock = {name = "clk_capture", setup_edge = "AB", hold_edge = "Z"}'
+    def test_capture_edge_past_nine_is_accepted(self):
+        sCaptureClock = 'capture_clock = {name = "clk_capture", setup_edge = 27, hold_edge = 25}'
         iExitCode = self.run_edges(build_interface({'capture_clock': sCaptureClock}))
         self.assertNotIn('interface_config_015', self.oStderr.getvalue() + self.oStdout.getvalue())
 

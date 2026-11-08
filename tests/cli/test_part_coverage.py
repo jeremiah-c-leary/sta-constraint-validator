@@ -14,7 +14,7 @@ TX_EN_PORT = '''[[port]]
 name = "O_RMII_TX_EN"
 methodology = "SDR-SYS-O"
 launch_clock = {name = "rmii_ref_clk", setup_edge = 0, hold_edge = 0}
-capture_clock = {name = "rmii_ref_clk", setup_edge = "C", hold_edge = "A"}
+capture_clock = {name = "rmii_ref_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_rmii_tx_en_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/O_RMII_TX_EN_timing.rpt",
@@ -30,7 +30,7 @@ MDIO_READ_PORT = '''[[port]]
 name = "IO_MDIO"
 methodology = "SDR-SS-RT-DI"
 launch_clock = {name = "mdc", setup_edge = 2, hold_edge = 2}
-capture_clock = {name = "clk_100mhz", setup_edge = "FA", hold_edge = "BY"}
+capture_clock = {name = "clk_100mhz", setup_edge = 156, hold_edge = 76}
 registers = ["q_mdio_in_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/IO_MDIO_read_timing.rpt",

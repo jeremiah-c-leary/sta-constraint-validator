@@ -25,7 +25,7 @@ port = "I_MII_RX_CLK"
 name = "O_MII_TXD[3:0]"
 methodology = "SDR-SS-RT-DO"
 launch_clock = {name = "mii_tx_clk", setup_edge = 0, hold_edge = 0}
-capture_clock = {name = "mii_tx_clk", setup_edge = "C", hold_edge = "A"}
+capture_clock = {name = "mii_tx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_txd_reg[*]"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/O_MII_TXD_timing.rpt",
@@ -35,7 +35,7 @@ timing_reports = [
 name = "O_MII_TX_EN"
 methodology = "SDR-SS-RT-DO"
 launch_clock = {name = "mii_tx_clk", setup_edge = 0, hold_edge = 0}
-capture_clock = {name = "mii_tx_clk", setup_edge = "C", hold_edge = "A"}
+capture_clock = {name = "mii_tx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_tx_en_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/O_MII_TX_EN_timing.rpt",
@@ -45,7 +45,7 @@ timing_reports = [
 name = "O_MII_TX_ER"
 methodology = "SDR-SS-RT-DO"
 launch_clock = {name = "mii_tx_clk", setup_edge = 0, hold_edge = 0}
-capture_clock = {name = "mii_tx_clk", setup_edge = "C", hold_edge = "A"}
+capture_clock = {name = "mii_tx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_tx_er_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/O_MII_TX_ER_timing.rpt",
@@ -55,7 +55,7 @@ timing_reports = [
 name = "I_MII_RXD[3:0]"
 methodology = "SDR-SS-I"
 launch_clock = {name = "mii_rx_clk", setup_edge = 0, hold_edge = 0}
-capture_clock = {name = "mii_rx_clk", setup_edge = "C", hold_edge = "A"}
+capture_clock = {name = "mii_rx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_rxd_reg[*]"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_MII_RXD_timing.rpt",
@@ -65,7 +65,7 @@ timing_reports = [
 name = "I_MII_RX_DV"
 methodology = "SDR-SS-I"
 launch_clock = {name = "mii_rx_clk", setup_edge = 0, hold_edge = 0}
-capture_clock = {name = "mii_rx_clk", setup_edge = "C", hold_edge = "A"}
+capture_clock = {name = "mii_rx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_rx_dv_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_MII_RX_DV_timing.rpt",
@@ -75,7 +75,7 @@ timing_reports = [
 name = "I_MII_RX_ER"
 methodology = "SDR-SS-I"
 launch_clock = {name = "mii_rx_clk", setup_edge = 0, hold_edge = 0}
-capture_clock = {name = "mii_rx_clk", setup_edge = "C", hold_edge = "A"}
+capture_clock = {name = "mii_rx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_rx_er_reg"]
 timing_reports = [
     "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_MII_RX_ER_timing.rpt",

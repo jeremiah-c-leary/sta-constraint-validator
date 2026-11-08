@@ -24,7 +24,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  -------------------
-# 45ef036ae8db3e8882580e620af0af83  if_dac_spi.toml
+# 0c590814edd48eb4b791a3976252ef36  if_dac_spi.toml
 # 0323617f7f710e853f8de6e4ae7a03be  ad7399.toml
 # 94a5942882184e7266286ad29d23cce5  dac_spi_traces.toml
 #
@@ -95,12 +95,12 @@ create_generated_clock -name clk_10mhz -source [get_pins q_spi_output_clock_reg/
 #                                                                              |---------------------setup requirement-------------------->|
 #                  |<---------------------hold requirement---------------------|
 #
-#                  A___________________________________________________________B                                                           C___________________________________________________________D
+#                  0___________________________________________________________1                                                           2___________________________________________________________3
 # clk_10mhz      __|                                                           |___________________________________________________________|                                                           |
 # (10 MHz)
 #
-# setup requirement:  50 ns (launch edge 10 at 50 ns -> capture edge C at 100 ns)
-# hold requirement:  -50 ns (launch edge 10 at 50 ns -> capture edge A at 0 ns)
+# setup requirement:  50 ns (launch edge 10 at 50 ns -> capture edge 2 at 100 ns)
+# hold requirement:  -50 ns (launch edge 10 at 50 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #

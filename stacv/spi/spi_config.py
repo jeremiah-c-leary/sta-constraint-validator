@@ -13,7 +13,6 @@ import tomllib
 from stacv.config import config_reader
 from stacv.config import value_type
 from stacv.output import number_format
-from stacv.rules import edge_times
 from stacv.spi import spi_config_error
 from stacv.spi import spi_config_location
 from stacv.spi import spi_edges
@@ -314,17 +313,17 @@ def check_cs_edges(oConfig, oLocation):
 
 
 def check_cipo_edges(oConfig, oLocation):
-    # The captures are on the device clock, so they are its letters, and so is the edge of SCK that launches CIPO.
+    # The captures are numbered on the device clock, and so is the edge of SCK that launches CIPO.
     oEdges = oConfig.edges
     sChange = oConfig.standard.change_edge.lower()
-    sLaunch = edge_times.convert_edge_number_to_letter(oEdges.cipo_change_edge)
+    iLaunch = oEdges.cipo_change_edge
     oLocation.set_key('cipo', 'capture')
     if oEdges.cipo_hold_capture < 0:
-        raise_edge_error(oLocation, 'capture', 'puts the hold capture before edge A, the first edge')
+        raise_edge_error(oLocation, 'capture', 'puts the hold capture before edge 0, the first edge')
     if oEdges.cipo_setup_capture <= oEdges.cipo_change_edge:
-        raise_edge_error(oLocation, 'capture', f'puts the setup capture at edge {edge_times.convert_edge_number_to_letter(oEdges.cipo_setup_capture)}, at or before the {sChange} edge of SCK at edge {sLaunch} that launches CIPO')
+        raise_edge_error(oLocation, 'capture', f'puts the setup capture at edge {oEdges.cipo_setup_capture}, at or before the {sChange} edge of SCK at edge {iLaunch} that launches CIPO')
     if oEdges.cipo_hold_capture > oEdges.cipo_change_edge:
-        raise_edge_error(oLocation, 'capture', f'puts the hold capture at edge {edge_times.convert_edge_number_to_letter(oEdges.cipo_hold_capture)}, after the {sChange} edge of SCK at edge {sLaunch} that launches CIPO')
+        raise_edge_error(oLocation, 'capture', f'puts the hold capture at edge {oEdges.cipo_hold_capture}, after the {sChange} edge of SCK at edge {iLaunch} that launches CIPO')
 
 
 def raise_edge_error(oLocation, sKey, sMessage):

@@ -68,9 +68,9 @@ def draw_first_last_clock_windows(oPort):
     # The setup window starts the capture clock at its first pulse, and the hold window stops it after its last pulse.
     fColumnsPerNanosecond = calculate_columns_per_nanosecond(oPort)
     oCaptureClock = oPort.capture_clock
-    iFirstPulseStart = find_pulse_start(oCaptureClock.idle, convert_capture_edge(oCaptureClock.setup_edge))
+    iFirstPulseStart = find_pulse_start(oCaptureClock.idle, oCaptureClock.setup_edge)
     iFirstPulseEnd = iFirstPulseStart + 1
-    iLastPulseEnd = find_pulse_start(oCaptureClock.idle, convert_capture_edge(oCaptureClock.hold_edge)) + 1
+    iLastPulseEnd = find_pulse_start(oCaptureClock.idle, oCaptureClock.hold_edge) + 1
     iEndColumn = calculate_column(calculate_first_last_clock_end_time(oPort, iFirstPulseEnd), fColumnsPerNanosecond)
     iLastEdgeInWindow = find_last_edge(oCaptureClock.period, fColumnsPerNanosecond, iEndColumn)
     lSetupLines = draw_launch_clock_with_frequency(oPort.launch_clock, fColumnsPerNanosecond, iEndColumn)
@@ -89,10 +89,6 @@ def draw_first_last_clock_windows(oPort):
     lWindows.append(edge_window.EdgeWindow(lSetupLines, [edge_window.SETUP]))
     lWindows.append(edge_window.EdgeWindow(lHoldLines, [edge_window.HOLD]))
     return lWindows
-
-
-def convert_capture_edge(sEdgeLetter):
-    return edge_times.convert_edge_letter_to_number(sEdgeLetter)
 
 
 def find_pulse_start(sIdle, iEdgeNumber):
@@ -139,6 +135,7 @@ def draw_edge_marker(sText, iColumn):
 
 def draw_stopped_clock(oClock, fColumnsPerNanosecond, iEndColumn, iFirstEdge, iLastEdge):
     # Runs from the first edge to the last edge, and is idle outside them.
+    lHigherDigitRows = []
     oLabelRow = text_row.TextRow()
     oWaveRow = text_row.TextRow()
     oWaveRow.write(0, oClock.name.ljust(CLOCK_NAME_WIDTH))
@@ -148,16 +145,16 @@ def draw_stopped_clock(oClock, fColumnsPerNanosecond, iEndColumn, iFirstEdge, iL
     else:
         draw_idle(oClock.idle, oLabelRow, oWaveRow, CLOCK_NAME_WIDTH, iFirstColumn - 1)
     for iEdgeNumber in range(iFirstEdge, iLastEdge + 1):
-        draw_running_edge(oClock.period, iEdgeNumber, iLastEdge, oLabelRow, oWaveRow, fColumnsPerNanosecond, iEndColumn)
+        draw_running_edge(oClock.period, iEdgeNumber, iLastEdge, lHigherDigitRows, oLabelRow, oWaveRow, fColumnsPerNanosecond, iEndColumn)
     iLastColumn = calculate_edge_column(oClock.period, iLastEdge, fColumnsPerNanosecond)
     if iLastColumn < iEndColumn:
         draw_idle(oClock.idle, oLabelRow, oWaveRow, iLastColumn + 1, iEndColumn)
-    return [oLabelRow.to_string(), oWaveRow.to_string()]
+    return build_clock_lines(lHigherDigitRows, oLabelRow, oWaveRow)
 
 
-def draw_running_edge(fPeriod, iEdgeNumber, iLastEdge, oLabelRow, oWaveRow, fColumnsPerNanosecond, iEndColumn):
+def draw_running_edge(fPeriod, iEdgeNumber, iLastEdge, lHigherDigitRows, oLabelRow, oWaveRow, fColumnsPerNanosecond, iEndColumn):
     iColumn = calculate_edge_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond)
-    oLabelRow.write(iColumn, edge_times.convert_edge_number_to_letter(iEdgeNumber))
+    draw_edge_label(lHigherDigitRows, oLabelRow, iColumn, str(iEdgeNumber))
     oWaveRow.write(iColumn, '|')
     if iEdgeNumber == iLastEdge:
         return
@@ -219,8 +216,7 @@ def calculate_launch_edge_time(oLaunchClock, iEdgeNumber):
     return edge_times.calculate_edge_time(oLaunchClock.period, iEdgeNumber)
 
 
-def calculate_capture_edge_time(oCaptureClock, sEdgeLetter):
-    iEdgeNumber = edge_times.convert_edge_letter_to_number(sEdgeLetter)
+def calculate_capture_edge_time(oCaptureClock, iEdgeNumber):
     return edge_times.calculate_edge_time(oCaptureClock.period, iEdgeNumber)
 
 
@@ -236,13 +232,13 @@ def calculate_edge_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond):
 
 def draw_launch_clock(oLaunchClock, fColumnsPerNanosecond, iEndColumn):
     iLastEdge = find_last_edge(oLaunchClock.period, fColumnsPerNanosecond, iEndColumn)
-    lEdgeLabels = build_launch_edge_labels(iLastEdge)
+    lEdgeLabels = build_edge_labels(iLastEdge)
     return draw_clock(oLaunchClock.name, oLaunchClock.period, lEdgeLabels, fColumnsPerNanosecond, iEndColumn)
 
 
 def draw_capture_clock(oCaptureClock, fColumnsPerNanosecond, iEndColumn):
     iLastEdge = find_last_edge(oCaptureClock.period, fColumnsPerNanosecond, iEndColumn)
-    lEdgeLabels = build_capture_edge_labels(iLastEdge)
+    lEdgeLabels = build_edge_labels(iLastEdge)
     return draw_clock(oCaptureClock.name, oCaptureClock.period, lEdgeLabels, fColumnsPerNanosecond, iEndColumn)
 
 
@@ -253,36 +249,30 @@ def find_last_edge(fPeriod, fColumnsPerNanosecond, iEndColumn):
     return iEdgeNumber
 
 
-def build_launch_edge_labels(iLastEdge):
+def build_edge_labels(iLastEdge):
+    # Launch and capture edges are both numbered from 0; the clock's name says which is which.
     lEdgeLabels = []
     for iEdgeNumber in range(iLastEdge + 1):
         lEdgeLabels.append(str(iEdgeNumber))
     return lEdgeLabels
 
 
-def build_capture_edge_labels(iLastEdge):
-    lEdgeLabels = []
-    for iEdgeNumber in range(iLastEdge + 1):
-        lEdgeLabels.append(edge_times.convert_edge_number_to_letter(iEdgeNumber))
-    return lEdgeLabels
-
-
 def draw_clock(sName, fPeriod, lEdgeLabels, fColumnsPerNanosecond, iEndColumn):
-    oTensRow = text_row.TextRow()
+    lHigherDigitRows = []
     oLabelRow = text_row.TextRow()
     oWaveRow = text_row.TextRow()
     oWaveRow.write(0, sName.ljust(CLOCK_NAME_WIDTH) + LOW_BEFORE_FIRST_EDGE)
     for iEdgeNumber, sEdgeLabel in enumerate(lEdgeLabels):
         iColumn = calculate_edge_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond)
         iSegmentEndColumn = calculate_segment_end_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond, iEndColumn)
-        draw_edge_label(oTensRow, oLabelRow, iColumn, sEdgeLabel)
+        draw_edge_label(lHigherDigitRows, oLabelRow, iColumn, sEdgeLabel)
         oWaveRow.write(iColumn, '|')
         sSegment = '_' * (iSegmentEndColumn - iColumn - 1)
         if is_rising_edge(iEdgeNumber):
             oLabelRow.write(iColumn + 1, sSegment)
         else:
             oWaveRow.write(iColumn + 1, sSegment)
-    return build_clock_lines(oTensRow, oLabelRow, oWaveRow)
+    return build_clock_lines(lHigherDigitRows, oLabelRow, oWaveRow)
 
 
 def calculate_segment_end_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond, iEndColumn):
@@ -290,24 +280,25 @@ def calculate_segment_end_column(fPeriod, iEdgeNumber, fColumnsPerNanosecond, iE
     return min(iNextColumn, iEndColumn)
 
 
-def draw_edge_label(oTensRow, oLabelRow, iColumn, sEdgeLabel):
+def draw_edge_label(lHigherDigitRows, oLabelRow, iColumn, sEdgeLabel):
+    # The units digit is on the label row, at the edge; the tens, hundreds, ... are stacked above it.
     oLabelRow.write(iColumn, sEdgeLabel[-1])
-    if has_tens_digit(sEdgeLabel):
-        oTensRow.write(iColumn, sEdgeLabel[-2])
-
-
-def has_tens_digit(sEdgeLabel):
-    return len(sEdgeLabel) > 1
+    sHigherDigits = sEdgeLabel[:-1]
+    for iRow, sDigit in enumerate(reversed(sHigherDigits)):
+        if len(lHigherDigitRows) <= iRow:
+            lHigherDigitRows.append(text_row.TextRow())
+        lHigherDigitRows[iRow].write(iColumn, sDigit)
 
 
 def is_rising_edge(iEdgeNumber):
     return iEdgeNumber % 2 == 0
 
 
-def build_clock_lines(oTensRow, oLabelRow, oWaveRow):
+def build_clock_lines(lHigherDigitRows, oLabelRow, oWaveRow):
+    # The highest digit's row is on top.
     lLines = []
-    if not oTensRow.is_empty():
-        lLines.append(oTensRow.to_string())
+    for oDigitRow in reversed(lHigherDigitRows):
+        lLines.append(oDigitRow.to_string())
     lLines.append(oLabelRow.to_string())
     lLines.append(oWaveRow.to_string())
     return lLines

@@ -27,7 +27,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
-# cefd7b953a5a0d3125247b8cccc4115a  example/microchip/vsc8540et/rgmii.toml
+# 6f82c1493be2ada690e9faadc82c563f  example/microchip/vsc8540et/rgmii.toml
 # 8458046ee525571615288ff9e53cc36b  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #
@@ -124,12 +124,12 @@ create_clock -name rgmii_rxc -period 40.000 [get_ports I_RGMII_RXC]
 #                                                      |---------->| setup requirement
 #                                          |<----------| hold requirement
 #
-#                  A_______________________B                       C_______________________D
+#                  0_______________________1                       2_______________________3
 # rgmii_txc      __|                       |_______________________|                       |
 # (25 MHz)
 #
-# setup requirement:  10 ns (launch edge 6 at 30 ns -> capture edge C at 40 ns)
-# hold requirement:  -10 ns (launch edge 6 at 30 ns -> capture edge B at 20 ns)
+# setup requirement:  10 ns (launch edge 6 at 30 ns -> capture edge 2 at 40 ns)
+# hold requirement:  -10 ns (launch edge 6 at 30 ns -> capture edge 1 at 20 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -187,12 +187,12 @@ set_multicycle_path 1 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #                                                      |---------->| setup requirement
 #                                          |<----------| hold requirement
 #
-#                  A_______________________B                       C_______________________D
+#                  0_______________________1                       2_______________________3
 # rgmii_txc      __|                       |_______________________|                       |
 # (25 MHz)
 #
-# setup requirement:  10 ns (launch edge 6 at 30 ns -> capture edge C at 40 ns)
-# hold requirement:  -10 ns (launch edge 6 at 30 ns -> capture edge B at 20 ns)
+# setup requirement:  10 ns (launch edge 6 at 30 ns -> capture edge 2 at 40 ns)
+# hold requirement:  -10 ns (launch edge 6 at 30 ns -> capture edge 1 at 20 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -249,12 +249,12 @@ set_multicycle_path 1 -hold -start -from [get_clocks clk_100mhz] -to [get_ports 
 #                              | setup requirement
 #                        |<----| hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # rgmii_rxc      __|     |_____|     |
 # (25 MHz)
 #
-# setup requirement:   0 ns (launch edge 2 at 40 ns -> capture edge C at 40 ns)
-# hold requirement:  -20 ns (launch edge 2 at 40 ns -> capture edge B at 20 ns)
+# setup requirement:   0 ns (launch edge 2 at 40 ns -> capture edge 2 at 40 ns)
+# hold requirement:  -20 ns (launch edge 2 at 40 ns -> capture edge 1 at 20 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -322,12 +322,12 @@ set_false_path -hold -fall_from [get_clocks rgmii_rxc] -through [get_ports {I_RG
 #                              | setup requirement
 #                        |<----| hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # rgmii_rxc      __|     |_____|     |
 # (25 MHz)
 #
-# setup requirement:   0 ns (launch edge 2 at 40 ns -> capture edge C at 40 ns)
-# hold requirement:  -20 ns (launch edge 2 at 40 ns -> capture edge B at 20 ns)
+# setup requirement:   0 ns (launch edge 2 at 40 ns -> capture edge 2 at 40 ns)
+# hold requirement:  -20 ns (launch edge 2 at 40 ns -> capture edge 1 at 20 ns)
 #
 #------------------------------------------------------------------------------
 #

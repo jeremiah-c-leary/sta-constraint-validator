@@ -31,7 +31,7 @@ def build_interface_text(lPortNames, sMissingTimingReport, sClockPort):
         lText.append(f'name = "{sPortName}"')
         lText.append('methodology = "SDR-SS-O"')
         lText.append('launch_clock = {name = "clk_launch", setup_edge = 4, hold_edge = 4}')
-        lText.append('capture_clock = {name = "clk_capture", setup_edge = "C", hold_edge = "A"}')
+        lText.append('capture_clock = {name = "clk_capture", setup_edge = 2, hold_edge = 0}')
         lText.append(f'registers = ["q_{sPortName.lower()}_reg"]')
         lText.append(f'timing_reports = ["{sMissingTimingReport}"]')
     return '\n'.join(lText) + '\n'

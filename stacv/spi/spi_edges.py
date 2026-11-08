@@ -13,7 +13,6 @@ edges; the first sample edge is the first after edge A, so there is a change edg
 A device clock has two edges, so each clock counted is two edges, and half a clock is a falling edge.
 '''
 
-from stacv.rules import edge_times
 from stacv.standards import standards
 
 
@@ -31,9 +30,9 @@ class SpiEdges():
         self.first_sample_edge = iFirstSample * iEdgesPerSckEdge
         self.previous_sample_edge = (iFirstSample - 2) * iEdgesPerSckEdge
         self.change_edge = iChange * iEdgesPerSckEdge
-        # COPI and CS are captured on SCK, so their capture edges are SCK's letters.
-        self.sck_setup_capture = edge_times.convert_edge_number_to_letter(iFirstSample)
-        self.sck_hold_capture = edge_times.convert_edge_number_to_letter(iFirstSample - 2)
+        # COPI and CS are captured on SCK, so their capture edges are SCK's numbers.
+        self.sck_setup_capture = iFirstSample
+        self.sck_hold_capture = iFirstSample - 2
         oChipSelectDeassert = oConfig.cs.edges['deassert']
         self.copi_launch = self.change_edge + oConfig.copi.edges['launch'].count_device_clock_edges()
         self.cs_setup_launch = self.first_sample_edge + oConfig.cs.edges['assert'].count_device_clock_edges()

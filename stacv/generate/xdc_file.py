@@ -705,11 +705,10 @@ def find_requirement_value_end(lRequirements):
     return iValueEnd
 
 
-def describe_edges(oPort, iLaunchEdge, sCaptureEdge):
+def describe_edges(oPort, iLaunchEdge, iCaptureEdge):
     fLaunchTime = edge_times.calculate_edge_time(oPort.launch_clock.period, iLaunchEdge)
-    iCaptureEdge = edge_times.convert_edge_letter_to_number(sCaptureEdge)
     fCaptureTime = edge_times.calculate_edge_time(oPort.capture_clock.period, iCaptureEdge)
-    return f'launch edge {iLaunchEdge} at {format_nanoseconds(fLaunchTime)} -> capture edge {sCaptureEdge} at {format_nanoseconds(fCaptureTime)}'
+    return f'launch edge {iLaunchEdge} at {format_nanoseconds(fLaunchTime)} -> capture edge {iCaptureEdge} at {format_nanoseconds(fCaptureTime)}'
 
 
 def build_command_block(lComments, sCommand):

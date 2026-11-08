@@ -22,8 +22,8 @@ sTimingReport = os.path.join(sFixtureReportDir, 'O_DAC_DATA_timing.rpt')
 fLaunchPeriod = 10.0
 fCapturePeriod = 40.0
 iLaunchEdge = 8
-sCaptureSetupEdge = 'D'
-sCaptureHoldEdge = 'B'
+sCaptureSetupEdge = 3
+sCaptureHoldEdge = 1
 
 # The timing report holds four reports, each 77 lines long, in this order:
 #    setup at the Slow Process Corner
@@ -207,7 +207,7 @@ def build_round_trip_config_text(sPartFile, sTracesFile, sTimingReportFile, sPor
     lText.append(f'name = "{sPortName}"')
     lText.append('methodology = "SDR-SS-RT-DI"')
     lText.append('launch_clock = {name = "dac_sclk_rd", setup_edge = 2, hold_edge = 2}')
-    lText.append('capture_clock = {name = "clk_100mhz", setup_edge = "Y", hold_edge = "I"}')
+    lText.append('capture_clock = {name = "clk_100mhz", setup_edge = 24, hold_edge = 8}')
     lText.append('registers = ["q_spi_input_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReportFile}"]')
     if sOtherPorts != '':

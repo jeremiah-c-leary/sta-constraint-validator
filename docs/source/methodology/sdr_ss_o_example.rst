@@ -60,7 +60,7 @@ I5     The edge the part captures on                      ``part.toml``       ke
 I6     The part's setup and hold                          ``part.toml``       keys "setup" and "hold" in pin SDIN of interface Serial Interface   10 ns, 10 ns
 I7     The data trace's delays                            ``traces.toml``     key "device_to_part" in trace data_output                           3 ns, 1 ns
 I8     The clock trace's delays                           ``traces.toml``     key "device_to_part" in trace clock                                 3 ns, 1 ns
-I9     The launch and capture edges                       ``interface.toml``  keys "launch_clock" and "capture_clock" in port O_DAC_DATA          setup 8 to D, hold 8 to B
+I9     The launch and capture edges                       ``interface.toml``  keys "launch_clock" and "capture_clock" in port O_DAC_DATA          setup 8 to 3, hold 8 to 1
 =====  =================================================  ==================  ==================================================================  ===============================
 
 The divide of the forwarded clock is not written: stacv works it out from the two periods.
@@ -110,7 +110,7 @@ The edge the part captures on (I5) is in ``part.toml``, with the part's setup an
                                                                     |---setup requirement-->|
                                             |<---hold requirement---|
 
-                    A_______________________B                       C_______________________D                       E
+                    0_______________________1                       2_______________________3                       4
    dac_sclk       __|                       |_______________________|                       |_______________________|
    (25 MHz)
 
@@ -118,7 +118,7 @@ The edge the part captures on (I5) is in ``part.toml``, with the part's setup an
    setup requirement = 20 ns
    hold requirement = -20 ns
 
-Compare the drawing with the part's datasheet: the data changes with the rising edge C, and the DAC81404 captures it on the falling edges B and D.
+Compare the drawing with the part's datasheet: the data changes with the rising edge 2, and the DAC81404 captures it on the falling edges 1 and 3.
 Adjust the setup and hold edges as necessary to and use ``stacv visualize edges interface.toml`` to visualize them to ensure the correct edges are being used.
 An edge that does not suit the methodology is reported under the drawing, and every other command stops on it.
 

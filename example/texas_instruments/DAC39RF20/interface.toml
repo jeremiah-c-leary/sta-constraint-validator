@@ -47,7 +47,7 @@ if_signal = "SCK"
 name = "dac_sdi"
 registers = ["u_spi/sdi_q_reg"]
 launch_clock = {name = "sys_clk", setup_edge = 8, hold_edge = 8}
-capture_clock = {name = "dac_sclk_clk", setup_edge = "C", hold_edge = "A"}
+capture_clock = {name = "dac_sclk_clk", setup_edge = 2, hold_edge = 0}
 timing_reports = [
     "$PROJ_DIR/design/build/timing_reports/DAC_SDO.COPI_timing.rpt",
 ]
@@ -60,7 +60,7 @@ if_signal = "COPI"
 name = "dac_scs_n"
 registers = ["u_spi/scs_n_q_reg"]
 launch_clock = {name = "sys_clk", setup_edge = 14, hold_edge = 2}
-capture_clock = {name = "dac_sclk_clk", setup_edge = "C", hold_edge = "A"}
+capture_clock = {name = "dac_sclk_clk", setup_edge = 2, hold_edge = 0}
 timing_reports = [
     "$PROJ_DIR/design/build/timing_reports/DAC_SCS_N.CS_timing.rpt",
 ]
@@ -73,7 +73,7 @@ if_signal = "CS"
 name = "dac_sdo"
 registers = ["u_spi/rx_shift_reg[0]"]
 launch_clock = {name = "dac_sclk_clk", setup_edge = 1, hold_edge = 1}
-capture_clock = {name = "sys_clk", setup_edge = "Q", hold_edge = "A"}
+capture_clock = {name = "sys_clk", setup_edge = 16, hold_edge = 0}
 timing_reports = [
     "$PROJ_DIR/design/build/timing_reports/DAC_SDO.CIPO_timing.rpt",
 ]

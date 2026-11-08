@@ -27,7 +27,7 @@ generator = {source = "q_spi_output_clock_reg", master_pin = "C", target_pin = "
 name = "O_DAC_DATA"
 methodology = "SDR-SS-O"
 launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
-capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
+capture_clock = {name = "dac_sclk", setup_edge = 3, hold_edge = 1}
 registers = ["q_spi_output_data_reg"]
 timing_reports = [
     "../../../fixtures/dac81404/timing_reports/O_DAC_DATA_timing.rpt",

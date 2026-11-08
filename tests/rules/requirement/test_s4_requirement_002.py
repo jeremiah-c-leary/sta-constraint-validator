@@ -12,11 +12,11 @@ sRuleId = 's4_requirement_002'
 # An SDR-SS-O port launches on one edge, and its capture hold edge is the capture edge before its setup edge.
 # With a launch clock period of 10.000ns and a capture clock period of 40.000ns:
 #    launch edge 8   is at (10.000 / 2) * 8 = 40.000ns
-#    capture edge B  is at (40.000 / 2) * 1 = 20.000ns
+#    capture edge 1  is at (40.000 / 2) * 1 = 20.000ns
 # which gives a hold requirement of 20.000 - 40.000 = -20.000ns.
 iPassingLaunchEdge = 8
-sPassingCaptureSetupEdge = 'D'
-sPassingCaptureHoldEdge = 'B'
+sPassingCaptureSetupEdge = 3
+sPassingCaptureHoldEdge = 1
 fPassingCapturePeriod = 40.0
 
 
@@ -38,7 +38,7 @@ def build_config_text(sPartFile, sTracesFile, sTimingReportFile, oEdges):
     lText.append('name = "O_DAC_DATA"')
     lText.append('methodology = "SDR-SS-O"')
     lText.append(f'launch_clock = {{name = "clk_100mhz", setup_edge = {oEdges.launch_edge}, hold_edge = {oEdges.launch_edge}}}')
-    lText.append(f'capture_clock = {{name = "dac_sclk", setup_edge = "{oEdges.capture_setup_edge}", hold_edge = "{oEdges.capture_hold_edge}"}}')
+    lText.append(f'capture_clock = {{name = "dac_sclk", setup_edge = {oEdges.capture_setup_edge}, hold_edge = {oEdges.capture_hold_edge}}}')
     lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReportFile}"]')
     return '\n'.join(lText)
@@ -107,7 +107,7 @@ class Test(rule_test_case.RuleTestCase):
 
     def test_fails_when_capture_hold_edge_differs(self):
         # (40.000 / 2) * 3 - (10.000 / 2) * 8 = 60.000 - 40.000 = 20.000
-        self.execute_with_edges(iPassingLaunchEdge, 'F', 'D')
+        self.execute_with_edges(iPassingLaunchEdge, 5, 3)
 
         self.assert_rule_failed(sRuleId)
 
@@ -125,7 +125,7 @@ class Test(rule_test_case.RuleTestCase):
 
     def test_passes_when_a_later_pair_of_edges_has_the_same_hold_requirement(self):
         # (40.000 / 2) * 3 - (10.000 / 2) * 16 = 60.000 - 80.000 = -20.000
-        self.execute_with_edges(16, 'F', 'D')
+        self.execute_with_edges(16, 5, 3)
 
         self.assert_rule_passed(sRuleId)
 

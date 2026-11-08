@@ -103,9 +103,8 @@ Interface file
      - Write the launch edge as a whole number, even for a rising edge and odd for a falling edge.
      - Stops
    * - interface_config_015
-     - ``key "<key>"<location> has <edge> <value>; capture edges are letters: A, B, C, ...``
-     - Write the capture edge in capital letters, A, C, E, ... for a rising edge and B, D, F, ... for a falling edge.
-       After Z, the letters continue AA, AB, ...
+     - ``key "<key>"<location> has <edge> <value>; capture edges are numbers: 0, 1, 2, ...``
+     - Write the capture edge as a number on its clock, 0, 2, 4, ... for a rising edge and 1, 3, 5, ... for a falling edge.
      - Stops
    * - interface_config_016
      - ``key "period" of clock <name> must be greater than 0``
@@ -126,7 +125,7 @@ Interface file
      - Use the same launch edge, or use SDR-SS-O-FLC for a chip select.
      - Drawn
    * - interface_config_020
-     - ``key "capture_clock"<location> has setup_edge <edge> and hold_edge <edge>; the hold edge of an SDR-SS-O port is the previous capture edge of the same type, <edge>``, or ``..., so setup_edge must be C or later`` when the setup edge is A or B
+     - ``key "capture_clock"<location> has setup_edge <edge> and hold_edge <edge>; the hold edge of an SDR-SS-O port is the previous capture edge of the same type, <edge>``, or ``..., so setup_edge must be 2 or later`` when the setup edge is 0 or 1
      - Use the edge given.
        Not reported when interface_config_018 is.
      - Drawn
@@ -143,8 +142,8 @@ Interface file
    * - interface_config_023
      - ``the edges<location> give a setup requirement of <time> and a hold requirement of <time>; <description>, so they must be <time> and <time>``
      - The edges do not match the edge the methodology captures on.
-       A DDR-SS-I-SE port captures each bit on the edge it is aligned with: a setup requirement of 0 ns and a hold requirement of minus half a period, such as launch edge 2 to capture edges C and B.
-       A DDR-SS-I-NE port captures each bit on the edge after the one it is launched on: a setup requirement of half a period and a hold requirement of 0 ns, such as launch edge 0 to capture edges B and A.
+       A DDR-SS-I-SE port captures each bit on the edge it is aligned with: a setup requirement of 0 ns and a hold requirement of minus half a period, such as launch edge 2 to capture edges 2 and 1.
+       A DDR-SS-I-NE port captures each bit on the edge after the one it is launched on: a setup requirement of half a period and a hold requirement of 0 ns, such as launch edge 0 to capture edges 1 and 0.
        Correct the edges, or use the other methodology.
      - Drawn
    * - interface_config_024

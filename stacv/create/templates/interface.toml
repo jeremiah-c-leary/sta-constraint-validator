@@ -27,7 +27,7 @@ status = "analyze"
 name = "O_DATA"
 methodology = "SDR-SS-O"
 launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
-capture_clock = {name = "clk_25mhz", setup_edge = "D", hold_edge = "B"}
+capture_clock = {name = "clk_25mhz", setup_edge = 3, hold_edge = 1}
 registers = ["q_data_reg"]
 timing_reports = [
     "O_DATA_timing.rpt",
@@ -38,7 +38,7 @@ status = "defer"
 name = "O_CS"
 methodology = "SDR-SS-O"
 launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
-capture_clock = {name = "clk_25mhz", setup_edge = "D", hold_edge = "B"}
+capture_clock = {name = "clk_25mhz", setup_edge = 3, hold_edge = 1}
 registers = ["q_cs_reg"]
 timing_reports = [
     "O_CS_timing.rpt",

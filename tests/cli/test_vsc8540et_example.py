@@ -130,8 +130,8 @@ class TestNextEdgeDoubleDataRateInput(unittest.TestCase):
         TestPartInterfaceSelection.setUp(self)
         with open(os.path.join(sProjectDir, sExampleDir, 'rgmii_id.toml')) as oFile:
             self.sInterfaceText = oFile.read().replace('$PROJ_DIR', self.sDirectory)
-        sSameEdge = 'methodology = "DDR-SS-I-SE"\nlaunch_clock = {name = "rgmii_id_rxc", setup_edge = 2, hold_edge = 2}\ncapture_clock = {name = "rgmii_id_rxc", setup_edge = "C", hold_edge = "B"}\nregisters = ["GEN_RGMII_ID_RX[4].U_IDDR"]'
-        sNextEdge = 'methodology = "DDR-SS-I-NE"\nlaunch_clock = {name = "rgmii_id_rxc", setup_edge = 0, hold_edge = 0}\ncapture_clock = {name = "rgmii_id_rxc", setup_edge = "B", hold_edge = "A"}\nregisters = ["GEN_RGMII_ID_RX[4].U_IDDR"]'
+        sSameEdge = 'methodology = "DDR-SS-I-SE"\nlaunch_clock = {name = "rgmii_id_rxc", setup_edge = 2, hold_edge = 2}\ncapture_clock = {name = "rgmii_id_rxc", setup_edge = 2, hold_edge = 1}\nregisters = ["GEN_RGMII_ID_RX[4].U_IDDR"]'
+        sNextEdge = 'methodology = "DDR-SS-I-NE"\nlaunch_clock = {name = "rgmii_id_rxc", setup_edge = 0, hold_edge = 0}\ncapture_clock = {name = "rgmii_id_rxc", setup_edge = 1, hold_edge = 0}\nregisters = ["GEN_RGMII_ID_RX[4].U_IDDR"]'
         self.assertIn(sSameEdge, self.sInterfaceText)
         self.sInterfaceText = self.sInterfaceText.replace(sSameEdge, sNextEdge)
 

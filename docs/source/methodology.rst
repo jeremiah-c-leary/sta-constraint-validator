@@ -118,7 +118,7 @@ Traces          The trace from each part pin to a device port, and its delays   
                 (:doc:`traces`).
 Interface       The clocks, their periods, and the port the capture clock          ``clk_100mhz``, 10 ns;
                 leaves the device on.                                              ``dac_sclk``, 40 ns, ``O_DAC_SCLK``
-Interface       Each port, its methodology, and its setup and hold launch and      8, D and 8, B
+Interface       Each port, its methodology, and its setup and hold launch and      8, 3 and 8, 1
                 capture edges (:doc:`interface`).
 Timing reports  What the timing tool timed, and the process corners it timed at.   Slow, Fast
 ==============  =================================================================  ==================================
@@ -144,11 +144,10 @@ For example, a clock with a rising edge at 1.25 ns starts with edge 0 or A at 1.
 Every edge is counted, rising and falling in turn:
 
 * Launch clock edges are numbered: 0, 1, 2, 3, ...
-* Capture clock edges are lettered: A, B, C, D, ...
-  After Z, the letters continue AA, AB, ... AZ, BA, BB, ...
+* Capture clock edges are numbered the same way, on their own clock: 0, 1, 2, ...
 
-Even numbers and the letters A, C, E, ... are rising edges.
-Odd numbers and the letters B, D, F, ... are falling edges.
+Even numbers are rising edges and odd numbers are falling edges.
+The clock each edge is on says which is which: a launch edge is on the launch clock, a capture edge on the capture clock.
 The edges are expanded as far as needed to cover any multicycle path.
 
 The part states whether each data pin is timed on the rising or falling edge of its clock pin.
@@ -169,7 +168,7 @@ This is the DAC81404 data port, drawn by ``stacv visualize edges``:
                                                                     |---setup requirement-->|
                                             |<---hold requirement---|
 
-                    A_______________________B                       C_______________________D                       E
+                    0_______________________1                       2_______________________3                       4
    dac_sclk       __|                       |_______________________|                       |_______________________|
    (25 MHz)
 
@@ -177,8 +176,8 @@ This is the DAC81404 data port, drawn by ``stacv visualize edges``:
    setup requirement = 20 ns
    hold requirement = -20 ns
 
-The setup check launches on edge 8 and captures on the falling edge D.
-The hold check launches on the same edge 8 and captures on the falling edge before D, B.
+The setup check launches on edge 8 and captures on the falling edge 3.
+The hold check launches on the same edge 8 and captures on the falling edge before 3, which is 1.
 
 Output delay calculation
 """"""""""""""""""""""""
@@ -316,14 +315,14 @@ The DAC81404 chip select first used the data port's edges, and failed setup by a
 .. code-block:: toml
 
    launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
-   capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
+   capture_clock = {name = "dac_sclk", setup_edge = 3, hold_edge = 1}
 
 Moving only the setup launch edge two launch periods earlier gave a 40 ns setup requirement and left the hold requirement at -20 ns, and both met timing:
 
 .. code-block:: toml
 
    launch_clock = {name = "clk_100mhz", setup_edge = 4, hold_edge = 8}
-   capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}
+   capture_clock = {name = "dac_sclk", setup_edge = 3, hold_edge = 1}
 
 For an SDR-SS-O data port, the same change would also have moved the hold requirement to 0 ns and failed hold.
 stacv reports different launch setup and hold edges on an SDR-SS-O port as an error (interface_config_019).
@@ -350,7 +349,7 @@ The DAC81404 chip select, with the passing edges above, captured on the falling 
                                             |---------------setup requirement-------------->|
                                                   clock starts ---->|
 
-                                                                    C_______________________D
+                                                                    2_______________________3
    dac_sclk       __________________________________________________|                       |
    (25 MHz)
 
@@ -363,7 +362,7 @@ The DAC81404 chip select, with the passing edges above, captured on the falling 
                                             |<---hold requirement---|
                            clock stops ---->|
 
-                    A_______________________B
+                    0_______________________1
    dac_sclk       __|                       |________________________________________________
    (25 MHz)
 
@@ -392,8 +391,8 @@ For the DAC81404 example, the read clock ``dac_sclk_rd`` runs at 80 ns, as the p
    setup (max) input delay = clock trace max + cko_max + data trace max = 3 + 30 + 1 = 34 ns
    hold (min) input delay  = clock trace min + cko_min + data trace min = 1 +  0 + 0 =  1 ns
 
-Launch edge 2 at 80 ns is captured by edge Y at 120 ns, a setup requirement of 40 ns.
-The hold edge I, at 40 ns, gives a hold requirement of -40 ns: the next bit, launched at 160 ns, must not reach the device before edge Y.
+Launch edge 2 at 80 ns is captured by edge 24 at 120 ns, a setup requirement of 40 ns.
+The hold edge 8, at 40 ns, gives a hold requirement of -40 ns: the next bit, launched at 160 ns, must not reach the device before edge 24.
 
 .. code-block:: toml
 
@@ -401,7 +400,7 @@ The hold edge I, at 40 ns, gives a hold requirement of -40 ns: the next bit, lau
    name = "I_DAC_DATA"
    methodology = "SDR-SS-RT-DI"
    launch_clock = {name = "dac_sclk_rd", setup_edge = 2, hold_edge = 2}
-   capture_clock = {name = "clk_100mhz", setup_edge = "Y", hold_edge = "I"}
+   capture_clock = {name = "clk_100mhz", setup_edge = 24, hold_edge = 8}
 
 The edges are drawn with the launch clock on top, as for SDR-SS-O, and the drawing ends at the edge of the forwarded clock after the last edge of the port.
 The capture edges are chosen to match the design: they must be the clock cycle on which the device samples the data.
@@ -477,8 +476,8 @@ The edges must give the requirements the name describes (interface_config_023):
 ===========  ==================  ====================  ========================
 Methodology  Setup requirement   Hold requirement      Edges, for example
 ===========  ==================  ====================  ========================
-DDR-SS-I-SE  0                   minus half a period   launch 2, capture C and B
-DDR-SS-I-NE  half a period       0                     launch 0, capture B and A
+DDR-SS-I-SE  0                   minus half a period   launch 2, capture 2 and 1
+DDR-SS-I-NE  half a period       0                     launch 0, capture 1 and 0
 ===========  ==================  ====================  ========================
 
 A same edge capture moves the setup check to the edge the data is aligned with, with a setup multicycle of 0, and removes the checks between an edge and the other type of edge.

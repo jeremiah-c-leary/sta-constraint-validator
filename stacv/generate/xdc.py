@@ -4,7 +4,6 @@ Generates Vivado timing constraints for the ports of an interface.
 
 from stacv.generate import generate_error
 from stacv.methodology import methodology
-from stacv.rules import edge_times
 from stacv.rules import input_delays
 from stacv.rules import output_delays
 from stacv.rules import path_lookups
@@ -175,8 +174,8 @@ def forwarded_clock_setup_edge_is_falling(oPort):
     return is_falling_edge(oPort.forwarded_clock.setup_edge)
 
 
-def is_falling_edge(sEdgeLetter):
-    return edge_times.convert_edge_letter_to_number(sEdgeLetter) % 2 == 1
+def is_falling_edge(iEdgeNumber):
+    return iEdgeNumber % 2 == 1
 
 
 def is_falling_launch_edge(iEdgeNumber):

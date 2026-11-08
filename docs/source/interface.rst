@@ -143,7 +143,7 @@ A port can have more than one table, one for each methodology, such as a bidirec
    name = "O_DATA"
    methodology = "SDR-SS-O"
    launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}
-   capture_clock = {name = "clk_25mhz", setup_edge = "D", hold_edge = "B"}
+   capture_clock = {name = "clk_25mhz", setup_edge = 3, hold_edge = 1}
    registers = ["q_data_reg"]
    timing_reports = [
        "O_DATA_timing.rpt",
@@ -221,9 +221,9 @@ Edges
 Edges are counted from the first rising edge of each clock, at time 0:
 
 * Launch edges are numbers: 0, 2, 4, ... are rising edges and 1, 3, 5, ... are falling edges.
-* Capture edges are letters: A, C, E, ... are rising edges and B, D, F, ... are falling edges.
+* Capture edges are numbers too, on the capture clock: 0, 2, 4, ... are rising edges and 1, 3, 5, ... are falling edges.
 
-A launch edge written as a letter, or a capture edge written as a number, is an error (interface_config_014, interface_config_015).
+An edge that is not a whole number of 0 or more is an error (interface_config_014 for a launch edge, interface_config_015 for a capture edge).
 The setup and hold capture edges must be the same type, both rising or both falling, because the part captures on one edge type (interface_config_018).
 
 An SDR-SS-O port has two more rules:

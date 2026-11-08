@@ -162,7 +162,7 @@ def find_forwarded_edge_at_launch(oPort, iLaunchEdge):
 
 
 def find_capture_edge(oPort):
-    return find_edge_type(edge_times.convert_edge_letter_to_number(oPort.capture_clock.setup_edge))
+    return find_edge_type(oPort.capture_clock.setup_edge)
 
 
 def find_edge_type(iEdgeNumber):

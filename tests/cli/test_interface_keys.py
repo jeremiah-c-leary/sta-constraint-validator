@@ -24,7 +24,7 @@ def build_interface(dReplacements=None):
     dLines['generator'] = 'generator = {source = "clock_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_launch"}'
     dLines['port'] = '[[port]]\nname = "O_DATA"\nmethodology = "SDR-SS-O"'
     dLines['launch_clock'] = 'launch_clock = {name = "clk_launch", setup_edge = 8, hold_edge = 8}'
-    dLines['capture_clock'] = 'capture_clock = {name = "clk_capture", setup_edge = "D", hold_edge = "B"}'
+    dLines['capture_clock'] = 'capture_clock = {name = "clk_capture", setup_edge = 3, hold_edge = 1}'
     dLines['registers'] = 'registers = ["q_data_reg"]'
     dLines['timing_reports'] = 'timing_reports = ["O_DATA_timing.rpt"]'
     if dReplacements is not None:
@@ -92,7 +92,7 @@ class TestInterfaceKeys(InterfaceTestCase):
         self.assert_error({'port': '[[port]]\nstauts = "defer"\nname = "O_DATA"\nmethodology = "SDR-SS-O"'}, 'interface_config_004', f'key "stauts" in port O_DATA is not a key stacv reads; the keys are {PORT_KEYS}')
 
     def test_unknown_key_in_capture_clock_is_an_error(self):
-        sCaptureClock = 'capture_clock = {name = "clk_capture", setup_egde = "D", hold_edge = "B"}'
+        sCaptureClock = 'capture_clock = {name = "clk_capture", setup_egde = "D", hold_edge = 1}'
         self.assert_error({'capture_clock': sCaptureClock}, 'interface_config_004', 'key "setup_egde" in capture_clock of port O_DATA is not a key stacv reads; the keys are name, setup_edge, hold_edge')
 
     def test_deferred_port_keys_are_not_checked(self):
@@ -112,7 +112,7 @@ class TestInterfaceKeys(InterfaceTestCase):
         self.assert_error({'generator': sGenerator}, 'interface_config_002', 'missing required key "master_pin" in generator of clock clk_capture')
 
     def test_capture_clock_without_a_hold_edge_is_an_error(self):
-        self.assert_error({'capture_clock': 'capture_clock = {name = "clk_capture", setup_edge = "D"}'}, 'interface_config_002', 'missing required key "hold_edge" in capture_clock of port O_DATA')
+        self.assert_error({'capture_clock': 'capture_clock = {name = "clk_capture", setup_edge = 3}'}, 'interface_config_002', 'missing required key "hold_edge" in capture_clock of port O_DATA')
 
     def test_period_must_be_a_number(self):
         self.assert_error({'clock_1': '[[clock]]\nname = "clk_launch"\nperiod = "10.0"'}, 'interface_config_003', 'key "period" of clock clk_launch must be a number')

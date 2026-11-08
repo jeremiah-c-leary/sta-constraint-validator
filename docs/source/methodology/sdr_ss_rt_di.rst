@@ -78,7 +78,7 @@ I5     The edge of its clock the part launches on                             pa
 I6     The part's maximum and minimum clock to out                            part datasheet  tSDODLY 30 ns, 0 ns
 I7     The clock trace's maximum and minimum delay                            HW engineer     3 ns, 1 ns
 I8     The data trace's maximum and minimum delay                             HW engineer     1 ns, 0 ns
-I9     The launch and capture edges, for setup and for hold                   designer        setup 2 to Y, hold 2 to I
+I9     The launch and capture edges, for setup and for hold                   designer        setup 2 to 24, hold 2 to 8
 =====  =====================================================================  ==============  ==================================
 
 Steps  (DID)
@@ -88,8 +88,8 @@ Steps  (DID)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Every edge of each clock is counted from 0 ns, rising and falling in turn.
-The launch clock's edges are numbered, 0, 1, 2, ..., and the capture clock's are lettered, A, B, C, ....
-Even numbers, and A, C, E, ..., are rising edges.
+Each clock's edges are numbered from 0 on that clock: 0, 1, 2, ..., the even ones rising and the odd ones falling.
+Even numbers are rising edges.
 
 The launch edges are on the forwarded clock, where the part launches the data (I5), and the capture edges are on the device clock, where the capture register captures it.
 
@@ -109,8 +109,9 @@ For I_DAC_DATA, launched on the rising edges of dac_sclk_rd and captured on clk_
                                                                                                                     |---------------setup requirement-------------->|
                                                                     |<---------------hold requirement---------------|
 
-                                                                                                                                                                                A     A     A     A     A     A     A
-                    A_____B     C_____D     E_____F     G_____H     I_____J     K_____L     M_____N     O_____P     Q_____R     S_____T     U_____V     W_____X     Y_____Z     A_____B     C_____D     E_____F     G
+                                                                                                                                                                                0     0     0     0     0     0     0
+                                                                                1     1     1     1     1     1     1     1     1     1     2     2     2     2     2     2
+                    0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     0_____1     2_____3     4_____5     6
    clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
    (100 MHz)
 
@@ -118,8 +119,8 @@ For I_DAC_DATA, launched on the rising edges of dac_sclk_rd and captured on clk_
    setup requirement = 40 ns
    hold requirement = -40 ns
 
-* setup: launch 2 at 80 ns, capture Y at 120 ns, a setup requirement of 40 ns;
-* hold: launch 2 at 80 ns, capture I at 40 ns, a hold requirement of -40 ns.
+* setup: launch 2 at 80 ns, capture 24 at 120 ns, a setup requirement of 40 ns;
+* hold: launch 2 at 80 ns, capture 8 at 40 ns, a hold requirement of -40 ns.
 
 2. Create the forwarded clock  (I1, I3, I4)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -161,8 +162,8 @@ Left to itself, a timing tool times each path on the closest edges: for setup, t
 The data comes back a whole round trip later, so these are rarely the edges intended.
 Here the device clock captures, and it is the faster clock, so the multicycle paths are counted in its periods and move the capture edges.
 
-**The default edges.**  For setup, the first device clock edge after launch 2 is S, at 90 ns: a setup requirement of 10 ns.
-For hold, the device clock edge before it, Q at 80 ns: a hold requirement of 0 ns.
+**The default edges.**  For setup, the first device clock edge after launch 2 is 18, at 90 ns: a setup requirement of 10 ns.
+For hold, the device clock edge before it, 16 at 80 ns: a hold requirement of 0 ns.
 
 .. code-block:: text
 
@@ -172,7 +173,8 @@ For hold, the device clock edge before it, Q at 80 ns: a hold requirement of 0 n
                                                                                                                     |---------->| setup requirement
                                                                                                                     | hold requirement
 
-                    A_____B     C_____D     E_____F     G_____H     I_____J     K_____L     M_____N     O_____P     Q_____R     S_____T     U_____V     W_____X     Y
+                                                                                1     1     1     1     1     1     1     1     1     1     2     2     2     2     2
+                    0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4
    clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
    (100 MHz)
 
@@ -180,8 +182,8 @@ For hold, the device clock edge before it, Q at 80 ns: a hold requirement of 0 n
    setup requirement = 10 ns
    hold requirement = 0 ns
 
-**Moving the setup edge.**  A setup multicycle path of 4, counted in device clock periods, moves the setup capture three periods later, to Y: a setup requirement of 40 ns.
-The hold check moves with it, to the device clock edge before Y, W at 110 ns: a hold requirement of 30 ns.
+**Moving the setup edge.**  A setup multicycle path of 4, counted in device clock periods, moves the setup capture three periods later, to 24: a setup requirement of 40 ns.
+The hold check moves with it, to the device clock edge before 24, 22 at 110 ns: a hold requirement of 30 ns.
 That hold check is against an edge that captures nothing from this interface, so it is not the intended check.
 
 .. code-block:: text
@@ -192,8 +194,9 @@ That hold check is against an edge that captures nothing from this interface, so
                                                                                                                     |---------------setup requirement-------------->|
                                                                                                                     |---------hold requirement--------->|
 
-                                                                                                                                                                                A     A     A     A     A     A     A
-                    A_____B     C_____D     E_____F     G_____H     I_____J     K_____L     M_____N     O_____P     Q_____R     S_____T     U_____V     W_____X     Y_____Z     A_____B     C_____D     E_____F     G
+                                                                                                                                                                                0     0     0     0     0     0     0
+                                                                                1     1     1     1     1     1     1     1     1     1     2     2     2     2     2     2
+                    0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     0_____1     2_____3     4_____5     6
    clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
    (100 MHz)
 
@@ -201,7 +204,7 @@ That hold check is against an edge that captures nothing from this interface, so
    setup requirement = 40 ns
    hold requirement = 30 ns
 
-**Moving the hold edge back.**  The hold check belongs on the device clock edge that captured the previous data, I at 40 ns, 80 ns before Y.
+**Moving the hold edge back.**  The hold check belongs on the device clock edge that captured the previous data, 8 at 40 ns, 80 ns before 24.
 A hold multicycle path of 7 moves the hold capture back seven device clock periods, 70 ns: its requirement goes from 30 ns to -40 ns.
 
 .. code-block:: text
@@ -212,8 +215,9 @@ A hold multicycle path of 7 moves the hold capture back seven device clock perio
                                                                                                                     |---------------setup requirement-------------->|
                                                                     |<---------------hold requirement---------------|
 
-                                                                                                                                                                                A     A     A     A     A     A     A
-                    A_____B     C_____D     E_____F     G_____H     I_____J     K_____L     M_____N     O_____P     Q_____R     S_____T     U_____V     W_____X     Y_____Z     A_____B     C_____D     E_____F     G
+                                                                                                                                                                                0     0     0     0     0     0     0
+                                                                                1     1     1     1     1     1     1     1     1     1     2     2     2     2     2     2
+                    0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     6_____7     8_____9     0_____1     2_____3     4_____5     0_____1     2_____3     4_____5     6
    clk_100mhz     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|
    (100 MHz)
 

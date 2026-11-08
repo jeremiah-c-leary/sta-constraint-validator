@@ -24,7 +24,7 @@ def build_config_text(sPartFile, sTracesFile, sRegisters):
     lText.append('name = "O_DAC_DATA"')
     lText.append('methodology = "SDR-SS-O"')
     lText.append('launch_clock = {name = "clk_100mhz", setup_edge = 8, hold_edge = 8}')
-    lText.append('capture_clock = {name = "dac_sclk", setup_edge = "D", hold_edge = "B"}')
+    lText.append('capture_clock = {name = "dac_sclk", setup_edge = 3, hold_edge = 1}')
     if sRegisters is not None:
         lText.append(f'registers = {sRegisters}')
     lText.append(f'timing_reports = ["{sTimingReport}"]')

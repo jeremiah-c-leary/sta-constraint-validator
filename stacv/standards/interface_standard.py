@@ -17,7 +17,6 @@ The checks:
 
 from stacv.methodology import methodology
 from stacv.part import part
-from stacv.rules import edge_times
 from stacv.standards import standard_error
 from stacv.standards import standards
 
@@ -283,8 +282,8 @@ def check_port_edge_types(oPort, lEdges, sExpected, sVerb, sFilename, oStandard)
             raise_error(12, sFilename, f'port {oPort.name} uses {sEdge.lower()} edges of {oPort.forwarded_clock.name}, but {oStandard.name} {sVerb} data on {sExpected.lower()} edges')
 
 
-def find_capture_edge_type(sEdgeLetter):
-    return find_edge_type(edge_times.convert_edge_letter_to_number(sEdgeLetter))
+def find_capture_edge_type(iEdgeNumber):
+    return find_edge_type(iEdgeNumber)
 
 
 def find_launch_edge_type(iEdgeNumber):

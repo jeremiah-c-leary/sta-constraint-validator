@@ -28,7 +28,7 @@
 #
 # md5sum                            Filename
 # --------------------------------  ------------------------------------------
-# 1a0c26176b3dacb45061f310dbbce427  example/microchip/vsc8540et/rmii.toml
+# 68ed3dd5ceeae17f909492222b8bcf88  example/microchip/vsc8540et/rmii.toml
 # 8458046ee525571615288ff9e53cc36b  example/microchip/vsc8540et/vsc8540et.toml
 # 3b559f4edb510badd14722e6dbded56c  example/microchip/vsc8540et/traces.toml
 #
@@ -120,12 +120,12 @@ create_clock -name rmii_ref_clk -period 20.000 [get_ports I_RMII_REF_CLK]
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # rmii_ref_clk   __|     |_____|     |
 # (50 MHz)
 #
-# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge C at 20 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge 2 at 20 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -158,12 +158,12 @@ set_output_delay -clock [get_clocks rmii_ref_clk] -min -0.800 [get_ports {O_RMII
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # rmii_ref_clk   __|     |_____|     |
 # (50 MHz)
 #
-# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge C at 20 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge 2 at 20 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -196,12 +196,12 @@ set_output_delay -clock [get_clocks rmii_ref_clk] -min -0.800 [get_ports O_RMII_
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # rmii_ref_clk   __|     |_____|     |
 # (50 MHz)
 #
-# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge C at 20 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge 2 at 20 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -234,12 +234,12 @@ set_output_delay -clock [get_clocks rmii_ref_clk] -min -0.800 [get_ports O_RMII_
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # rmii_ref_clk   __|     |_____|     |
 # (50 MHz)
 #
-# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge C at 20 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge 2 at 20 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -272,12 +272,12 @@ set_input_delay -clock [get_clocks rmii_ref_clk] -min -0.200 [get_ports {I_RMII_
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # rmii_ref_clk   __|     |_____|     |
 # (50 MHz)
 #
-# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge C at 20 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge 2 at 20 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #
@@ -310,12 +310,12 @@ set_input_delay -clock [get_clocks rmii_ref_clk] -min -0.200 [get_ports I_RMII_C
 #                  |---------->| setup requirement
 #                  | hold requirement
 #
-#                  A_____B     C_____D
+#                  0_____1     2_____3
 # rmii_ref_clk   __|     |_____|     |
 # (50 MHz)
 #
-# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge C at 20 ns)
-# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge A at 0 ns)
+# setup requirement:  20 ns (launch edge 0 at 0 ns -> capture edge 2 at 20 ns)
+# hold requirement:    0 ns (launch edge 0 at 0 ns -> capture edge 0 at 0 ns)
 #
 #------------------------------------------------------------------------------
 #

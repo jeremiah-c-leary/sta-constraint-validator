@@ -53,7 +53,7 @@ def build_port_text(sName, fLaunchPeriod, fCapturePeriod, lSetupEdges, lHoldEdge
     lText.append(f'name = "{sName}"')
     lText.append('methodology = "SDR-SS-O"')
     lText.append(f'launch_clock = {{name = "clk_launch", setup_edge = {lSetupEdges[0]}, hold_edge = {lHoldEdges[0]}}}')
-    lText.append(f'capture_clock = {{name = "clk_capture", setup_edge = "{lSetupEdges[1]}", hold_edge = "{lHoldEdges[1]}"}}')
+    lText.append(f'capture_clock = {{name = "clk_capture", setup_edge = {lSetupEdges[1]}, hold_edge = {lHoldEdges[1]}}}')
     return '\n'.join(lText)
 
 
@@ -91,11 +91,11 @@ class VisualizeTestCase(unittest.TestCase):
 class TestVisualizeEdgesDispatch(VisualizeTestCase):
 
     def test_exits_with_zero_when_timing_reports_do_not_exist(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.assertEqual(0, self.run_visualize_edges([sPort]))
 
     def test_writes_nothing_to_stderr(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_visualize_edges([sPort])
         self.assertEqual('', self.oStderr.getvalue())
 
@@ -111,8 +111,8 @@ class TestVisualizeEdgesPorts(VisualizeTestCase):
 
     def test_names_each_port_between_dividers(self):
         lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
-        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 2], [4, 0]))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 2], [4, 0]))
         self.run_visualize_edges(lPorts)
         lLines = self.oStdout.getvalue().split('\n')
         lExpected = []
@@ -128,7 +128,7 @@ class TestVisualizeEdgesPorts(VisualizeTestCase):
 class TestVisualizeEdgesClocks(VisualizeTestCase):
 
     def test_stops_launch_clock_at_the_capture_edge_after_the_last_configured_edge(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('                                                                             1     1     1')
@@ -137,23 +137,23 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
         self.assert_rows_drawn(lExpected)
 
     def test_stops_capture_clock_at_the_capture_edge_after_the_last_configured_edge(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_visualize_edges([sPort])
         lExpected = []
-        lExpected.append('                 A_______________________B                       C_______________________D')
+        lExpected.append('                 0_______________________1                       2_______________________3')
         lExpected.append('clk_capture    __|                       |_______________________|                       |')
         self.assert_rows_drawn(lExpected)
 
     def test_stops_capture_clock_at_edge_e_when_the_last_configured_edge_is_d(self):
-        sPort = build_port_text('O_DATA', 10, 40, [6, 'D'], [6, 'B'])
+        sPort = build_port_text('O_DATA', 10, 40, [6, 3], [6, 1])
         self.run_visualize_edges([sPort])
         lExpected = []
-        lExpected.append('                 A_______________________B                       C_______________________D                       E')
+        lExpected.append('                 0_______________________1                       2_______________________3                       4')
         lExpected.append('clk_capture    __|                       |_______________________|                       |_______________________|')
         self.assert_rows_drawn(lExpected)
 
     def test_stops_at_the_capture_edge_after_a_launch_edge_later_than_every_capture_edge(self):
-        sPort = build_port_text('O_DATA', 10, 40, [8, 'A'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [8, 0], [4, 0])
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('                                                                             1     1     1')
@@ -163,14 +163,14 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
         lExpected.append('                 |<---------------setup requirement--------------|')
         lExpected.append('                 |<---hold requirement---|')
         lExpected.append('')
-        lExpected.append('                 A_______________________B                       C_______________________D')
+        lExpected.append('                 0_______________________1                       2_______________________3')
         lExpected.append('clk_capture    __|                       |_______________________|                       |')
         lExpected.append('(25 MHz)')
         self.assert_rows_drawn(lExpected)
 
 
     def test_labels_each_clock_with_its_name(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         sPort = sPort.replace('clk_launch', 'clk_100mhz').replace('clk_capture', 'dac_sclk')
         self.run_visualize_edges([sPort])
         lLines = self.oStdout.getvalue().split('\n')
@@ -179,7 +179,7 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
 
 
     def test_writes_each_clock_frequency_under_its_clock(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('clk_launch     __|     |_____|     |_____|     |_____|     |_____|     |_____|     |_____|')
@@ -191,14 +191,14 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
         self.assert_rows_drawn(lExpected)
 
     def test_trims_trailing_zeros_from_a_frequency(self):
-        sPort = build_port_text('O_DATA', 16, 32, [2, 'C'], [2, 'A'])
+        sPort = build_port_text('O_DATA', 16, 32, [2, 2], [2, 0])
         self.run_visualize_edges([sPort])
         lLines = self.oStdout.getvalue().split('\n')
         self.assertIn('(62.5 MHz)', lLines)
         self.assertIn('(31.25 MHz)', lLines)
 
     def test_rounds_a_frequency_to_three_decimals(self):
-        sPort = build_port_text('O_DATA', 30, 60, [2, 'C'], [2, 'A'])
+        sPort = build_port_text('O_DATA', 30, 60, [2, 2], [2, 0])
         self.run_visualize_edges([sPort])
         lLines = self.oStdout.getvalue().split('\n')
         self.assertIn('(33.333 MHz)', lLines)
@@ -208,17 +208,17 @@ class TestVisualizeEdgesClocks(VisualizeTestCase):
 class TestVisualizeEdgesSetupRequirement(VisualizeTestCase):
 
     def test_draws_setup_requirement_from_launch_edge_to_capture_edge(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_visualize_edges([sPort])
         self.assert_rows_drawn(['                                         |---setup requirement-->|'])
 
     def test_writes_setup_requirement_after_an_arrow_too_short_to_hold_it(self):
-        sPort = build_port_text('O_DATA', 10, 20, [2, 'C'], [2, 'A'])
+        sPort = build_port_text('O_DATA', 10, 20, [2, 2], [2, 0])
         self.run_visualize_edges([sPort])
         self.assert_rows_drawn(['                             |---------->| setup requirement'])
 
     def test_points_setup_requirement_back_at_a_capture_edge_before_the_launch_edge(self):
-        sPort = build_port_text('O_DATA', 10, 40, [8, 'A'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [8, 0], [4, 0])
         self.run_visualize_edges([sPort])
         self.assert_rows_drawn(['                 |<---------------setup requirement--------------|'])
 
@@ -226,7 +226,7 @@ class TestVisualizeEdgesSetupRequirement(VisualizeTestCase):
 class TestVisualizeEdgesHoldRequirement(VisualizeTestCase):
 
     def test_draws_hold_requirement_under_setup_requirement(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('                                         |---setup requirement-->|')
@@ -234,7 +234,7 @@ class TestVisualizeEdgesHoldRequirement(VisualizeTestCase):
         self.assert_rows_drawn(lExpected)
 
     def test_draws_hold_requirement_on_one_column_when_launch_and_capture_edges_line_up(self):
-        sPort = build_port_text('O_DATA', 10, 50, [8, 'C'], [0, 'A'])
+        sPort = build_port_text('O_DATA', 10, 50, [8, 2], [0, 0])
         self.run_visualize_edges([sPort])
         self.assert_rows_drawn(['                 | hold requirement'])
 
@@ -242,7 +242,7 @@ class TestVisualizeEdgesHoldRequirement(VisualizeTestCase):
 class TestVisualizeEdgesRequirementValues(VisualizeTestCase):
 
     def test_writes_the_requirements_after_the_capture_clock(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('(25 MHz)')
@@ -253,7 +253,7 @@ class TestVisualizeEdgesRequirementValues(VisualizeTestCase):
         self.assert_rows_drawn(lExpected)
 
     def test_writes_requirements_that_are_not_whole_nanoseconds(self):
-        sPort = build_port_text('O_DATA', 5, 40, [1, 'C'], [1, 'A'])
+        sPort = build_port_text('O_DATA', 5, 40, [1, 2], [1, 0])
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('setup requirement = 37.5 ns')
@@ -261,7 +261,7 @@ class TestVisualizeEdgesRequirementValues(VisualizeTestCase):
         self.assert_rows_drawn(lExpected)
 
     def test_writes_a_hold_requirement_of_zero(self):
-        sPort = build_port_text('O_DATA', 10, 50, [8, 'C'], [0, 'A'])
+        sPort = build_port_text('O_DATA', 10, 50, [8, 2], [0, 0])
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('setup requirement = 10 ns')
@@ -272,7 +272,7 @@ class TestVisualizeEdgesRequirementValues(VisualizeTestCase):
 class TestVisualizeEdgesCombinations(VisualizeTestCase):
 
     def test_draws_the_whole_example_drawing_for_one_port(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('=' * 80)
@@ -286,7 +286,7 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected.append('                                         |---setup requirement-->|')
         lExpected.append('                 |<---hold requirement---|')
         lExpected.append('')
-        lExpected.append('                 A_______________________B                       C_______________________D')
+        lExpected.append('                 0_______________________1                       2_______________________3')
         lExpected.append('clk_capture    __|                       |_______________________|                       |')
         lExpected.append('(25 MHz)')
         lExpected.append('')
@@ -297,7 +297,7 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         self.assertEqual('\n'.join(lExpected) + '\n', self.oStdout.getvalue())
 
     def test_draws_a_capture_period_five_times_the_launch_period(self):
-        sPort = build_port_text('O_DATA', 10, 50, [8, 'C'], [0, 'A'])
+        sPort = build_port_text('O_DATA', 10, 50, [8, 2], [0, 0])
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('                                                                             1     1     1     1     1     1')
@@ -307,13 +307,13 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected.append('                                                                 |---------->| setup requirement')
         lExpected.append('                 | hold requirement')
         lExpected.append('')
-        lExpected.append('                 A_____________________________B                             C_____________________________D')
+        lExpected.append('                 0_____________________________1                             2_____________________________3')
         lExpected.append('clk_capture    __|                             |_____________________________|                             |')
         lExpected.append('(20 MHz)')
         self.assert_rows_drawn(lExpected)
 
     def test_gives_the_shortest_half_period_six_columns_when_the_capture_clock_is_faster(self):
-        sPort = build_port_text('O_DATA', 40, 10, [2, 'K'], [2, 'I'])
+        sPort = build_port_text('O_DATA', 40, 10, [2, 10], [2, 8])
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('                 0_______________________1                       2_________________')
@@ -322,13 +322,14 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected.append('                                                                 |---------->| setup requirement')
         lExpected.append('                                                                 | hold requirement')
         lExpected.append('')
-        lExpected.append('                 A_____B     C_____D     E_____F     G_____H     I_____J     K_____L')
+        lExpected.append('                                                                             1     1')
+        lExpected.append('                 0_____1     2_____3     4_____5     6_____7     8_____9     0_____1')
         lExpected.append('clk_capture    __|     |_____|     |_____|     |_____|     |_____|     |_____|     |')
         lExpected.append('(100 MHz)')
         self.assert_rows_drawn(lExpected)
 
     def test_draws_tens_digits_above_edge_numbers_past_nineteen(self):
-        sPort = build_port_text('O_DATA', 10, 100, [10, 'C'], [10, 'A'])
+        sPort = build_port_text('O_DATA', 10, 100, [10, 2], [10, 0])
         self.run_visualize_edges([sPort])
         lExpected = []
         lExpected.append('                                                                             1     1     1     1     1     1     1     1     1     1     2     2     2     2     2     2     2     2     2     2     3')
@@ -338,7 +339,7 @@ class TestVisualizeEdgesCombinations(VisualizeTestCase):
         lExpected.append('                                                                             |---------------------setup requirement-------------------->|')
         lExpected.append('                 |<---------------------hold requirement---------------------|')
         lExpected.append('')
-        lExpected.append('                 A___________________________________________________________B                                                           C___________________________________________________________D')
+        lExpected.append('                 0___________________________________________________________1                                                           2___________________________________________________________3')
         lExpected.append('clk_capture    __|                                                           |___________________________________________________________|                                                           |')
         lExpected.append('(10 MHz)')
         self.assert_rows_drawn(lExpected)
@@ -348,7 +349,7 @@ class TestVisualizeEdgesDeferredPorts(VisualizeTestCase):
 
     def test_draws_nothing_for_a_deferred_port(self):
         lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 2], [4, 0]))
         lPorts.append('[[port]]\nname = "O_DEFERRED"\nstatus = "defer"')
         self.assertEqual(0, self.run_visualize_edges(lPorts))
         self.assertNotIn('O_DEFERRED', self.oStdout.getvalue())

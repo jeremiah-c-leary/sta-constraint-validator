@@ -16,13 +16,13 @@ BANNER = '#' * 79
 # The part launches SDO on that clock, and the device captures it on I_DATA with clk_sys.
 # With clk_sclk at 80 ns and clk_sys at 10 ns:
 #    launch edge 2   is at (80 / 2) * 2  = 80 ns
-#    capture edge Y  is at (10 / 2) * 24 = 120 ns, a setup requirement of 40 ns
-#    capture edge I  is at (10 / 2) * 8  = 40 ns, a hold requirement of -40 ns
+#    capture edge 24  is at (10 / 2) * 24 = 120 ns, a setup requirement of 40 ns
+#    capture edge 8  is at (10 / 2) * 8  = 40 ns, a hold requirement of -40 ns
 # The input delays are:
 #    maximum:  clock maximum + SDO cko_max + data_input maximum = 1.2 + 30 + 1.5 = 32.7 ns
 #    minimum:  clock minimum + SDO cko_min + data_input minimum = 0.4 + 0 + 0.5  = 0.9 ns
-PASSING_SETUP_EDGES = [2, 'Y']
-PASSING_HOLD_EDGES = [2, 'I']
+PASSING_SETUP_EDGES = [2, 24]
+PASSING_HOLD_EDGES = [2, 8]
 
 
 def build_system_clock_table():
@@ -51,7 +51,7 @@ def build_round_trip_port_table(sName, sLaunchClock, lSetupEdges, lHoldEdges, sT
     lText.append(f'name = "{sName}"')
     lText.append(f'methodology = "{ROUND_TRIP}"')
     lText.append(f'launch_clock = {{name = "{sLaunchClock}", setup_edge = {lSetupEdges[0]}, hold_edge = {lHoldEdges[0]}}}')
-    lText.append(f'capture_clock = {{name = "clk_sys", setup_edge = "{lSetupEdges[1]}", hold_edge = "{lHoldEdges[1]}"}}')
+    lText.append(f'capture_clock = {{name = "clk_sys", setup_edge = {lSetupEdges[1]}, hold_edge = {lHoldEdges[1]}}}')
     lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
@@ -63,7 +63,7 @@ def build_output_port_table(sName, sCaptureClock, sTimingReport):
     lText.append(f'name = "{sName}"')
     lText.append('methodology = "SDR-SS-O"')
     lText.append('launch_clock = {name = "clk_sys", setup_edge = 8, hold_edge = 8}')
-    lText.append(f'capture_clock = {{name = "{sCaptureClock}", setup_edge = "D", hold_edge = "B"}}')
+    lText.append(f'capture_clock = {{name = "{sCaptureClock}", setup_edge = 3, hold_edge = 1}}')
     lText.append('registers = ["q_spi_output_data_reg"]')
     lText.append(f'timing_reports = ["{sTimingReport}"]')
     return '\n'.join(lText)
@@ -312,12 +312,12 @@ class TestRoundTripConstraints(RoundTripTestCase):
     def test_starts_with_the_requirements_and_their_edges(self):
         self.run_generate_xdc(self.build_round_trip_tables())
         lSection = self.read_section('5.1:  I_DATA')
-        self.assertIn('# setup requirement:  40 ns (launch edge 2 at 80 ns -> capture edge Y at 120 ns)', lSection)
-        self.assertIn('# hold requirement:  -40 ns (launch edge 2 at 80 ns -> capture edge I at 40 ns)', lSection)
+        self.assertIn('# setup requirement:  40 ns (launch edge 2 at 80 ns -> capture edge 24 at 120 ns)', lSection)
+        self.assertIn('# hold requirement:  -40 ns (launch edge 2 at 80 ns -> capture edge 8 at 40 ns)', lSection)
 
     def test_applies_the_input_delays_to_a_falling_launch_edge(self):
-        # Launch edge 1 is at 40 ns, capture edge Q at 80 ns and capture edge A at 0 ns.
-        self.assertEqual(0, self.run_generate_xdc(self.build_round_trip_tables([1, 'Q'], [1, 'A'])))
+        # Launch edge 1 is at 40 ns, capture edge 16 at 80 ns and capture edge 0 at 0 ns.
+        self.assertEqual(0, self.run_generate_xdc(self.build_round_trip_tables([1, 16], [1, 0])))
         self.assert_line_written('set_input_delay -clock [get_clocks clk_sclk] -clock_fall -reference_pin [get_ports O_SCLK] -max 32.700 [get_ports I_DATA]')
         self.assert_line_written('set_input_delay -clock [get_clocks clk_sclk] -clock_fall -reference_pin [get_ports O_SCLK] -min 0.900 [get_ports I_DATA]')
         self.assertIn('# -clock_fall:          the launch edge 1 is a falling edge of clk_sclk', self.read_section('5.1:  I_DATA'))
@@ -340,16 +340,16 @@ class TestRoundTripConstraints(RoundTripTestCase):
 class TestRoundTripEdges(RoundTripTestCase):
 
     def test_draws_the_edges_to_the_launch_clock_edge_after_the_last_edge(self):
-        # The last edge is capture edge Y at 120 ns, and the next edge of the forwarded clock is launch edge 4 at 160 ns.
+        # The last edge is capture edge 24 at 120 ns, and the next edge of the forwarded clock is launch edge 4 at 160 ns.
         self.assertEqual(0, self.run_stacv(self.build_round_trip_tables(), ['visualize', 'edges', self.sInterfaceFile]))
         lLines = self.get_output_lines()
         sHigh = '_' * 47
         sLow = ' ' * 47
         iLaunchLabels = lLines.index('                 0' + sHigh + '1' + sLow + '2' + sHigh + '3' + sLow + '4')
         self.assertEqual('clk_sclk       __|' + sLow + '|' + sHigh + '|' + sLow + '|' + sHigh + '|', lLines[iLaunchLabels + 1])
-        # Capture edge AG, at 160 ns, has its first letter in the row above.
-        self.assertTrue(lLines[iLaunchLabels + 6].endswith('A'))
-        self.assertTrue(lLines[iLaunchLabels + 7].endswith('G'))
+        # Capture edge 32, at 160 ns, has its tens digit in the row above.
+        self.assertTrue(lLines[iLaunchLabels + 6].endswith('3'))
+        self.assertTrue(lLines[iLaunchLabels + 7].endswith('2'))
         self.assertTrue(lLines[iLaunchLabels + 8].startswith('clk_sys        __|'))
 
 

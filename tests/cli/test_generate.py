@@ -70,7 +70,7 @@ def build_port_text(sName, fLaunchPeriod, fCapturePeriod, lSetupEdges, lHoldEdge
     lText.append(f'name = "{sName}"')
     lText.append(f'methodology = "{sMethodology}"')
     lText.append(f'launch_clock = {{name = "clk_launch", setup_edge = {lSetupEdges[0]}, hold_edge = {lHoldEdges[0]}}}')
-    lText.append(f'capture_clock = {{name = "clk_capture", setup_edge = "{lSetupEdges[1]}", hold_edge = "{lHoldEdges[1]}"}}')
+    lText.append(f'capture_clock = {{name = "clk_capture", setup_edge = {lSetupEdges[1]}, hold_edge = {lHoldEdges[1]}}}')
     return '\n'.join(lText)
 
 
@@ -163,11 +163,11 @@ class GenerateTestCase(unittest.TestCase):
 class TestGenerateXdcDispatch(GenerateTestCase):
 
     def test_exits_with_zero_when_timing_reports_do_not_exist(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.assertEqual(0, self.run_generate_xdc([sPort]))
 
     def test_writes_nothing_to_stderr(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_generate_xdc([sPort])
         self.assertEqual('', self.oStderr.getvalue())
 
@@ -182,30 +182,30 @@ class TestGenerateXdcDispatch(GenerateTestCase):
 class TestGenerateXdcGeneratedClock(GenerateTestCase):
 
     def test_divides_the_capture_clock_from_the_generator_when_it_is_slower(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_generate_xdc([sPort])
         self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins q_sclk_reg/C] -divide_by 4 [get_pins q_sclk_reg/Q]')
 
     def test_multiplies_the_capture_clock_from_the_generator_when_it_is_faster(self):
-        sPort = build_port_text('O_DATA', 40, 10, [2, 'K'], [2, 'I'])
+        sPort = build_port_text('O_DATA', 40, 10, [2, 10], [2, 8])
         self.run_generate_xdc([sPort])
         self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins q_sclk_reg/C] -multiply_by 4 [get_pins q_sclk_reg/Q]')
 
     def test_divides_by_one_when_the_periods_are_equal(self):
-        sPort = build_port_text('O_DATA', 10, 10, [0, 'C'], [0, 'A'])
+        sPort = build_port_text('O_DATA', 10, 10, [0, 2], [0, 0])
         self.run_generate_xdc([sPort])
         self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins q_sclk_reg/C] -divide_by 1 [get_pins q_sclk_reg/Q]')
 
     def test_uses_the_pins_named_by_the_generator(self):
         sGenerator = '{source = "u_clock_out/oddr_inst", master_pin = "CLK", target_pin = "OUT", master_clock = "clk_launch"}'
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'], sGenerator)
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0], sGenerator)
         self.run_generate_xdc([sPort])
         self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins u_clock_out/oddr_inst/CLK] -divide_by 4 [get_pins u_clock_out/oddr_inst/OUT]')
 
     def test_generates_a_capture_clock_shared_by_two_ports_once(self):
         lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
-        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 2], [4, 0]))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 2], [4, 0]))
         self.run_generate_xdc(lPorts)
         self.assertEqual(1, self.count_lines_starting_with('create_generated_clock '))
 
@@ -213,7 +213,7 @@ class TestGenerateXdcGeneratedClock(GenerateTestCase):
     def test_divides_by_the_period_of_the_master_clock(self):
         sGenerator = '{source = "q_sclk_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_master"}'
         sMasterClock = '[[clock]]\nname = "clk_master"\nperiod = 20\n'
-        sPort = sMasterClock + build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'], sGenerator)
+        sPort = sMasterClock + build_port_text('O_DATA', 10, 40, [4, 2], [4, 0], sGenerator)
         self.run_generate_xdc([sPort])
         self.assert_line_written('create_generated_clock -name clk_capture -source [get_pins q_sclk_reg/C] -divide_by 2 [get_pins q_sclk_reg/Q]')
 
@@ -221,29 +221,29 @@ class TestGenerateXdcGeneratedClock(GenerateTestCase):
 class TestGenerateXdcOutputDelays(GenerateTestCase):
 
     def test_writes_the_maximum_output_delay_against_the_clock_port(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_generate_xdc([sPort])
         self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -max 8.100 [get_ports O_DATA]')
 
     def test_writes_the_minimum_output_delay_against_the_clock_port(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_generate_xdc([sPort])
         self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -min -2.700 [get_ports O_DATA]')
 
     def test_applies_the_maximum_output_delay_to_a_falling_capture_edge(self):
-        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [2, 'B'], [4, 'B'])
+        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [2, 1], [4, 1])
         self.run_generate_xdc([sPort])
         self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -clock_fall -reference_pin [get_ports O_SCLK] -max 8.100 [get_ports O_DATA]')
 
     def test_applies_the_minimum_output_delay_to_a_falling_capture_edge(self):
-        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [2, 'B'], [4, 'B'])
+        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [2, 1], [4, 1])
         self.run_generate_xdc([sPort])
         self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -clock_fall -reference_pin [get_ports O_SCLK] -min -2.700 [get_ports O_DATA]')
 
     def test_writes_output_delays_for_every_port(self):
         lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
-        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 2], [4, 0]))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [4, 2], [4, 0]))
         self.run_generate_xdc(lPorts)
         self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -max 8.100 [get_ports O_CHIP_SELECT]')
         self.assert_line_written('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -min -2.700 [get_ports O_CHIP_SELECT]')
@@ -252,29 +252,29 @@ class TestGenerateXdcOutputDelays(GenerateTestCase):
 class TestGenerateXdcSetupMulticycle(GenerateTestCase):
 
     def test_moves_the_launch_edge_when_the_launch_clock_is_faster(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_generate_xdc([sPort])
         self.assert_line_written('set_multicycle_path 2 -setup -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
 
     def test_moves_the_capture_edge_when_the_capture_clock_is_faster(self):
-        sPort = build_port_text('O_DATA', 40, 10, [0, 'E'], [0, 'C'])
+        sPort = build_port_text('O_DATA', 40, 10, [0, 4], [0, 2])
         self.run_generate_xdc([sPort])
         self.assert_line_written('set_multicycle_path 2 -setup -end -from [get_clocks clk_launch] -to [get_ports O_DATA]')
 
     def test_moves_the_capture_edge_when_the_periods_are_equal(self):
-        sPort = build_port_text('O_DATA', 10, 10, [0, 'E'], [0, 'C'])
+        sPort = build_port_text('O_DATA', 10, 10, [0, 4], [0, 2])
         self.run_generate_xdc([sPort])
         self.assert_line_written('set_multicycle_path 2 -setup -end -from [get_clocks clk_launch] -to [get_ports O_DATA]')
 
     def test_writes_no_setup_multicycle_of_one(self):
-        sPort = build_port_text('O_DATA', 10, 40, [6, 'C'], [6, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [6, 2], [6, 0])
         self.run_generate_xdc([sPort])
         self.assert_no_line_contains(' -setup ')
 
     def test_writes_a_setup_multicycle_for_every_port(self):
         lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
-        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [2, 'C'], [2, 'A']))
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 2], [4, 0]))
+        lPorts.append(build_port_text('O_CHIP_SELECT', 10, 40, [2, 2], [2, 0]))
         self.run_generate_xdc(lPorts)
         self.assert_line_written('set_multicycle_path 2 -setup -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
         self.assert_line_written('set_multicycle_path 3 -setup -start -from [get_clocks clk_launch] -to [get_ports O_CHIP_SELECT]')
@@ -283,25 +283,25 @@ class TestGenerateXdcSetupMulticycle(GenerateTestCase):
 class TestGenerateXdcHoldMulticycle(GenerateTestCase):
 
     def test_moves_the_hold_launch_edge_when_the_launch_clock_is_faster(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.run_generate_xdc([sPort])
         self.assert_line_written('set_multicycle_path 3 -hold -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
 
     def test_moves_the_hold_capture_edge_when_the_capture_clock_is_faster(self):
-        sPort = build_first_last_clock_port_text('O_DATA', 40, 10, [0, 'E'], [0, 'A'])
+        sPort = build_first_last_clock_port_text('O_DATA', 40, 10, [0, 4], [0, 0])
         self.run_generate_xdc([sPort])
         self.assert_line_written('set_multicycle_path 1 -hold -end -from [get_clocks clk_launch] -to [get_ports O_DATA]')
 
     def test_writes_no_hold_multicycle_of_zero(self):
-        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [6, 'C'], [8, 'C'])
+        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [6, 2], [8, 2])
         self.run_generate_xdc([sPort])
         self.assert_no_line_contains(' -hold ')
 
     def test_writes_a_hold_multicycle_for_every_port(self):
         lPorts = []
         # Both ports are SDR-SS-O-FLC, so they share one clock table.
-        lPorts.append(build_first_last_clock_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
-        lPorts.append(build_first_last_clock_port_text('O_CHIP_SELECT', 10, 40, [2, 'C'], [4, 'A']))
+        lPorts.append(build_first_last_clock_port_text('O_DATA', 10, 40, [4, 2], [4, 0]))
+        lPorts.append(build_first_last_clock_port_text('O_CHIP_SELECT', 10, 40, [2, 2], [4, 0]))
         self.run_generate_xdc(lPorts)
         self.assert_line_written('set_multicycle_path 3 -hold -start -from [get_clocks clk_launch] -to [get_ports O_DATA]')
         self.assert_line_written('set_multicycle_path 4 -hold -start -from [get_clocks clk_launch] -to [get_ports O_CHIP_SELECT]')
@@ -313,46 +313,46 @@ class TestGenerateXdcErrors(GenerateTestCase):
         self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[' + sIdentifier + r'\] ')
 
     def test_exits_with_two_on_a_generate_error(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'], None)
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0], None)
         self.assertEqual(2, self.run_generate_xdc([sPort]))
 
     def test_writes_no_constraints_on_a_generate_error(self):
         lPorts = []
         # Both ports are SDR-SS-O-FLC, so they share one clock table.
-        lPorts.append(build_first_last_clock_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
-        lPorts.append(build_first_last_clock_port_text('O_CHIP_SELECT', 10, 40, [10, 'C'], [4, 'A']))
+        lPorts.append(build_first_last_clock_port_text('O_DATA', 10, 40, [4, 2], [4, 0]))
+        lPorts.append(build_first_last_clock_port_text('O_CHIP_SELECT', 10, 40, [10, 2], [4, 0]))
         self.run_generate_xdc(lPorts)
         self.assertRegex(self.oStderr.getvalue(), r'^ERROR: \[generate_004\] ')
         self.assertEqual('', self.oStdout.getvalue())
 
     def test_reports_a_capture_clock_without_a_generator(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'], None)
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0], None)
         self.run_generate_xdc([sPort])
         self.assert_error_written('generate_001')
 
     def test_reports_a_setup_requirement_that_is_not_a_whole_number_of_step_periods(self):
-        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [3, 'C'], [4, 'A'])
+        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [3, 2], [4, 0])
         self.run_generate_xdc([sPort])
         self.assert_error_written('generate_002')
 
     def test_reports_a_hold_requirement_that_is_not_a_whole_number_of_step_periods(self):
-        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [4, 'C'], [3, 'A'])
+        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [4, 2], [3, 0])
         self.run_generate_xdc([sPort])
         self.assert_error_written('generate_003')
 
     def test_reports_a_setup_multicycle_less_than_zero(self):
-        # Launch edge 10 at 50 ns is after capture edge C at 40 ns.
-        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [10, 'C'], [4, 'A'])
+        # Launch edge 10 at 50 ns is after capture edge 2 at 40 ns.
+        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [10, 2], [4, 0])
         self.run_generate_xdc([sPort])
         self.assert_error_written('generate_004')
 
     def test_reports_a_hold_multicycle_less_than_zero(self):
-        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [6, 'C'], [6, 'C'])
+        sPort = build_first_last_clock_port_text('O_DATA', 10, 40, [6, 2], [6, 2])
         self.run_generate_xdc([sPort])
         self.assert_error_written('generate_005')
 
     def test_reports_setup_and_hold_capture_edges_of_different_types(self):
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [2, 'B'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [2, 1])
         self.run_generate_xdc([sPort])
         self.assert_error_written('interface_config_018')
 
@@ -375,26 +375,26 @@ class TestGenerateXdcInputErrors(GenerateTestCase):
 
     def test_reports_a_port_without_a_trace(self):
         # The part's SDIN has a trace to O_DATA, which is deferred, so only O_NO_TRACE has no trace.
-        sPort = build_port_text('O_NO_TRACE', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_NO_TRACE', 10, 40, [4, 2], [4, 0])
         self.assertEqual(2, self.run_generate_xdc([sPort, DEFERRED_O_DATA]))
         self.assert_error_written('generate_007')
 
     def test_reports_a_trace_to_a_pin_the_part_does_not_have(self):
         # SDIN has its own trace to a deferred port, so only the trace of O_DATA reaches a pin the part does not have.
         self.write_traces([('O_DATA', 'SDIN_UNKNOWN'), ('O_SPARE', 'SDIN'), ('O_SCLK', 'SCLK')])
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.assertEqual(2, self.run_generate_xdc([sPort, '[[port]]\nstatus = "defer"\nname = "O_SPARE"']))
         self.assert_error_written('generate_008')
 
     def test_reports_a_missing_clock_trace(self):
         self.write_traces([('O_DATA', 'SDIN'), ('O_OTHER_SCLK', 'SCLK')])
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.assertEqual(2, self.run_generate_xdc([sPort]))
         self.assert_error_written('generate_009')
 
     def test_reports_a_traces_error(self):
         self.write_file('traces.toml', '[[trace]]\nname = "O_DATA_trace"\ndevice_pin = "O_DATA"\npart_pin = "SDIN"\ndevice_to_part = {}\n')
-        sPort = build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])
+        sPort = build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])
         self.assertEqual(2, self.run_generate_xdc([sPort]))
         self.assert_error_written('traces_config_005')
 
@@ -403,7 +403,7 @@ class TestGenerateXdcDeferredPorts(GenerateTestCase):
 
     def test_writes_nothing_for_a_deferred_port(self):
         lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 2], [4, 0]))
         lPorts.append('[[port]]\nname = "O_NO_TRACE"\nstatus = "defer"')
         self.assertEqual(0, self.run_generate_xdc(lPorts))
         for sLine in self.get_output_lines():
@@ -419,7 +419,7 @@ class XdcFileTestCase(GenerateTestCase):
 
     def run_with_a_deferred_port(self):
         lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 2], [4, 0]))
         lPorts.append('[[port]]\nname = "O_CHIP_SELECT"\nstatus = "defer"')
         self.run_generate_xdc(lPorts)
 
@@ -578,7 +578,7 @@ class TestGenerateXdcTraceDelays(XdcFileTestCase):
         lTraces.append('[[trace]]\nname = "clock"\ndevice_pin = "O_SCLK"\npart_pin = "SCLK"\ndevice_to_part = {max_delay = 1.2, min_delay = 0.4}')
         self.write_file('traces.toml', '\n\n'.join(lTraces) + '\n')
         lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 2], [4, 0]))
         lPorts.append('[[port]]\nname = "I_DATA"\nstatus = "defer"')
         lPorts.append('[[port]]\nname = "IO_DATA"\nstatus = "defer"')
         self.run_generate_xdc(lPorts)
@@ -617,7 +617,7 @@ class TestGenerateXdcPartTiming(XdcFileTestCase):
         lTraces.append('[[trace]]\nname = "clock"\ndevice_pin = "O_SCLK"\npart_pin = "SCLK"\ndevice_to_part = {max_delay = 1.2, min_delay = 0.4}')
         self.write_file('traces.toml', '\n\n'.join(lTraces) + '\n')
         lPorts = []
-        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A']))
+        lPorts.append(build_port_text('O_DATA', 10, 40, [4, 2], [4, 0]))
         lPorts.append('[[port]]\nname = "I_DATA"\nstatus = "defer"')
         self.run_generate_xdc(lPorts)
         lExpected = []
@@ -652,7 +652,7 @@ class TestGenerateXdcGeneratedClockSection(XdcFileTestCase):
         self.assertEqual(lExpected, self.read_section('4.1:  clk_capture Generated Clock'))
 
     def test_explains_each_argument_of_a_multiplied_clock(self):
-        self.run_generate_xdc([build_port_text('O_DATA', 40, 10, [2, 'K'], [2, 'I'])])
+        self.run_generate_xdc([build_port_text('O_DATA', 40, 10, [2, 10], [2, 8])])
         lExpected = []
         lExpected.append('#')
         lExpected.append('# -name:         the name of the generated clock')
@@ -686,17 +686,17 @@ class TestGenerateXdcPortSection(XdcFileTestCase):
         for sLine in self.draw_edges():
             lExpected.append(('# ' + sLine).rstrip())
         lExpected.append('#')
-        lExpected.append('# setup requirement:  20 ns (launch edge 4 at 20 ns -> capture edge C at 40 ns)')
-        lExpected.append('# hold requirement:  -20 ns (launch edge 4 at 20 ns -> capture edge A at 0 ns)')
+        lExpected.append('# setup requirement:  20 ns (launch edge 4 at 20 ns -> capture edge 2 at 40 ns)')
+        lExpected.append('# hold requirement:  -20 ns (launch edge 4 at 20 ns -> capture edge 0 at 0 ns)')
         lExpected.append('#')
         lExpected.append('#' + '-' * 78)
         self.assertEqual(lExpected, self.read_section('5.1:  O_DATA')[0:len(lExpected)])
 
     def test_right_aligns_requirements_that_are_not_whole_nanoseconds(self):
-        self.run_generate_xdc([build_port_text('O_DATA', 2.5, 20, [2, 'C'], [2, 'A'])])
+        self.run_generate_xdc([build_port_text('O_DATA', 2.5, 20, [2, 2], [2, 0])])
         lSection = self.read_section('5.1:  O_DATA')
-        self.assertIn('# setup requirement:  17.5 ns (launch edge 2 at 2.5 ns -> capture edge C at 20 ns)', lSection)
-        self.assertIn('# hold requirement:   -2.5 ns (launch edge 2 at 2.5 ns -> capture edge A at 0 ns)', lSection)
+        self.assertIn('# setup requirement:  17.5 ns (launch edge 2 at 2.5 ns -> capture edge 2 at 20 ns)', lSection)
+        self.assertIn('# hold requirement:   -2.5 ns (launch edge 2 at 2.5 ns -> capture edge 0 at 0 ns)', lSection)
 
     def test_writes_deferred_for_a_deferred_port(self):
         self.run_with_a_deferred_port()
@@ -739,12 +739,12 @@ class TestGenerateXdcOutputDelayComments(XdcFileTestCase):
         self.assert_lines_in_section('5.1:  O_DATA', lExpected)
 
     def test_explains_falling_capture_edges(self):
-        self.run_generate_xdc([build_first_last_clock_port_text('O_DATA', 10, 40, [6, 'D'], [8, 'B'])])
-        self.assert_lines_in_section('5.1:  O_DATA', ['# -clock_fall:           the capture edges D and B are falling edges of clk_capture'])
+        self.run_generate_xdc([build_first_last_clock_port_text('O_DATA', 10, 40, [6, 3], [8, 1])])
+        self.assert_lines_in_section('5.1:  O_DATA', ['# -clock_fall:           the capture edges 3 and 1 are falling edges of clk_capture'])
 
     def test_explains_one_falling_capture_edge_used_for_setup_and_hold(self):
-        self.run_generate_xdc([build_first_last_clock_port_text('O_DATA', 10, 40, [2, 'B'], [4, 'B'])])
-        self.assert_lines_in_section('5.1:  O_DATA', ['# -clock_fall:           the capture edge B is a falling edge of clk_capture'])
+        self.run_generate_xdc([build_first_last_clock_port_text('O_DATA', 10, 40, [2, 1], [4, 1])])
+        self.assert_lines_in_section('5.1:  O_DATA', ['# -clock_fall:           the capture edge 1 is a falling edge of clk_capture'])
 
 
 class TestGenerateXdcMulticycleComments(XdcFileTestCase):
@@ -781,7 +781,7 @@ class TestGenerateXdcMulticycleComments(XdcFileTestCase):
         self.assertEqual(lExpected, self.read_section('5.1:  O_DATA')[-len(lExpected) - 1:-1])
 
     def test_counts_capture_periods_when_the_capture_clock_is_faster(self):
-        self.run_generate_xdc([build_first_last_clock_port_text('O_DATA', 40, 10, [0, 'E'], [0, 'A'])])
+        self.run_generate_xdc([build_first_last_clock_port_text('O_DATA', 40, 10, [0, 4], [0, 0])])
         lExpected = []
         lExpected.append('# multiplier:  setup requirement / capture period')
         lExpected.append('#              20 ns / 10 ns')
@@ -791,7 +791,7 @@ class TestGenerateXdcMulticycleComments(XdcFileTestCase):
         self.assert_lines_in_section('5.1:  O_DATA', lExpected)
 
     def test_explains_the_shared_arguments_with_the_hold_multicycle_when_no_setup_multicycle_is_needed(self):
-        self.run_generate_xdc([build_first_last_clock_port_text('O_DATA', 10, 40, [6, 'C'], [4, 'A'])])
+        self.run_generate_xdc([build_first_last_clock_port_text('O_DATA', 10, 40, [6, 2], [4, 0])])
         lExpected = []
         lExpected.append('#')
         lExpected.append('# multiplier:  (setup requirement - hold requirement) / launch period - 1')
@@ -807,7 +807,7 @@ class TestGenerateXdcMulticycleComments(XdcFileTestCase):
         self.assert_lines_in_section('5.1:  O_DATA', lExpected)
 
     def test_writes_no_multicycle_block_when_the_default_edges_are_timed(self):
-        self.run_generate_xdc([build_first_last_clock_port_text('O_DATA', 10, 40, [6, 'C'], [8, 'C'])])
+        self.run_generate_xdc([build_first_last_clock_port_text('O_DATA', 10, 40, [6, 2], [8, 2])])
         lSection = self.read_section('5.1:  O_DATA')
         # The last section of the file ends with its last command.
         self.assertEqual('set_output_delay -clock [get_clocks clk_capture] -reference_pin [get_ports O_SCLK] -min -2.700 [get_ports O_DATA]', lSection[-1])
@@ -817,7 +817,7 @@ class TestGenerateXdcOutputFile(XdcFileTestCase):
 
     def run_with_output_option(self):
         self.sOutputFile = os.path.join(self.sDirectory, 'constraints.xdc')
-        self.write_file('interface.toml', build_interface_text([build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])], self.sMissingTimingReport))
+        self.write_file('interface.toml', build_interface_text([build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])], self.sMissingTimingReport))
         oStdout = io.StringIO()
         with mock.patch('sys.argv', ['stacv', 'generate', 'xdc', self.sInterfaceFile, '--output', self.sOutputFile]):
             with contextlib.redirect_stdout(oStdout):
@@ -826,7 +826,7 @@ class TestGenerateXdcOutputFile(XdcFileTestCase):
         return oContext.exception.code, oStdout.getvalue()
 
     def test_writes_the_constraints_to_the_output_file(self):
-        self.run_generate_xdc([build_port_text('O_DATA', 10, 40, [4, 'C'], [4, 'A'])])
+        self.run_generate_xdc([build_port_text('O_DATA', 10, 40, [4, 2], [4, 0])])
         sConstraints = self.oStdout.getvalue()
         self.run_with_output_option()
         with open(self.sOutputFile) as oFile:
