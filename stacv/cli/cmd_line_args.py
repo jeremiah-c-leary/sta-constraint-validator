@@ -51,7 +51,7 @@ def add_subparsers(top_parser):
 
 def build_check_subparser(subparser):
     parser = subparser.add_parser('check', help='Perform Timing Rule Checks on timing reports.')
-    parser.add_argument('interface_file', help='Interface TOML file.')
+    parser.add_argument('interface_file', help='Interface TOML file, or an interface configuration file such as spi_config.toml.')
     parser.add_argument('--report', help='Check report file name.')
     parser.add_argument('--junit', help='Generate a JUnit file.')
     parser.set_defaults(which='check')
@@ -68,17 +68,17 @@ def build_visualize_subparser(subparser):
 
 def build_edges_subparser(subparser):
     parser = subparser.add_parser('edges', help='Draw the launch and capture clock edges of every port.')
-    parser.add_argument('interface_file', help='Interface TOML file.')
+    parser.add_argument('interface_file', help='Interface TOML file, or an interface configuration file such as spi_config.toml.')
 
 
 def build_block_diagram_subparser(subparser):
     parser = subparser.add_parser('block_diagram', help='Draw the device, the part and the traces between them, with the registers of each port and their clocks.')
-    parser.add_argument('interface_file', help='Interface TOML file.')
+    parser.add_argument('interface_file', help='Interface TOML file, or an interface configuration file such as spi_config.toml.')
 
 
 def build_eye_subparser(subparser):
     parser = subparser.add_parser('eye', help='Draw the eye of every port from its timing reports.')
-    parser.add_argument('interface_file', help='Interface TOML file.')
+    parser.add_argument('interface_file', help='Interface TOML file, or an interface configuration file such as spi_config.toml.')
 
 
 def build_generate_subparser(subparser):
@@ -88,23 +88,30 @@ def build_generate_subparser(subparser):
     build_xdc_subparser(targets)
     build_report_tcl_subparser(targets)
     build_datasheet_subparser(targets)
+    build_interface_subparser(targets)
 
 
 def build_xdc_subparser(subparser):
     parser = subparser.add_parser('xdc', help='Generate Vivado timing constraints for every port.')
-    parser.add_argument('interface_file', help='Interface TOML file.')
+    parser.add_argument('interface_file', help='Interface TOML file, or an interface configuration file such as spi_config.toml.')
     parser.add_argument('--output', help='Constraints file name.  The constraints are written to stdout without it.')
 
 
 def build_report_tcl_subparser(subparser):
     parser = subparser.add_parser('report_tcl', help='Generate a Vivado script that writes the timing reports of every analyzed port.')
-    parser.add_argument('interface_file', help='Interface TOML file.')
+    parser.add_argument('interface_file', help='Interface TOML file, or an interface configuration file such as spi_config.toml.')
     parser.add_argument('--output', help='Report script file name.  The script is written to stdout without it.')
+
+
+def build_interface_subparser(subparser):
+    parser = subparser.add_parser('interface', help='Generate the interface file an interface configuration file expands to.')
+    parser.add_argument('interface_file', help='Interface configuration file, such as spi_config.toml.')
+    parser.add_argument('--output', help='Interface file name.  The interface file is written to stdout without it.')
 
 
 def build_datasheet_subparser(subparser):
     parser = subparser.add_parser('datasheet', help='Generate the datasheet of the interface from its timing reports: the timing of each port at the device\'s pins.')
-    parser.add_argument('interface_file', help='Interface TOML file.')
+    parser.add_argument('interface_file', help='Interface TOML file, or an interface configuration file such as spi_config.toml.')
     parser.add_argument('--output', help='Datasheet file name.  The datasheet is written to stdout without it.')
 
 

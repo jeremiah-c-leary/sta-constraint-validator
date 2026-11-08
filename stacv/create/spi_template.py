@@ -1,24 +1,19 @@
 '''
-Creates the interface, part and traces files of an SPI interface, linked by the signals of the SPI standard.
+Creates the SPI configuration, part and traces files of an SPI interface, linked by the signals of the SPI standard.
 
-The mode sets the level SCK idles at and the edges data changes and is sampled on, and the clock periods set where
-those edges are, so every launch and capture edge is worked out here.  The user fills in the part's timing from its
-datasheet, the registers, and the trace delays, and checks the edges with stacv visualize edges.
-
-The edges, with SCK half a period, H, long and divided from the device clock:
-
-    COPI   launched with the change edge before the first sample edge, captured on the sample edges either side of it
-    CS     timed to the first and last sample edges: set one SCK period before the first, cleared at the change edge
-           after the last
-    CIPO   launched by the part on SCK's change edge, captured by the device at the sample edges either side of it
+The user fills in the names in the design in the SPI configuration, the part's timing from its datasheet, and the trace
+delays.  stacv works out every edge from the mode and the clock periods, and expands the configuration into an
+interface file whenever a command reads it.
 '''
 
 from stacv.create import create_error
 from stacv.output import number_format
 from stacv.part import part
+from stacv.spi import spi_config
 from stacv.standards import standards
 
-FILE_NAMES = ['interface.toml', 'part.toml', 'traces.toml']
+FILE_NAMES = ['spi_config.toml', 'part.toml', 'traces.toml']
+DESIGN_PLACEHOLDER = spi_config.PLACEHOLDER
 DOCS_URL = 'https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source'
 PLACEHOLDER = part.PLACEHOLDER
 WIRES = [3, 4]
@@ -39,40 +34,6 @@ class SpiOptions():
         self.sck_period = fSckPeriod
 
 
-class SpiEdges():
-    '''
-    The launch and capture edges of each port, for the mode and the clock periods.
-    '''
-
-    def __init__(self, oOptions, oStandard):
-        iClockEdgesPerSckEdge = round(oOptions.sck_period / oOptions.clock_period)
-        self.sample_edge = oStandard.sample_edge
-        self.change_edge = oStandard.change_edge
-        # SCK rises at its edge 0, A, and falls at its edge 1, B.  The first sample edge is the first of the sample
-        # kind after edge 0, so there is a change edge before it to launch on.
-        iFirstSample = 2
-        if oStandard.sample_edge == standards.FALLING:
-            iFirstSample = 3
-        iChange = iFirstSample - 1
-        self.copi_launch = iChange * iClockEdgesPerSckEdge
-        self.copi_setup_capture = convert_number_to_letter(iFirstSample)
-        self.copi_hold_capture = convert_number_to_letter(iFirstSample - 2)
-        self.cs_setup_launch = (iFirstSample - 2) * iClockEdgesPerSckEdge
-        self.cs_hold_launch = self.copi_launch
-        self.cipo_launch = iChange
-        self.cipo_setup_capture = convert_number_to_letter(iFirstSample * iClockEdgesPerSckEdge)
-        self.cipo_hold_capture = convert_number_to_letter((iFirstSample - 2) * iClockEdgesPerSckEdge)
-
-
-def convert_number_to_letter(iEdgeNumber):
-    sLetters = ''
-    iRemaining = iEdgeNumber + 1
-    while iRemaining > 0:
-        iRemaining, iLetter = divmod(iRemaining - 1, 26)
-        sLetters = chr(ord('A') + iLetter) + sLetters
-    return sLetters
-
-
 def check_options(oOptions):
     if oOptions.wires == 3:
         raise create_error.CreateError('create_004', '--wires 3 is not supported yet; 3-wire SPI shares one data line, SDIO, in both directions')
@@ -89,9 +50,8 @@ def create_files(oOptions):
     # The three files, by name.
     check_options(oOptions)
     oStandard = standards.get_standard(f'SPI mode {oOptions.mode}')
-    oEdges = SpiEdges(oOptions, oStandard)
     dFiles = {}
-    dFiles['interface.toml'] = build_interface(oOptions, oStandard, oEdges)
+    dFiles['spi_config.toml'] = build_spi_config(oOptions, oStandard)
     dFiles['part.toml'] = build_part(oOptions, oStandard)
     dFiles['traces.toml'] = build_traces(oOptions)
     return dFiles
@@ -117,79 +77,79 @@ def build_header_divider_lines():
     return lLines
 
 
-def build_interface(oOptions, oStandard, oEdges):
-    sChange = oStandard.change_edge.lower()
-    sSample = oStandard.sample_edge.lower()
+def build_spi_config(oOptions, oStandard):
     lLines = []
-    lLines.append(f'# stacv interface file for a {oOptions.wires}-wire SPI interface, SPI mode {oOptions.mode}, with the device as the {oOptions.type}.')
+    lLines.append(f'# stacv SPI configuration file for a {oOptions.wires}-wire SPI interface, SPI mode {oOptions.mode}, with the device as the {oOptions.type}.')
     lLines.append(f'# Created by:  {build_command(oOptions)}')
     lLines.append('#')
     lLines.append('# Keys are described in:')
-    lLines.append(f'# {DOCS_URL}/interface.rst')
-    lLines.append('# The SPI signals and modes are described in:')
-    lLines.append(f'# {DOCS_URL}/standards.rst')
+    lLines.append(f'# {DOCS_URL}/spi_config.rst')
     lLines.append('#')
-    lLines.append('# Rename the clocks, ports and registers to your design\'s, and SPI_INTERFACE_NAME everywhere it appears.')
-    lLines.extend(build_header_divider_lines())
-    lLines.append('# Check the edges against the part\'s datasheet with:  stacv visualize edges interface.toml')
+    lLines.append('# stacv generates the interface file, the constraints and the report script')
+    lLines.append('# from this file.  Only this file, the part file and the traces file are edited.')
+    lLines.append('#')
+    lLines.append(f'# Replace each {DESIGN_PLACEHOLDER} with the name in your design; stacv stops on it until then.')
+    lLines.append('# Registers are named as Vivado names them:  the hierarchy separated by /, with')
+    lLines.append('# _reg added, and a bit of a bus in brackets, such as u_spi/rx_shift_reg[0].')
     lLines.append('#')
     lLines.append(f'# SPI mode {oOptions.mode}:  {describe_mode(oStandard)}')
     lLines.append('#')
-    lLines.append('# Paths are relative to this file.')
+    lLines.append(f'# Edges:  each signal is launched and captured on the edges SPI mode {oOptions.mode}')
+    lLines.append('#         defines.  When the design launches a signal on another device')
+    lLines.append('#         clock edge, the adjust keys move it: +1 is one edge later, -1')
+    lLines.append('#         one edge earlier, so +2 is one device clock period.  Check the')
+    lLines.append('#         result with:  stacv visualize edges spi_config.toml')
     lLines.append('#')
-    lLines.append('# All periods are in nanoseconds.')
+    lLines.append('# Periods are in nanoseconds.  Paths are relative to this file.')
     lLines.append('')
-    lLines.append('description = "SPI_DESCRIPTION"')
-    lLines.append('name = "SPI_INTERFACE_NAME"')
-    lLines.append('part = "part.toml"')
-    lLines.append('part_interface = "SPI"')
-    lLines.append('traces = "traces.toml"')
-    lLines.append(build_divider())
-    lLines.append(f'if_standard = "{oStandard.name}"')
-    lLines.append(f'if_role = "{oOptions.type}"')
+    lLines.append('interface = "spi"')
+    lLines.append('name      = "SPI"')
+    lLines.append(f'mode      = {oOptions.mode}')
+    lLines.append(f'role      = "{oOptions.type}"')
+    lLines.append('')
+    lLines.append('part    = "part.toml"')
+    lLines.append('traces  = "traces.toml"')
+    lLines.append('')
+    lLines.append('timing_reports_dir = "timing_reports"')
     lLines.append('')
     lLines.append('# The device clock the SPI logic runs on.')
-    lLines.append('[[clock]]')
-    lLines.append('name = "device_clk"')
-    lLines.append(build_divider())
-    lLines.append(f'period = {oOptions.clock_period:.3f}')
+    lLines.append('[device_clock]')
+    lLines.append(f'name   = "{DESIGN_PLACEHOLDER}"')
+    lLines.append(f'period = {format_config_period(oOptions.clock_period)}')
     lLines.append('')
-    lLines.append('# SCK, generated from device_clk and forwarded to the part.')
-    lLines.append('[[clock]]')
-    lLines.append('name = "spi_sck"')
-    lLines.append('port = "O_SPI_SCK"')
-    lLines.append('generator = {source = "q_spi_sck_reg", master_pin = "C", target_pin = "Q", master_clock = "device_clk"}')
-    lLines.append(build_divider())
-    lLines.append(f'period = {oOptions.sck_period:.3f}')
-    lLines.append(f'idle = "{oStandard.idle}"')
-    lLines.append('if_signal = "SCK"')
+    lLines.append('# SCK, the SPI clock: generated in the device by a register and forwarded to the part.')
+    lLines.append('[sck]')
+    lLines.append(f'port     = "{DESIGN_PLACEHOLDER}"')
+    lLines.append(f'register = "{DESIGN_PLACEHOLDER}"')
+    lLines.append(f'period   = {format_config_period(oOptions.sck_period)}')
     lLines.append('')
-    lLines.append(f'# COPI changes on the {sChange} edge of SCK, and the part samples it on the next {sSample} edge.')
-    lLines.extend(build_port('O_SPI_COPI', 'SDR-SS-O', 'COPI', ('device_clk', oEdges.copi_launch, oEdges.copi_launch), ('spi_sck', oEdges.copi_setup_capture, oEdges.copi_hold_capture), 'q_spi_copi_reg'))
+    lLines.append('# COPI: data from the device into the part.')
+    lLines.extend(build_data_signal('copi'))
     lLines.append('')
-    lLines.append(f'# CS is timed to the first and last {sSample} edges of SCK.')
-    lLines.extend(build_port('O_SPI_CS', 'SDR-SS-O-FLC', 'CS', ('device_clk', oEdges.cs_setup_launch, oEdges.cs_hold_launch), ('spi_sck', oEdges.copi_setup_capture, oEdges.copi_hold_capture), 'q_spi_cs_reg'))
+    lLines.append('# CIPO: data from the part into the device.')
+    lLines.extend(build_data_signal('cipo'))
     lLines.append('')
-    lLines.append(f'# The part changes CIPO on the {sChange} edge of SCK, and the device captures it on device_clk at the next {sSample} edge.')
-    lLines.extend(build_port('I_SPI_CIPO', 'SDR-SS-RT-DI', 'CIPO', ('spi_sck', oEdges.cipo_launch, oEdges.cipo_launch), ('device_clk', oEdges.cipo_setup_capture, oEdges.cipo_hold_capture), 'q_spi_cipo_reg'))
+    lLines.append(f'# CS: selects the part.  Timed to the first and last {oStandard.sample_edge.lower()} edges of SCK.')
+    lLines.append('[cs]')
+    lLines.append(f'port         = "{DESIGN_PLACEHOLDER}"')
+    lLines.append(f'register     = "{DESIGN_PLACEHOLDER}"')
+    lLines.append('setup_adjust = 0')
+    lLines.append('hold_adjust  = 0')
     return lLines
 
 
-def build_port(sName, sMethodology, sSignal, tLaunch, tCapture, sRegister):
+def build_data_signal(sTable):
     lLines = []
-    lLines.append('[[port]]')
-    lLines.append('status = "analyze"')
-    lLines.append(f'name = "{sName}"')
-    lLines.append(f'registers = ["{sRegister}"]')
-    lLines.append(f'launch_clock = {{name = "{tLaunch[0]}", setup_edge = {tLaunch[1]}, hold_edge = {tLaunch[2]}}}')
-    lLines.append(f'capture_clock = {{name = "{tCapture[0]}", setup_edge = "{tCapture[1]}", hold_edge = "{tCapture[2]}"}}')
-    lLines.append('timing_reports = [')
-    lLines.append(f'    "timing_reports/SPI_INTERFACE_NAME.{sSignal}_timing.rpt",')
-    lLines.append(']')
-    lLines.append(build_divider())
-    lLines.append(f'methodology = "{sMethodology}"')
-    lLines.append(f'if_signal = "{sSignal}"')
+    lLines.append(f'[{sTable}]')
+    lLines.append(f'port     = "{DESIGN_PLACEHOLDER}"')
+    lLines.append(f'register = "{DESIGN_PLACEHOLDER}"')
+    lLines.append('adjust   = 0')
     return lLines
+
+
+def format_config_period(fPeriod):
+    # A period is written as the number given, always with a decimal point, as a time.
+    return str(float(fPeriod))
 
 
 def build_part(oOptions, oStandard):

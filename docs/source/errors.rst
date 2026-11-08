@@ -21,6 +21,7 @@ stacv visualize edges
 
 * It reads only the interface file.
   The part and traces files do not need to exist yet, and the timing report paths are not read.
+  An SPI configuration file also reads the part file once it exists, to find the part's SPI interface (spi_config_012, spi_config_013).
 * Errors marked **Stops** in the interface table stop it, as they stop every command.
 * Errors marked **Drawn** do not stop it.
   The port is drawn, and the error is printed under its requirements, on standard output, in the port's section.
@@ -261,6 +262,57 @@ Part file
 
 The location is ``in [properties]``, ``in [datasheet]``, ``in interface <name>``, or ``in pin <name> of interface <name>``.
 
+SPI configuration file
+----------------------
+
+These are checked by every command that reads an SPI configuration file (see :doc:`spi_config`).
+The location names the table and the line of the key, such as ``in [cs] (line 56)``; a missing key is given the line of its table.
+A file that is not valid TOML, or does not exist, is reported as interface_config_001 or interface_config_007, as stacv reads it before it knows its kind.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 18 52 30
+
+   * - Identifier
+     - Message
+     - Correction
+   * - spi_config_002
+     - ``missing required key "<key>"<location>``
+     - Add the key, or the table.
+   * - spi_config_003
+     - ``key "<key>"<location> must be <type>``
+     - Write the value as the type given, such as ``a non-empty string`` or ``a whole number``.
+   * - spi_config_004
+     - ``key "<key>"<location> is not a key stacv reads; the keys are <keys>``
+     - Correct the key name.
+   * - spi_config_005
+     - ``key "interface"<location> names <name>, which stacv has no configuration for; the configurations are <names>``
+     - Correct the name, or time the interface with an interface file.
+   * - spi_config_006
+     - ``key "<key>"<location> is FROM_DESIGN; replace it with the name in your design``
+     - Fill in the name.
+   * - spi_config_007
+     - ``key "mode"<location> must be 0, 1, 2 or 3``
+     - Give the SPI mode.
+   * - spi_config_008
+     - ``key "role"<location> must be "controller"; a peripheral is not supported yet``
+     - Only the device as the controller can be timed yet.
+   * - spi_config_009
+     - ``key "period"<location> must be greater than 0``
+     - Give the period in ns.
+   * - spi_config_010
+     - ``key "period" in [sck]<line> is <time> ns, which is not an even number of device clock periods of <time> ns``
+     - Give an SCK period that is an even number of device clock periods, so each SCK edge is on a rising edge of the device clock.
+   * - spi_config_011
+     - ``key "<adjust>"<location> moves the launch to edge <n>, ...``, or ``moves the setup capture`` or ``the hold capture``, and the edge it passes
+     - Keep the edge in its range (see :doc:`spi_config`); check it with ``stacv visualize edges``.
+   * - spi_config_012
+     - ``key "part"<location> names <file>, which has no [[interface]] with if_standard "SPI mode <mode>" and if_role "peripheral"``
+     - Give the part's SPI interface the mode and the peripheral role, or correct the mode.
+   * - spi_config_013
+     - ``key "part"<location> names <file>, which has more than one [[interface]] with ...: <names>``
+     - Keep one SPI interface of the mode in the part file.
+
 Interface standards
 -------------------
 
@@ -358,6 +410,10 @@ The message starts with the port: ``ERROR: [<identifier>] port <name> <message>`
    * - generate_011
      - ``launch edge <n> at <time> is not at an edge of <clock>; the datasheet gives the clock to out from the clock edge the data is launched with``, or ``setup launch edge <n> is at a <rising or falling> edge of <clock> and hold launch edge <n> at a <falling or rising> edge; the datasheet gives the clock to out from one edge``, for an SDR-SS-O port by ``stacv generate datasheet``
      - Launch the data at an edge of the clock the device forwards, the same kind of edge for setup and hold.
+   * - generate_012
+     - ``<file> is an interface file, not an interface configuration file; ...``, by ``stacv generate interface``.
+       The message starts with the file, not a port.
+     - Give an interface configuration file, such as ``spi_config.toml``.
 
 Creating templates
 ------------------

@@ -28,13 +28,19 @@ Build and check
 From the repository root, with Vivado on the PATH (or ``VIVADO_SETTINGS`` naming its ``settings64.sh``)::
 
    bin/vivado_loop example/texas_instruments/DAC39RF20/design/design.tcl \
-       --xdc <interface constraints> --report-tcl <report script> --interface <interface.toml>
+       --xdc <interface constraints> --report-tcl <report script> \
+       --interface example/texas_instruments/DAC39RF20/spi_config.toml
+
+with the constraints and the report script generated from ``spi_config.toml`` in its folder::
+
+   stacv generate xdc spi_config.toml --output if_dac39rf20.xdc
+   stacv generate report_tcl spi_config.toml --output if_dac39rf20_stacv_report.tcl
 
 Without the options it only builds the design.  The build goes to ``design/build/``.
 
-With ``--interface``, the report script runs in the interface file's folder, so its relative
-``timing_reports`` paths mean the same to Vivado as to ``stacv check``: generate the report script
-from that folder.  The report folders are created before Vivado runs.
+With ``--interface``, the report script runs in the folder of the interface file, or of the SPI
+configuration, so its relative report paths mean the same to Vivado as to ``stacv check``: generate
+the report script from that folder.  The report folders are created before Vivado runs.
 
 Simulate
 --------

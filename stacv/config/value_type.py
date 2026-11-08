@@ -59,6 +59,18 @@ class NumberType():
         return isinstance(value, (int, float))
 
 
+class IntegerType():
+
+    def __init__(self):
+        self.description = 'a whole number'
+
+    def is_valid(self, value):
+        # A TOML true or false is a bool, which Python also counts as an int.
+        if isinstance(value, bool):
+            return False
+        return isinstance(value, int)
+
+
 class TableType():
 
     def __init__(self):
@@ -72,4 +84,5 @@ ARRAY_OF_TABLES = ArrayOfTablesType()
 LIST_OF_STRINGS = ListOfStringsType()
 STRING = StringType()
 NUMBER = NumberType()
+INTEGER = IntegerType()
 TABLE = TableType()

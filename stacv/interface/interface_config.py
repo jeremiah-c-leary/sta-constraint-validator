@@ -18,6 +18,8 @@ from stacv.methodology import methodology_factory
 from stacv.output import number_format
 from stacv.rules import edge_times
 from stacv.rules import requirements
+from stacv.spi import spi_config
+from stacv.spi import spi_interface
 from stacv.interface import clock
 from stacv.interface import clock_pin
 from stacv.interface import clock_generator
@@ -63,7 +65,17 @@ def resolve_part_and_traces(oInterface, sInterfaceFile):
 def read_interface_config_for_drawing(sInterfaceFile):
     # Errors in the edges can still be drawn, so they are kept on each port instead of raised.
     dConfig = read_file(sInterfaceFile)
+    if spi_config.is_interface_configuration(dConfig):
+        return create_interface_from_configuration(sInterfaceFile)
     return create_interface_config(dConfig, sInterfaceFile)
+
+
+def create_interface_from_configuration(sConfigFile):
+    # An interface configuration file is expanded into an interface file, so every command reads it the same way.
+    oSpiConfig = spi_config.read_spi_config(sConfigFile)
+    oInterface = create_interface_config(spi_interface.build_interface_dictionary(oSpiConfig), sConfigFile)
+    oInterface.edges_description = spi_config.describe_edges(oSpiConfig)
+    return oInterface
 
 
 def raise_first_edge_error(oInterface):

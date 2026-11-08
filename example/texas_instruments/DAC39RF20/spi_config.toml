@@ -1,0 +1,57 @@
+# SPI configuration for the DAC39RF20 start-up design.
+#
+# stacv generates the interface file, the constraints and the report script
+# from this file before each run.  Only this file, the part file and the
+# traces file are edited.
+#
+# SPI mode 0:  SCK idles low, data changes on the falling edge of SCK and is
+#              sampled on the rising edge.
+#
+# Edges:       each signal is launched and captured on the edges SPI mode 0
+#              defines.  When the design launches a signal on another device
+#              clock edge, the adjust keys move it: +1 is one edge later, -1
+#              one edge earlier, so +2 is one device clock period.  Check the
+#              result with:  stacv visualize edges spi_config.toml
+#
+# Periods are in nanoseconds.  Paths are relative to this file.
+
+interface = "spi"
+name      = "DAC_SPI"
+mode      = 0
+role      = "controller"
+
+part    = "part.toml"
+traces  = "traces.toml"
+
+timing_reports_dir = "design/build/timing_reports"
+
+# The device clock the SPI logic runs on.
+[device_clock]
+name   = "sys_clk"
+period = 10.0
+
+# SCK, the SPI clock: generated in the device by a register and forwarded to the part.
+[sck]
+port     = "dac_sclk"
+register = "u_spi/sclk_q_reg"
+period   = 80.0
+
+# COPI: data from the device into the part.
+[copi]
+port     = "dac_sdi"
+register = "u_spi/sdi_q_reg"
+
+# CIPO: data from the part into the device.
+[cipo]
+port     = "dac_sdo"
+register = "u_spi/rx_shift_reg[0]"
+
+# CS: selects the part.  Timed to the first and last rising edges of SCK.
+# This design drops CS with the first COPI bit, 8 edges after the mode 0
+# default, and raises it half an SCK period after the last falling edge,
+# 8 edges after the default.
+[cs]
+port         = "dac_scs_n"
+register     = "u_spi/scs_n_q_reg"
+setup_adjust = 8
+hold_adjust  = 8

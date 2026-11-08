@@ -14,6 +14,7 @@ Welcome to sta-constraint-validator's documentation!
    methodology
    standards
    spi
+   spi_config
    create
    interface
    traces

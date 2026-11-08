@@ -9,7 +9,9 @@ from stacv import __main__
 
 sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sExampleDir = os.path.join(sProjectDir, 'example', 'spi_template')
-FILE_NAMES = ['interface.toml', 'part.toml', 'traces.toml']
+FILE_NAMES = ['spi_config.toml', 'part.toml', 'traces.toml']
+# The names a user fills in, in the order the SPI configuration asks for them.
+DESIGN_NAMES = ['device_clk', 'O_SPI_SCK', 'q_spi_sck_reg', 'O_SPI_COPI', 'q_spi_copi_reg', 'I_SPI_CIPO', 'q_spi_cipo_reg', 'O_SPI_CS', 'q_spi_cs_reg']
 
 
 class SpiTemplateTestCase(unittest.TestCase):
@@ -49,6 +51,19 @@ class SpiTemplateTestCase(unittest.TestCase):
         with open(os.path.join(self.sDirectory, 'part.toml'), 'w') as oFile:
             oFile.write(sText)
 
+    def fill_in_design(self):
+        # The names a user fills in from the design.
+        sText = self.read_file('spi_config.toml')
+        for sName in DESIGN_NAMES:
+            sText = sText.replace('"FROM_DESIGN"', f'"{sName}"', 1)
+        with open(os.path.join(self.sDirectory, 'spi_config.toml'), 'w') as oFile:
+            oFile.write(sText)
+
+    def generate_interface(self):
+        # The interface file the SPI configuration expands to.
+        self.assertEqual(0, self.run_in_directory(['generate', 'interface', 'spi_config.toml']))
+        return self.oStdout.getvalue()
+
     def run_in_directory(self, lArguments):
         sWorkingDir = os.getcwd()
         self.addCleanup(os.chdir, sWorkingDir)
@@ -86,13 +101,14 @@ class TestSpiTemplate(SpiTemplateTestCase):
                 self.addCleanup(oDirectory.cleanup)
                 self.sDirectory = oDirectory.name
                 self.assertEqual(0, self.create_spi(iMode))
-                sInterface = self.read_file('interface.toml')
+                self.fill_in_design()
+                sInterface = self.generate_interface()
                 sPart = self.read_file('part.toml')
                 self.assertIn(f'if_standard = "SPI mode {iMode}"', sInterface)
                 self.assertIn(f'idle = "{sIdle}"', sInterface)
                 self.assertIn(f'launch_clock = {{name = "{sCopiLaunch}}}', sInterface)
-                self.assertIn(f'capture_clock = {{name = "spi_sck", setup_edge = {sCopiCapture}}}', sInterface)
-                self.assertIn(f'launch_clock = {{name = "spi_sck", {sCipoLaunch}}}', sInterface)
+                self.assertIn(f'capture_clock = {{name = "O_SPI_SCK_clk", setup_edge = {sCopiCapture}}}', sInterface)
+                self.assertIn(f'launch_clock = {{name = "O_SPI_SCK_clk", {sCipoLaunch}}}', sInterface)
                 self.assertIn(f'capture_clock = {{name = "device_clk", setup_edge = {sCipoCapture}}}', sInterface)
                 self.assertEqual(2, sPart.count(f'capture_edge = "{sCaptureEdge}"'))
                 self.assertIn(f'launch_edge = "{sLaunchEdge}"', sPart)
@@ -104,29 +120,39 @@ class TestSpiTemplate(SpiTemplateTestCase):
                 self.addCleanup(oDirectory.cleanup)
                 self.sDirectory = oDirectory.name
                 self.assertEqual(0, self.create_spi(iMode))
+                self.fill_in_design()
                 self.fill_in_part()
-                self.assertEqual(0, self.run_in_directory(['generate', 'xdc', 'interface.toml']))
+                self.assertEqual(0, self.run_in_directory(['generate', 'xdc', 'spi_config.toml']))
                 self.assertEqual('', self.oStderr.getvalue())
 
     def test_the_clock_periods_set_the_edges(self):
         # SCK is 80 ns, ten 8 ns device clock periods, so each SCK edge is ten device clock edges apart.
         self.assertEqual(0, self.create_spi(0, ['--clock-period', '8', '--sck-period', '80']))
-        sInterface = self.read_file('interface.toml')
-        self.assertIn('period = 8.000', sInterface)
-        self.assertIn('period = 80.000', sInterface)
+        sConfig = self.read_file('spi_config.toml')
+        self.assertIn('period = 8.0', sConfig)
+        self.assertIn('period   = 80.0', sConfig)
+        self.assertIn('# Created by:  stacv create template spi --wires 4 --mode 0 --type controller --clock-period 8 --sck-period 80', sConfig)
+        self.fill_in_design()
+        sInterface = self.generate_interface()
         self.assertIn('launch_clock = {name = "device_clk", setup_edge = 10, hold_edge = 10}', sInterface)
         self.assertIn('capture_clock = {name = "device_clk", setup_edge = "U", hold_edge = "A"}', sInterface)
-        self.assertIn('# Created by:  stacv create template spi --wires 4 --mode 0 --type controller --clock-period 8 --sck-period 80', sInterface)
 
     def test_the_timing_reports_are_named_by_interface_and_signal(self):
         self.assertEqual(0, self.create_spi(0))
-        sInterface = self.read_file('interface.toml')
+        self.fill_in_design()
+        sInterface = self.generate_interface()
         for sSignal in ['COPI', 'CS', 'CIPO']:
-            self.assertIn(f'    "timing_reports/SPI_INTERFACE_NAME.{sSignal}_timing.rpt",', sInterface)
+            self.assertIn(f'    "timing_reports/SPI.{sSignal}_timing.rpt",', sInterface)
+
+    def test_a_name_still_to_fill_in_is_an_error(self):
+        self.assertEqual(0, self.create_spi(0))
+        self.assertEqual(2, self.run_in_directory(['generate', 'xdc', 'spi_config.toml']))
+        self.assertEqual('ERROR: [spi_config_006] spi_config.toml key "name" in [device_clock] (line 36) is FROM_DESIGN; replace it with the name in your design\n', self.oStderr.getvalue())
 
     def test_a_value_still_to_fill_in_is_an_error(self):
         self.assertEqual(0, self.create_spi(0))
-        self.assertEqual(2, self.run_in_directory(['generate', 'xdc', 'interface.toml']))
+        self.fill_in_design()
+        self.assertEqual(2, self.run_in_directory(['generate', 'xdc', 'spi_config.toml']))
         self.assertEqual('ERROR: [part_config_011] part.toml key "max_frequency" in clock of pin COPI of interface SPI is FROM_DATASHEET; fill it in from the part\'s datasheet\n', self.oStderr.getvalue())
 
 

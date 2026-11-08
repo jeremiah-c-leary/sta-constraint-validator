@@ -34,34 +34,37 @@ The steps
 
       stacv create template spi --wires 4 --mode 1 --type controller --clock-period 10 --sck-period 40 --output spi
 
-   The launch and capture edges are worked out from the mode and the periods (see :doc:`create`).
+   They are the SPI configuration, ``spi_config.toml``, the part file and the traces file.
+   The launch and capture edges are worked out from the mode and the periods (see :doc:`create` and :doc:`spi_config`).
 
 #. Fill in the part's setup, hold, clock to out and fastest SCK from its datasheet, in ``part.toml``, or point ``part`` at a part file from a library that gives the SPI signals.
    stacv stops on each value still ``FROM_DATASHEET`` (part_config_011).
 #. Fill in the trace delays from the board, in ``traces.toml``, or leave ``{}`` to use the default delay.
-#. Rename the ports, clocks and registers to your design's, and ``SPI_INTERFACE_NAME`` everywhere it appears.
-   Keep each ``if_signal``: it links the files.
-#. Check the edges against the part's datasheet:
+#. Fill in the names in your design, the device clock, and the port and register of each signal, in ``spi_config.toml``.
+   stacv stops on each name still ``FROM_DESIGN`` (spi_config_006).
+#. Check the edges against the part's datasheet, and against when the design launches each signal; move them with the adjust keys:
 
    .. code-block:: text
 
-      stacv visualize edges interface.toml
+      stacv visualize edges spi_config.toml
 
 #. Generate the constraints and the report script, apply the constraints, and run the report script in Vivado (see :doc:`generate`).
 #. Check the timing reports, and look at the eye of each signal (see :doc:`eye`):
 
    .. code-block:: text
 
-      stacv check interface.toml
-      stacv visualize eye interface.toml
+      stacv check spi_config.toml
+      stacv visualize eye spi_config.toml
 
-#. Move a capture edge to centre an eye, if the slacks are uneven, and go round again.
+#. Move CIPO's capture edges with its adjust key to centre its eye, if the slacks are uneven, and go round again.
 #. Generate the datasheet of the interface, for whoever connects a part to the device (see :doc:`datasheet`).
 
-The DAC81404 example in ``example/texas_instruments/DAC81404`` is an SPI mode 1 interface timed this way, with a slower SCK for reads.
+The DAC39RF20 example in ``example/texas_instruments/DAC39RF20`` is an SPI mode 0 interface timed this way.
+The DAC81404 example in ``example/texas_instruments/DAC81404`` is an SPI mode 1 interface with a slower SCK for reads, which an SPI configuration cannot give yet, so it is timed with an interface file.
 
 Not supported yet
 -----------------
 
 * The device as the peripheral.
 * 3-wire SPI, with one data line, SDIO, in both directions.
+* A bus shared by several parts; each part is its own interface.

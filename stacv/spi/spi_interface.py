@@ -1,0 +1,167 @@
+'''
+Expands an SPI configuration into an interface file: the clocks, and a port for each signal with its methodology and
+edges, named as the design names them.
+
+Every command reads the interface built from these lines, and stacv generate interface writes them, so the file a
+user takes over is the interface stacv used.
+'''
+
+import os
+import tomllib
+
+from stacv.rules import edge_times
+from stacv.spi import spi_config
+
+DOCS_URL = 'https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source'
+WIRES = 4
+
+
+def build_interface_dictionary(oConfig):
+    return tomllib.loads('\n'.join(build_interface_lines(oConfig)))
+
+
+def build_interface_lines(oConfig):
+    lLines = []
+    lLines.extend(build_header(oConfig))
+    lLines.extend(build_top_level_keys(oConfig))
+    lLines.append('')
+    lLines.extend(build_device_clock(oConfig))
+    lLines.append('')
+    lLines.extend(build_sck_clock(oConfig))
+    lLines.append('')
+    lLines.extend(build_copi_port(oConfig))
+    lLines.append('')
+    lLines.extend(build_cs_port(oConfig))
+    lLines.append('')
+    lLines.extend(build_cipo_port(oConfig))
+    return lLines
+
+
+def build_header(oConfig):
+    sConfigFile = os.path.basename(oConfig.filename)
+    lLines = []
+    lLines.append(f'# stacv interface file for a {WIRES}-wire SPI interface, SPI mode {oConfig.mode}, with the device as the {oConfig.role}.')
+    lLines.append(f'# Generated from {sConfigFile} by:  stacv generate interface {sConfigFile}')
+    lLines.append('#')
+    lLines.append('# Keys are described in:')
+    lLines.append(f'# {DOCS_URL}/interface.rst')
+    lLines.append('#')
+    lLines.append(f'# Edges:  {spi_config.describe_edges(oConfig)}')
+    lLines.append('#')
+    lLines.append(f'# Paths are relative to the folder of {sConfigFile}.')
+    lLines.append('#')
+    lLines.append('# All periods are in nanoseconds.')
+    lLines.append('')
+    return lLines
+
+
+def build_top_level_keys(oConfig):
+    lLines = []
+    lLines.append(f'description = "SPI mode {oConfig.mode} interface, with the device as the {oConfig.role}"')
+    lLines.append(f'name = {quote(oConfig.name)}')
+    lLines.append(f'part = {quote(oConfig.part_as_written)}')
+    lLines.append(f'part_interface = {quote(spi_config.find_part_interface(oConfig))}')
+    lLines.append(f'traces = {quote(oConfig.traces_as_written)}')
+    lLines.append(f'if_standard = "{oConfig.standard.name}"')
+    lLines.append(f'if_role = "{oConfig.role}"')
+    return lLines
+
+
+def build_device_clock(oConfig):
+    lLines = []
+    lLines.append('# The device clock the SPI logic runs on.')
+    lLines.append('[[clock]]')
+    lLines.append(f'name = {quote(oConfig.device_clock.name)}')
+    lLines.append(f'period = {oConfig.device_clock.period:.3f}')
+    return lLines
+
+
+def build_sck_clock(oConfig):
+    lLines = []
+    lLines.append(f'# SCK, generated from {oConfig.device_clock.name} and forwarded to the part.')
+    lLines.append('[[clock]]')
+    lLines.append(f'name = {quote(find_sck_clock_name(oConfig))}')
+    lLines.append(f'port = {quote(oConfig.sck.port)}')
+    lLines.append(f'generator = {{source = {quote(oConfig.sck.register)}, master_pin = "C", target_pin = "Q", master_clock = {quote(oConfig.device_clock.name)}}}')
+    lLines.append(f'period = {oConfig.sck.period:.3f}')
+    lLines.append(f'idle = "{oConfig.standard.idle}"')
+    lLines.append('if_signal = "SCK"')
+    return lLines
+
+
+def find_sck_clock_name(oConfig):
+    # SCK is a clock named after its port, as the port is the name the user knows it by.
+    return f'{oConfig.sck.port}_clk'
+
+
+def build_copi_port(oConfig):
+    oEdges = oConfig.edges
+    lLines = []
+    lLines.append(f'# COPI changes on the {describe_change_edge(oConfig)} edge of SCK, and the part samples it on the next {describe_sample_edge(oConfig)} edge.')
+    lLines.append('[[port]]')
+    lLines.append(f'name = {quote(oConfig.copi.port)}')
+    lLines.append('methodology = "SDR-SS-O"')
+    lLines.append('if_signal = "COPI"')
+    lLines.append(f'launch_clock = {{name = {quote(oConfig.device_clock.name)}, setup_edge = {oEdges.copi_launch}, hold_edge = {oEdges.copi_launch}}}')
+    lLines.append(f'capture_clock = {{name = {quote(find_sck_clock_name(oConfig))}, setup_edge = "{oEdges.sck_setup_capture}", hold_edge = "{oEdges.sck_hold_capture}"}}')
+    lLines.extend(build_registers_and_reports(oConfig, oConfig.copi.register, 'COPI'))
+    return lLines
+
+
+def build_cs_port(oConfig):
+    oEdges = oConfig.edges
+    lLines = []
+    lLines.append(f'# CS is timed to the first and last {describe_sample_edge(oConfig)} edges of SCK.')
+    lLines.append('[[port]]')
+    lLines.append(f'name = {quote(oConfig.cs.port)}')
+    lLines.append('methodology = "SDR-SS-O-FLC"')
+    lLines.append('if_signal = "CS"')
+    lLines.append(f'launch_clock = {{name = {quote(oConfig.device_clock.name)}, setup_edge = {oEdges.cs_setup_launch}, hold_edge = {oEdges.cs_hold_launch}}}')
+    lLines.append(f'capture_clock = {{name = {quote(find_sck_clock_name(oConfig))}, setup_edge = "{oEdges.sck_setup_capture}", hold_edge = "{oEdges.sck_hold_capture}"}}')
+    lLines.extend(build_registers_and_reports(oConfig, oConfig.cs.register, 'CS'))
+    return lLines
+
+
+def build_cipo_port(oConfig):
+    oEdges = oConfig.edges
+    sSetupCapture = edge_times.convert_edge_number_to_letter(oEdges.cipo_setup_capture)
+    sHoldCapture = edge_times.convert_edge_number_to_letter(oEdges.cipo_hold_capture)
+    lLines = []
+    lLines.append(f'# The part changes CIPO on the {describe_change_edge(oConfig)} edge of SCK, and the device captures it on {oConfig.device_clock.name}.')
+    lLines.append('[[port]]')
+    lLines.append(f'name = {quote(oConfig.cipo.port)}')
+    lLines.append('methodology = "SDR-SS-RT-DI"')
+    lLines.append('if_signal = "CIPO"')
+    lLines.append(f'launch_clock = {{name = {quote(find_sck_clock_name(oConfig))}, setup_edge = {oEdges.cipo_launch}, hold_edge = {oEdges.cipo_launch}}}')
+    lLines.append(f'capture_clock = {{name = {quote(oConfig.device_clock.name)}, setup_edge = "{sSetupCapture}", hold_edge = "{sHoldCapture}"}}')
+    lLines.extend(build_registers_and_reports(oConfig, oConfig.cipo.register, 'CIPO'))
+    return lLines
+
+
+def build_registers_and_reports(oConfig, sRegister, sSignal):
+    lLines = []
+    lLines.append(f'registers = [{quote(sRegister)}]')
+    lLines.append('timing_reports = [')
+    lLines.append(f'    {quote(build_timing_report_path(oConfig, sSignal))},')
+    lLines.append(']')
+    return lLines
+
+
+def build_timing_report_path(oConfig, sSignal):
+    # Each report is named by the interface and the signal, in the folder the user gives.
+    sDirectory = oConfig.timing_reports_dir.rstrip('/')
+    return f'{sDirectory}/{oConfig.name}.{sSignal}_timing.rpt'
+
+
+def describe_change_edge(oConfig):
+    return oConfig.standard.change_edge.lower()
+
+
+def describe_sample_edge(oConfig):
+    return oConfig.standard.sample_edge.lower()
+
+
+def quote(sValue):
+    # A TOML basic string, with its backslashes and quotes escaped.
+    sEscaped = sValue.replace('\\', '\\\\').replace('"', '\\"')
+    return f'"{sEscaped}"'

@@ -10,16 +10,19 @@ The constraints, the visualizations and the checks all come from one interface f
    stacv generate xdc interface.toml --output constraints.xdc
    stacv generate report_tcl interface.toml --output report.tcl
    stacv generate datasheet interface.toml --output datasheet.toml
+   stacv generate interface spi_config.toml --output interface.toml
 
 The ``xdc`` target writes a Vivado constraints file for the interface.
 The ``report_tcl`` target writes a Vivado script that writes the timing reports ``stacv check`` reads.
 The ``datasheet`` target writes the timing of each port at the device's pins, from the timing reports (see :doc:`datasheet`).
+The ``interface`` target writes the interface file an interface configuration file expands to (see :doc:`spi_config`).
+Every target reads an interface configuration file, such as ``spi_config.toml``, in place of an interface file.
 Each is written to standard output, or to the file named by ``--output``.
 An ``sdc`` target is planned for other vendors.
 
 The intended process is:
 
-#. Create the interface, traces and part files from their templates with ``stacv create template``, and fill them in.
+#. Create the interface, traces and part files from their templates with ``stacv create template``, and fill them in; for SPI, the SPI configuration, traces and part files.
 #. Confirm the launch and capture edges with ``stacv visualize edges``.
 #. Generate the constraints and apply them in the timing tool.
 #. Generate the report script and source it in the timing tool.

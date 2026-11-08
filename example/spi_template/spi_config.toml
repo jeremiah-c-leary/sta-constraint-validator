@@ -1,0 +1,62 @@
+# stacv SPI configuration file for a 4-wire SPI interface, SPI mode 1, with the device as the controller.
+# Created by:  stacv create template spi --wires 4 --mode 1 --type controller --clock-period 10 --sck-period 40
+#
+# Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/spi_config.rst
+#
+# stacv generates the interface file, the constraints and the report script
+# from this file.  Only this file, the part file and the traces file are edited.
+#
+# Replace each FROM_DESIGN with the name in your design; stacv stops on it until then.
+# Registers are named as Vivado names them:  the hierarchy separated by /, with
+# _reg added, and a bit of a bus in brackets, such as u_spi/rx_shift_reg[0].
+#
+# SPI mode 1:  SCK idles low, data changes on the rising edge and is sampled on the falling edge.
+#
+# Edges:  each signal is launched and captured on the edges SPI mode 1
+#         defines.  When the design launches a signal on another device
+#         clock edge, the adjust keys move it: +1 is one edge later, -1
+#         one edge earlier, so +2 is one device clock period.  Check the
+#         result with:  stacv visualize edges spi_config.toml
+#
+# Periods are in nanoseconds.  Paths are relative to this file.
+
+interface = "spi"
+name      = "SPI"
+mode      = 1
+role      = "controller"
+
+part    = "part.toml"
+traces  = "traces.toml"
+
+timing_reports_dir = "timing_reports"
+
+# The device clock the SPI logic runs on.
+[device_clock]
+name   = "FROM_DESIGN"
+period = 10.0
+
+# SCK, the SPI clock: generated in the device by a register and forwarded to the part.
+[sck]
+port     = "FROM_DESIGN"
+register = "FROM_DESIGN"
+period   = 40.0
+
+# COPI: data from the device into the part.
+[copi]
+port     = "FROM_DESIGN"
+register = "FROM_DESIGN"
+adjust   = 0
+
+# CIPO: data from the part into the device.
+[cipo]
+port     = "FROM_DESIGN"
+register = "FROM_DESIGN"
+adjust   = 0
+
+# CS: selects the part.  Timed to the first and last falling edges of SCK.
+[cs]
+port         = "FROM_DESIGN"
+register     = "FROM_DESIGN"
+setup_adjust = 0
+hold_adjust  = 0

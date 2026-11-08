@@ -1,5 +1,6 @@
 import os
 
+from stacv.config import config_error
 from stacv.interface import interface_config
 from stacv.interface import part_coverage
 from stacv.generate import datasheet_file
@@ -7,6 +8,8 @@ from stacv.generate import datasheet_pin
 from stacv.generate import report_tcl_file
 from stacv.generate import xdc_file
 from stacv.part import part
+from stacv.spi import spi_config
+from stacv.spi import spi_interface
 from stacv.standards import interface_standard
 from stacv.timing_report import timing_report_file
 from stacv.timing_report.xilinx import vivado
@@ -14,6 +17,10 @@ from stacv.traces import traces
 
 
 def execute(oCmdLine, lArgv):
+    if oCmdLine.target == 'interface':
+        lLines = generate_interface_file(oCmdLine.interface_file)
+        write_output(oCmdLine.output, lLines, 'interface file')
+        return 0
     oInterface = interface_config.read_interface_config(oCmdLine.interface_file)
     if oCmdLine.target == 'report_tcl':
         lLines = report_tcl_file.generate_file(oCmdLine.interface_file, oInterface, lArgv)
@@ -26,6 +33,14 @@ def execute(oCmdLine, lArgv):
     lLines = generate_xdc_file(oCmdLine.interface_file, oInterface)
     write_output(oCmdLine.output, lLines, 'XDC file')
     return 0
+
+
+def generate_interface_file(sConfigFile):
+    # Only an interface configuration file expands to an interface file; an interface file is one already.
+    dConfig = interface_config.read_file(sConfigFile)
+    if not spi_config.is_interface_configuration(dConfig):
+        raise config_error.ConfigError('generate_012', sConfigFile, 'is an interface file, not an interface configuration file; only an interface configuration file, such as spi_config.toml, generates an interface file')
+    return spi_interface.build_interface_lines(spi_config.read_spi_config(sConfigFile))
 
 
 def generate_xdc_file(sInterfaceFile, oInterface):

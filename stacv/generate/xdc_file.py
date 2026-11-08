@@ -61,6 +61,8 @@ def build_references(sInterfaceFile, oInterface, oPart):
     lLines.append(f'# Datasheet:  {oPart.datasheet.name}')
     lLines.append(f'# Revision:   {oPart.datasheet.version}')
     lLines.append(f'# URL:        {oPart.datasheet.url}')
+    if oInterface.edges_description is not None:
+        lLines.append(f'# Edges:      {oInterface.edges_description}')
     lLines.append('#')
     return lLines
 
