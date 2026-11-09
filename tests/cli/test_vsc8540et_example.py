@@ -82,10 +82,12 @@ class TestPartInterfaceSelection(unittest.TestCase):
             self.sPartText = oFile.read()
         with open(os.path.join(sProjectDir, sExampleDir, 'traces.toml')) as oFile:
             self.sTracesText = oFile.read()
+        with open(os.path.join(sProjectDir, sExampleDir, 'mii_traces.toml')) as oFile:
+            self.sMiiTracesText = oFile.read()
         self.sInterfaceText = self.sInterfaceText.replace('$PROJ_DIR', self.sDirectory)
 
     def run_generate(self):
-        for sName, sText in [('mii.toml', self.sInterfaceText), ('vsc8540et.toml', self.sPartText), ('traces.toml', self.sTracesText)]:
+        for sName, sText in [('mii.toml', self.sInterfaceText), ('vsc8540et.toml', self.sPartText), ('traces.toml', self.sTracesText), ('mii_traces.toml', self.sMiiTracesText)]:
             write_file(os.path.join(self.sDirectory, sName), sText)
         self.oStdout = io.StringIO()
         self.oStderr = io.StringIO()
@@ -114,8 +116,8 @@ class TestPartInterfaceSelection(unittest.TestCase):
         self.assertIn('timing in pin RXD[3:0] of interface Compensated RGMII MAC Interface must give cko_max and cko_min, or valid_before and valid_after', self.oStderr.getvalue())
 
     def test_a_trace_from_a_source_needs_a_delay(self):
-        # The shared traces file has no trace from a source since the RMII traces have their own file, so one is added.
-        self.sTracesText += '\n[[trace]]\nname = "rmii_clk_to_part"\nsource = "phy_rmii_clkout"\n'
+        # The MII traces have no trace from a source, so one is added.
+        self.sMiiTracesText += '\n[[trace]]\nname = "rmii_clk_to_part"\nsource = "phy_rmii_clkout"\n'
         self.assertEqual(2, self.run_generate())
         self.assertIn('trace rmii_clk_to_part has neither source_to_device nor source_to_part', self.oStderr.getvalue())
 

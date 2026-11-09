@@ -9,21 +9,26 @@ description = "VSC8540ET MII MAC interface"
 name = "VSC8540_MII"
 part = "vsc8540et.toml"
 part_interface = "MII"
-traces = "traces.toml"
+traces = "mii_traces.toml"
+if_standard = "MII"
+if_role = "MAC"
 
 [[clock]]
 name = "mii_tx_clk"
 period = 40.000
 port = "I_MII_TX_CLK"
+if_signal = "TX_CLK"
 
 [[clock]]
 name = "mii_rx_clk"
 period = 40.000
 port = "I_MII_RX_CLK"
+if_signal = "RX_CLK"
 
 [[port]]
 name = "O_MII_TXD[3:0]"
 methodology = "SDR-SS-RT-DO"
+if_signal = "TXD"
 launch_clock = {name = "mii_tx_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "mii_tx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_txd_reg[*]"]
@@ -34,6 +39,7 @@ timing_reports = [
 [[port]]
 name = "O_MII_TX_EN"
 methodology = "SDR-SS-RT-DO"
+if_signal = "TX_EN"
 launch_clock = {name = "mii_tx_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "mii_tx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_tx_en_reg"]
@@ -44,6 +50,7 @@ timing_reports = [
 [[port]]
 name = "O_MII_TX_ER"
 methodology = "SDR-SS-RT-DO"
+if_signal = "TX_ER"
 launch_clock = {name = "mii_tx_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "mii_tx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_tx_er_reg"]
@@ -54,6 +61,7 @@ timing_reports = [
 [[port]]
 name = "I_MII_RXD[3:0]"
 methodology = "SDR-SS-I"
+if_signal = "RXD"
 launch_clock = {name = "mii_rx_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "mii_rx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_rxd_reg[*]"]
@@ -64,6 +72,7 @@ timing_reports = [
 [[port]]
 name = "I_MII_RX_DV"
 methodology = "SDR-SS-I"
+if_signal = "RX_DV"
 launch_clock = {name = "mii_rx_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "mii_rx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_rx_dv_reg"]
@@ -74,6 +83,7 @@ timing_reports = [
 [[port]]
 name = "I_MII_RX_ER"
 methodology = "SDR-SS-I"
+if_signal = "RX_ER"
 launch_clock = {name = "mii_rx_clk", setup_edge = 0, hold_edge = 0}
 capture_clock = {name = "mii_rx_clk", setup_edge = 2, hold_edge = 0}
 registers = ["q_mii_rx_er_reg"]

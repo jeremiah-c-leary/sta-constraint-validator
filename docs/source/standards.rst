@@ -117,9 +117,33 @@ RX_ER     data     PHY                  Yes
 ========  =======  ===================  ===========
 
 Every signal changes and is sampled on the rising edge of the 50 MHz REF_CLK.
-REF_CLK may come from the PHY, the MAC or an oscillator, and reaches each end on a trace of its own, from its ``source``; those traces name their pins, so no trace gives REF_CLK, but the device's clock and the part's clock pin do.
+REF_CLK may come from the PHY, the MAC or an oscillator, and reaches each end on a trace of its own, from its ``source``; each of those traces names its pin, or gives REF_CLK and runs to one end (see :doc:`traces`).
 An optional signal is timed when an interface has it, and may be left out.
 The VSC8540ET example's ``rmii.toml`` follows RMII, with the RMII traces in ``rmii_traces.toml``.
+
+MII
+---
+
+The standard is ``MII``, and the signal names are IEEE 802.3 Clause 22's.
+The roles are ``MAC`` and ``PHY``.
+
+========  =======  ===================  ===========
+Signal    Kind     Driven by            Optional
+========  =======  ===================  ===========
+TX_CLK    clock    PHY                  No
+TXD       data     MAC                  No
+TX_EN     data     MAC                  No
+TX_ER     data     MAC                  Yes
+RX_CLK    clock    PHY                  No
+RXD       data     PHY                  No
+RX_DV     data     PHY                  No
+RX_ER     data     PHY                  Yes
+========  =======  ===================  ===========
+
+The PHY drives both clocks, 25 MHz at 100 Mbit/s and 2.5 MHz at 10 Mbit/s.
+The MAC launches TXD, TX_EN and TX_ER on the rising edge of the TX_CLK it receives, and the PHY samples them on the next rising edge; the PHY launches RXD, RX_DV and RX_ER on the rising edge of RX_CLK, and the MAC samples them on the next.
+CRS and COL are asynchronous, so they are not timed and are not signals of the standard.
+The VSC8540ET example's ``mii.toml`` follows MII, with the MII traces in ``mii_traces.toml``.
 
 Checks
 ------
