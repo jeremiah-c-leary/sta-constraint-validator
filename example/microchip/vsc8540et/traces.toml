@@ -70,56 +70,6 @@ device_pin = "I_MII_RX_ER"
 part_pin = "RX_ER"
 part_to_device = {max_delay = 1.2, min_delay = 0.8}
 
-# RMII: the PHY's RMII_CLKOUT drives the 50 MHz clock back into its own RMII_CLKIN and into the device (Mode 2)
-
-[[trace]]
-name = "rmii_clk_to_device"
-source = "phy_rmii_clkout"
-device_pin = "I_RMII_REF_CLK"
-source_to_device = {max_delay = 1.4, min_delay = 1.0}
-
-[[trace]]
-name = "rmii_clk_to_part"
-source = "phy_rmii_clkout"
-part_pin = "RMII_CLKIN"
-source_to_part = {max_delay = 0.6, min_delay = 0.4}
-
-[[trace]]
-name = "rmii_txd"
-device_pin = "O_RMII_TXD[1:0]"
-part_pin = "TXD[1:0]"
-device_to_part = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "rmii_tx_en"
-device_pin = "O_RMII_TX_EN"
-part_pin = "TX_EN"
-device_to_part = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "rmii_tx_er"
-device_pin = "O_RMII_TX_ER"
-part_pin = "TX_ER"
-device_to_part = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "rmii_rxd"
-device_pin = "I_RMII_RXD[1:0]"
-part_pin = "RXD[1:0]"
-part_to_device = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "rmii_crs_dv"
-device_pin = "I_RMII_CRS_DV"
-part_pin = "CRS_DV"
-part_to_device = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "rmii_rx_er"
-device_pin = "I_RMII_RX_ER"
-part_pin = "RX_ER"
-part_to_device = {max_delay = 1.2, min_delay = 0.8}
-
 # Uncompensated RGMII: the board adds more than 1.5 ns to each clock (Table 7-25, footnote 1)
 
 [[trace]]

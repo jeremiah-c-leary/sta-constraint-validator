@@ -156,7 +156,16 @@ def check_trace_signals(oStandard, oInterface, oTraceList):
         if oTrace.if_signal in lSignals:
             raise_error(5, oInterface.traces, f'trace {oTrace.name} gives if_signal {oTrace.if_signal}, which another trace gives; a signal is carried by one trace')
         lSignals.append(oTrace.if_signal)
-    check_every_signal_is_carried(oStandard, lSignals, oInterface.traces, 'the traces file has no trace')
+    check_every_signal_is_carried(build_standard_without_source_clocks(oStandard), lSignals, oInterface.traces, 'the traces file has no trace')
+
+
+def build_standard_without_source_clocks(oStandard):
+    # A clock from a source reaches each end on a trace that names its pin, so no trace gives its signal.
+    lSignals = []
+    for oSignal in oStandard.signals:
+        if not oSignal.is_from_source():
+            lSignals.append(oSignal)
+    return standards.Standard(oStandard.name, oStandard.roles, lSignals, oStandard.idle, oStandard.change_edge, oStandard.sample_edge)
 
 
 def check_every_signal_is_carried(oStandard, lSignals, sFilename, sDescription):
@@ -165,6 +174,8 @@ def check_every_signal_is_carried(oStandard, lSignals, sFilename, sDescription):
     for sSignal in lSignals:
         lNames.append(oStandard.get_signal(sSignal).name)
     for oSignal in oStandard.signals:
+        if oSignal.optional:
+            continue
         if oSignal.name not in lNames:
             raise_error(9, sFilename, f'{sDescription} with if_signal {oSignal.name}, a signal of {oStandard.name}')
 
@@ -252,7 +263,7 @@ def check_pin_direction(oStandard, oInterface, oPartInterface, oPin):
 
 def check_edges(oStandard, sInterfaceFile, oInterface, oPartInterface):
     for oClock in oInterface.clocks:
-        if oClock.if_signal is not None and oClock.idle is not None and oClock.idle != oStandard.idle:
+        if oClock.if_signal is not None and oClock.idle is not None and oStandard.idle is not None and oClock.idle != oStandard.idle:
             raise_error(12, sInterfaceFile, f'clock {oClock.name} idles {oClock.idle}, but the clock of {oStandard.name} idles {oStandard.idle}')
     for oPort in oInterface.get_analyzed_ports():
         if oPort.if_signal is not None:

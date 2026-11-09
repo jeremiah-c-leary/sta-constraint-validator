@@ -10,6 +10,10 @@ A signal that can repeat, such as the chip select of a bus with several parts, i
 
 CONTROLLER = 'controller'
 PERIPHERAL = 'peripheral'
+MAC = 'MAC'
+PHY = 'PHY'
+# A clock from a source, such as an oscillator or the PHY's own clock output, reaches each end on a trace of its own.
+SOURCE = 'source'
 RISING = 'Rising'
 FALLING = 'Falling'
 CLOCK = 'clock'
@@ -19,14 +23,20 @@ SIGNAL_NUMBER_SEPARATOR = '.'
 
 class Signal():
     '''
-    A signal of a standard: whether it is a clock or data, the role that drives it, and whether it can repeat.
+    A signal of a standard: whether it is a clock or data, the role that drives it, whether it can repeat, and whether
+    an interface can leave it out.
     '''
 
-    def __init__(self, sName, sKind, sDriver, bRepeats):
+    def __init__(self, sName, sKind, sDriver, bRepeats, bOptional=False):
         self.name = sName
         self.kind = sKind
         self.driver = sDriver
         self.repeats = bRepeats
+        self.optional = bOptional
+
+    def is_from_source(self):
+        # Its traces run from the source to each end, and name their pins, so no trace gives the signal.
+        return self.driver == SOURCE
 
 
 class Standard():
@@ -90,11 +100,32 @@ def build_spi_mode(iMode):
     return Standard(f'SPI mode {iMode}', [CONTROLLER, PERIPHERAL], build_spi_signals(), sIdle, sLeadingEdge, sTrailingEdge)
 
 
+def build_rmii_signals():
+    # The signal names of the RMII specification, revision 1.2.  REF_CLK may come from the PHY, the MAC or an
+    # oscillator; TX_ER and RX_ER are optional.
+    lSignals = []
+    lSignals.append(Signal('REF_CLK', CLOCK, SOURCE, False))
+    lSignals.append(Signal('TXD', DATA, MAC, False))
+    lSignals.append(Signal('TX_EN', DATA, MAC, False))
+    lSignals.append(Signal('TX_ER', DATA, MAC, False, True))
+    lSignals.append(Signal('RXD', DATA, PHY, False))
+    lSignals.append(Signal('CRS_DV', DATA, PHY, False))
+    lSignals.append(Signal('RX_ER', DATA, PHY, False, True))
+    return lSignals
+
+
+def build_rmii():
+    # Every signal changes and is sampled on the rising edge of REF_CLK, which runs all the time.
+    return Standard('RMII', [MAC, PHY], build_rmii_signals(), None, RISING, RISING)
+
+
 def build_standards():
     dStandards = {}
     for iMode in range(4):
         oStandard = build_spi_mode(iMode)
         dStandards[oStandard.name] = oStandard
+    oRmii = build_rmii()
+    dStandards[oRmii.name] = oRmii
     return dStandards
 
 

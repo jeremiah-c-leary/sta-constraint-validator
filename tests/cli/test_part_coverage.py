@@ -8,7 +8,8 @@ from unittest import mock
 from stacv import __main__
 
 sProjectDir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-sExampleDir = os.path.join(sProjectDir, 'example', 'microchip', 'vsc8540et')
+# The VSC8540ET's files from before its RMII interface was linked by signal; see the fixture's README.
+sExampleDir = os.path.join(sProjectDir, 'tests', 'fixtures', 'vsc8540et')
 
 TX_EN_PORT = '''[[port]]
 name = "O_RMII_TX_EN"

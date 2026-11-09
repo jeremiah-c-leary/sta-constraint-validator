@@ -4,8 +4,9 @@ from tests.rules import rule_test_case
 
 # The rules of the methodologies whose clock comes from the part or a clock source, and of double data rate,
 # are tested on the VSC8540ET example: its timing reports are a Vivado run of the constraints stacv generates for it.
-sExampleDir = os.path.join(rule_test_case.sProjectDir, 'example', 'microchip', 'vsc8540et')
-sTimingReportDir = os.path.join(sExampleDir, 'timing_reports')
+# The VSC8540ET's files from before its RMII interface was linked by signal; see the fixture's README.
+sExampleDir = os.path.join(rule_test_case.sProjectDir, 'tests', 'fixtures', 'vsc8540et')
+sTimingReportDir = os.path.join(rule_test_case.sProjectDir, 'example', 'microchip', 'vsc8540et', 'timing_reports')
 
 
 def read_example_file(sFilename):
