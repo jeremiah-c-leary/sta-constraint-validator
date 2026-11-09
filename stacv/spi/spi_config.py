@@ -24,8 +24,8 @@ CONFIGURATIONS = ['spi']
 PLACEHOLDER = 'FROM_DESIGN'
 MODES = [0, 1, 2, 3]
 TOP_LEVEL_KEYS = ['interface', 'name', 'mode', 'role', 'part', 'traces', 'timing_reports_dir', 'device_clock', 'sck', 'copi', 'cipo', 'cs']
-DEVICE_CLOCK_KEYS = ['name', 'period']
-SCK_KEYS = ['port', 'register', 'period', 'read_period']
+DEVICE_CLOCK_KEYS = ['name', 'period', 'source']
+SCK_KEYS = ['port', 'register', 'period', 'read_period', 'source']
 COPI_KEYS = ['port', 'register', 'launch']
 CIPO_KEYS = ['port', 'register', 'capture']
 CS_KEYS = ['port', 'register', 'assert', 'deassert']
@@ -67,6 +67,8 @@ class DeviceClock():
     def __init__(self):
         self.name = None
         self.period = None
+        # Where the period comes from, or None when it is not given.
+        self.source = None
 
 
 class Sck():
@@ -77,6 +79,8 @@ class Sck():
         self.period = None
         # A slower SCK for reads, which CIPO is timed on; None when reads run at the same period.
         self.read_period = None
+        # Where the periods come from, or None when it is not given.
+        self.source = None
 
     def find_read_period(self):
         if self.read_period is None:
@@ -155,9 +159,14 @@ def check_configuration(dConfig, oLocation):
 def read_string(dTable, sTable, sKey, oLocation):
     oLocation.set_key(sTable, sKey)
     sValue = READER.get_required_string(dTable, sKey, oLocation)
-    if sValue == PLACEHOLDER:
-        READER.raise_error(6, oLocation.filename, f'key "{sKey}"{oLocation.location} is {PLACEHOLDER}; replace it with the name in your design')
+    if is_placeholder(sValue):
+        READER.raise_error(6, oLocation.filename, f'key "{sKey}"{oLocation.location} is {sValue}; replace it with the name in your design')
     return sValue
+
+
+def is_placeholder(sValue):
+    # A template names each placeholder after the key it fills, such as FROM_DESIGN_SCK_PORT, so each can be found.
+    return sValue.startswith(PLACEHOLDER)
 
 
 def read_mode(dConfig, oLocation):
@@ -196,6 +205,7 @@ def read_device_clock(dConfig, oLocation):
     oDeviceClock = DeviceClock()
     oDeviceClock.name = read_string(dTable, 'device_clock', 'name', oLocation)
     oDeviceClock.period = read_period(dTable, 'device_clock', 'period', oLocation)
+    oDeviceClock.source = read_optional_source(dTable, 'device_clock', oLocation)
     return oDeviceClock
 
 
@@ -207,7 +217,15 @@ def read_sck(dConfig, oLocation):
     oSck.period = read_period(dTable, 'sck', 'period', oLocation)
     if 'read_period' in dTable:
         oSck.read_period = read_period(dTable, 'sck', 'read_period', oLocation)
+    oSck.source = read_optional_source(dTable, 'sck', oLocation)
     return oSck
+
+
+def read_optional_source(dTable, sTable, oLocation):
+    # The periods are facts of the design, so where they come from may be given, as it is for the edges.
+    if 'source' not in dTable:
+        return None
+    return read_string(dTable, sTable, 'source', oLocation)
 
 
 def read_signal(dConfig, sTable, lKeys, oLocation):
@@ -260,8 +278,8 @@ def read_clocks(dEdge, sKey, oLocation):
 def read_edge_source(dEdge, sKey, oLocation):
     # The edges are the judgement in the file, so each one says where in the design it comes from.
     sSource = READER.get_required_string(dEdge, 'source', oLocation)
-    if sSource == PLACEHOLDER:
-        READER.raise_error(6, oLocation.filename, f'key "{sKey}"{oLocation.location} has source {PLACEHOLDER}; say where in the design the edge comes from')
+    if is_placeholder(sSource):
+        READER.raise_error(6, oLocation.filename, f'key "{sKey}"{oLocation.location} has source {sSource}; say where in the design the edge comes from')
     return sSource
 
 
@@ -391,6 +409,7 @@ SCK_EDGE_NAMES['first sample'] = 'the first SCK sample edge'
 SCK_EDGE_NAMES['last change'] = 'the last SCK change edge'
 SCK_EDGE_NAMES['last sample'] = 'the last SCK sample edge'
 EDGES_HEADING = 'set in the SPI configuration, not verified against simulation'
+CLOCKS_HEADING = 'set in the SPI configuration'
 
 
 def build_edge_lines(oConfig):
@@ -429,3 +448,32 @@ def describe_clocks(fClocks):
     if fClocks == 1:
         return f'{sNumber} clock'
     return f'{sNumber} clocks'
+
+
+def build_clock_lines(oConfig):
+    # Each clock's period, with where it comes from when the configuration gives it.
+    lRows = []
+    lRows.append(('device clock', f'{oConfig.device_clock.name} {format_period(oConfig.device_clock.period)}', oConfig.device_clock.source))
+    lRows.append(('SCK', f'{oConfig.sck.port} {describe_sck_periods(oConfig.sck)}', oConfig.sck.source))
+    iNameWidth = find_column_width(lRows, 0)
+    iPeriodWidth = find_column_width(lRows, 1)
+    lLines = []
+    for sName, sPeriod, sSource in lRows:
+        lLines.append(build_clock_line(sName.ljust(iNameWidth), sPeriod, iPeriodWidth, sSource))
+    return lLines
+
+
+def describe_sck_periods(oSck):
+    if oSck.read_period is None:
+        return format_period(oSck.period)
+    return f'{format_period(oSck.period)}, reads {format_period(oSck.read_period)}'
+
+
+def build_clock_line(sName, sPeriod, iPeriodWidth, sSource):
+    if sSource is None:
+        return f'{sName}  {sPeriod}'
+    return f'{sName}  {sPeriod.ljust(iPeriodWidth)}  {sSource}'
+
+
+def format_period(fPeriod):
+    return f'{number_format.format_number(fPeriod)} ns'

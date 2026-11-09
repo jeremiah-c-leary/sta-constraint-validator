@@ -31,7 +31,7 @@ Collect what the next steps need before any file is written:
 
 ``stacv create template`` writes the interface, part and traces templates (see :doc:`commands`).
 For an interface pattern such as SPI, the command line gives the mode and the clock periods, and the templates have every edge already set for the mode, with comments that give each edge's time.
-Each value still to fill in is a placeholder, ``FROM_DESIGN`` or ``FROM_DATASHEET``, which stacv stops on, so nothing is left at a guess.
+Each value still to fill in is a placeholder, ``FROM_DESIGN_...`` or ``FROM_DATASHEET_...`` named after its key, which stacv stops on, so nothing is left at a guess.
 
 3 Create Input Files
 --------------------

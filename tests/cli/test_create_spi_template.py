@@ -1,6 +1,7 @@
 import contextlib
 import io
 import os
+import re
 import tempfile
 import unittest
 from unittest import mock
@@ -46,10 +47,12 @@ class SpiTemplateTestCase(unittest.TestCase):
 
     def fill_in_part(self):
         # The values a user fills in from the part's datasheet.
-        sText = self.read_file('part.toml').replace('value = "FROM_DATASHEET"', 'value = 5').replace('source = "FROM_DATASHEET"', 'source = "Table 1"')
-        sText = sText.replace('symbol = "FROM_DATASHEET"', 'symbol = "tX"')
-        sText = sText.replace('max_frequency = "FROM_DATASHEET"', 'max_frequency = 50')
-        sText = sText.replace('"FROM_DATASHEET"', '"From the datasheet"')
+        sText = self.read_file('part.toml')
+        sText = re.sub(r'value = "FROM_DATASHEET\w*"', 'value = 5', sText)
+        sText = re.sub(r'source = "FROM_DATASHEET\w*"', 'source = "Table 1"', sText)
+        sText = re.sub(r'symbol = "FROM_DATASHEET\w*"', 'symbol = "tX"', sText)
+        sText = re.sub(r'max_frequency = "FROM_DATASHEET\w*"', 'max_frequency = 50', sText)
+        sText = re.sub(r'"FROM_DATASHEET\w*"', '"From the datasheet"', sText)
         with open(os.path.join(self.sDirectory, 'part.toml'), 'w') as oFile:
             oFile.write(sText)
 
@@ -57,7 +60,7 @@ class SpiTemplateTestCase(unittest.TestCase):
         # The names a user fills in from the design.
         sText = self.read_file('spi_config.toml')
         for sName in DESIGN_NAMES:
-            sText = sText.replace('"FROM_DESIGN"', f'"{sName}"', 1)
+            sText = re.sub(r'"FROM_DESIGN\w*"', f'"{sName}"', sText, count=1)
         with open(os.path.join(self.sDirectory, 'spi_config.toml'), 'w') as oFile:
             oFile.write(sText)
 
@@ -149,13 +152,13 @@ class TestSpiTemplate(SpiTemplateTestCase):
     def test_a_name_still_to_fill_in_is_an_error(self):
         self.assertEqual(0, self.create_spi(0))
         self.assertEqual(2, self.run_in_directory(['generate', 'xdc', 'spi_config.toml']))
-        self.assertEqual('ERROR: [spi_config_006] spi_config.toml key "name" in [device_clock] (line 39) is FROM_DESIGN; replace it with the name in your design\n', self.oStderr.getvalue())
+        self.assertEqual('ERROR: [spi_config_006] spi_config.toml key "name" in [device_clock] (line 40) is FROM_DESIGN_DEVICE_CLOCK_NAME; replace it with the name in your design\n', self.oStderr.getvalue())
 
     def test_a_value_still_to_fill_in_is_an_error(self):
         self.assertEqual(0, self.create_spi(0))
         self.fill_in_design()
         self.assertEqual(2, self.run_in_directory(['generate', 'xdc', 'spi_config.toml']))
-        self.assertEqual('ERROR: [part_config_011] part.toml key "manufacturer" in [properties] is FROM_DATASHEET; fill it in from the part\'s datasheet\n', self.oStderr.getvalue())
+        self.assertEqual('ERROR: [part_config_011] part.toml key "manufacturer" in [properties] is FROM_DATASHEET_MANUFACTURER; fill it in from the part\'s datasheet\n', self.oStderr.getvalue())
 
 
 class TestSpiTemplateErrors(SpiTemplateTestCase):

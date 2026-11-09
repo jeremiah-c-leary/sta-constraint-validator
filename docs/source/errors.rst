@@ -250,7 +250,7 @@ Part file
      - ``timing<location> must give cko_max and cko_min, or valid_before and valid_after``, for an output pin
      - Give the pin's timing in one form, the form its datasheet uses.
    * - part_config_011
-     - ``key "<key>"<location> is FROM_DATASHEET; fill it in from the part's datasheet``
+     - ``key "<key>"<location> is FROM_DATASHEET_<name>; fill it in from the part's datasheet``
      - Fill in the ``value``, ``source`` or ``max_frequency`` a template left for the part's datasheet.
    * - part_config_012
      - ``key "clock"<location> must give pin or if_signal, not both``
@@ -288,7 +288,7 @@ A file that is not valid TOML, or does not exist, is reported as interface_confi
      - ``key "interface"<location> names <name>, which stacv has no configuration for; the configurations are <names>``
      - Correct the name, or time the interface with an interface file.
    * - spi_config_006
-     - ``key "<key>"<location> is FROM_DESIGN; replace it with the name in your design``, or ``key "<edge>"<location> has source FROM_DESIGN; say where in the design the edge comes from``
+     - ``key "<key>"<location> is FROM_DESIGN_<name>; replace it with the name in your design``, or ``key "<edge>"<location> has source FROM_DESIGN_<name>; say where in the design the edge comes from``
      - Fill in the name, or the place in the HDL the edge comes from.
    * - spi_config_007
      - ``key "mode"<location> must be 0, 1, 2 or 3``

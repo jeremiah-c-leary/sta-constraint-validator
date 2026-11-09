@@ -74,6 +74,7 @@ def create_interface_from_configuration(sConfigFile):
     oSpiConfig = spi_config.read_spi_config(sConfigFile)
     oInterface = create_interface_config(spi_interface.build_interface_dictionary(oSpiConfig), sConfigFile)
     oInterface.edge_lines = spi_config.build_edge_lines(oSpiConfig)
+    oInterface.clock_lines = spi_config.build_clock_lines(oSpiConfig)
     return oInterface
 
 

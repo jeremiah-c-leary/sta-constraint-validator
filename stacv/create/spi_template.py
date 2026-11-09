@@ -88,7 +88,8 @@ def build_spi_config(oOptions, oStandard):
     lLines.append('# stacv generates the interface file, the constraints and the report script')
     lLines.append('# from this file.  Only this file, the part file and the traces file are edited.')
     lLines.append('#')
-    lLines.append(f'# Replace each {DESIGN_PLACEHOLDER} with the name in your design; stacv stops on it until then.')
+    lLines.append(f'# Replace each {DESIGN_PLACEHOLDER}_... with the name in your design; stacv stops on it until then.')
+    lLines.append('# Each placeholder is named after its key, so it can be found and replaced on its own.')
     lLines.append('# Registers are named as Vivado names them:  the hierarchy separated by /, with')
     lLines.append('# _reg added, and a bit of a bus in brackets, such as u_spi/rx_shift_reg[0].')
     lLines.append('#')
@@ -117,15 +118,18 @@ def build_spi_config(oOptions, oStandard):
     lLines.append('')
     lLines.append('# The device clock the SPI logic runs on.')
     lLines.append('[device_clock]')
-    lLines.append(f'name   = "{DESIGN_PLACEHOLDER}"')
+    lLines.append(f'name   = "{build_design_placeholder("device_clock", "name")}"')
     lLines.append(f'period = {format_config_period(oOptions.clock_period)}')
+    lLines.append('# source = "<where the period comes from>"   # optional')
     lLines.append('')
     lLines.append('# SCK, the SPI clock: generated in the device by a register and forwarded to the part.')
     lLines.append('[sck]')
-    lLines.append(f'port     = "{DESIGN_PLACEHOLDER}"')
-    lLines.append(f'register = "{DESIGN_PLACEHOLDER}"')
+    lLines.append(f'port     = "{build_design_placeholder("sck", "port")}"')
+    lLines.append(f'register = "{build_design_placeholder("sck", "register")}"')
     lLines.append(f'period   = {format_config_period(oOptions.sck_period)}')
-    lLines.append('# read_period = <ns>   # a slower SCK for reads, when the part\'s CIPO needs one')
+    lLines.append('# read_period = <ns>   # a slower SCK for reads, when the part\'s CIPO needs one;')
+    lLines.append('#                      # COPI and CS are then timed on SCK, and CIPO on the read SCK')
+    lLines.append('# source = "<where the periods come from>"   # optional')
     lLines.append('')
     lLines.extend(build_copi(oOptions, oStandard))
     lLines.append('')
@@ -143,9 +147,9 @@ def build_copi(oOptions, oStandard):
     lLines.append(f'#   launch:   when the design changes COPI, from the SCK change edge ({sChange})')
     lLines.append(f'#             {format_period(oOptions.sck_period / 2)} ns before the {sSample} sample edge that captures it.')
     lLines.append('[copi]')
-    lLines.append(f'port     = "{DESIGN_PLACEHOLDER}"')
-    lLines.append(f'register = "{DESIGN_PLACEHOLDER}"')
-    lLines.append(f'launch   = {build_edge("change", 0)}')
+    lLines.append(f'port     = "{build_design_placeholder("copi", "port")}"')
+    lLines.append(f'register = "{build_design_placeholder("copi", "register")}"')
+    lLines.append(f'launch   = {build_edge("copi", "launch", "change", 0)}')
     return lLines
 
 
@@ -158,9 +162,9 @@ def build_cipo(oOptions, oStandard):
     lLines.append(f'#             {format_period(oOptions.sck_period / 2)} ns after the {sChange} change edge the part launches it on.')
     lLines.append('#             0 is the device clock edge that makes that SCK edge.')
     lLines.append('[cipo]')
-    lLines.append(f'port     = "{DESIGN_PLACEHOLDER}"')
-    lLines.append(f'register = "{DESIGN_PLACEHOLDER}"')
-    lLines.append(f'capture  = {build_edge("sample", 0)}')
+    lLines.append(f'port     = "{build_design_placeholder("cipo", "port")}"')
+    lLines.append(f'register = "{build_design_placeholder("cipo", "register")}"')
+    lLines.append(f'capture  = {build_edge("cipo", "capture", "sample", 0)}')
     return lLines
 
 
@@ -175,16 +179,35 @@ def build_cs(oOptions, oStandard):
     lLines.append(f'#   deassert: when CS becomes inactive, from the last SCK change edge ({sChange}),')
     lLines.append('#             or with sck_edge = "last sample", from the last sample edge.')
     lLines.append('#             The drawing measures the hold from the last sample edge either way.')
+    lLines.append('#   With read_period, give the access with the least time to the SCK edge: usually')
+    lLines.append('#   the faster write, as CS is timed on SCK, not on the read SCK.')
     lLines.append('[cs]')
-    lLines.append(f'port     = "{DESIGN_PLACEHOLDER}"')
-    lLines.append(f'register = "{DESIGN_PLACEHOLDER}"')
-    lLines.append(f'assert   = {build_edge("first sample", -1 * oOptions.sck_period / oOptions.clock_period)}')
-    lLines.append(f'deassert = {build_edge("last change", 0)}')
+    lLines.append(f'port     = "{build_design_placeholder("cs", "port")}"')
+    lLines.append(f'register = "{build_design_placeholder("cs", "register")}"')
+    lLines.append(f'assert   = {build_edge("cs", "assert", "first sample", -1 * oOptions.sck_period / oOptions.clock_period)}')
+    lLines.append(f'deassert = {build_edge("cs", "deassert", "last change", 0)}')
     return lLines
 
 
-def build_edge(sSckEdge, fClocks):
-    return f'{{sck_edge = "{sSckEdge}", clocks = {format_period(fClocks)}, source = "{DESIGN_PLACEHOLDER}"}}'
+def build_edge(sTable, sKey, sSckEdge, fClocks):
+    sSource = build_design_placeholder(sTable, sKey, 'source')
+    return f'{{sck_edge = "{sSckEdge}", clocks = {format_period(fClocks)}, source = "{sSource}"}}'
+
+
+def build_design_placeholder(*lNames):
+    # Named after the table and key it fills, such as FROM_DESIGN_SCK_PORT.
+    return build_placeholder_name(DESIGN_PLACEHOLDER, lNames)
+
+
+def build_datasheet_placeholder(*lNames):
+    return build_placeholder_name(PLACEHOLDER, lNames)
+
+
+def build_placeholder_name(sPrefix, lNames):
+    lParts = [sPrefix]
+    for sName in lNames:
+        lParts.append(sName.upper().replace(' ', '_'))
+    return '_'.join(lParts)
 
 
 def format_config_period(fPeriod):
@@ -200,8 +223,12 @@ def build_part(oOptions, oStandard):
     lLines.append('# Keys are described in:')
     lLines.append(f'# {DOCS_URL}/part.rst')
     lLines.append('#')
-    lLines.append('# Fill in each value from the part\'s datasheet, with its symbol and where it comes from.')
-    lLines.append(f'# The values are {PLACEHOLDER} until then, which stacv stops on.')
+    lLines.append('# Fill in each value from the part\'s datasheet, with its symbol and where it comes from,')
+    lLines.append('# such as source = "SBASAO8A section 6.9, page 27": the document, its section and page.')
+    lLines.append(f'# The values are {PLACEHOLDER}_... until then, each named after its key, which stacv stops on.')
+    lLines.append('# stacv does not check the SCK period, its high and low times, or the gap CS must stay')
+    lLines.append('# high between accesses (such as tP, tPH, tPL and tIAG), and max_frequency is recorded')
+    lLines.append('# but not yet checked: check those by hand against the design.')
     lLines.append('# Rename the pins to the datasheet\'s; the traces file keeps its trace names, as the')
     lLines.append('# files are linked by signal, not by name.')
     lLines.extend(build_header_divider_lines())
@@ -210,13 +237,13 @@ def build_part(oOptions, oStandard):
     lLines.append('# All frequencies are in MHz.')
     lLines.append('')
     lLines.append('[properties]')
-    lLines.append(f'manufacturer = "{PLACEHOLDER}"')
-    lLines.append(f'part_number = "{PLACEHOLDER}"')
+    lLines.append(f'manufacturer = "{build_datasheet_placeholder("manufacturer")}"')
+    lLines.append(f'part_number = "{build_datasheet_placeholder("part_number")}"')
     lLines.append('')
     lLines.append('[datasheet]')
-    lLines.append(f'name = "{PLACEHOLDER}"')
-    lLines.append(f'url = "{PLACEHOLDER}"')
-    lLines.append(f'version = "{PLACEHOLDER}"')
+    lLines.append(f'name = "{build_datasheet_placeholder("datasheet", "name")}"')
+    lLines.append(f'url = "{build_datasheet_placeholder("datasheet", "url")}"')
+    lLines.append(f'version = "{build_datasheet_placeholder("datasheet", "version")}"')
     lLines.append('')
     lLines.append('[[interface]]')
     lLines.append('name = "SPI"')
@@ -236,11 +263,13 @@ def build_part(oOptions, oStandard):
     lLines.extend(build_input_pin('CS', oStandard.sample_edge))
     lLines.append('')
     lLines.append(f'# CIPO: clock to out, measured from the SCK change edge ({oStandard.change_edge.lower()}) to CIPO valid, such as tOD or tCO.')
+    lLines.append('# When the datasheet also gives the time to drive CIPO out of high impedance (such as tOZD),')
+    lLines.append('# use the worse of the two, as the first bit of a read is driven from high impedance.')
     lLines.append('[[interface.pin]]')
     lLines.append('name = "CIPO"')
-    lLines.append(build_placeholder('cko_max'))
-    lLines.append(build_placeholder('cko_min'))
-    lLines.append(build_clock())
+    lLines.append(build_placeholder('CIPO', 'cko_max'))
+    lLines.append(build_placeholder('CIPO', 'cko_min'))
+    lLines.append(build_clock('CIPO'))
     lLines.append(build_divider())
     lLines.append('methodology = "SDR-SS-RT-DO"')
     lLines.append('if_signal = "CIPO"')
@@ -252,9 +281,9 @@ def build_input_pin(sName, sCaptureEdge):
     lLines = []
     lLines.append('[[interface.pin]]')
     lLines.append(f'name = "{sName}"')
-    lLines.append(build_placeholder('setup'))
-    lLines.append(build_placeholder('hold'))
-    lLines.append(build_clock())
+    lLines.append(build_placeholder(sName, 'setup'))
+    lLines.append(build_placeholder(sName, 'hold'))
+    lLines.append(build_clock(sName))
     lLines.append(build_divider())
     lLines.append('methodology = "SDR-SS-I"')
     lLines.append(f'if_signal = "{sName}"')
@@ -262,14 +291,17 @@ def build_input_pin(sName, sCaptureEdge):
     return lLines
 
 
-def build_clock():
+def build_clock(sPin):
     # The fastest SCK the part's pin allows is a datasheet value.
-    return f'clock = {{if_signal = "SCK", max_frequency = "{PLACEHOLDER}"}}'
+    return f'clock = {{if_signal = "SCK", max_frequency = "{build_datasheet_placeholder(sPin, "max_frequency")}"}}'
 
 
-def build_placeholder(sKey):
+def build_placeholder(sPin, sKey):
     # The value, its symbol and where it comes from are all the datasheet's, so each is filled in from it.
-    return f'{sKey} = {{value = "{PLACEHOLDER}", symbol = "{PLACEHOLDER}", source = "{PLACEHOLDER}"}}'
+    sValue = build_datasheet_placeholder(sPin, sKey, 'value')
+    sSymbol = build_datasheet_placeholder(sPin, sKey, 'symbol')
+    sSource = build_datasheet_placeholder(sPin, sKey, 'source')
+    return f'{sKey} = {{value = "{sValue}", symbol = "{sSymbol}", source = "{sSource}"}}'
 
 
 def build_traces(oOptions):

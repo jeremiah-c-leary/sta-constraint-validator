@@ -17,6 +17,8 @@ class Interface():
         self.if_role = None
         # The edges an interface configuration file gives, one line each with its source; empty for an interface file.
         self.edge_lines = []
+        # The clocks an interface configuration file gives, one line each with its source; empty for an interface file.
+        self.clock_lines = []
         self.clocks = []
         self.ports = []
 

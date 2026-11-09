@@ -7,7 +7,8 @@
 # stacv generates the interface file, the constraints and the report script
 # from this file.  Only this file, the part file and the traces file are edited.
 #
-# Replace each FROM_DESIGN with the name in your design; stacv stops on it until then.
+# Replace each FROM_DESIGN_... with the name in your design; stacv stops on it until then.
+# Each placeholder is named after its key, so it can be found and replaced on its own.
 # Registers are named as Vivado names them:  the hierarchy separated by /, with
 # _reg added, and a bit of a bus in brackets, such as u_spi/rx_shift_reg[0].
 #
@@ -36,32 +37,35 @@ timing_reports_dir = "timing_reports"
 
 # The device clock the SPI logic runs on.
 [device_clock]
-name   = "FROM_DESIGN"
+name   = "FROM_DESIGN_DEVICE_CLOCK_NAME"
 period = 10.0
+# source = "<where the period comes from>"   # optional
 
 # SCK, the SPI clock: generated in the device by a register and forwarded to the part.
 [sck]
-port     = "FROM_DESIGN"
-register = "FROM_DESIGN"
+port     = "FROM_DESIGN_SCK_PORT"
+register = "FROM_DESIGN_SCK_REGISTER"
 period   = 40.0
-# read_period = <ns>   # a slower SCK for reads, when the part's CIPO needs one
+# read_period = <ns>   # a slower SCK for reads, when the part's CIPO needs one;
+#                      # COPI and CS are then timed on SCK, and CIPO on the read SCK
+# source = "<where the periods come from>"   # optional
 
 # COPI: data from the device into the part.
 #   launch:   when the design changes COPI, from the SCK change edge (rising)
 #             20 ns before the falling sample edge that captures it.
 [copi]
-port     = "FROM_DESIGN"
-register = "FROM_DESIGN"
-launch   = {sck_edge = "change", clocks = 0, source = "FROM_DESIGN"}
+port     = "FROM_DESIGN_COPI_PORT"
+register = "FROM_DESIGN_COPI_REGISTER"
+launch   = {sck_edge = "change", clocks = 0, source = "FROM_DESIGN_COPI_LAUNCH_SOURCE"}
 
 # CIPO: data from the part into the device.
 #   capture:  when the device captures CIPO, from the SCK sample edge (falling)
 #             20 ns after the rising change edge the part launches it on.
 #             0 is the device clock edge that makes that SCK edge.
 [cipo]
-port     = "FROM_DESIGN"
-register = "FROM_DESIGN"
-capture  = {sck_edge = "sample", clocks = 0, source = "FROM_DESIGN"}
+port     = "FROM_DESIGN_CIPO_PORT"
+register = "FROM_DESIGN_CIPO_REGISTER"
+capture  = {sck_edge = "sample", clocks = 0, source = "FROM_DESIGN_CIPO_CAPTURE_SOURCE"}
 
 # CS: selects the part.  Timed to the first and last falling edges of SCK.
 #   assert:   when CS becomes active, from the first SCK sample edge;
@@ -69,8 +73,10 @@ capture  = {sck_edge = "sample", clocks = 0, source = "FROM_DESIGN"}
 #   deassert: when CS becomes inactive, from the last SCK change edge (rising),
 #             or with sck_edge = "last sample", from the last sample edge.
 #             The drawing measures the hold from the last sample edge either way.
+#   With read_period, give the access with the least time to the SCK edge: usually
+#   the faster write, as CS is timed on SCK, not on the read SCK.
 [cs]
-port     = "FROM_DESIGN"
-register = "FROM_DESIGN"
-assert   = {sck_edge = "first sample", clocks = -4, source = "FROM_DESIGN"}
-deassert = {sck_edge = "last change", clocks = 0, source = "FROM_DESIGN"}
+port     = "FROM_DESIGN_CS_PORT"
+register = "FROM_DESIGN_CS_REGISTER"
+assert   = {sck_edge = "first sample", clocks = -4, source = "FROM_DESIGN_CS_ASSERT_SOURCE"}
+deassert = {sck_edge = "last change", clocks = 0, source = "FROM_DESIGN_CS_DEASSERT_SOURCE"}

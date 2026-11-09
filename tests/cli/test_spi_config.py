@@ -155,6 +155,30 @@ class TestSpiConfig(SpiConfigTestCase):
         lExpected.append('#             CS deassert   4 clocks after the last SCK change edge    spi_master.vhd: TRAIL sets scs_n_q HALF_PERIOD after the last sclk_q fall')
         self.assertIn('\n' + '\n'.join(lExpected) + '\n', sXdc)
 
+    def test_the_constraints_list_each_clock_period(self):
+        self.assertEqual(0, self.run_stacv(['generate', 'xdc', 'spi_config.toml']))
+        lExpected = []
+        lExpected.append('# Clocks:     set in the SPI configuration')
+        lExpected.append('#             device clock  sys_clk 10 ns')
+        lExpected.append('#             SCK           dac_sclk 80 ns')
+        lExpected.append('# Edges:      set in the SPI configuration, not verified against simulation')
+        self.assertIn('\n' + '\n'.join(lExpected) + '\n', self.oStdout.getvalue())
+
+    def test_a_period_source_is_listed_beside_its_clock(self):
+        self.edit_config('period = 10.0', 'period = 10.0\nsource = "dac39rf20_board.xdc: create_clock sys_clk"')
+        self.edit_config('period   = 80.0', 'period   = 80.0\nsource   = "dac39rf20_top.vhd: HALF_PERIOD 4"')
+        sInterface = self.generate_interface()
+        lExpected = []
+        lExpected.append('# Clocks: set in the SPI configuration')
+        lExpected.append('#         device clock  sys_clk 10 ns   dac39rf20_board.xdc: create_clock sys_clk')
+        lExpected.append('#         SCK           dac_sclk 80 ns  dac39rf20_top.vhd: HALF_PERIOD 4')
+        self.assertIn('\n'.join(lExpected) + '\n', sInterface)
+
+    def test_a_part_value_still_to_fill_in_is_named_in_the_error(self):
+        self.edit_file('part.toml', 'manufacturer = "Texas Instruments"', 'manufacturer = "FROM_DATASHEET_MANUFACTURER"')
+        self.assertEqual(2, self.run_stacv(['generate', 'xdc', 'spi_config.toml']))
+        self.assertEqual('ERROR: [part_config_011] part.toml key "manufacturer" in [properties] is FROM_DATASHEET_MANUFACTURER; fill it in from the part\'s datasheet\n', self.oStderr.getvalue())
+
     def test_one_clock_is_written_in_the_singular(self):
         self.set_edge('launch', 'change', '-1')
         self.assertIn('COPI launch   1 clock before the SCK change edge', self.generate_interface())

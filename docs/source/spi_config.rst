@@ -50,6 +50,7 @@ Table               Keys                                Value
 ``[device_clock]``  ``name``, ``period``                The device clock the SPI logic runs on, as the constraints name it, and its period in ns.
 ``[sck]``           ``port``, ``register``, ``period``  The port SCK leaves the device on, the register that generates it, and its period in ns, an even number of device clock periods.
                     ``read_period``                     Optional: the period of a slower SCK for reads, when the part's CIPO allows a lower SCK frequency than its inputs.
+                                                        COPI and CS are then timed on SCK, and CIPO on the read SCK.
 ``[copi]``          ``port``, ``register``, ``launch``  The port COPI, the data from the device into the part, leaves on, the register that drives it, and when it launches.
 ``[cipo]``          ``port``, ``register``,             The port CIPO, the data from the part into the device, arrives on, the register that captures it, and when.
                     ``capture``
@@ -57,8 +58,12 @@ Table               Keys                                Value
                     ``assert``, ``deassert``
 ==================  ==================================  ================================================================
 
+``[device_clock]`` and ``[sck]`` can also give ``source``: where their periods come from, such as ``"dac39rf20_top.vhd: HALF_PERIOD 4"``.
+It is optional, and the constraints file lists it beside the clock.
+
 Registers are named as Vivado names them: the hierarchy separated by ``/``, with ``_reg`` added, and a bit of a bus in brackets, such as ``u_spi/rx_shift_reg[0]``.
-A name still ``FROM_DESIGN``, as the template writes it, stops every command (spi_config_006).
+A value still ``FROM_DESIGN_...``, as the template writes it, stops every command (spi_config_006).
+The template names each placeholder after its table and key, such as ``FROM_DESIGN_SCK_PORT``, so each can be found and replaced on its own.
 
 Edges
 -----
@@ -74,7 +79,7 @@ Each edge says when the design launches or captures a signal, the way the HDL co
 * ``clocks`` counts device clock periods from that edge: ``-4`` is four periods before it, ``0`` the device clock edge that makes the SCK edge, ``0.5`` half a period after it, for a register on the falling edge of the device clock.
   It is a whole or half number (spi_config_015).
 * ``source`` says where in the design the edge comes from.
-  It is required, and ``FROM_DESIGN``, as the template writes it, stops every command (spi_config_006), as the edges are the judgement in the file.
+  It is required, and ``FROM_DESIGN_...``, as the template writes it, stops every command (spi_config_006), as the edges are the judgement in the file.
 
 ============  =================================  ===========================================================  ====================================================
 Key           ``sck_edge``                       Counted from                                                 Must stay
@@ -94,10 +99,13 @@ Read the HDL, correct them, and check them with ``stacv visualize edges spi_conf
 An edge outside its range stops every command (spi_config_011), and an ``sck_edge`` the key is not counted from is spi_config_014.
 
 Until the design is simulated against them, the edges are the ones the configuration gives.
-The constraints file lists each one with its source, in its references:
+The constraints file lists each clock's period, and each edge with its source, in its references:
 
 .. code-block:: text
 
+   # Clocks:     set in the SPI configuration
+   #             device clock  sys_clk 10 ns
+   #             SCK           dac_sclk 80 ns
    # Edges:      set in the SPI configuration, not verified against simulation
    #             COPI launch   at the SCK change edge                     spi_master.vhd: SCLK_HIGH sets sdi_q with sclk_q low
    #             CIPO capture  at the SCK sample edge                     spi_master.vhd: SCLK_LOW shifts sdo into rx_shift with sclk_q high

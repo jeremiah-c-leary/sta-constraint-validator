@@ -4,8 +4,12 @@
 # Keys are described in:
 # https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/part.rst
 #
-# Fill in each value from the part's datasheet, with its symbol and where it comes from.
-# The values are FROM_DATASHEET until then, which stacv stops on.
+# Fill in each value from the part's datasheet, with its symbol and where it comes from,
+# such as source = "SBASAO8A section 6.9, page 27": the document, its section and page.
+# The values are FROM_DATASHEET_... until then, each named after its key, which stacv stops on.
+# stacv does not check the SCK period, its high and low times, or the gap CS must stay
+# high between accesses (such as tP, tPH, tPL and tIAG), and max_frequency is recorded
+# but not yet checked: check those by hand against the design.
 # Rename the pins to the datasheet's; the traces file keeps its trace names, as the
 # files are linked by signal, not by name.
 # Keys below each "set by stacv create template spi" line are set from the command line above;
@@ -15,13 +19,13 @@
 # All frequencies are in MHz.
 
 [properties]
-manufacturer = "FROM_DATASHEET"
-part_number = "FROM_DATASHEET"
+manufacturer = "FROM_DATASHEET_MANUFACTURER"
+part_number = "FROM_DATASHEET_PART_NUMBER"
 
 [datasheet]
-name = "FROM_DATASHEET"
-url = "FROM_DATASHEET"
-version = "FROM_DATASHEET"
+name = "FROM_DATASHEET_DATASHEET_NAME"
+url = "FROM_DATASHEET_DATASHEET_URL"
+version = "FROM_DATASHEET_DATASHEET_VERSION"
 
 [[interface]]
 name = "SPI"
@@ -37,9 +41,9 @@ if_signal = "SCK"
 # COPI: setup and hold, measured to the SCK sample edge (falling), such as tSU and tH.
 [[interface.pin]]
 name = "COPI"
-setup = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
-hold = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
-clock = {if_signal = "SCK", max_frequency = "FROM_DATASHEET"}
+setup = {value = "FROM_DATASHEET_COPI_SETUP_VALUE", symbol = "FROM_DATASHEET_COPI_SETUP_SYMBOL", source = "FROM_DATASHEET_COPI_SETUP_SOURCE"}
+hold = {value = "FROM_DATASHEET_COPI_HOLD_VALUE", symbol = "FROM_DATASHEET_COPI_HOLD_SYMBOL", source = "FROM_DATASHEET_COPI_HOLD_SOURCE"}
+clock = {if_signal = "SCK", max_frequency = "FROM_DATASHEET_COPI_MAX_FREQUENCY"}
 #--- set by stacv create template spi; do not change below ---
 methodology = "SDR-SS-I"
 if_signal = "COPI"
@@ -48,20 +52,22 @@ capture_edge = "Falling"
 # CS: setup to the first SCK sample edge (falling) and hold after the last, such as tCSS and tCSH.
 [[interface.pin]]
 name = "CS"
-setup = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
-hold = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
-clock = {if_signal = "SCK", max_frequency = "FROM_DATASHEET"}
+setup = {value = "FROM_DATASHEET_CS_SETUP_VALUE", symbol = "FROM_DATASHEET_CS_SETUP_SYMBOL", source = "FROM_DATASHEET_CS_SETUP_SOURCE"}
+hold = {value = "FROM_DATASHEET_CS_HOLD_VALUE", symbol = "FROM_DATASHEET_CS_HOLD_SYMBOL", source = "FROM_DATASHEET_CS_HOLD_SOURCE"}
+clock = {if_signal = "SCK", max_frequency = "FROM_DATASHEET_CS_MAX_FREQUENCY"}
 #--- set by stacv create template spi; do not change below ---
 methodology = "SDR-SS-I"
 if_signal = "CS"
 capture_edge = "Falling"
 
 # CIPO: clock to out, measured from the SCK change edge (rising) to CIPO valid, such as tOD or tCO.
+# When the datasheet also gives the time to drive CIPO out of high impedance (such as tOZD),
+# use the worse of the two, as the first bit of a read is driven from high impedance.
 [[interface.pin]]
 name = "CIPO"
-cko_max = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
-cko_min = {value = "FROM_DATASHEET", symbol = "FROM_DATASHEET", source = "FROM_DATASHEET"}
-clock = {if_signal = "SCK", max_frequency = "FROM_DATASHEET"}
+cko_max = {value = "FROM_DATASHEET_CIPO_CKO_MAX_VALUE", symbol = "FROM_DATASHEET_CIPO_CKO_MAX_SYMBOL", source = "FROM_DATASHEET_CIPO_CKO_MAX_SOURCE"}
+cko_min = {value = "FROM_DATASHEET_CIPO_CKO_MIN_VALUE", symbol = "FROM_DATASHEET_CIPO_CKO_MIN_SYMBOL", source = "FROM_DATASHEET_CIPO_CKO_MIN_SOURCE"}
+clock = {if_signal = "SCK", max_frequency = "FROM_DATASHEET_CIPO_MAX_FREQUENCY"}
 #--- set by stacv create template spi; do not change below ---
 methodology = "SDR-SS-RT-DO"
 if_signal = "CIPO"

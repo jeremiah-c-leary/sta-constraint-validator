@@ -48,6 +48,9 @@ def build_header(oConfig):
     lLines.append('# Keys are described in:')
     lLines.append(f'# {DOCS_URL}/interface.rst')
     lLines.append('#')
+    lLines.append(f'# Clocks: {spi_config.CLOCKS_HEADING}')
+    for sLine in spi_config.build_clock_lines(oConfig):
+        lLines.append(f'#         {sLine}')
     lLines.append(f'# Edges:  {spi_config.EDGES_HEADING}')
     for sLine in spi_config.build_edge_lines(oConfig):
         lLines.append(f'#         {sLine}')

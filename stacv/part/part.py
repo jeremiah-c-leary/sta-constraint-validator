@@ -267,8 +267,13 @@ def build_constraint(dPin, sTable, sPinName, sInterfaceName, oPinLocation):
 
 def check_not_placeholder(dTable, oLocation):
     for sKey in dTable:
-        if dTable[sKey] == PLACEHOLDER:
-            READER.raise_error(11, oLocation.filename, f'key "{sKey}"{oLocation.location} is {PLACEHOLDER}; fill it in from the part\'s datasheet')
+        if is_placeholder(dTable[sKey]):
+            READER.raise_error(11, oLocation.filename, f'key "{sKey}"{oLocation.location} is {dTable[sKey]}; fill it in from the part\'s datasheet')
+
+
+def is_placeholder(value):
+    # A template names each placeholder after what it holds, such as FROM_DATASHEET_COPI_SETUP, so each can be found.
+    return isinstance(value, str) and value.startswith(PLACEHOLDER)
 
 
 def read_edge(dPin, sKey, oLocation):

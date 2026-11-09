@@ -55,11 +55,11 @@ The steps
 
 #. **Create Input Files.**
 
-   * In ``spi_config.toml``, the device clock, and the port and register of each signal, from the HDL; stacv stops on each still ``FROM_DESIGN``.
+   * In ``spi_config.toml``, the device clock, and the port and register of each signal, from the HDL; stacv stops on each still ``FROM_DESIGN_...``.
      Each launch and capture is counted in device clocks from a named edge of SCK, such as ``assert = {sck_edge = "first sample", clocks = -4, source = "..."}``, with the line of the HDL it comes from.
      The template gives the usual edges for the mode; correct them from the HDL.
      A part that reads at a slower SCK than it is written at takes ``read_period`` (see :doc:`spi_config`).
-   * In ``part.toml``, each pin's setup, hold, clock to out and fastest SCK, with its symbol and where it is in the datasheet; stacv stops on each still ``FROM_DATASHEET``.
+   * In ``part.toml``, each pin's setup, hold, clock to out and fastest SCK, with its symbol and where it is in the datasheet; stacv stops on each still ``FROM_DATASHEET_...``.
      A part file from a library that gives the SPI signals can be named in place of one.
    * In ``traces.toml``, the delay of each trace, or ``{}`` for the default delay.
 

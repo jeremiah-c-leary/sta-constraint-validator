@@ -22,7 +22,8 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
    It writes `spi_config.toml`, `part.toml` and `traces.toml`.  SCK must be an even number of device clock
    periods.
 
-2. **Fill in `spi_config.toml`** from the HDL.  Replace every `FROM_DESIGN`:
+2. **Fill in `spi_config.toml`** from the HDL.  Replace every `FROM_DESIGN_...`; each placeholder is named
+   after its table and key, such as `FROM_DESIGN_SCK_PORT`, so each can be replaced on its own:
    - `[device_clock] name`: the clock the SPI logic runs on, as the board constraints name it
      (`create_clock -name ...`).
    - `port` of `[sck]`, `[copi]`, `[cipo]`, `[cs]`: the top-level ports.  COPI is data into the part, CIPO
@@ -32,22 +33,24 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
      `u_spi/rx_shift_reg[0]`.  Exactly the bit the design uses: for a receive shift register, the bit the
      port shifts into, which is the only one with a path from the port.
    - `[sck] read_period`: only when the design reads at a slower SCK than it writes (the part's CIPO allows
-     a lower frequency); CIPO is then timed on that read clock.
+     a lower frequency).  COPI and CS are then timed on SCK and CIPO on the read SCK, so give the CS edges
+     for the access with the least time to the SCK edge, usually the faster write.
+   - `source` in `[device_clock]` and `[sck]`, optional: where the periods come from.
    - `name`: any name for the interface; it names the timing reports.
    - `timing_reports_dir`: where the report script writes the reports, relative to `spi_config.toml`.
 
-   The pin and port tables of the templates repeat the same placeholder lines, so a search-and-replace
-   cannot tell them apart: write each filled-in file whole.
-
 3. **Fill in `part.toml`** from the part's datasheet.  Read it as text with `pdftotext -layout <file>.pdf -`,
    which keeps table columns aligned; `-f` and `-l` pick the first and last page.  The interface timing
-   table is often split across two pages; read both.  Replace every `FROM_DATASHEET`: each `value` with a
+   table is often split across two pages; read both.  Replace every `FROM_DATASHEET_...`: each `value` with a
    number (ns, or MHz for `max_frequency`), its `symbol` with the datasheet's (such as `"tOD"`), and its
-   `source` with where it is (such as `"Table 6.9"`).  Rename the pins to the datasheet's names; the traces
+   `source` with where it is: the document, its section and page, such as `"SBASAO8A section 6.9, page 27"`.  Rename the pins to the datasheet's names; the traces
    file keeps its own.  Do not change the keys below the `#--- set by stacv ...` lines.
    - COPI pin: `setup` and `hold` to the SCK sample edge.
    - CS pin: chip-select setup and hold (tCSS, tCSH).
-   - CIPO pin: `cko_max` and `cko_min`, the clock-to-out from the SCK change edge.
+   - CIPO pin: `cko_max` and `cko_min`, the clock-to-out from the SCK change edge.  If the datasheet also
+     gives the time to drive CIPO out of high impedance (such as tOZD), use the worse of the two.
+   - stacv does not check the SCK period, its high and low times, or the gap CS stays high between accesses
+     (such as tP, tPH, tPL and tIAG), and does not yet check `max_frequency`: check them by hand.
 
 4. **Fill in `traces.toml`** from the board: `{max_delay = ..., min_delay = ...}` in ns for each trace, or
    leave `{}` to use `default_delay`.

@@ -62,8 +62,19 @@ def build_references(sInterfaceFile, oInterface, oPart):
     lLines.append(f'# Datasheet:  {oPart.datasheet.name}')
     lLines.append(f'# Revision:   {oPart.datasheet.version}')
     lLines.append(f'# URL:        {oPart.datasheet.url}')
+    lLines.extend(build_clock_lines(oInterface))
     lLines.extend(build_edge_lines(oInterface))
     lLines.append('#')
+    return lLines
+
+
+def build_clock_lines(oInterface):
+    # An interface configuration file gives each clock's period, and where it comes from when it is given.
+    if len(oInterface.clock_lines) == 0:
+        return []
+    lLines = [f'# Clocks:     {spi_config.CLOCKS_HEADING}']
+    for sLine in oInterface.clock_lines:
+        lLines.append(f'#             {sLine}')
     return lLines
 
 
