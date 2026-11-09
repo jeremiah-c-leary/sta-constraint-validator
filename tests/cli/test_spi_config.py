@@ -244,7 +244,7 @@ class TestSpiConfigErrors(SpiConfigTestCase):
 
     def test_an_interface_stacv_has_no_configuration_for_is_an_error(self):
         self.edit_config('interface = "spi"', 'interface = "i2c"')
-        self.assert_error('spi_config_005', 'key "interface" (line 17) names i2c, which stacv has no configuration for; the configurations are spi, rmii')
+        self.assert_error('spi_config_005', 'key "interface" (line 17) names i2c, which stacv has no configuration for; the configurations are spi, rmii, mii')
 
     def test_a_name_still_to_fill_in_is_an_error(self):
         self.edit_config('port     = "dac_sdo"', 'port     = "FROM_DESIGN"')

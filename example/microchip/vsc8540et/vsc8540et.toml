@@ -133,9 +133,20 @@ cko_min = {value = 0, symbol = "tCO", source = "Table 7-29"}
 name = "MII"
 # The clocks are 25 MHz at 100 Mbit/s and 2.5 MHz at 10 Mbit/s (IEEE 802.3 Clause 22).
 # Not timed: COL and CRS, asynchronous status outputs.
+if_standard = "MII"
+if_role = "PHY"
+
+[[interface.clock_pin]]
+name = "MII_TXCLK"
+if_signal = "TX_CLK"
+
+[[interface.clock_pin]]
+name = "RX_CLK"
+if_signal = "RX_CLK"
 
 [[interface.pin]]
 name = "TXD[3:0]"
+if_signal = "TXD"
 methodology = "SDR-SS-RT-DI"
 clock = {pin = "MII_TXCLK", max_frequency = 25}
 capture_edge = "Rising"
@@ -144,6 +155,7 @@ hold = {value = 0, symbol = "tH", source = "Table 7-24"}
 
 [[interface.pin]]
 name = "TX_EN"
+if_signal = "TX_EN"
 methodology = "SDR-SS-RT-DI"
 clock = {pin = "MII_TXCLK", max_frequency = 25}
 capture_edge = "Rising"
@@ -152,6 +164,7 @@ hold = {value = 0, symbol = "tH", source = "Table 7-24"}
 
 [[interface.pin]]
 name = "TX_ER"
+if_signal = "TX_ER"
 methodology = "SDR-SS-RT-DI"
 clock = {pin = "MII_TXCLK", max_frequency = 25}
 capture_edge = "Rising"
@@ -160,6 +173,7 @@ hold = {value = 0, symbol = "tH", source = "Table 7-24"}
 
 [[interface.pin]]
 name = "RXD[3:0]"
+if_signal = "RXD"
 methodology = "SDR-SS-O"
 clock = {pin = "RX_CLK", max_frequency = 25}
 cko_max = {value = 30, symbol = "tDELAY", source = "Table 7-23"}
@@ -168,6 +182,7 @@ launch_edge = "Rising"
 
 [[interface.pin]]
 name = "RX_DV"
+if_signal = "RX_DV"
 methodology = "SDR-SS-O"
 clock = {pin = "RX_CLK", max_frequency = 25}
 cko_max = {value = 30, symbol = "tDELAY", source = "Table 7-23"}
@@ -176,6 +191,7 @@ launch_edge = "Rising"
 
 [[interface.pin]]
 name = "RX_ER"
+if_signal = "RX_ER"
 methodology = "SDR-SS-O"
 clock = {pin = "RX_CLK", max_frequency = 25}
 cko_max = {value = 30, symbol = "tDELAY", source = "Table 7-23"}

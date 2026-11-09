@@ -20,7 +20,7 @@ from stacv.standards import standards
 
 READER = config_reader.ConfigReader('spi_config', spi_config_error.SpiConfigError)
 INTERFACE_KEY = 'interface'
-CONFIGURATIONS = ['spi', 'rmii']
+CONFIGURATIONS = ['spi', 'rmii', 'mii']
 PLACEHOLDER = 'FROM_DESIGN'
 MODES = [0, 1, 2, 3]
 TOP_LEVEL_KEYS = ['interface', 'name', 'mode', 'role', 'part', 'traces', 'timing_reports_dir', 'device_clock', 'sck', 'copi', 'cipo', 'cs']

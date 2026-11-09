@@ -41,7 +41,8 @@ class Signal():
 
 class Standard():
     '''
-    A standard with one clock: the level the clock idles at, and the edges data changes and is sampled on.
+    A standard: the level its clock idles at, and the edges data changes and is sampled on, the same for each of its
+    clocks.
     '''
 
     def __init__(self, sName, lRoles, lSignals, sIdle, sChangeEdge, sSampleEdge):
@@ -119,6 +120,27 @@ def build_rmii():
     return Standard('RMII', [MAC, PHY], build_rmii_signals(), None, RISING, RISING)
 
 
+def build_mii_signals():
+    # The signal names of IEEE 802.3 Clause 22.  The PHY drives both clocks; TX_ER and RX_ER are optional.  CRS and COL
+    # are asynchronous, so they are not timed and are not signals here.
+    lSignals = []
+    lSignals.append(Signal('TX_CLK', CLOCK, PHY, False))
+    lSignals.append(Signal('TXD', DATA, MAC, False))
+    lSignals.append(Signal('TX_EN', DATA, MAC, False))
+    lSignals.append(Signal('TX_ER', DATA, MAC, False, True))
+    lSignals.append(Signal('RX_CLK', CLOCK, PHY, False))
+    lSignals.append(Signal('RXD', DATA, PHY, False))
+    lSignals.append(Signal('RX_DV', DATA, PHY, False))
+    lSignals.append(Signal('RX_ER', DATA, PHY, False, True))
+    return lSignals
+
+
+def build_mii():
+    # The MAC launches TXD on the rising edge of TX_CLK and the PHY samples it on the next; the PHY launches RXD on the
+    # rising edge of RX_CLK and the MAC samples it on the next.  Both clocks run all the time.
+    return Standard('MII', [MAC, PHY], build_mii_signals(), None, RISING, RISING)
+
+
 def build_standards():
     dStandards = {}
     for iMode in range(4):
@@ -126,6 +148,8 @@ def build_standards():
         dStandards[oStandard.name] = oStandard
     oRmii = build_rmii()
     dStandards[oRmii.name] = oRmii
+    oMii = build_mii()
+    dStandards[oMii.name] = oMii
     return dStandards
 
 

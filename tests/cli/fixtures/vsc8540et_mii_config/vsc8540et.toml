@@ -1,0 +1,270 @@
+# stacv part file.  Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/part.rst
+#
+# All delays are in nanoseconds.
+# All frequencies are in MHz.
+#
+# Pin names are the signal names of each mode.  The package has no GTX_CLK pin:
+# Figures 4-1 and 4-3 show GTX_CLK, but the pin table and Table 4-3 name the
+# transmit clock input TX_CLK (pin 37).
+
+[properties]
+manufacturer = "Microchip"
+part_number = "VSC8540ET"
+
+[datasheet]
+name = "Extended-Temperature Single Port Fast Ethernet Copper PHY with RGMII/MII/RMII Interfaces"
+url = "https://ww1.microchip.com/downloads/aemDocuments/documents/AERO/ProductDocuments/DataSheets/VSC8540ET_Extended_Temperature_Single_Port_Fast_Ethernet_Copper_PHY_DS60001648.pdf"
+version = "DS60001648A"
+
+[[interface]]
+name = "Uncompensated RGMII MAC Interface"
+# Table 7-25 gives the inputs only as the RGMII v1.3 receive skew window, tSKEWR 1.0 to 2.6 ns.
+# That window is a board budget for an edge-aligned transmitter, not the PHY's requirement:
+# it leaves the data a 1.6 ns slot to change in.  The inputs use the RGMII v2.0 receiver
+# setup and hold instead (TsetupR, TholdR), which TI SNLA243 Table 1 also lists.
+
+[[interface.pin]]
+name = "TXD[3:0]"
+methodology = "DDR-SS-I"
+clock = {pin = "TX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
+capture_edge = "Both"
+setup = {value = 1.0, symbol = "TsetupR", source = "RGMII v2.0"}
+hold = {value = 1.0, symbol = "TholdR", source = "RGMII v2.0"}
+
+[[interface.pin]]
+name = "TX_CTL"
+methodology = "DDR-SS-I"
+clock = {pin = "TX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
+capture_edge = "Both"
+setup = {value = 1.0, symbol = "TsetupR", source = "RGMII v2.0"}
+hold = {value = 1.0, symbol = "TholdR", source = "RGMII v2.0"}
+
+[[interface.pin]]
+name = "RXD[3:0]"
+methodology = "DDR-SS-O"
+clock = {pin = "RX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
+cko_max = {value = 0.5, symbol = "tSKEWT", source = "Table 7-25"}
+cko_min = {value = -0.5, symbol = "tSKEWT", source = "Table 7-25"}
+launch_edge = "Both"
+
+[[interface.pin]]
+name = "RX_CTL"
+methodology = "DDR-SS-O"
+clock = {pin = "RX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
+cko_max = {value = 0.5, symbol = "tSKEWT", source = "Table 7-25"}
+cko_min = {value = -0.5, symbol = "tSKEWT", source = "Table 7-25"}
+launch_edge = "Both"
+
+
+[[interface]]
+name = "Compensated RGMII MAC Interface"
+# TX_CLK internal delay: register 20E2.[2:0] = 011b.
+# RX_CLK internal delay: register 20E2.[6:4] = 100b.
+# The datasheet names these tables by path: T for the TX path (PHY input),
+# R for the RX path (PHY output).  RGMII v2.0 uses T and R for transmitter and receiver.
+# The negative setup is real: the internal clock delay lets data arrive after the clock edge at the pin.
+# The outputs are not timed with Table 7-27.  Its window, valid 1.4 ns before and 1.5 ns after the
+# delayed RX_CLK edge, is written for gigabit timing, and at 25 MHz it would leave the data a 17 ns
+# slot to change in.  As RGMII v2.0 describes for a transmitter with an integrated delay, the PHY
+# launches the data within tSKEWT (+/-0.5 ns, Table 7-25) of its internal clock, and drives RX_CLK
+# out 2.0 ns later (register 20E2.[6:4] = 100b, Table 5-38).  Seen from the RX_CLK edge, the data
+# changes from 2.5 ns to 1.5 ns before it:
+#   cko_max = tSKEWT maximum - RX_CLK delay = 0.5 - 2.0 = -1.5 ns
+#   cko_min = tSKEWT minimum - RX_CLK delay = -0.5 - 2.0 = -2.5 ns
+# Table 5-38 gives the delay without a tolerance.  cko_max still meets RGMII v2.0 TsetupT, 1.2 ns minimum.
+
+[[interface.pin]]
+name = "TXD[3:0]"
+methodology = "DDR-SS-I"
+clock = {pin = "TX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
+capture_edge = "Both"
+setup = {value = -1.0, symbol = "tSETUP_T", source = "Table 7-26"}
+hold = {value = 2.8, symbol = "tHOLD_T", source = "Table 7-26"}
+
+[[interface.pin]]
+name = "TX_CTL"
+methodology = "DDR-SS-I"
+clock = {pin = "TX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
+capture_edge = "Both"
+setup = {value = -1.0, symbol = "tSETUP_T", source = "Table 7-26"}
+hold = {value = 2.8, symbol = "tHOLD_T", source = "Table 7-26"}
+
+[[interface.pin]]
+name = "RXD[3:0]"
+methodology = "DDR-SS-O"
+clock = {pin = "RX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
+cko_max = {value = -1.5, symbol = "tSKEWT - RX_CLK delay", source = "Tables 7-25, 5-38"}
+cko_min = {value = -2.5, symbol = "tSKEWT - RX_CLK delay", source = "Tables 7-25, 5-38"}
+launch_edge = "Both"
+
+[[interface.pin]]
+name = "RX_CTL"
+methodology = "DDR-SS-O"
+clock = {pin = "RX_CLK", max_frequency = 25, duty_cycle = {min = 40, max = 60}}
+cko_max = {value = -1.5, symbol = "tSKEWT - RX_CLK delay", source = "Tables 7-25, 5-38"}
+cko_min = {value = -2.5, symbol = "tSKEWT - RX_CLK delay", source = "Tables 7-25, 5-38"}
+launch_edge = "Both"
+
+
+[[interface]]
+name = "Serial Management Interface"
+# Not timed: MDINT, an open-drain interrupt with no clock.
+
+[[interface.pin]]
+name = "MDIO"
+methodology = "SDR-SS-I"
+clock = {pin = "MDC", max_frequency = 12.5}
+capture_edge = "Rising"
+setup = {value = 10, symbol = "tSU", source = "Table 7-29"}
+hold = {value = 14, symbol = "tH", source = "Table 7-29"}
+
+[[interface.pin]]
+name = "MDIO"
+methodology = "SDR-SS-RT-DO"
+clock = {pin = "MDC", max_frequency = 12.5}
+launch_edge = "Rising"
+# Table 7-29 gives no minimum for tCO: its 10 ns is typical, so the minimum is taken as 0.
+cko_max = {value = 300, symbol = "tCO", source = "Table 7-29"}
+cko_min = {value = 0, symbol = "tCO", source = "Table 7-29"}
+
+
+[[interface]]
+name = "MII"
+# The clocks are 25 MHz at 100 Mbit/s and 2.5 MHz at 10 Mbit/s (IEEE 802.3 Clause 22).
+# Not timed: COL and CRS, asynchronous status outputs.
+if_standard = "MII"
+if_role = "PHY"
+
+[[interface.clock_pin]]
+name = "MII_TXCLK"
+if_signal = "TX_CLK"
+
+[[interface.clock_pin]]
+name = "RX_CLK"
+if_signal = "RX_CLK"
+
+[[interface.pin]]
+name = "TXD[3:0]"
+if_signal = "TXD"
+methodology = "SDR-SS-RT-DI"
+clock = {pin = "MII_TXCLK", max_frequency = 25}
+capture_edge = "Rising"
+setup = {value = 15, symbol = "tSU", source = "Table 7-24"}
+hold = {value = 0, symbol = "tH", source = "Table 7-24"}
+
+[[interface.pin]]
+name = "TX_EN"
+if_signal = "TX_EN"
+methodology = "SDR-SS-RT-DI"
+clock = {pin = "MII_TXCLK", max_frequency = 25}
+capture_edge = "Rising"
+setup = {value = 15, symbol = "tSU", source = "Table 7-24"}
+hold = {value = 0, symbol = "tH", source = "Table 7-24"}
+
+[[interface.pin]]
+name = "TX_ER"
+if_signal = "TX_ER"
+methodology = "SDR-SS-RT-DI"
+clock = {pin = "MII_TXCLK", max_frequency = 25}
+capture_edge = "Rising"
+setup = {value = 15, symbol = "tSU", source = "Table 7-24"}
+hold = {value = 0, symbol = "tH", source = "Table 7-24"}
+
+[[interface.pin]]
+name = "RXD[3:0]"
+if_signal = "RXD"
+methodology = "SDR-SS-O"
+clock = {pin = "RX_CLK", max_frequency = 25}
+cko_max = {value = 30, symbol = "tDELAY", source = "Table 7-23"}
+cko_min = {value = 10, symbol = "tDELAY", source = "Table 7-23"}
+launch_edge = "Rising"
+
+[[interface.pin]]
+name = "RX_DV"
+if_signal = "RX_DV"
+methodology = "SDR-SS-O"
+clock = {pin = "RX_CLK", max_frequency = 25}
+cko_max = {value = 30, symbol = "tDELAY", source = "Table 7-23"}
+cko_min = {value = 10, symbol = "tDELAY", source = "Table 7-23"}
+launch_edge = "Rising"
+
+[[interface.pin]]
+name = "RX_ER"
+if_signal = "RX_ER"
+methodology = "SDR-SS-O"
+clock = {pin = "RX_CLK", max_frequency = 25}
+cko_max = {value = 30, symbol = "tDELAY", source = "Table 7-23"}
+cko_min = {value = 10, symbol = "tDELAY", source = "Table 7-23"}
+launch_edge = "Rising"
+
+
+[[interface]]
+name = "RMII"
+# Every pin is timed to RMII_CLKIN, chip pin TX_CLK (Table 4-3).
+# The 50 MHz clock comes from an external oscillator (Mode 1), or from the PHY's
+# RMII_CLKOUT, chip pin RX_CLK (Mode 2).  Either way it reaches RMII_CLKIN and the
+# MAC on separate traces, so the mode is described in the traces file.
+# In RMII mode, TX_ER is carried on chip pin TXD3, RX_ER on RXD3, and CRS_DV on RX_DV/RX_CTL.
+# Table 7-22 gives TDELAY only a maximum, so the minimum is taken as 0.
+# Table 7-22 leaves TX_ER out of the setup and hold row; it is taken to be the same as TX_EN.
+if_standard = "RMII"
+if_role = "PHY"
+
+[[interface.clock_pin]]
+name = "RMII_CLKIN"
+if_signal = "REF_CLK"
+
+[[interface.pin]]
+name = "TXD[1:0]"
+if_signal = "TXD"
+methodology = "SDR-SYS-I"
+clock = {pin = "RMII_CLKIN", max_frequency = 50}
+capture_edge = "Rising"
+setup = {value = 4, symbol = "TSU", source = "Table 7-22"}
+hold = {value = 2, symbol = "THOLD", source = "Table 7-22"}
+
+[[interface.pin]]
+name = "TX_EN"
+if_signal = "TX_EN"
+methodology = "SDR-SYS-I"
+clock = {pin = "RMII_CLKIN", max_frequency = 50}
+capture_edge = "Rising"
+setup = {value = 4, symbol = "TSU", source = "Table 7-22"}
+hold = {value = 2, symbol = "THOLD", source = "Table 7-22"}
+
+[[interface.pin]]
+name = "TX_ER"
+if_signal = "TX_ER"
+methodology = "SDR-SYS-I"
+clock = {pin = "RMII_CLKIN", max_frequency = 50}
+capture_edge = "Rising"
+setup = {value = 4, symbol = "TSU", source = "Table 7-22"}
+hold = {value = 2, symbol = "THOLD", source = "Table 7-22"}
+
+[[interface.pin]]
+name = "RXD[1:0]"
+if_signal = "RXD"
+methodology = "SDR-SYS-O"
+clock = {pin = "RMII_CLKIN", max_frequency = 50}
+cko_max = {value = 13.5, symbol = "TDELAY", source = "Table 7-22"}
+cko_min = {value = 0, symbol = "TDELAY", source = "Table 7-22"}
+launch_edge = "Rising"
+
+[[interface.pin]]
+name = "CRS_DV"
+if_signal = "CRS_DV"
+methodology = "SDR-SYS-O"
+clock = {pin = "RMII_CLKIN", max_frequency = 50}
+cko_max = {value = 13.5, symbol = "TDELAY", source = "Table 7-22"}
+cko_min = {value = 0, symbol = "TDELAY", source = "Table 7-22"}
+launch_edge = "Rising"
+
+[[interface.pin]]
+name = "RX_ER"
+if_signal = "RX_ER"
+methodology = "SDR-SYS-O"
+clock = {pin = "RMII_CLKIN", max_frequency = 50}
+cko_max = {value = 13.5, symbol = "TDELAY", source = "Table 7-22"}
+cko_min = {value = 0, symbol = "TDELAY", source = "Table 7-22"}
+launch_edge = "Rising"

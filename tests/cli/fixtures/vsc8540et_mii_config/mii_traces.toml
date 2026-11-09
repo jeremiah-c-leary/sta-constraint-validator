@@ -1,0 +1,49 @@
+# stacv traces file for the VSC8540ET's MII interface.
+# The MII traces are linked to the interface's ports and the part's pins by signal, so they
+# are in a file of their own; the other modes share traces.toml.
+#
+# Delays are in nanoseconds.  These are example values, not a real board.
+
+default_delay = {max_delay = 1.0, min_delay = 0.0}
+
+# MII: the PHY sends both clocks
+
+[[trace]]
+name = "mii_tx_clk"
+if_signal = "TX_CLK"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_txd"
+if_signal = "TXD"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_tx_en"
+if_signal = "TX_EN"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_tx_er"
+if_signal = "TX_ER"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_rx_clk"
+if_signal = "RX_CLK"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_rxd"
+if_signal = "RXD"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_rx_dv"
+if_signal = "RX_DV"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "mii_rx_er"
+if_signal = "RX_ER"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}

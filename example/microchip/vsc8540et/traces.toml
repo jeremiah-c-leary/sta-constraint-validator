@@ -1,5 +1,6 @@
 # stacv traces file for a board with one VSC8540ET connected in each MAC mode.
-# Each mode is its own interface file; they all share this traces file.
+# Each mode is its own interface file; they share this traces file, but for RMII and MII,
+# which are linked by signal and have files of their own.
 #
 # Delays are in nanoseconds.  These are example values, not a real board.
 
@@ -19,56 +20,6 @@ device_pin = "IO_MDIO"
 part_pin = "MDIO"
 device_to_part = {max_delay = 1.5, min_delay = 1.0}
 part_to_device = {max_delay = 1.5, min_delay = 1.0}
-
-# MII: the PHY sends both clocks
-
-[[trace]]
-name = "mii_tx_clk"
-device_pin = "I_MII_TX_CLK"
-part_pin = "MII_TXCLK"
-part_to_device = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "mii_txd"
-device_pin = "O_MII_TXD[3:0]"
-part_pin = "TXD[3:0]"
-device_to_part = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "mii_tx_en"
-device_pin = "O_MII_TX_EN"
-part_pin = "TX_EN"
-device_to_part = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "mii_tx_er"
-device_pin = "O_MII_TX_ER"
-part_pin = "TX_ER"
-device_to_part = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "mii_rx_clk"
-device_pin = "I_MII_RX_CLK"
-part_pin = "RX_CLK"
-part_to_device = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "mii_rxd"
-device_pin = "I_MII_RXD[3:0]"
-part_pin = "RXD[3:0]"
-part_to_device = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "mii_rx_dv"
-device_pin = "I_MII_RX_DV"
-part_pin = "RX_DV"
-part_to_device = {max_delay = 1.2, min_delay = 0.8}
-
-[[trace]]
-name = "mii_rx_er"
-device_pin = "I_MII_RX_ER"
-part_pin = "RX_ER"
-part_to_device = {max_delay = 1.2, min_delay = 0.8}
 
 # Uncompensated RGMII: the board adds more than 1.5 ns to each clock (Table 7-25, footnote 1)
 
