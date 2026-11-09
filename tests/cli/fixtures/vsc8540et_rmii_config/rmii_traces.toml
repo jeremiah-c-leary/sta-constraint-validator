@@ -1,0 +1,51 @@
+# stacv traces file for the VSC8540ET's RMII interface.
+# The RMII traces are linked to the interface's ports and the part's pins by signal, so they
+# are in a file of their own; the other modes share traces.toml.
+#
+# Delays are in nanoseconds.  These are example values, not a real board.
+
+default_delay = {max_delay = 1.0, min_delay = 0.0}
+
+# RMII: the PHY's RMII_CLKOUT drives the 50 MHz clock back into its own RMII_CLKIN and into the device (Mode 2)
+
+[[trace]]
+name = "rmii_clk_to_device"
+source = "phy_rmii_clkout"
+device_pin = "I_RMII_REF_CLK"
+source_to_device = {max_delay = 1.4, min_delay = 1.0}
+
+[[trace]]
+name = "rmii_clk_to_part"
+source = "phy_rmii_clkout"
+part_pin = "RMII_CLKIN"
+source_to_part = {max_delay = 0.6, min_delay = 0.4}
+
+[[trace]]
+name = "rmii_txd"
+if_signal = "TXD"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "rmii_tx_en"
+if_signal = "TX_EN"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "rmii_tx_er"
+if_signal = "TX_ER"
+device_to_part = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "rmii_rxd"
+if_signal = "RXD"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "rmii_crs_dv"
+if_signal = "CRS_DV"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}
+
+[[trace]]
+name = "rmii_rx_er"
+if_signal = "RX_ER"
+part_to_device = {max_delay = 1.2, min_delay = 0.8}

@@ -1,0 +1,456 @@
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Tue Nov  3 22:53:26 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_clocks rmii_ref_clk] -through [get_ports I_RMII_RX_ER] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_RMII_RX_ER_timing.rpt
+| Design       : vsc8540et_mac
+| Device       : xa7a15t-csg324
+| Speed File   : -1Q  PRODUCTION 1.16 2018-06-13
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             3.209ns  (required time - arrival time)
+  Source:                 I_RMII_RX_ER
+                            (input port clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            q_rmii_rx_er_reg/D
+                            (rising edge-triggered cell FDRE clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             rmii_ref_clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (rmii_ref_clk rise@20.000ns - rmii_ref_clk rise@0.000ns)
+  Data Path Delay:        6.690ns  (logic 1.039ns (15.533%)  route 5.651ns (84.467%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            14.300ns
+  Clock Path Skew:        4.301ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.301ns = ( 24.301 - 20.000 ) 
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+                         input delay                 14.300    14.300    
+    R16                                               0.000    14.300 r  I_RMII_RX_ER (IN)
+                         net (fo=0)                   0.000    14.300    I_RMII_RX_ER
+    R16                  IBUF (Prop_ibuf_I_O)         1.039    15.339 r  I_RMII_RX_ER_IBUF_inst/O
+                         net (fo=1, routed)           5.651    20.990    I_RMII_RX_ER_IBUF
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock rmii_ref_clk rise edge)    20.000    20.000 r  
+    T14                                               0.000    20.000 r  I_RMII_REF_CLK (IN)
+                         net (fo=0)                   0.000    20.000    I_RMII_REF_CLK
+    T14                  IBUF (Prop_ibuf_I_O)         0.834    20.834 r  I_RMII_REF_CLK_IBUF_inst/O
+                         net (fo=1, routed)           1.868    22.702    I_RMII_REF_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    22.793 r  I_RMII_REF_CLK_IBUF_BUFG_inst/O
+                         net (fo=8, routed)           1.508    24.301    I_RMII_REF_CLK_IBUF_BUFG
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/C
+                         clock pessimism              0.000    24.301    
+                         clock uncertainty           -0.035    24.266    
+    SLICE_X0Y20          FDRE (Setup_fdre_C_D)       -0.067    24.199    q_rmii_rx_er_reg
+  -------------------------------------------------------------------
+                         required time                         24.199    
+                         arrival time                         -20.990    
+  -------------------------------------------------------------------
+                         slack                                  3.209    
+
+Slack (MET) :             3.209ns  (required time - arrival time)
+  Source:                 I_RMII_RX_ER
+                            (input port clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            q_rmii_rx_er_reg/D
+                            (rising edge-triggered cell FDRE clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             rmii_ref_clk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            20.000ns  (rmii_ref_clk rise@20.000ns - rmii_ref_clk rise@0.000ns)
+  Data Path Delay:        6.690ns  (logic 1.039ns (15.533%)  route 5.651ns (84.467%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            14.300ns
+  Clock Path Skew:        4.301ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    4.301ns = ( 24.301 - 20.000 ) 
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+                         input delay                 14.300    14.300    
+    R16                                               0.000    14.300 f  I_RMII_RX_ER (IN)
+                         net (fo=0)                   0.000    14.300    I_RMII_RX_ER
+    R16                  IBUF (Prop_ibuf_I_O)         1.039    15.339 f  I_RMII_RX_ER_IBUF_inst/O
+                         net (fo=1, routed)           5.651    20.990    I_RMII_RX_ER_IBUF
+    SLICE_X0Y20          FDRE                                         f  q_rmii_rx_er_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock rmii_ref_clk rise edge)    20.000    20.000 r  
+    T14                                               0.000    20.000 r  I_RMII_REF_CLK (IN)
+                         net (fo=0)                   0.000    20.000    I_RMII_REF_CLK
+    T14                  IBUF (Prop_ibuf_I_O)         0.834    20.834 r  I_RMII_REF_CLK_IBUF_inst/O
+                         net (fo=1, routed)           1.868    22.702    I_RMII_REF_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.091    22.793 r  I_RMII_REF_CLK_IBUF_BUFG_inst/O
+                         net (fo=8, routed)           1.508    24.301    I_RMII_REF_CLK_IBUF_BUFG
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/C
+                         clock pessimism              0.000    24.301    
+                         clock uncertainty           -0.035    24.266    
+    SLICE_X0Y20          FDRE (Setup_fdre_C_D)       -0.067    24.199    q_rmii_rx_er_reg
+  -------------------------------------------------------------------
+                         required time                         24.199    
+                         arrival time                         -20.990    
+  -------------------------------------------------------------------
+                         slack                                  3.209    
+
+
+
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Tue Nov  3 22:53:26 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_clocks rmii_ref_clk] -through [get_ports I_RMII_RX_ER] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_RMII_RX_ER_timing.rpt
+| Design       : vsc8540et_mac
+| Device       : xa7a15t-csg324
+| Speed File   : -1Q  PRODUCTION 1.16 2018-06-13
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.434ns  (arrival time - required time)
+  Source:                 I_RMII_RX_ER
+                            (input port clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            q_rmii_rx_er_reg/D
+                            (rising edge-triggered cell FDRE clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             rmii_ref_clk
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (rmii_ref_clk rise@0.000ns - rmii_ref_clk rise@0.000ns)
+  Data Path Delay:        5.697ns  (logic 0.828ns (14.529%)  route 4.869ns (85.471%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            -0.200ns
+  Clock Path Skew:        4.738ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.738ns
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+                         input delay                 -0.200    -0.200    
+    R16                                               0.000    -0.200 r  I_RMII_RX_ER (IN)
+                         net (fo=0)                   0.000    -0.200    I_RMII_RX_ER
+    R16                  IBUF (Prop_ibuf_I_O)         0.828     0.628 r  I_RMII_RX_ER_IBUF_inst/O
+                         net (fo=1, routed)           4.869     5.497    I_RMII_RX_ER_IBUF
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+    T14                                               0.000     0.000 r  I_RMII_REF_CLK (IN)
+                         net (fo=0)                   0.000     0.000    I_RMII_REF_CLK
+    T14                  IBUF (Prop_ibuf_I_O)         1.045     1.045 r  I_RMII_REF_CLK_IBUF_inst/O
+                         net (fo=1, routed)           1.972     3.017    I_RMII_REF_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.113 r  I_RMII_REF_CLK_IBUF_BUFG_inst/O
+                         net (fo=8, routed)           1.625     4.738    I_RMII_REF_CLK_IBUF_BUFG
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/C
+                         clock pessimism              0.000     4.738    
+                         clock uncertainty            0.035     4.774    
+    SLICE_X0Y20          FDRE (Hold_fdre_C_D)         0.289     5.063    q_rmii_rx_er_reg
+  -------------------------------------------------------------------
+                         required time                         -5.063    
+                         arrival time                           5.497    
+  -------------------------------------------------------------------
+                         slack                                  0.434    
+
+Slack (MET) :             0.434ns  (arrival time - required time)
+  Source:                 I_RMII_RX_ER
+                            (input port clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            q_rmii_rx_er_reg/D
+                            (rising edge-triggered cell FDRE clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             rmii_ref_clk
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (rmii_ref_clk rise@0.000ns - rmii_ref_clk rise@0.000ns)
+  Data Path Delay:        5.697ns  (logic 0.828ns (14.529%)  route 4.869ns (85.471%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            -0.200ns
+  Clock Path Skew:        4.738ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    4.738ns
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+                         input delay                 -0.200    -0.200    
+    R16                                               0.000    -0.200 f  I_RMII_RX_ER (IN)
+                         net (fo=0)                   0.000    -0.200    I_RMII_RX_ER
+    R16                  IBUF (Prop_ibuf_I_O)         0.828     0.628 f  I_RMII_RX_ER_IBUF_inst/O
+                         net (fo=1, routed)           4.869     5.497    I_RMII_RX_ER_IBUF
+    SLICE_X0Y20          FDRE                                         f  q_rmii_rx_er_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+    T14                                               0.000     0.000 r  I_RMII_REF_CLK (IN)
+                         net (fo=0)                   0.000     0.000    I_RMII_REF_CLK
+    T14                  IBUF (Prop_ibuf_I_O)         1.045     1.045 r  I_RMII_REF_CLK_IBUF_inst/O
+                         net (fo=1, routed)           1.972     3.017    I_RMII_REF_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.096     3.113 r  I_RMII_REF_CLK_IBUF_BUFG_inst/O
+                         net (fo=8, routed)           1.625     4.738    I_RMII_REF_CLK_IBUF_BUFG
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/C
+                         clock pessimism              0.000     4.738    
+                         clock uncertainty            0.035     4.774    
+    SLICE_X0Y20          FDRE (Hold_fdre_C_D)         0.289     5.063    q_rmii_rx_er_reg
+  -------------------------------------------------------------------
+                         required time                         -5.063    
+                         arrival time                           5.497    
+  -------------------------------------------------------------------
+                         slack                                  0.434    
+
+
+
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Tue Nov  3 22:53:26 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_clocks rmii_ref_clk] -through [get_ports I_RMII_RX_ER] -setup -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_RMII_RX_ER_timing.rpt
+| Design       : vsc8540et_mac
+| Device       : xa7a15t-csg324
+| Speed File   : -1Q  PRODUCTION 1.16 2018-06-13
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             4.085ns  (required time - arrival time)
+  Source:                 I_RMII_RX_ER
+                            (input port clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            q_rmii_rx_er_reg/D
+                            (rising edge-triggered cell FDRE clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             rmii_ref_clk
+  Path Type:              Setup (Max at Fast Process Corner)
+  Requirement:            20.000ns  (rmii_ref_clk rise@20.000ns - rmii_ref_clk rise@0.000ns)
+  Data Path Delay:        3.007ns  (logic 0.379ns (12.602%)  route 2.628ns (87.398%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            14.300ns
+  Clock Path Skew:        1.442ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.442ns = ( 21.442 - 20.000 ) 
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+                         input delay                 14.300    14.300    
+    R16                                               0.000    14.300 r  I_RMII_RX_ER (IN)
+                         net (fo=0)                   0.000    14.300    I_RMII_RX_ER
+    R16                  IBUF (Prop_ibuf_I_O)         0.379    14.679 r  I_RMII_RX_ER_IBUF_inst/O
+                         net (fo=1, routed)           2.628    17.307    I_RMII_RX_ER_IBUF
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock rmii_ref_clk rise edge)    20.000    20.000 r  
+    T14                                               0.000    20.000 r  I_RMII_REF_CLK (IN)
+                         net (fo=0)                   0.000    20.000    I_RMII_REF_CLK
+    T14                  IBUF (Prop_ibuf_I_O)         0.196    20.196 r  I_RMII_REF_CLK_IBUF_inst/O
+                         net (fo=1, routed)           0.634    20.830    I_RMII_REF_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.026    20.856 r  I_RMII_REF_CLK_IBUF_BUFG_inst/O
+                         net (fo=8, routed)           0.586    21.442    I_RMII_REF_CLK_IBUF_BUFG
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/C
+                         clock pessimism              0.000    21.442    
+                         clock uncertainty           -0.035    21.406    
+    SLICE_X0Y20          FDRE (Setup_fdre_C_D)       -0.014    21.392    q_rmii_rx_er_reg
+  -------------------------------------------------------------------
+                         required time                         21.392    
+                         arrival time                         -17.307    
+  -------------------------------------------------------------------
+                         slack                                  4.085    
+
+Slack (MET) :             4.085ns  (required time - arrival time)
+  Source:                 I_RMII_RX_ER
+                            (input port clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            q_rmii_rx_er_reg/D
+                            (rising edge-triggered cell FDRE clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             rmii_ref_clk
+  Path Type:              Setup (Max at Fast Process Corner)
+  Requirement:            20.000ns  (rmii_ref_clk rise@20.000ns - rmii_ref_clk rise@0.000ns)
+  Data Path Delay:        3.007ns  (logic 0.379ns (12.602%)  route 2.628ns (87.398%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            14.300ns
+  Clock Path Skew:        1.442ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    1.442ns = ( 21.442 - 20.000 ) 
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+                         input delay                 14.300    14.300    
+    R16                                               0.000    14.300 f  I_RMII_RX_ER (IN)
+                         net (fo=0)                   0.000    14.300    I_RMII_RX_ER
+    R16                  IBUF (Prop_ibuf_I_O)         0.379    14.679 f  I_RMII_RX_ER_IBUF_inst/O
+                         net (fo=1, routed)           2.628    17.307    I_RMII_RX_ER_IBUF
+    SLICE_X0Y20          FDRE                                         f  q_rmii_rx_er_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock rmii_ref_clk rise edge)    20.000    20.000 r  
+    T14                                               0.000    20.000 r  I_RMII_REF_CLK (IN)
+                         net (fo=0)                   0.000    20.000    I_RMII_REF_CLK
+    T14                  IBUF (Prop_ibuf_I_O)         0.196    20.196 r  I_RMII_REF_CLK_IBUF_inst/O
+                         net (fo=1, routed)           0.634    20.830    I_RMII_REF_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.026    20.856 r  I_RMII_REF_CLK_IBUF_BUFG_inst/O
+                         net (fo=8, routed)           0.586    21.442    I_RMII_REF_CLK_IBUF_BUFG
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/C
+                         clock pessimism              0.000    21.442    
+                         clock uncertainty           -0.035    21.406    
+    SLICE_X0Y20          FDRE (Setup_fdre_C_D)       -0.014    21.392    q_rmii_rx_er_reg
+  -------------------------------------------------------------------
+                         required time                         21.392    
+                         arrival time                         -17.307    
+  -------------------------------------------------------------------
+                         slack                                  4.085    
+
+
+
+
+Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2020.2 (win64) Build 3064766 Wed Nov 18 09:12:45 MST 2020
+| Date         : Tue Nov  3 22:53:26 2026
+| Host         : DESKTOP-HV9NHA3 running 64-bit major release  (build 9200)
+| Command      : report_timing -column_style variable_width -from [get_clocks rmii_ref_clk] -through [get_ports I_RMII_RX_ER] -hold -max_paths 100 -nworst 100 -path full_clock_expanded -append -file Z:/home/jcleary/projects/sta-constraint-validator/example/microchip/vsc8540et/timing_reports/I_RMII_RX_ER_timing.rpt
+| Design       : vsc8540et_mac
+| Device       : xa7a15t-csg324
+| Speed File   : -1Q  PRODUCTION 1.16 2018-06-13
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.183ns  (arrival time - required time)
+  Source:                 I_RMII_RX_ER
+                            (input port clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            q_rmii_rx_er_reg/D
+                            (rising edge-triggered cell FDRE clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             rmii_ref_clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (rmii_ref_clk rise@0.000ns - rmii_ref_clk rise@0.000ns)
+  Data Path Delay:        2.446ns  (logic 0.190ns (7.772%)  route 2.256ns (92.228%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            -0.200ns
+  Clock Path Skew:        1.957ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.957ns
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+                         input delay                 -0.200    -0.200    
+    R16                                               0.000    -0.200 r  I_RMII_RX_ER (IN)
+                         net (fo=0)                   0.000    -0.200    I_RMII_RX_ER
+    R16                  IBUF (Prop_ibuf_I_O)         0.190    -0.010 r  I_RMII_RX_ER_IBUF_inst/O
+                         net (fo=1, routed)           2.256     2.246    I_RMII_RX_ER_IBUF
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+    T14                                               0.000     0.000 r  I_RMII_REF_CLK (IN)
+                         net (fo=0)                   0.000     0.000    I_RMII_REF_CLK
+    T14                  IBUF (Prop_ibuf_I_O)         0.385     0.385 r  I_RMII_REF_CLK_IBUF_inst/O
+                         net (fo=1, routed)           0.689     1.074    I_RMII_REF_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.029     1.103 r  I_RMII_REF_CLK_IBUF_BUFG_inst/O
+                         net (fo=8, routed)           0.855     1.957    I_RMII_REF_CLK_IBUF_BUFG
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/C
+                         clock pessimism              0.000     1.957    
+                         clock uncertainty            0.035     1.993    
+    SLICE_X0Y20          FDRE (Hold_fdre_C_D)         0.070     2.063    q_rmii_rx_er_reg
+  -------------------------------------------------------------------
+                         required time                         -2.063    
+                         arrival time                           2.246    
+  -------------------------------------------------------------------
+                         slack                                  0.183    
+
+Slack (MET) :             0.183ns  (arrival time - required time)
+  Source:                 I_RMII_RX_ER
+                            (input port clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Destination:            q_rmii_rx_er_reg/D
+                            (rising edge-triggered cell FDRE clocked by rmii_ref_clk  {rise@0.000ns fall@10.000ns period=20.000ns})
+  Path Group:             rmii_ref_clk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (rmii_ref_clk rise@0.000ns - rmii_ref_clk rise@0.000ns)
+  Data Path Delay:        2.446ns  (logic 0.190ns (7.772%)  route 2.256ns (92.228%))
+  Logic Levels:           1  (IBUF=1)
+  Input Delay:            -0.200ns
+  Clock Path Skew:        1.957ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.957ns
+    Source Clock Delay      (SCD):    0.000ns
+    Clock Pessimism Removal (CPR):    -0.000ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+                         input delay                 -0.200    -0.200    
+    R16                                               0.000    -0.200 f  I_RMII_RX_ER (IN)
+                         net (fo=0)                   0.000    -0.200    I_RMII_RX_ER
+    R16                  IBUF (Prop_ibuf_I_O)         0.190    -0.010 f  I_RMII_RX_ER_IBUF_inst/O
+                         net (fo=1, routed)           2.256     2.246    I_RMII_RX_ER_IBUF
+    SLICE_X0Y20          FDRE                                         f  q_rmii_rx_er_reg/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock rmii_ref_clk rise edge)     0.000     0.000 r  
+    T14                                               0.000     0.000 r  I_RMII_REF_CLK (IN)
+                         net (fo=0)                   0.000     0.000    I_RMII_REF_CLK
+    T14                  IBUF (Prop_ibuf_I_O)         0.385     0.385 r  I_RMII_REF_CLK_IBUF_inst/O
+                         net (fo=1, routed)           0.689     1.074    I_RMII_REF_CLK_IBUF
+    BUFGCTRL_X0Y0        BUFG (Prop_bufg_I_O)         0.029     1.103 r  I_RMII_REF_CLK_IBUF_BUFG_inst/O
+                         net (fo=8, routed)           0.855     1.957    I_RMII_REF_CLK_IBUF_BUFG
+    SLICE_X0Y20          FDRE                                         r  q_rmii_rx_er_reg/C
+                         clock pessimism              0.000     1.957    
+                         clock uncertainty            0.035     1.993    
+    SLICE_X0Y20          FDRE (Hold_fdre_C_D)         0.070     2.063    q_rmii_rx_er_reg
+  -------------------------------------------------------------------
+                         required time                         -2.063    
+                         arrival time                           2.246    
+  -------------------------------------------------------------------
+                         slack                                  0.183    
+
+
+
+

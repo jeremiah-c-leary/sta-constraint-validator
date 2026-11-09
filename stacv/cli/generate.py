@@ -9,7 +9,6 @@ from stacv.generate import report_tcl_file
 from stacv.generate import xdc_file
 from stacv.part import part
 from stacv.spi import spi_config
-from stacv.spi import spi_interface
 from stacv.standards import interface_standard
 from stacv.timing_report import timing_report_file
 from stacv.timing_report.xilinx import vivado
@@ -40,7 +39,7 @@ def generate_interface_file(sConfigFile):
     dConfig = interface_config.read_file(sConfigFile)
     if not spi_config.is_interface_configuration(dConfig):
         raise config_error.ConfigError('generate_012', sConfigFile, 'is an interface file, not an interface configuration file; only an interface configuration file, such as spi_config.toml, generates an interface file')
-    return spi_interface.build_interface_lines(spi_config.read_spi_config(sConfigFile))
+    return interface_config.build_configuration_lines(sConfigFile, dConfig)
 
 
 def generate_xdc_file(sInterfaceFile, oInterface):

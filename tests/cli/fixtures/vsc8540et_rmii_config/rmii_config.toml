@@ -1,0 +1,53 @@
+# RMII configuration for the VSC8540ET MAC design: the FPGA is the MAC, the VSC8540ET the PHY.
+#
+# stacv generates the interface file, the constraints and the report script from this file.
+# Only this file, the part file and the traces file are edited.
+#
+# RMII:  every signal is launched and captured on the rising edge of the 50 MHz REF_CLK, at
+#        the MAC and at the PHY, so there are no edges to set.  Where REF_CLK comes from (the
+#        PHY, the MAC or an oscillator) is in the traces file: its delay to each end.
+#
+# Registers are named as Vivado names them:  the hierarchy separated by /, with _reg added,
+# and the bits of a bus as reg[*].  Paths are relative to this file.
+
+interface = "rmii"
+name      = "VSC8540_RMII"
+role      = "MAC"
+
+part    = "vsc8540et.toml"
+traces  = "rmii_traces.toml"
+
+timing_reports_dir = "timing_reports"
+
+# REF_CLK: the 50 MHz reference clock the MAC receives: the clock's name in the
+# constraints, and the port it arrives on.
+[ref_clk]
+name = "rmii_ref_clk"
+port = "I_RMII_REF_CLK"
+
+# TXD[1:0], TX_EN and TX_ER: data from the MAC to the PHY.
+# TX_ER and RX_ER are optional in RMII: remove [tx_er] or [rx_er] if the design does not use it.
+[txd]
+port     = "O_RMII_TXD[1:0]"
+register = "q_rmii_txd_reg[*]"
+
+[tx_en]
+port     = "O_RMII_TX_EN"
+register = "q_rmii_tx_en_reg"
+
+[tx_er]
+port     = "O_RMII_TX_ER"
+register = "q_rmii_tx_er_reg"
+
+# RXD[1:0], CRS_DV and RX_ER: data from the PHY to the MAC.
+[rxd]
+port     = "I_RMII_RXD[1:0]"
+register = "q_rmii_rxd_reg[*]"
+
+[crs_dv]
+port     = "I_RMII_CRS_DV"
+register = "q_rmii_crs_dv_reg"
+
+[rx_er]
+port     = "I_RMII_RX_ER"
+register = "q_rmii_rx_er_reg"

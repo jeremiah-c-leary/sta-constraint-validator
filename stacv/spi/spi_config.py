@@ -20,7 +20,7 @@ from stacv.standards import standards
 
 READER = config_reader.ConfigReader('spi_config', spi_config_error.SpiConfigError)
 INTERFACE_KEY = 'interface'
-CONFIGURATIONS = ['spi']
+CONFIGURATIONS = ['spi', 'rmii']
 PLACEHOLDER = 'FROM_DESIGN'
 MODES = [0, 1, 2, 3]
 TOP_LEVEL_KEYS = ['interface', 'name', 'mode', 'role', 'part', 'traces', 'timing_reports_dir', 'device_clock', 'sck', 'copi', 'cipo', 'cs']
@@ -409,7 +409,7 @@ SCK_EDGE_NAMES['first sample'] = 'the first SCK sample edge'
 SCK_EDGE_NAMES['last change'] = 'the last SCK change edge'
 SCK_EDGE_NAMES['last sample'] = 'the last SCK sample edge'
 EDGES_HEADING = 'set in the SPI configuration, not verified against simulation'
-CLOCKS_HEADING = 'set in the SPI configuration'
+CLOCKS_HEADING = 'set in the interface configuration'
 
 
 def build_edge_lines(oConfig):
