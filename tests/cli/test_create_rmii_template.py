@@ -75,7 +75,7 @@ class TestRmiiTemplate(unittest.TestCase):
         self.assertEqual(0, self.create_rmii())
         os.chdir(self.sDirectory)
         self.assertEqual(2, self.run_stacv(['generate', 'xdc', 'rmii_config.toml']))
-        self.assertEqual('ERROR: [rmii_config_006] rmii_config.toml key "name" in [ref_clk] (line 34) is FROM_DESIGN_REF_CLK_NAME; replace it with the name in your design\n', self.oStderr.getvalue())
+        self.assertEqual('ERROR: [rmii_config_006] rmii_config.toml key "name" in [ref_clk] (line 36) is FROM_DESIGN_REF_CLK_NAME; replace it with the name in your design\n', self.oStderr.getvalue())
 
     def test_a_reference_clock_port_still_to_fill_in_in_the_traces_is_an_error(self):
         self.assertEqual(0, self.create_rmii())

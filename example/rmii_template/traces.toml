@@ -8,6 +8,7 @@
 # The data traces are linked to their port and pin by signal, so keep their names.
 # REF_CLK comes from a source, the PHY, the MAC or an oscillator, on a trace to each
 # end, which names its pin: the port REF_CLK arrives on, and the PHY's REF_CLK pin.
+# source is any name for the source; the two traces share it.
 # Keys below each "set by stacv create template rmii" line are set by the RMII standard;
 # do not change them.
 #

@@ -103,7 +103,7 @@ class TestRmiiConfigErrors(RmiiConfigTestCase):
 
     def test_a_missing_key_is_reported_at_its_table(self):
         self.edit_config('register = "q_rmii_tx_en_reg"\n', '')
-        self.assert_error('rmii_config_002', 'missing required key "register" in [tx_en] (line 34)')
+        self.assert_error('rmii_config_002', 'missing required key "register" in [tx_en] (line 35)')
 
     def test_a_missing_required_signal_is_an_error(self):
         self.edit_config('[crs_dv]\nport     = "I_RMII_CRS_DV"\nregister = "q_rmii_crs_dv_reg"\n', '')
@@ -115,7 +115,11 @@ class TestRmiiConfigErrors(RmiiConfigTestCase):
 
     def test_a_name_still_to_fill_in_is_an_error(self):
         self.edit_config('port = "I_RMII_REF_CLK"', 'port = "FROM_DESIGN_REF_CLK_PORT"')
-        self.assert_error('rmii_config_006', 'key "port" in [ref_clk] (line 26) is FROM_DESIGN_REF_CLK_PORT; replace it with the name in your design')
+        self.assert_error('rmii_config_006', 'key "port" in [ref_clk] (line 27) is FROM_DESIGN_REF_CLK_PORT; replace it with the name in your design')
+
+    def test_a_bus_port_written_as_its_registers_are_is_an_error(self):
+        self.edit_config('port     = "O_RMII_TXD[1:0]"', 'port     = "O_RMII_TXD[*]"')
+        self.assert_error('rmii_config_014', 'key "port" in [txd] (line 32) is O_RMII_TXD[*]; write a bus port as NAME[upper:lower], such as TXD[1:0], and its register as reg[*]')
 
     def test_a_phy_is_not_supported_yet(self):
         self.edit_config('role      = "MAC"', 'role      = "PHY"')

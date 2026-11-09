@@ -19,8 +19,9 @@ traces  = "rmii_traces.toml"
 
 timing_reports_dir = "timing_reports"
 
-# REF_CLK: the 50 MHz reference clock the MAC receives: the clock's name in the
-# constraints, and the port it arrives on.
+# REF_CLK: the 50 MHz reference clock the MAC receives on its port.  stacv creates
+# the clock with this name (create_clock); if the board constraints already create
+# a clock on the port, Vivado warns of the two, so remove the other.
 [ref_clk]
 name = "rmii_ref_clk"
 port = "I_RMII_REF_CLK"

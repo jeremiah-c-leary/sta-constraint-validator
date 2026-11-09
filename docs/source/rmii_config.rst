@@ -27,7 +27,7 @@ Key                         Value
 ``part``                    The part file, a path relative to this file.
 ``traces``                  The traces file, a path relative to this file.
 ``timing_reports_dir``      The folder the timing reports are written to and read from, relative to this file.
-``[ref_clk]``               ``name``: the clock's name in the constraints; ``port``: the port REF_CLK arrives on.
+``[ref_clk]``               ``name``: the name stacv creates the clock with; ``port``: the port REF_CLK arrives on.
 ``[txd]``, ``[tx_en]``      ``port`` and ``register`` of each signal from the MAC to the PHY.
 ``[tx_er]``                 The same, and optional: remove it, and its trace, if the design does not use TX_ER.
 ``[rxd]``, ``[crs_dv]``     ``port`` and ``register`` of each signal from the PHY to the MAC.
@@ -35,6 +35,8 @@ Key                         Value
 ==========================  ==========================================================================================
 
 A value still ``FROM_DESIGN_...``, as the template writes it, stops every command (rmii_config_006).
+A bus port is written ``NAME[upper:lower]``, such as ``O_RMII_TXD[1:0]``, and its register ``reg[*]`` (rmii_config_014).
+stacv creates REF_CLK's clock on its port; if the board constraints already create one there, Vivado warns of the two, so remove the other.
 
 The interface it expands to
 ---------------------------

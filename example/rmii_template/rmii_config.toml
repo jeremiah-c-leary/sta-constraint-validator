@@ -11,6 +11,7 @@
 # Each placeholder is named after its key, so it can be found and replaced on its own.
 # Registers are named as Vivado names them:  the hierarchy separated by /, with
 # _reg added, and the bits of a bus as reg[*], such as u_mac/rmii_txd_reg[*].
+# A bus port is written NAME[upper:lower], such as O_RMII_TXD[1:0].
 #
 # RMII:  every signal is launched and captured on the rising edge of the 50 MHz
 #        REF_CLK, at the MAC and at the PHY, so there are no edges or periods to
@@ -28,8 +29,9 @@ traces  = "traces.toml"
 
 timing_reports_dir = "timing_reports"
 
-# REF_CLK: the 50 MHz reference clock the MAC receives: the clock's name in the
-# constraints, and the port it arrives on.
+# REF_CLK: the 50 MHz reference clock the MAC receives on its port.  stacv creates
+# the clock with this name (create_clock); if the board constraints already create
+# a clock on the port, Vivado warns of the two, so remove the other.
 [ref_clk]
 name = "FROM_DESIGN_REF_CLK_NAME"
 port = "FROM_DESIGN_REF_CLK_PORT"

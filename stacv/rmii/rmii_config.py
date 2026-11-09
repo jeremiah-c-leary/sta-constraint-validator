@@ -7,6 +7,7 @@ into an interface file whenever a command reads it.
 '''
 
 import os
+import re
 import tomllib
 
 from stacv.config import config_reader
@@ -126,9 +127,17 @@ def read_signal(dConfig, sTable, sSignal, oLocation):
     dTable = read_table(dConfig, sTable, SIGNAL_KEYS, oLocation)
     oSignal = Signal()
     oSignal.signal = sSignal
-    oSignal.port = read_string(dTable, sTable, 'port', oLocation)
+    oSignal.port = read_port(dTable, sTable, oLocation)
     oSignal.register = read_string(dTable, sTable, 'register', oLocation)
     return oSignal
+
+
+def read_port(dTable, sTable, oLocation):
+    # A bus port is written NAME[upper:lower], unlike its registers, which are written reg[*].
+    sPort = read_string(dTable, sTable, 'port', oLocation)
+    if '[' in sPort and re.fullmatch(r'[A-Za-z_]\w*\[\d+:\d+\]', sPort) is None:
+        READER.raise_error(14, oLocation.filename, f'key "port"{oLocation.location} is {sPort}; write a bus port as NAME[upper:lower], such as TXD[1:0], and its register as reg[*]')
+    return sPort
 
 
 def find_part_interface(oConfig):

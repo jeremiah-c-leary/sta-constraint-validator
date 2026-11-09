@@ -349,6 +349,9 @@ The location names the table and the line of the key, as for an SPI configuratio
    * - rmii_config_008
      - ``key "role"<location> must be "MAC"; a PHY is not supported yet``
      - Only the device as the MAC can be timed yet.
+   * - rmii_config_014
+     - ``key "port"<location> is <port>; write a bus port as NAME[upper:lower], such as TXD[1:0], and its register as reg[*]``
+     - Write the port as the bus it is; only its register is written with ``[*]``.
    * - rmii_config_012
      - ``key "part"<location> names <file>, which has no [[interface]] with if_standard "RMII" and if_role "PHY"``
      - Give the part's RMII interface the standard and the PHY role.
