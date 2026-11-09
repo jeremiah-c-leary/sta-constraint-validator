@@ -103,7 +103,7 @@ The constraints file lists each clock's period, and each edge with its source, i
 
 .. code-block:: text
 
-   # Clocks:     set in the SPI configuration
+   # Clocks:     set in the interface configuration
    #             device clock  sys_clk 10 ns
    #             SCK           dac_sclk 80 ns
    # Edges:      set in the SPI configuration, not verified against simulation

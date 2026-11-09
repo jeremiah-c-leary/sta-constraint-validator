@@ -42,6 +42,7 @@ Where people start
    :caption: Interface Patterns
 
    spi
+   rmii
 
 .. toctree::
    :maxdepth: 2
@@ -70,6 +71,7 @@ Where people start
    :caption: Theory of operation
 
    spi_config
+   rmii_config
    interface
    part
    traces

@@ -203,6 +203,9 @@ Traces file
    * - traces_config_011
      - ``trace <name> gives if_signal and a pin; give if_signal, or device_pin and part_pin``, or ``trace <name> from a clock source gives if_signal; a trace from a clock source names its pin``
      - A trace names its ends with ``device_pin`` and ``part_pin``, or with the ``if_signal`` that links them (see :doc:`standards`).
+   * - traces_config_012
+     - ``key "<device_pin or part_pin>" of trace <name> is FROM_..._<name>; replace it with the name in your design or the part's datasheet``
+     - Fill in the pin of a trace from a clock source, as a template writes it: the port the clock arrives on, or the part's clock pin.
 
 The location is ``in trace <name>``, or ``in trace number <n>`` when the trace has no name.
 
@@ -317,6 +320,43 @@ A file that is not valid TOML, or does not exist, is reported as interface_confi
    * - spi_config_015
      - ``key "<edge>"<location> has clocks <n>; an edge is on a device clock edge, so clocks is a whole or half number``
      - Give the device clocks from the SCK edge; a half is a falling edge of the device clock.
+
+RMII configuration file
+-----------------------
+
+These are checked by every command that reads an RMII configuration file (see :doc:`rmii_config`).
+The location names the table and the line of the key, as for an SPI configuration file.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 18 52 30
+
+   * - Identifier
+     - Message
+     - Correction
+   * - rmii_config_002
+     - ``missing required key "<key>"<location>``
+     - Add the key, or the table; only ``[tx_er]`` and ``[rx_er]`` may be left out.
+   * - rmii_config_003
+     - ``key "<key>"<location> must be <type>``
+     - Write the value as the type given.
+   * - rmii_config_004
+     - ``key "<key>"<location> is not a key stacv reads; the keys are <keys>``
+     - Correct the key name.
+   * - rmii_config_006
+     - ``key "<key>"<location> is FROM_DESIGN_<name>; replace it with the name in your design``
+     - Fill in the name.
+   * - rmii_config_008
+     - ``key "role"<location> must be "MAC"; a PHY is not supported yet``
+     - Only the device as the MAC can be timed yet.
+   * - rmii_config_012
+     - ``key "part"<location> names <file>, which has no [[interface]] with if_standard "RMII" and if_role "PHY"``
+     - Give the part's RMII interface the standard and the PHY role.
+   * - rmii_config_013
+     - ``key "part"<location> names <file>, which has more than one [[interface]] with ...: <names>``
+     - Keep one RMII interface in the part file.
+
+An ``interface`` that names a configuration stacv does not have is spi_config_005, which lists the configurations.
 
 Interface standards
 -------------------

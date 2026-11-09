@@ -9,6 +9,8 @@ from stacv.traces import traces_location
 
 READER = config_reader.ConfigReader('traces_config', traces_config_error.TracesConfigError)
 TOP_LEVEL_KEYS = ['default_delay', 'trace']
+# The start of a template's placeholders, FROM_DESIGN_... and FROM_DATASHEET_...
+PLACEHOLDER = 'FROM_'
 TRACE_KEYS = ['name', 'if_signal', 'device_pin', 'part_pin', 'device_to_part', 'part_to_device', 'source', 'source_to_device', 'source_to_part']
 DELAY_KEYS = ['max_delay', 'min_delay']
 
@@ -102,14 +104,22 @@ def build_source_trace(dTrace, oTrace, oDefaultDelay, oLocation):
     # Each trace runs from the source to one pin; the traces of one source share its name.
     oTrace.source = READER.get_required_string(dTrace, 'source', oLocation)
     if 'device_pin' in dTrace:
-        oTrace.device_pin = READER.get_required_string(dTrace, 'device_pin', oLocation)
+        oTrace.device_pin = read_source_trace_pin(dTrace, oTrace.name, 'device_pin', oLocation)
         oTrace.source_to_device = build_trace_delay(dTrace, oTrace.name, 'source_to_device', oDefaultDelay, oLocation)
     if 'part_pin' in dTrace:
-        oTrace.part_pin = READER.get_required_string(dTrace, 'part_pin', oLocation)
+        oTrace.part_pin = read_source_trace_pin(dTrace, oTrace.name, 'part_pin', oLocation)
         oTrace.source_to_part = build_trace_delay(dTrace, oTrace.name, 'source_to_part', oDefaultDelay, oLocation)
     if oTrace.source_to_device is None and oTrace.source_to_part is None:
         READER.raise_error(7, oLocation.filename, f'trace {oTrace.name} has neither source_to_device nor source_to_part')
     return oTrace
+
+
+def read_source_trace_pin(dTrace, sTraceName, sKey, oLocation):
+    # A template names a trace from a source by placeholders, as the pins are the design's and the part's names.
+    sPin = READER.get_required_string(dTrace, sKey, oLocation)
+    if sPin.startswith(PLACEHOLDER):
+        READER.raise_error(12, oLocation.filename, f'key "{sKey}" of trace {sTraceName} is {sPin}; replace it with the name in your design or the part\'s datasheet')
+    return sPin
 
 
 def set_trace_location(dTrace, iTrace, oLocation):
