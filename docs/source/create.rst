@@ -67,6 +67,25 @@ The command each was created by is at its top.
 
 ``example/spi_template`` holds the files of the command above.
 
+RMII
+----
+
+``stacv create template rmii`` creates the three files of an RMII interface, with the device as the MAC: its RMII configuration, its part file and its traces file (see :doc:`rmii_config` and :doc:`rmii`):
+
+.. code-block:: text
+
+   stacv create template rmii --output rmii
+
+RMII fixes its 50 MHz clock and every edge, so it takes no options.
+``rmii_config.toml``, ``part.toml`` and ``traces.toml`` are written to the directory.
+
+* ``rmii_config.toml`` has ``FROM_DESIGN_...`` for each name in the design, named after its key, which stacv stops on.
+* The part's values are ``FROM_DATASHEET_...``, named after the pin and key, which stacv stops on.
+* The traces file has a trace for each signal, linked by its signal: one for each data signal, and REF_CLK's two from its source, one to each end.
+* ``[tx_er]`` and ``[rx_er]`` are optional: remove the table and the trace of one the design does not use.
+
+``example/rmii_template`` holds the files of the command above.
+
 Errors
 ------
 

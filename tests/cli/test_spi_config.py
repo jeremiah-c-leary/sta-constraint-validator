@@ -158,7 +158,7 @@ class TestSpiConfig(SpiConfigTestCase):
     def test_the_constraints_list_each_clock_period(self):
         self.assertEqual(0, self.run_stacv(['generate', 'xdc', 'spi_config.toml']))
         lExpected = []
-        lExpected.append('# Clocks:     set in the SPI configuration')
+        lExpected.append('# Clocks:     set in the interface configuration')
         lExpected.append('#             device clock  sys_clk 10 ns')
         lExpected.append('#             SCK           dac_sclk 80 ns')
         lExpected.append('# Edges:      set in the SPI configuration, not verified against simulation')
@@ -169,7 +169,7 @@ class TestSpiConfig(SpiConfigTestCase):
         self.edit_config('period   = 80.0', 'period   = 80.0\nsource   = "dac39rf20_top.vhd: HALF_PERIOD 4"')
         sInterface = self.generate_interface()
         lExpected = []
-        lExpected.append('# Clocks: set in the SPI configuration')
+        lExpected.append('# Clocks: set in the interface configuration')
         lExpected.append('#         device clock  sys_clk 10 ns   dac39rf20_board.xdc: create_clock sys_clk')
         lExpected.append('#         SCK           dac_sclk 80 ns  dac39rf20_top.vhd: HALF_PERIOD 4')
         self.assertIn('\n'.join(lExpected) + '\n', sInterface)
@@ -244,7 +244,7 @@ class TestSpiConfigErrors(SpiConfigTestCase):
 
     def test_an_interface_stacv_has_no_configuration_for_is_an_error(self):
         self.edit_config('interface = "spi"', 'interface = "i2c"')
-        self.assert_error('spi_config_005', 'key "interface" (line 17) names i2c, which stacv has no configuration for; the configurations are spi')
+        self.assert_error('spi_config_005', 'key "interface" (line 17) names i2c, which stacv has no configuration for; the configurations are spi, rmii')
 
     def test_a_name_still_to_fill_in_is_an_error(self):
         self.edit_config('port     = "dac_sdo"', 'port     = "FROM_DESIGN"')

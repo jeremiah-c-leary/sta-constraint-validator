@@ -1,0 +1,67 @@
+# stacv interface file for the VSC8540ET uncompensated RGMII MAC interface.
+#
+# Paths are relative to this file.
+#
+# All periods are in nanoseconds
+
+description = "VSC8540ET uncompensated RGMII MAC interface"
+
+name = "VSC8540_RGMII"
+part = "vsc8540et.toml"
+part_interface = "Uncompensated RGMII MAC Interface"
+traces = "traces.toml"
+
+[[clock]]
+name = "clk_100mhz"
+period = 10.000
+
+[[clock]]
+name = "rgmii_txc"
+period = 40.000
+port = "O_RGMII_TXC"
+generator = {source = "q_rgmii_txc_reg", master_pin = "C", target_pin = "Q", master_clock = "clk_100mhz"}
+
+[[clock]]
+name = "rgmii_rxc"
+period = 40.000
+port = "I_RGMII_RXC"
+
+[[port]]
+name = "O_RGMII_TXD[3:0]"
+methodology = "DDR-SS-O"
+launch_clock = {name = "clk_100mhz", setup_edge = 6, hold_edge = 6}
+capture_clock = {name = "rgmii_txc", setup_edge = 2, hold_edge = 1}
+registers = ["q_rgmii_txd_reg[*]"]
+timing_reports = [
+    "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/O_RGMII_TXD_timing.rpt",
+]
+
+[[port]]
+name = "O_RGMII_TX_CTL"
+methodology = "DDR-SS-O"
+launch_clock = {name = "clk_100mhz", setup_edge = 6, hold_edge = 6}
+capture_clock = {name = "rgmii_txc", setup_edge = 2, hold_edge = 1}
+registers = ["q_rgmii_tx_ctl_reg"]
+timing_reports = [
+    "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/O_RGMII_TX_CTL_timing.rpt",
+]
+
+[[port]]
+name = "I_RGMII_RXD[3:0]"
+methodology = "DDR-SS-I-SE"
+launch_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 2}
+capture_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 1}
+registers = ["GEN_RGMII_RX[*].U_IDDR"]
+timing_reports = [
+    "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_RGMII_RXD_timing.rpt",
+]
+
+[[port]]
+name = "I_RGMII_RX_CTL"
+methodology = "DDR-SS-I-SE"
+launch_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 2}
+capture_clock = {name = "rgmii_rxc", setup_edge = 2, hold_edge = 1}
+registers = ["GEN_RGMII_RX[4].U_IDDR"]
+timing_reports = [
+    "$PROJ_DIR/example/microchip/vsc8540et/timing_reports/I_RGMII_RX_CTL_timing.rpt",
+]

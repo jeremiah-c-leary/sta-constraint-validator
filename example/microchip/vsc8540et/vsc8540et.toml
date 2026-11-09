@@ -192,9 +192,16 @@ name = "RMII"
 # In RMII mode, TX_ER is carried on chip pin TXD3, RX_ER on RXD3, and CRS_DV on RX_DV/RX_CTL.
 # Table 7-22 gives TDELAY only a maximum, so the minimum is taken as 0.
 # Table 7-22 leaves TX_ER out of the setup and hold row; it is taken to be the same as TX_EN.
+if_standard = "RMII"
+if_role = "PHY"
+
+[[interface.clock_pin]]
+name = "RMII_CLKIN"
+if_signal = "REF_CLK"
 
 [[interface.pin]]
 name = "TXD[1:0]"
+if_signal = "TXD"
 methodology = "SDR-SYS-I"
 clock = {pin = "RMII_CLKIN", max_frequency = 50}
 capture_edge = "Rising"
@@ -203,6 +210,7 @@ hold = {value = 2, symbol = "THOLD", source = "Table 7-22"}
 
 [[interface.pin]]
 name = "TX_EN"
+if_signal = "TX_EN"
 methodology = "SDR-SYS-I"
 clock = {pin = "RMII_CLKIN", max_frequency = 50}
 capture_edge = "Rising"
@@ -211,6 +219,7 @@ hold = {value = 2, symbol = "THOLD", source = "Table 7-22"}
 
 [[interface.pin]]
 name = "TX_ER"
+if_signal = "TX_ER"
 methodology = "SDR-SYS-I"
 clock = {pin = "RMII_CLKIN", max_frequency = 50}
 capture_edge = "Rising"
@@ -219,6 +228,7 @@ hold = {value = 2, symbol = "THOLD", source = "Table 7-22"}
 
 [[interface.pin]]
 name = "RXD[1:0]"
+if_signal = "RXD"
 methodology = "SDR-SYS-O"
 clock = {pin = "RMII_CLKIN", max_frequency = 50}
 cko_max = {value = 13.5, symbol = "TDELAY", source = "Table 7-22"}
@@ -227,6 +237,7 @@ launch_edge = "Rising"
 
 [[interface.pin]]
 name = "CRS_DV"
+if_signal = "CRS_DV"
 methodology = "SDR-SYS-O"
 clock = {pin = "RMII_CLKIN", max_frequency = 50}
 cko_max = {value = 13.5, symbol = "TDELAY", source = "Table 7-22"}
@@ -235,6 +246,7 @@ launch_edge = "Rising"
 
 [[interface.pin]]
 name = "RX_ER"
+if_signal = "RX_ER"
 methodology = "SDR-SYS-O"
 clock = {pin = "RMII_CLKIN", max_frequency = 50}
 cko_max = {value = 13.5, symbol = "TDELAY", source = "Table 7-22"}

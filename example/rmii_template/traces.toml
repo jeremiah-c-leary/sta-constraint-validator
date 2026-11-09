@@ -1,0 +1,67 @@
+# stacv traces file for an RMII interface, with the device as the MAC.
+# Created by:  stacv create template rmii
+#
+# Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/traces.rst
+#
+# Fill in each trace's delays from the board, or leave {} to use default_delay.
+# Each trace is linked to its port and pin by signal, so the names are free.
+# REF_CLK comes from a source, the PHY, the MAC or an oscillator, on a trace to each
+# end: source_to_device to the port it arrives on, source_to_part to the PHY's
+# REF_CLK pin.  source is any name for the source; the two traces share it.
+# Keys below each "set by stacv create template rmii" line are set by the RMII standard;
+# do not change them.
+#
+# Delays are in nanoseconds.
+
+default_delay = {max_delay = 1.00, min_delay = 0.00}
+
+[[trace]]
+name = "ref_clk_to_device"
+source = "ref_clk_source"
+source_to_device = {}
+#--- set by stacv create template rmii; do not change below ---
+if_signal = "REF_CLK"
+
+[[trace]]
+name = "ref_clk_to_part"
+source = "ref_clk_source"
+source_to_part = {}
+#--- set by stacv create template rmii; do not change below ---
+if_signal = "REF_CLK"
+
+[[trace]]
+name = "txd"
+device_to_part = {}
+#--- set by stacv create template rmii; do not change below ---
+if_signal = "TXD"
+
+[[trace]]
+name = "tx_en"
+device_to_part = {}
+#--- set by stacv create template rmii; do not change below ---
+if_signal = "TX_EN"
+
+[[trace]]
+name = "tx_er"
+device_to_part = {}
+#--- set by stacv create template rmii; do not change below ---
+if_signal = "TX_ER"
+
+[[trace]]
+name = "rxd"
+part_to_device = {}
+#--- set by stacv create template rmii; do not change below ---
+if_signal = "RXD"
+
+[[trace]]
+name = "crs_dv"
+part_to_device = {}
+#--- set by stacv create template rmii; do not change below ---
+if_signal = "CRS_DV"
+
+[[trace]]
+name = "rx_er"
+part_to_device = {}
+#--- set by stacv create template rmii; do not change below ---
+if_signal = "RX_ER"

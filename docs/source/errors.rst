@@ -188,7 +188,7 @@ Traces file
      - ``trace <name> key "<key>" must give both max_delay and min_delay, or neither``
      - Give both delays, or write ``{}`` to use ``default_delay``.
    * - traces_config_007
-     - ``trace <name> has neither device_to_part nor part_to_device``, or ``has neither source_to_device nor source_to_part`` for a trace from a clock source
+     - ``trace <name> has neither device_to_part nor part_to_device``, or ``has neither source_to_device nor source_to_part`` for a trace from a clock source, or ``gives both source_to_device and source_to_part; a trace from a clock source runs to one end`` for one that gives ``if_signal``
      - Give the direction the trace carries.
    * - traces_config_008
      - ``trace <name> key "<key>" has max_delay <value> less than min_delay <value>``, or ``default_delay has max_delay <value> less than min_delay <value>``
@@ -201,8 +201,11 @@ Traces file
      - Every pin of the part interface needs a trace to the device, from the device for a pin the part captures, and to it for a pin the part drives.
        Reported by ``check``, ``generate xdc``, ``visualize block_diagram`` and ``visualize eye``, with interface_config_024.
    * - traces_config_011
-     - ``trace <name> gives if_signal and a pin; give if_signal, or device_pin and part_pin``, or ``trace <name> from a clock source gives if_signal; a trace from a clock source names its pin``
+     - ``trace <name> gives if_signal and a pin; give if_signal, or device_pin and part_pin``, or ``trace <name> gives if_signal and a pin; give if_signal, or the pin`` for a trace from a clock source
      - A trace names its ends with ``device_pin`` and ``part_pin``, or with the ``if_signal`` that links them (see :doc:`standards`).
+   * - traces_config_012
+     - ``key "<device_pin or part_pin>" of trace <name> is FROM_..._<name>; replace it with the name in your design or the part's datasheet``
+     - Fill in the pin of a trace from a clock source: the port the clock arrives on, or the part's clock pin; or give ``if_signal`` in place of the pin.
 
 The location is ``in trace <name>``, or ``in trace number <n>`` when the trace has no name.
 
@@ -317,6 +320,46 @@ A file that is not valid TOML, or does not exist, is reported as interface_confi
    * - spi_config_015
      - ``key "<edge>"<location> has clocks <n>; an edge is on a device clock edge, so clocks is a whole or half number``
      - Give the device clocks from the SCK edge; a half is a falling edge of the device clock.
+
+RMII configuration file
+-----------------------
+
+These are checked by every command that reads an RMII configuration file (see :doc:`rmii_config`).
+The location names the table and the line of the key, as for an SPI configuration file.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 18 52 30
+
+   * - Identifier
+     - Message
+     - Correction
+   * - rmii_config_002
+     - ``missing required key "<key>"<location>``
+     - Add the key, or the table; only ``[tx_er]`` and ``[rx_er]`` may be left out.
+   * - rmii_config_003
+     - ``key "<key>"<location> must be <type>``
+     - Write the value as the type given.
+   * - rmii_config_004
+     - ``key "<key>"<location> is not a key stacv reads; the keys are <keys>``
+     - Correct the key name.
+   * - rmii_config_006
+     - ``key "<key>"<location> is FROM_DESIGN_<name>; replace it with the name in your design``
+     - Fill in the name.
+   * - rmii_config_008
+     - ``key "role"<location> must be "MAC"; a PHY is not supported yet``
+     - Only the device as the MAC can be timed yet.
+   * - rmii_config_014
+     - ``key "port"<location> is <port>; write a bus port as NAME[upper:lower], such as TXD[1:0], and its register as reg[*]``
+     - Write the port as the bus it is; only its register is written with ``[*]``.
+   * - rmii_config_012
+     - ``key "part"<location> names <file>, which has no [[interface]] with if_standard "RMII" and if_role "PHY"``
+     - Give the part's RMII interface the standard and the PHY role.
+   * - rmii_config_013
+     - ``key "part"<location> names <file>, which has more than one [[interface]] with ...: <names>``
+     - Keep one RMII interface in the part file.
+
+An ``interface`` that names a configuration stacv does not have is spi_config_005, which lists the configurations.
 
 Interface standards
 -------------------

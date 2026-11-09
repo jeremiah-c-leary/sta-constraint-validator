@@ -114,7 +114,8 @@ class TestPartInterfaceSelection(unittest.TestCase):
         self.assertIn('timing in pin RXD[3:0] of interface Compensated RGMII MAC Interface must give cko_max and cko_min, or valid_before and valid_after', self.oStderr.getvalue())
 
     def test_a_trace_from_a_source_needs_a_delay(self):
-        self.sTracesText = self.sTracesText.replace('part_pin = "RMII_CLKIN"\nsource_to_part = {max_delay = 0.6, min_delay = 0.4}\n', '')
+        # The shared traces file has no trace from a source since the RMII traces have their own file, so one is added.
+        self.sTracesText += '\n[[trace]]\nname = "rmii_clk_to_part"\nsource = "phy_rmii_clkout"\n'
         self.assertEqual(2, self.run_generate())
         self.assertIn('trace rmii_clk_to_part has neither source_to_device nor source_to_part', self.oStderr.getvalue())
 

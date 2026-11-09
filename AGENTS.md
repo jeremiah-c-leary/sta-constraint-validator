@@ -122,7 +122,26 @@ The device (the FPGA) is the SPI controller; the part is the peripheral.  4-wire
    For the margin in each corner, and where the data sits in its eye, `bin/stacv visualize eye
    spi_config.toml` prints it for each data port.
 
-## Errors
+## The workflow for an RMII interface
+
+The device (the FPGA) is the MAC; the part is the PHY.  RMII fixes REF_CLK at 50 MHz and every edge (launch
+and capture on its rising edge, at both ends), so there are no edges or periods to set.
+
+1. `bin/stacv create template rmii --output <folder>` writes `rmii_config.toml`, `part.toml` and
+   `traces.toml`.
+2. In `rmii_config.toml`, replace every `FROM_DESIGN_...`: `[ref_clk]` `name` (the clock's name in the
+   constraints) and `port`, and the `port` and `register` of `[txd]`, `[tx_en]`, `[rxd]` and `[crs_dv]`.
+   `[tx_er]` and `[rx_er]` are optional: if the design does not use one, remove its table here and its
+   trace in `traces.toml`.
+3. In `part.toml`, the PHY's RMII timing: setup and hold of TXD, TX_EN and TX_ER, and the output delay
+   (`cko_max`, `cko_min`) of RXD, CRS_DV and RX_ER, all to the rising edge of REF_CLK.  If the datasheet
+   gives only a maximum output delay, use 0 as the minimum.
+4. In `traces.toml`, each trace's delays.  REF_CLK reaches each end on its own trace from its source (the
+   PHY, the MAC or an oscillator): give `ref_clk_to_device` and `ref_clk_to_part` each its delay from the
+   source.  Every trace is linked by signal, so renaming the part's pins needs no change here.
+5. `bin/stacv visualize block_diagram rmii_config.toml`, then generate, run Vivado and check as for SPI
+   (steps 6 to 8 above), with `rmii_config.toml` in place of `spi_config.toml`.
+
 
 Input errors are one line on standard error, exit code 2:
 

@@ -105,7 +105,7 @@ class TestStandardErrors(InterfaceStandardTestCase):
         self.assert_error('if_standard_001', 'interface.toml', 'clock dac_sclk gives if_signal SCK, but the interface file names no if_standard', lInterfaceChanges=[('if_standard = "SPI mode 1"\n', '')])
 
     def test_an_unknown_standard_is_an_error(self):
-        self.assert_error('if_standard_002', 'interface.toml', 'key "if_standard" names SPI mode 5; the standards are SPI mode 0, SPI mode 1, SPI mode 2 or SPI mode 3', lInterfaceChanges=[('if_standard = "SPI mode 1"', 'if_standard = "SPI mode 5"')])
+        self.assert_error('if_standard_002', 'interface.toml', 'key "if_standard" names SPI mode 5; the standards are SPI mode 0, SPI mode 1, SPI mode 2, SPI mode 3 or RMII', lInterfaceChanges=[('if_standard = "SPI mode 1"', 'if_standard = "SPI mode 5"')])
 
     def test_a_standard_without_a_role_is_an_error(self):
         self.assert_error('if_standard_003', 'interface.toml', 'the interface file names if_standard SPI mode 1 but no if_role; give if_role controller or peripheral', lInterfaceChanges=[('if_role = "controller"\n', '')])

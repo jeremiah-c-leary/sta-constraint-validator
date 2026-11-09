@@ -98,6 +98,29 @@ SPI mode 2  1     0     high        rising (trailing)   falling (leading)
 SPI mode 3  1     1     high        falling (leading)   rising (trailing)
 ==========  ====  ====  ==========  ==================  ==================
 
+RMII
+----
+
+The standard is ``RMII``, and the signal names are the RMII specification's (revision 1.2).
+The roles are ``MAC`` and ``PHY``.
+
+========  =======  ===================  ===========
+Signal    Kind     Driven by            Optional
+========  =======  ===================  ===========
+REF_CLK   clock    a source             No
+TXD       data     MAC                  No
+TX_EN     data     MAC                  No
+TX_ER     data     MAC                  Yes
+RXD       data     PHY                  No
+CRS_DV    data     PHY                  No
+RX_ER     data     PHY                  Yes
+========  =======  ===================  ===========
+
+Every signal changes and is sampled on the rising edge of the 50 MHz REF_CLK.
+REF_CLK may come from the PHY, the MAC or an oscillator, and reaches each end on a trace of its own, from its ``source``; those traces name their pins, so no trace gives REF_CLK, but the device's clock and the part's clock pin do.
+An optional signal is timed when an interface has it, and may be left out.
+The VSC8540ET example's ``rmii.toml`` follows RMII, with the RMII traces in ``rmii_traces.toml``.
+
 Checks
 ------
 
@@ -107,7 +130,7 @@ Every command that reads the traces and part files with the interface file runs 
   A file that gives a signal names a standard (if_standard_001).
 * Each signal is carried once in each file (if_standard_005).
 * The part interface follows the same standard, in the other role (if_standard_006).
-* Every signal of the standard has a port or clock, a part pin, and a trace (if_standard_009), and each trace's signal has a port or clock (if_standard_007) and a part pin (if_standard_008).
+* Every signal of the standard, except an optional one, has a port or clock, a part pin, and a trace (if_standard_009); a clock from a source has no trace that gives its signal, and each trace's signal has a port or clock (if_standard_007) and a part pin (if_standard_008).
 * Each signal goes the way its driver sends it (if_standard_010, if_standard_011):
 
   * a trace gives ``device_to_part`` when the device drives the signal, and ``part_to_device`` when the part does;

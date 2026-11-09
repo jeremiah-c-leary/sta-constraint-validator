@@ -4,12 +4,16 @@ Checks every pin of the part interface the interface file uses has a port in the
 A pin is connected to a device port by a trace, and the port times it when the port's methodology is the pin's,
 seen from the device.  A deferred port also covers a pin: the pin is not timed yet, but it is listed, so the
 user has seen it.  A pin with no port could be left out of the timing without anyone noticing.
+
+A pin that carries an optional signal of the interface's standard, such as RMII's RX_ER, is unused when the
+interface carries no such signal, so it needs no port.
 '''
 
 from stacv.interface import interface_config_error
 from stacv.interface import port
 from stacv.methodology import methodology_factory
 from stacv.part import part
+from stacv.standards import standards
 from stacv.traces import traces_config_error
 
 
@@ -18,7 +22,28 @@ def check_every_part_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPar
     if oPartInterface is None:
         return
     for oPin in oPartInterface.pins.pins:
+        if is_unused_optional_pin(oInterface, oPin):
+            continue
         check_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPin, oPartInterface.name)
+
+
+def is_unused_optional_pin(oInterface, oPin):
+    if oInterface.if_standard is None or oPin.if_signal is None:
+        return False
+    oStandard = standards.get_standard(oInterface.if_standard)
+    if oStandard is None:
+        return False
+    oSignal = oStandard.get_signal(oPin.if_signal)
+    if oSignal is None or not oSignal.optional:
+        return False
+    return not interface_carries_signal(oInterface, oPin.if_signal)
+
+
+def interface_carries_signal(oInterface, sSignal):
+    for oPort in oInterface.ports:
+        if oPort.if_signal == sSignal:
+            return True
+    return False
 
 
 def check_pin_has_a_port(sInterfaceFile, oInterface, oTraceList, oPin, sPartInterfaceName):

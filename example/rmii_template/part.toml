@@ -1,0 +1,103 @@
+# stacv part file for the PHY of an RMII interface.
+# Created by:  stacv create template rmii
+#
+# Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/part.rst
+#
+# Fill in each value from the part's datasheet, with its symbol and where it comes from,
+# such as source = "DS60001648 Table 7-22, page 70": the document, its table or section and page.
+# The values are FROM_DATASHEET_... until then, each named after its key, which stacv stops on.
+# Rename the pins to the datasheet's; the traces file keeps its trace names, as the
+# files are linked by signal, not by name.  Remove the pin of an optional signal
+# (TX_ER, RX_ER) that the design does not use, or leave it: an unused one needs no port.
+# The RMII specification gives the setup, hold and output delay too; use the part's
+# datasheet where it gives them.
+# Keys below each "set by stacv create template rmii" line are set by the RMII standard;
+# do not change them.
+#
+# All delays are in nanoseconds.
+# All frequencies are in MHz.
+
+[properties]
+manufacturer = "FROM_DATASHEET_MANUFACTURER"
+part_number = "FROM_DATASHEET_PART_NUMBER"
+
+[datasheet]
+name = "FROM_DATASHEET_DATASHEET_NAME"
+url = "FROM_DATASHEET_DATASHEET_URL"
+version = "FROM_DATASHEET_DATASHEET_VERSION"
+
+[[interface]]
+name = "RMII"
+#--- set by stacv create template rmii; do not change below ---
+if_standard = "RMII"
+if_role = "PHY"
+
+[[interface.clock_pin]]
+name = "REF_CLK"
+#--- set by stacv create template rmii; do not change below ---
+if_signal = "REF_CLK"
+
+# TXD, TX_EN, TX_ER: setup and hold to the rising edge of REF_CLK at the PHY, such as TSU and THOLD.
+[[interface.pin]]
+name = "TXD[1:0]"
+setup = {value = "FROM_DATASHEET_TXD_SETUP_VALUE", symbol = "FROM_DATASHEET_TXD_SETUP_SYMBOL", source = "FROM_DATASHEET_TXD_SETUP_SOURCE"}
+hold = {value = "FROM_DATASHEET_TXD_HOLD_VALUE", symbol = "FROM_DATASHEET_TXD_HOLD_SYMBOL", source = "FROM_DATASHEET_TXD_HOLD_SOURCE"}
+clock = {if_signal = "REF_CLK", max_frequency = "FROM_DATASHEET_TXD_MAX_FREQUENCY"}
+#--- set by stacv create template rmii; do not change below ---
+methodology = "SDR-SYS-I"
+if_signal = "TXD"
+capture_edge = "Rising"
+
+[[interface.pin]]
+name = "TX_EN"
+setup = {value = "FROM_DATASHEET_TX_EN_SETUP_VALUE", symbol = "FROM_DATASHEET_TX_EN_SETUP_SYMBOL", source = "FROM_DATASHEET_TX_EN_SETUP_SOURCE"}
+hold = {value = "FROM_DATASHEET_TX_EN_HOLD_VALUE", symbol = "FROM_DATASHEET_TX_EN_HOLD_SYMBOL", source = "FROM_DATASHEET_TX_EN_HOLD_SOURCE"}
+clock = {if_signal = "REF_CLK", max_frequency = "FROM_DATASHEET_TX_EN_MAX_FREQUENCY"}
+#--- set by stacv create template rmii; do not change below ---
+methodology = "SDR-SYS-I"
+if_signal = "TX_EN"
+capture_edge = "Rising"
+
+[[interface.pin]]
+name = "TX_ER"
+setup = {value = "FROM_DATASHEET_TX_ER_SETUP_VALUE", symbol = "FROM_DATASHEET_TX_ER_SETUP_SYMBOL", source = "FROM_DATASHEET_TX_ER_SETUP_SOURCE"}
+hold = {value = "FROM_DATASHEET_TX_ER_HOLD_VALUE", symbol = "FROM_DATASHEET_TX_ER_HOLD_SYMBOL", source = "FROM_DATASHEET_TX_ER_HOLD_SOURCE"}
+clock = {if_signal = "REF_CLK", max_frequency = "FROM_DATASHEET_TX_ER_MAX_FREQUENCY"}
+#--- set by stacv create template rmii; do not change below ---
+methodology = "SDR-SYS-I"
+if_signal = "TX_ER"
+capture_edge = "Rising"
+
+# RXD, CRS_DV, RX_ER: output delay from the rising edge of REF_CLK at the PHY, such as TDELAY.
+# If the datasheet gives only a maximum, give 0 as the minimum, the pessimistic value.
+[[interface.pin]]
+name = "RXD[1:0]"
+cko_max = {value = "FROM_DATASHEET_RXD_CKO_MAX_VALUE", symbol = "FROM_DATASHEET_RXD_CKO_MAX_SYMBOL", source = "FROM_DATASHEET_RXD_CKO_MAX_SOURCE"}
+cko_min = {value = "FROM_DATASHEET_RXD_CKO_MIN_VALUE", symbol = "FROM_DATASHEET_RXD_CKO_MIN_SYMBOL", source = "FROM_DATASHEET_RXD_CKO_MIN_SOURCE"}
+clock = {if_signal = "REF_CLK", max_frequency = "FROM_DATASHEET_RXD_MAX_FREQUENCY"}
+#--- set by stacv create template rmii; do not change below ---
+methodology = "SDR-SYS-O"
+if_signal = "RXD"
+launch_edge = "Rising"
+
+[[interface.pin]]
+name = "CRS_DV"
+cko_max = {value = "FROM_DATASHEET_CRS_DV_CKO_MAX_VALUE", symbol = "FROM_DATASHEET_CRS_DV_CKO_MAX_SYMBOL", source = "FROM_DATASHEET_CRS_DV_CKO_MAX_SOURCE"}
+cko_min = {value = "FROM_DATASHEET_CRS_DV_CKO_MIN_VALUE", symbol = "FROM_DATASHEET_CRS_DV_CKO_MIN_SYMBOL", source = "FROM_DATASHEET_CRS_DV_CKO_MIN_SOURCE"}
+clock = {if_signal = "REF_CLK", max_frequency = "FROM_DATASHEET_CRS_DV_MAX_FREQUENCY"}
+#--- set by stacv create template rmii; do not change below ---
+methodology = "SDR-SYS-O"
+if_signal = "CRS_DV"
+launch_edge = "Rising"
+
+[[interface.pin]]
+name = "RX_ER"
+cko_max = {value = "FROM_DATASHEET_RX_ER_CKO_MAX_VALUE", symbol = "FROM_DATASHEET_RX_ER_CKO_MAX_SYMBOL", source = "FROM_DATASHEET_RX_ER_CKO_MAX_SOURCE"}
+cko_min = {value = "FROM_DATASHEET_RX_ER_CKO_MIN_VALUE", symbol = "FROM_DATASHEET_RX_ER_CKO_MIN_SYMBOL", source = "FROM_DATASHEET_RX_ER_CKO_MIN_SOURCE"}
+clock = {if_signal = "REF_CLK", max_frequency = "FROM_DATASHEET_RX_ER_MAX_FREQUENCY"}
+#--- set by stacv create template rmii; do not change below ---
+methodology = "SDR-SYS-O"
+if_signal = "RX_ER"
+launch_edge = "Rising"
+

@@ -17,6 +17,8 @@ from stacv.methodology import methodology
 from stacv.methodology import methodology_factory
 from stacv.output import number_format
 from stacv.rules import requirements
+from stacv.rmii import rmii_config
+from stacv.rmii import rmii_interface
 from stacv.spi import spi_config
 from stacv.spi import spi_interface
 from stacv.interface import clock
@@ -65,16 +67,37 @@ def read_interface_config_for_drawing(sInterfaceFile):
     # Errors in the edges can still be drawn, so they are kept on each port instead of raised.
     dConfig = read_file(sInterfaceFile)
     if spi_config.is_interface_configuration(dConfig):
-        return create_interface_from_configuration(sInterfaceFile)
+        return create_interface_from_configuration(sInterfaceFile, dConfig)
     return create_interface_config(dConfig, sInterfaceFile)
 
 
-def create_interface_from_configuration(sConfigFile):
+def is_rmii_configuration(dConfig):
+    return dConfig.get(spi_config.INTERFACE_KEY) == rmii_config.CONFIGURATION
+
+
+def build_configuration_lines(sConfigFile, dConfig):
+    # The interface file an interface configuration file expands to.
+    if is_rmii_configuration(dConfig):
+        return rmii_interface.build_interface_lines(rmii_config.read_rmii_config(sConfigFile))
+    return spi_interface.build_interface_lines(spi_config.read_spi_config(sConfigFile))
+
+
+def create_interface_from_configuration(sConfigFile, dConfig):
     # An interface configuration file is expanded into an interface file, so every command reads it the same way.
+    if is_rmii_configuration(dConfig):
+        return create_interface_from_rmii_configuration(sConfigFile)
     oSpiConfig = spi_config.read_spi_config(sConfigFile)
     oInterface = create_interface_config(spi_interface.build_interface_dictionary(oSpiConfig), sConfigFile)
     oInterface.edge_lines = spi_config.build_edge_lines(oSpiConfig)
     oInterface.clock_lines = spi_config.build_clock_lines(oSpiConfig)
+    return oInterface
+
+
+def create_interface_from_rmii_configuration(sConfigFile):
+    # RMII fixes its edges, so the constraints list only its clock.
+    oRmiiConfig = rmii_config.read_rmii_config(sConfigFile)
+    oInterface = create_interface_config(rmii_interface.build_interface_dictionary(oRmiiConfig), sConfigFile)
+    oInterface.clock_lines = rmii_config.build_clock_lines(oRmiiConfig)
     return oInterface
 
 
