@@ -72,4 +72,4 @@ class TestUsageHelp(unittest.TestCase):
         self.assert_help_then_error(['create', 'template'], ['create', 'template'], 'the following arguments are required: file_type')
 
     def test_create_template_with_unknown_file_type_prints_template_help(self):
-        self.assert_help_then_error(['create', 'template', 'device'], ['create', 'template'], "argument file_type: invalid choice: 'device' (choose from 'interface', 'traces', 'part', 'spi', 'rmii')")
+        self.assert_help_then_error(['create', 'template', 'device'], ['create', 'template'], "argument file_type: invalid choice: 'device' (choose from 'interface', 'traces', 'part', 'spi', 'rmii', 'mii')")

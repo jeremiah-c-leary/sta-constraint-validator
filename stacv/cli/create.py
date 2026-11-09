@@ -1,7 +1,7 @@
 import os
 
 from stacv.create import create_error
-from stacv.create import rmii_template
+from stacv.create import mac_phy_template
 from stacv.create import spi_template
 from stacv.create import template
 
@@ -15,9 +15,10 @@ def execute(oCmdLine):
     if oCmdLine.file_type == 'spi':
         return create_spi_files(oCmdLine)
     check_no_spi_options(oCmdLine)
-    if oCmdLine.file_type == 'rmii':
-        # RMII fixes its clock and edges, so the files need no options.
-        write_files(find_output_directory(oCmdLine), rmii_template.create_files())
+    oProtocol = mac_phy_template.get_protocol(oCmdLine.file_type)
+    if oProtocol is not None:
+        # RMII and MII fix their clocks and edges, so the files need no options.
+        write_files(find_output_directory(oCmdLine), mac_phy_template.create_files(oProtocol))
         return 0
     sTemplate = template.read_template(oCmdLine.file_type)
     if oCmdLine.output is None:

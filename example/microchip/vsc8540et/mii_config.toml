@@ -1,0 +1,62 @@
+# MII configuration for the VSC8540ET MAC design: the FPGA is the MAC, the VSC8540ET the PHY.
+#
+# stacv generates the interface file, the constraints and the report script from this file.
+# Only this file, the part file and the traces file are edited.
+#
+# MII:  the PHY sends TX_CLK and RX_CLK, 25 MHz at 100 Mbit/s.  The MAC launches TXD on the
+#       rising edge of TX_CLK and the PHY samples it on the next; the PHY launches RXD on the
+#       rising edge of RX_CLK and the MAC samples it on the next, so there are no edges to set.
+#       At 10 Mbit/s the clocks are 2.5 MHz with the same timing at the pins, so timing at
+#       25 MHz covers both.  CRS and COL are asynchronous and are not timed.
+#
+# Registers are named as Vivado names them:  the hierarchy separated by /, with _reg added,
+# and the bits of a bus as reg[*].  A bus port is written NAME[upper:lower].
+# Paths are relative to this file.
+
+interface = "mii"
+name      = "VSC8540_MII"
+role      = "MAC"
+
+part    = "vsc8540et.toml"
+traces  = "mii_traces.toml"
+
+timing_reports_dir = "timing_reports"
+
+# TX_CLK and RX_CLK: the clocks the MAC receives from the PHY on its ports.  stacv creates
+# each clock with its name (create_clock); if the board constraints already create a
+# clock on the port, Vivado warns of the two, so remove the other.
+[tx_clk]
+name = "mii_tx_clk"
+port = "I_MII_TX_CLK"
+
+[rx_clk]
+name = "mii_rx_clk"
+port = "I_MII_RX_CLK"
+
+# TXD[3:0], TX_EN and TX_ER: data from the MAC to the PHY, launched on TX_CLK.
+# TX_ER and RX_ER are optional in MII: remove [tx_er] or [rx_er], and its trace, if the
+# design does not use it.
+[txd]
+port     = "O_MII_TXD[3:0]"
+register = "q_mii_txd_reg[*]"
+
+[tx_en]
+port     = "O_MII_TX_EN"
+register = "q_mii_tx_en_reg"
+
+[tx_er]
+port     = "O_MII_TX_ER"
+register = "q_mii_tx_er_reg"
+
+# RXD[3:0], RX_DV and RX_ER: data from the PHY to the MAC, sent with RX_CLK.
+[rxd]
+port     = "I_MII_RXD[3:0]"
+register = "q_mii_rxd_reg[*]"
+
+[rx_dv]
+port     = "I_MII_RX_DV"
+register = "q_mii_rx_dv_reg"
+
+[rx_er]
+port     = "I_MII_RX_ER"
+register = "q_mii_rx_er_reg"

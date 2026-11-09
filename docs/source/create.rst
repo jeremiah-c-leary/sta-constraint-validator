@@ -86,6 +86,21 @@ RMII fixes its 50 MHz clock and every edge, so it takes no options.
 
 ``example/rmii_template`` holds the files of the command above.
 
+MII
+---
+
+``stacv create template mii`` creates the three files of an MII interface, with the device as the MAC: its MII configuration, its part file and its traces file (see :doc:`mii_config` and :doc:`mii`):
+
+.. code-block:: text
+
+   stacv create template mii --output mii
+
+MII fixes its clocks and every edge, so it takes no options.
+``mii_config.toml``, ``part.toml`` and ``traces.toml`` are written to the directory, as for RMII.
+The traces file has a trace for each signal, linked by its signal, with TX_CLK and RX_CLK each on one trace from the PHY to the MAC.
+
+``example/mii_template`` holds the files of the command above.
+
 Errors
 ------
 

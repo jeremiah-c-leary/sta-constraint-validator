@@ -1,0 +1,73 @@
+# stacv MII configuration file, with the device as the MAC.
+# Created by:  stacv create template mii
+#
+# Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/mii_config.rst
+#
+# stacv generates the interface file, the constraints and the report script
+# from this file.  Only this file, the part file and the traces file are edited.
+#
+# Replace each FROM_DESIGN_... with the name in your design; stacv stops on it until then.
+# Each placeholder is named after its key, so it can be found and replaced on its own.
+# Registers are named as Vivado names them:  the hierarchy separated by /, with
+# _reg added, and the bits of a bus as reg[*], such as u_mac/mii_txd_reg[*].
+# A bus port is written NAME[upper:lower], such as O_MII_TXD[3:0].
+#
+# MII:   the PHY sends TX_CLK and RX_CLK, 25 MHz at 100 Mbit/s.  The MAC launches TXD
+#        on the rising edge of TX_CLK and the PHY samples it on the next; the PHY
+#        launches RXD on the rising edge of RX_CLK and the MAC samples it on the next,
+#        so there are no edges or periods to set.  At 10 Mbit/s the clocks are 2.5 MHz
+#        with the same timing at the pins, so timing at 25 MHz covers both.  CRS and
+#        COL are asynchronous and are not timed.
+#
+# Paths are relative to this file.
+
+interface = "mii"
+name      = "MII"
+role      = "MAC"
+
+part    = "part.toml"
+traces  = "traces.toml"
+
+timing_reports_dir = "timing_reports"
+
+# TX_CLK and RX_CLK: the clocks the MAC receives from the PHY on its ports.  stacv
+# creates each clock with its name (create_clock); if the board constraints already
+# create a clock on the port, Vivado warns of the two, so remove the other.
+[tx_clk]
+name = "FROM_DESIGN_TX_CLK_NAME"
+port = "FROM_DESIGN_TX_CLK_PORT"
+
+[rx_clk]
+name = "FROM_DESIGN_RX_CLK_NAME"
+port = "FROM_DESIGN_RX_CLK_PORT"
+
+# TXD[3:0], TX_EN and TX_ER: data from the MAC to the PHY, launched on TX_CLK.
+# TX_ER and RX_ER are optional in MII: if the design does not use one, remove its
+# table here and its trace in the traces file.
+[txd]
+port     = "FROM_DESIGN_TXD_PORT"
+register = "FROM_DESIGN_TXD_REGISTER"
+
+[tx_en]
+port     = "FROM_DESIGN_TX_EN_PORT"
+register = "FROM_DESIGN_TX_EN_REGISTER"
+
+[tx_er]
+port     = "FROM_DESIGN_TX_ER_PORT"
+register = "FROM_DESIGN_TX_ER_REGISTER"
+
+
+# RXD[3:0], RX_DV and RX_ER: data from the PHY to the MAC, sent with RX_CLK.
+[rxd]
+port     = "FROM_DESIGN_RXD_PORT"
+register = "FROM_DESIGN_RXD_REGISTER"
+
+[rx_dv]
+port     = "FROM_DESIGN_RX_DV_PORT"
+register = "FROM_DESIGN_RX_DV_REGISTER"
+
+[rx_er]
+port     = "FROM_DESIGN_RX_ER_PORT"
+register = "FROM_DESIGN_RX_ER_REGISTER"
+

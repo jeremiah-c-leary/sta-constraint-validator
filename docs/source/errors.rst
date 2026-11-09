@@ -321,10 +321,11 @@ A file that is not valid TOML, or does not exist, is reported as interface_confi
      - ``key "<edge>"<location> has clocks <n>; an edge is on a device clock edge, so clocks is a whole or half number``
      - Give the device clocks from the SCK edge; a half is a falling edge of the device clock.
 
-RMII configuration file
------------------------
+RMII and MII configuration files
+--------------------------------
 
-These are checked by every command that reads an RMII configuration file (see :doc:`rmii_config`).
+These are checked by every command that reads an RMII or MII configuration file (see :doc:`rmii_config` and :doc:`mii_config`).
+The identifiers are listed for RMII; an MII configuration file gives the same errors as ``mii_config_<number>``, with its own tables, such as ``[tx_clk]`` and ``[rx_dv]``.
 The location names the table and the line of the key, as for an SPI configuration file.
 
 .. list-table::
@@ -354,10 +355,10 @@ The location names the table and the line of the key, as for an SPI configuratio
      - Write the port as the bus it is; only its register is written with ``[*]``.
    * - rmii_config_012
      - ``key "part"<location> names <file>, which has no [[interface]] with if_standard "RMII" and if_role "PHY"``
-     - Give the part's RMII interface the standard and the PHY role.
+     - Give the part's RMII (or MII) interface the standard and the PHY role.
    * - rmii_config_013
      - ``key "part"<location> names <file>, which has more than one [[interface]] with ...: <names>``
-     - Keep one RMII interface in the part file.
+     - Keep one RMII (or MII) interface in the part file.
 
 An ``interface`` that names a configuration stacv does not have is spi_config_005, which lists the configurations.
 

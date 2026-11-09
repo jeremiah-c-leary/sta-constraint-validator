@@ -43,6 +43,7 @@ Where people start
 
    spi
    rmii
+   mii
 
 .. toctree::
    :maxdepth: 2
@@ -72,6 +73,7 @@ Where people start
 
    spi_config
    rmii_config
+   mii_config
    interface
    part
    traces

@@ -1,0 +1,63 @@
+# stacv traces file for an MII interface, with the device as the MAC.
+# Created by:  stacv create template mii
+#
+# Keys are described in:
+# https://github.com/jeremiah-c-leary/sta-constraint-validator/blob/main/docs/source/traces.rst
+#
+# Fill in each trace's delays from the board, or leave {} to use default_delay.
+# Each trace is linked to its port and pin by signal, so the names are free.
+# The PHY sends TX_CLK and RX_CLK to the MAC, each on a trace of its own.
+# Keys below each "set by stacv create template mii" line are set by the MII standard;
+# do not change them.
+#
+# Delays are in nanoseconds.
+
+default_delay = {max_delay = 1.00, min_delay = 0.00}
+
+[[trace]]
+name = "tx_clk"
+part_to_device = {}
+#--- set by stacv create template mii; do not change below ---
+if_signal = "TX_CLK"
+
+[[trace]]
+name = "rx_clk"
+part_to_device = {}
+#--- set by stacv create template mii; do not change below ---
+if_signal = "RX_CLK"
+
+[[trace]]
+name = "txd"
+device_to_part = {}
+#--- set by stacv create template mii; do not change below ---
+if_signal = "TXD"
+
+[[trace]]
+name = "tx_en"
+device_to_part = {}
+#--- set by stacv create template mii; do not change below ---
+if_signal = "TX_EN"
+
+[[trace]]
+name = "tx_er"
+device_to_part = {}
+#--- set by stacv create template mii; do not change below ---
+if_signal = "TX_ER"
+
+[[trace]]
+name = "rxd"
+part_to_device = {}
+#--- set by stacv create template mii; do not change below ---
+if_signal = "RXD"
+
+[[trace]]
+name = "rx_dv"
+part_to_device = {}
+#--- set by stacv create template mii; do not change below ---
+if_signal = "RX_DV"
+
+[[trace]]
+name = "rx_er"
+part_to_device = {}
+#--- set by stacv create template mii; do not change below ---
+if_signal = "RX_ER"

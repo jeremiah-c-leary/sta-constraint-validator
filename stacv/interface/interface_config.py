@@ -17,8 +17,9 @@ from stacv.methodology import methodology
 from stacv.methodology import methodology_factory
 from stacv.output import number_format
 from stacv.rules import requirements
-from stacv.rmii import rmii_config
-from stacv.rmii import rmii_interface
+from stacv.mac_phy import mac_phy_config
+from stacv.mac_phy import mac_phy_interface
+from stacv.mac_phy import protocols
 from stacv.spi import spi_config
 from stacv.spi import spi_interface
 from stacv.interface import clock
@@ -71,21 +72,24 @@ def read_interface_config_for_drawing(sInterfaceFile):
     return create_interface_config(dConfig, sInterfaceFile)
 
 
-def is_rmii_configuration(dConfig):
-    return dConfig.get(spi_config.INTERFACE_KEY) == rmii_config.CONFIGURATION
+def find_mac_phy_protocol(dConfig):
+    # The MAC to PHY protocol an RMII or MII configuration names, or None for another configuration.
+    return protocols.get_protocol(dConfig.get(spi_config.INTERFACE_KEY))
 
 
 def build_configuration_lines(sConfigFile, dConfig):
     # The interface file an interface configuration file expands to.
-    if is_rmii_configuration(dConfig):
-        return rmii_interface.build_interface_lines(rmii_config.read_rmii_config(sConfigFile))
+    oProtocol = find_mac_phy_protocol(dConfig)
+    if oProtocol is not None:
+        return mac_phy_interface.build_interface_lines(mac_phy_config.read_mac_phy_config(sConfigFile, oProtocol))
     return spi_interface.build_interface_lines(spi_config.read_spi_config(sConfigFile))
 
 
 def create_interface_from_configuration(sConfigFile, dConfig):
     # An interface configuration file is expanded into an interface file, so every command reads it the same way.
-    if is_rmii_configuration(dConfig):
-        return create_interface_from_rmii_configuration(sConfigFile)
+    oProtocol = find_mac_phy_protocol(dConfig)
+    if oProtocol is not None:
+        return create_interface_from_mac_phy_configuration(sConfigFile, oProtocol)
     oSpiConfig = spi_config.read_spi_config(sConfigFile)
     oInterface = create_interface_config(spi_interface.build_interface_dictionary(oSpiConfig), sConfigFile)
     oInterface.edge_lines = spi_config.build_edge_lines(oSpiConfig)
@@ -93,11 +97,11 @@ def create_interface_from_configuration(sConfigFile, dConfig):
     return oInterface
 
 
-def create_interface_from_rmii_configuration(sConfigFile):
-    # RMII fixes its edges, so the constraints list only its clock.
-    oRmiiConfig = rmii_config.read_rmii_config(sConfigFile)
-    oInterface = create_interface_config(rmii_interface.build_interface_dictionary(oRmiiConfig), sConfigFile)
-    oInterface.clock_lines = rmii_config.build_clock_lines(oRmiiConfig)
+def create_interface_from_mac_phy_configuration(sConfigFile, oProtocol):
+    # The standard fixes the edges, so the constraints list only the clocks.
+    oConfig = mac_phy_config.read_mac_phy_config(sConfigFile, oProtocol)
+    oInterface = create_interface_config(mac_phy_interface.build_interface_dictionary(oConfig), sConfigFile)
+    oInterface.clock_lines = mac_phy_config.build_clock_lines(oConfig)
     return oInterface
 
 

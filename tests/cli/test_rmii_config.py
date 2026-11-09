@@ -21,11 +21,13 @@ class RmiiConfigTestCase(unittest.TestCase):
     REF_CLK to both ends.  The timing reports are the example's, from Vivado.
     '''
 
+    sFixtureDir = sFixtureDir
+
     def setUp(self):
         oTemporaryDirectory = tempfile.TemporaryDirectory()
         self.addCleanup(oTemporaryDirectory.cleanup)
         self.sDirectory = os.path.join(oTemporaryDirectory.name, 'vsc8540et')
-        shutil.copytree(sFixtureDir, self.sDirectory)
+        shutil.copytree(self.sFixtureDir, self.sDirectory)
         sWorkingDir = os.getcwd()
         self.addCleanup(os.chdir, sWorkingDir)
         os.chdir(self.sDirectory)
