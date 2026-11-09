@@ -11,7 +11,8 @@
 # files are linked by signal, not by name.  Remove the pin of an optional signal
 # (TX_ER, RX_ER) that the design does not use, or leave it: an unused one needs no port.
 # IEEE 802.3 Clause 22 gives the setup, hold and output delay too; use the part's
-# datasheet where it gives them.
+# datasheet where it gives them.  A PHY with several modes may give the MII clocks pins
+# of their own, such as MII_TXCLK; use the MII pins and timing, not another mode's.
 # Keys below each "set by stacv create template mii" line are set by the MII standard;
 # do not change them.
 #

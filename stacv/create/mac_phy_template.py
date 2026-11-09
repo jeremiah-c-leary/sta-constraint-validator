@@ -60,7 +60,8 @@ TEXT['mii'] = {
     'config_rx': ['# RXD[3:0], RX_DV and RX_ER: data from the PHY to the MAC, sent with RX_CLK.'],
     'part_reference': [
         '# IEEE 802.3 Clause 22 gives the setup, hold and output delay too; use the part\'s',
-        '# datasheet where it gives them.',
+        '# datasheet where it gives them.  A PHY with several modes may give the MII clocks pins',
+        '# of their own, such as MII_TXCLK; use the MII pins and timing, not another mode\'s.',
     ],
     'part_tx': ['# TXD, TX_EN, TX_ER: setup and hold to the rising edge of TX_CLK at the PHY, such as tSU and tH.'],
     'part_rx': ['# RXD, RX_DV, RX_ER: output delay from the rising edge of RX_CLK at the PHY, such as tDELAY.'],

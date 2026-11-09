@@ -152,12 +152,14 @@ to set.  CRS and COL are asynchronous and are not timed.
 1. `bin/stacv create template mii --output <folder>` writes `mii_config.toml`, `part.toml` and
    `traces.toml`.
 2. In `mii_config.toml`, replace every `FROM_DESIGN_...`: the `name` and `port` of `[tx_clk]` and
-   `[rx_clk]`, and the `port` and `register` of `[txd]`, `[tx_en]`, `[rxd]` and `[rx_dv]`.  `[tx_er]` and
+   `[rx_clk]`, and the `port` and `register` of `[txd]`, `[tx_en]`, `[rxd]` and `[rx_dv]`.  A bus port is
+   written `NAME[3:0]` and its register `reg[*]`, all its bits, unlike SPI's single bit.  `[tx_er]` and
    `[rx_er]` are optional: if the design does not use one, remove its table here and its trace in
    `traces.toml`.
 3. In `part.toml`, the PHY's MII timing: setup and hold of TXD, TX_EN and TX_ER to the rising edge of
    TX_CLK, and the output delay (`cko_max`, `cko_min`) of RXD, RX_DV and RX_ER from the rising edge of
-   RX_CLK.
+   RX_CLK.  A PHY with several modes may give the MII clocks pins of their own, such as
+   `MII_TXCLK`: use the MII pins and timing, not another mode's.
 4. In `traces.toml`, each trace's delays, the clocks' included.  Every trace is linked by signal, so
    renaming the part's pins needs no change here.
 5. `bin/stacv visualize block_diagram mii_config.toml`, then generate, run Vivado and check as for SPI
