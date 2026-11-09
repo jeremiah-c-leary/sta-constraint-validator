@@ -148,19 +148,35 @@ def check_part_signals(oStandard, oInterface, oPartInterface):
 
 
 def check_trace_signals(oStandard, oInterface, oTraceList):
+    # A signal is carried by one trace, or a clock from a source by one trace to each end.
     lSignals = []
     for oTrace in oTraceList.traces:
         if oTrace.if_signal is None:
             continue
         check_signal_name(oStandard, oTrace.if_signal, oInterface.traces, f'trace {oTrace.name}')
-        if oTrace.if_signal in lSignals:
-            raise_error(5, oInterface.traces, f'trace {oTrace.name} gives if_signal {oTrace.if_signal}, which another trace gives; a signal is carried by one trace')
-        lSignals.append(oTrace.if_signal)
-    check_every_signal_is_carried(build_standard_without_source_clocks(oStandard), lSignals, oInterface.traces, 'the traces file has no trace')
+        sCarrier = describe_trace_carrier(oTrace)
+        if sCarrier in lSignals:
+            raise_error(5, oInterface.traces, f'trace {oTrace.name} gives if_signal {oTrace.if_signal}, which another trace gives; a signal is carried by one trace, or a clock from a source by one trace to each end')
+        lSignals.append(sCarrier)
+    lCarried = []
+    for oTrace in oTraceList.traces:
+        # A clock from a source may name its pins instead, so it is not required to be carried by signal.
+        if oTrace.if_signal is not None and not oTrace.is_from_source():
+            lCarried.append(oTrace.if_signal)
+    check_every_signal_is_carried(build_standard_without_source_clocks(oStandard), lCarried, oInterface.traces, 'the traces file has no trace')
+
+
+def describe_trace_carrier(oTrace):
+    # The traces of a clock from a source each carry its signal to one end.
+    if oTrace.is_from_source():
+        if oTrace.source_to_device is not None:
+            return oTrace.if_signal + ' to the device'
+        return oTrace.if_signal + ' to the part'
+    return oTrace.if_signal
 
 
 def build_standard_without_source_clocks(oStandard):
-    # A clock from a source reaches each end on a trace that names its pin, so no trace gives its signal.
+    # A clock from a source reaches each end on a trace that names its pin or gives its signal, so neither is required.
     lSignals = []
     for oSignal in oStandard.signals:
         if not oSignal.is_from_source():
@@ -184,12 +200,22 @@ def link_traces(sInterfaceFile, oInterface, oTraceList, oPartInterface):
     for oTrace in oTraceList.traces:
         if oTrace.if_signal is None:
             continue
-        oTrace.device_pin = find_device_pin(oInterface, oTrace.if_signal)
-        if oTrace.device_pin is None:
-            raise_error(7, sInterfaceFile, f'has no port or clock with if_signal {oTrace.if_signal}, which trace {oTrace.name} carries')
-        oTrace.part_pin = find_part_pin(oPartInterface, oTrace.if_signal)
-        if oTrace.part_pin is None:
-            raise_error(8, oInterface.part, f'part interface {oPartInterface.name} has no pin with if_signal {oTrace.if_signal}, which trace {oTrace.name} carries')
+        if not oTrace.is_from_source() or oTrace.source_to_device is not None:
+            link_device_end(sInterfaceFile, oInterface, oTrace)
+        if not oTrace.is_from_source() or oTrace.source_to_part is not None:
+            link_part_end(oInterface, oTrace, oPartInterface)
+
+
+def link_device_end(sInterfaceFile, oInterface, oTrace):
+    oTrace.device_pin = find_device_pin(oInterface, oTrace.if_signal)
+    if oTrace.device_pin is None:
+        raise_error(7, sInterfaceFile, f'has no port or clock with if_signal {oTrace.if_signal}, which trace {oTrace.name} carries')
+
+
+def link_part_end(oInterface, oTrace, oPartInterface):
+    oTrace.part_pin = find_part_pin(oPartInterface, oTrace.if_signal)
+    if oTrace.part_pin is None:
+        raise_error(8, oInterface.part, f'part interface {oPartInterface.name} has no pin with if_signal {oTrace.if_signal}, which trace {oTrace.name} carries')
 
 
 def collect_part_pins(oPartInterface):
@@ -216,7 +242,8 @@ def find_device_pin(oInterface, sSignal):
 def check_directions(oStandard, sInterfaceFile, oInterface, oTraceList, oPartInterface):
     # Each signal goes from the role that drives it to the other.
     for oTrace in oTraceList.traces:
-        if oTrace.if_signal is not None:
+        # A clock from a source goes from the source to each end, as its trace's delay says.
+        if oTrace.if_signal is not None and not oTrace.is_from_source():
             check_trace_direction(oStandard, oInterface, oTrace)
     for oPort in oInterface.get_analyzed_ports():
         if oPort.if_signal is not None:

@@ -81,7 +81,7 @@ RMII fixes its 50 MHz clock and every edge, so it takes no options.
 
 * ``rmii_config.toml`` has ``FROM_DESIGN_...`` for each name in the design, named after its key, which stacv stops on.
 * The part's values are ``FROM_DATASHEET_...``, named after the pin and key, which stacv stops on.
-* The traces file has a trace for each data signal, linked by its signal, and REF_CLK's two traces from its source, which name the port it arrives on (``FROM_DESIGN_REF_CLK_PORT``) and the part's clock pin.
+* The traces file has a trace for each signal, linked by its signal: one for each data signal, and REF_CLK's two from its source, one to each end.
 * ``[tx_er]`` and ``[rx_er]`` are optional: remove the table and the trace of one the design does not use.
 
 ``example/rmii_template`` holds the files of the command above.

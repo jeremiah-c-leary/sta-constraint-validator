@@ -137,8 +137,8 @@ and capture on its rising edge, at both ends), so there are no edges or periods 
    (`cko_max`, `cko_min`) of RXD, CRS_DV and RX_ER, all to the rising edge of REF_CLK.  If the datasheet
    gives only a maximum output delay, use 0 as the minimum.
 4. In `traces.toml`, each trace's delays.  REF_CLK reaches each end on its own trace from its source (the
-   PHY, the MAC or an oscillator): `ref_clk_to_device` names the port it arrives on, `ref_clk_to_part` the
-   PHY's clock pin; give each its delay from the source.
+   PHY, the MAC or an oscillator): give `ref_clk_to_device` and `ref_clk_to_part` each its delay from the
+   source.  Every trace is linked by signal, so renaming the part's pins needs no change here.
 5. `bin/stacv visualize block_diagram rmii_config.toml`, then generate, run Vivado and check as for SPI
    (steps 6 to 8 above), with `rmii_config.toml` in place of `spi_config.toml`.
 

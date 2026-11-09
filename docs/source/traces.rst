@@ -110,3 +110,14 @@ Each one names the component with ``source``, and the methodology pairs the two 
 
 ``source`` here is the name of the clock source, not a datasheet reference as in the part file.
 A trace from a source gives ``device_pin`` with ``source_to_device``, or ``part_pin`` with ``source_to_part``.
+When the interface and part follow a standard, a trace from a source may give ``if_signal`` in place of its pin, and the pin is the port or clock pin with that signal at the end its delay runs to:
+
+.. code-block:: toml
+
+   [[trace]]
+   name = "rmii_clk_to_part"
+   source = "phy_rmii_clkout"
+   if_signal = "REF_CLK"
+   source_to_part = {max_delay = 0.6, min_delay = 0.4}
+
+Such a trace runs to one end, so it gives ``source_to_device`` or ``source_to_part``, not both.

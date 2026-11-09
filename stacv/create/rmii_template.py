@@ -200,10 +200,10 @@ def build_traces():
     lLines.append(f'# {DOCS_URL}/traces.rst')
     lLines.append('#')
     lLines.append('# Fill in each trace\'s delays from the board, or leave {} to use default_delay.')
-    lLines.append('# The data traces are linked to their port and pin by signal, so keep their names.')
+    lLines.append('# Each trace is linked to its port and pin by signal, so the names are free.')
     lLines.append('# REF_CLK comes from a source, the PHY, the MAC or an oscillator, on a trace to each')
-    lLines.append('# end, which names its pin: the port REF_CLK arrives on, and the PHY\'s REF_CLK pin.')
-    lLines.append('# source is any name for the source; the two traces share it.')
+    lLines.append('# end: source_to_device to the port it arrives on, source_to_part to the PHY\'s')
+    lLines.append('# REF_CLK pin.  source is any name for the source; the two traces share it.')
     lLines.append('# Keys below each "set by stacv create template rmii" line are set by the RMII standard;')
     lLines.append('# do not change them.')
     lLines.append('#')
@@ -211,21 +211,24 @@ def build_traces():
     lLines.append('')
     lLines.append('default_delay = {max_delay = 1.00, min_delay = 0.00}')
     lLines.append('')
-    lLines.append('[[trace]]')
-    lLines.append('name = "ref_clk_to_device"')
-    lLines.append('source = "ref_clk_source"')
-    lLines.append(f'device_pin = "{design_placeholder("ref_clk", "port")}"')
-    lLines.append('source_to_device = {}')
+    lLines.extend(build_source_trace('ref_clk_to_device', 'source_to_device'))
     lLines.append('')
-    lLines.append('[[trace]]')
-    lLines.append('name = "ref_clk_to_part"')
-    lLines.append('source = "ref_clk_source"')
-    lLines.append('part_pin = "REF_CLK"')
-    lLines.append('source_to_part = {}')
+    lLines.extend(build_source_trace('ref_clk_to_part', 'source_to_part'))
     for sTable, sSignal, sPin, bOptional in TX_SIGNALS:
         lLines.extend(build_data_trace(sTable, sSignal, 'device_to_part'))
     for sTable, sSignal, sPin, bOptional in RX_SIGNALS:
         lLines.extend(build_data_trace(sTable, sSignal, 'part_to_device'))
+    return lLines
+
+
+def build_source_trace(sName, sDelay):
+    lLines = []
+    lLines.append('[[trace]]')
+    lLines.append(f'name = "{sName}"')
+    lLines.append('source = "ref_clk_source"')
+    lLines.append(f'{sDelay} = {{}}')
+    lLines.append(DIVIDER)
+    lLines.append('if_signal = "REF_CLK"')
     return lLines
 
 

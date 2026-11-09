@@ -188,7 +188,7 @@ Traces file
      - ``trace <name> key "<key>" must give both max_delay and min_delay, or neither``
      - Give both delays, or write ``{}`` to use ``default_delay``.
    * - traces_config_007
-     - ``trace <name> has neither device_to_part nor part_to_device``, or ``has neither source_to_device nor source_to_part`` for a trace from a clock source
+     - ``trace <name> has neither device_to_part nor part_to_device``, or ``has neither source_to_device nor source_to_part`` for a trace from a clock source, or ``gives both source_to_device and source_to_part; a trace from a clock source runs to one end`` for one that gives ``if_signal``
      - Give the direction the trace carries.
    * - traces_config_008
      - ``trace <name> key "<key>" has max_delay <value> less than min_delay <value>``, or ``default_delay has max_delay <value> less than min_delay <value>``
@@ -201,11 +201,11 @@ Traces file
      - Every pin of the part interface needs a trace to the device, from the device for a pin the part captures, and to it for a pin the part drives.
        Reported by ``check``, ``generate xdc``, ``visualize block_diagram`` and ``visualize eye``, with interface_config_024.
    * - traces_config_011
-     - ``trace <name> gives if_signal and a pin; give if_signal, or device_pin and part_pin``, or ``trace <name> from a clock source gives if_signal; a trace from a clock source names its pin``
+     - ``trace <name> gives if_signal and a pin; give if_signal, or device_pin and part_pin``, or ``trace <name> gives if_signal and a pin; give if_signal, or the pin`` for a trace from a clock source
      - A trace names its ends with ``device_pin`` and ``part_pin``, or with the ``if_signal`` that links them (see :doc:`standards`).
    * - traces_config_012
      - ``key "<device_pin or part_pin>" of trace <name> is FROM_..._<name>; replace it with the name in your design or the part's datasheet``
-     - Fill in the pin of a trace from a clock source, as a template writes it: the port the clock arrives on, or the part's clock pin.
+     - Fill in the pin of a trace from a clock source: the port the clock arrives on, or the part's clock pin; or give ``if_signal`` in place of the pin.
 
 The location is ``in trace <name>``, or ``in trace number <n>`` when the trace has no name.
 

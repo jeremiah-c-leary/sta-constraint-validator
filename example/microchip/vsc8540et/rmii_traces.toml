@@ -11,13 +11,13 @@ default_delay = {max_delay = 1.0, min_delay = 0.0}
 [[trace]]
 name = "rmii_clk_to_device"
 source = "phy_rmii_clkout"
-device_pin = "I_RMII_REF_CLK"
+if_signal = "REF_CLK"
 source_to_device = {max_delay = 1.4, min_delay = 1.0}
 
 [[trace]]
 name = "rmii_clk_to_part"
 source = "phy_rmii_clkout"
-part_pin = "RMII_CLKIN"
+if_signal = "REF_CLK"
 source_to_part = {max_delay = 0.6, min_delay = 0.4}
 
 [[trace]]

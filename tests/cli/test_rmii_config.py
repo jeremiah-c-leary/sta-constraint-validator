@@ -72,6 +72,14 @@ class TestRmiiConfig(RmiiConfigTestCase):
             lExpected = build_constraint_lines(oFile.read())
         self.assertEqual(lExpected, build_constraint_lines(self.oStdout.getvalue()))
 
+    def test_the_reference_clock_traces_linked_by_signal_time_as_those_that_name_their_pins(self):
+        self.edit_file('rmii_traces.toml', 'device_pin = "I_RMII_REF_CLK"', 'if_signal = "REF_CLK"')
+        self.edit_file('rmii_traces.toml', 'part_pin = "RMII_CLKIN"', 'if_signal = "REF_CLK"')
+        self.assertEqual(0, self.run_stacv(['generate', 'xdc', 'rmii_config.toml']))
+        with open(sExampleConstraints) as oFile:
+            lExpected = build_constraint_lines(oFile.read())
+        self.assertEqual(lExpected, build_constraint_lines(self.oStdout.getvalue()))
+
     def test_the_interface_receives_ref_clk_and_times_each_signal_on_its_rising_edges(self):
         sInterface = self.generate_interface()
         self.assertIn('if_standard = "RMII"\nif_role = "MAC"\n', sInterface)
@@ -120,6 +128,16 @@ class TestRmiiConfigErrors(RmiiConfigTestCase):
     def test_a_bus_port_written_as_its_registers_are_is_an_error(self):
         self.edit_config('port     = "O_RMII_TXD[1:0]"', 'port     = "O_RMII_TXD[*]"')
         self.assert_error('rmii_config_014', 'key "port" in [txd] (line 32) is O_RMII_TXD[*]; write a bus port as NAME[upper:lower], such as TXD[1:0], and its register as reg[*]')
+
+    def test_a_reference_clock_trace_by_signal_runs_to_one_end(self):
+        self.edit_file('rmii_traces.toml', 'device_pin = "I_RMII_REF_CLK"\nsource_to_device = {max_delay = 1.4, min_delay = 1.0}', 'if_signal = "REF_CLK"\nsource_to_device = {max_delay = 1.4, min_delay = 1.0}\nsource_to_part = {max_delay = 0.6, min_delay = 0.4}')
+        self.assertEqual(2, self.run_stacv(['generate', 'xdc', 'rmii_config.toml']))
+        self.assertEqual('ERROR: [traces_config_007] rmii_traces.toml trace rmii_clk_to_device gives both source_to_device and source_to_part; a trace from a clock source runs to one end\n', self.oStderr.getvalue())
+
+    def test_a_reference_clock_trace_gives_its_signal_or_its_pin(self):
+        self.edit_file('rmii_traces.toml', 'device_pin = "I_RMII_REF_CLK"', 'device_pin = "I_RMII_REF_CLK"\nif_signal = "REF_CLK"')
+        self.assertEqual(2, self.run_stacv(['generate', 'xdc', 'rmii_config.toml']))
+        self.assertEqual('ERROR: [traces_config_011] rmii_traces.toml trace rmii_clk_to_device gives if_signal and a pin; give if_signal, or the pin\n', self.oStderr.getvalue())
 
     def test_a_phy_is_not_supported_yet(self):
         self.edit_config('role      = "MAC"', 'role      = "PHY"')

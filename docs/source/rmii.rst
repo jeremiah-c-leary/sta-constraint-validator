@@ -37,7 +37,7 @@ The steps
 
    * In ``rmii_config.toml``, REF_CLK's clock name and port, and the port and register of each signal; remove ``[tx_er]`` or ``[rx_er]`` if the design does not use it (see :doc:`rmii_config`).
    * In ``part.toml``, each pin's timing from the datasheet.
-   * In ``traces.toml``, the delay of each trace, and the port REF_CLK arrives on in its trace to the device.
+   * In ``traces.toml``, the delay of each trace, with REF_CLK's from its source to each end.
 
 #. **Validate Input Files.**  ``stacv visualize block_diagram rmii_config.toml`` shows the paths; RMII's edges are fixed.
 #. **Generate Constraints.**  ``stacv generate xdc`` and ``stacv generate report_tcl``, from the folder of ``rmii_config.toml``.

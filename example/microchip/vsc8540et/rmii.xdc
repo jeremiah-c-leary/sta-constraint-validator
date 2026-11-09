@@ -30,7 +30,7 @@
 # --------------------------------  --------------------------------------------
 # 21be5f9a57966f470527bfb93e5cd8d3  example/microchip/vsc8540et/rmii.toml
 # 3f5584df79f3fecea0295a763d5c132e  example/microchip/vsc8540et/vsc8540et.toml
-# d14081e77a5908fe7763e877b51af740  example/microchip/vsc8540et/rmii_traces.toml
+# 2a6d6d93a884b8ad404bb3eab6e0022e  example/microchip/vsc8540et/rmii_traces.toml
 #
 # Part:       Microchip VSC8540ET
 # Datasheet:  Extended-Temperature Single Port Fast Ethernet Copper PHY with RGMII/MII/RMII Interfaces

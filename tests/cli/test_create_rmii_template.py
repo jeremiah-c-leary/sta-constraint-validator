@@ -47,8 +47,6 @@ class TestRmiiTemplate(unittest.TestCase):
         # The names a user fills in from the design, and the values from the PHY's datasheet.
         sConfig = re.sub(r'"FROM_DESIGN_(\w+)"', lambda oMatch: '"' + oMatch.group(1).lower() + '"', self.read_file('rmii_config.toml'))
         self.write_file('rmii_config.toml', sConfig)
-        sTraces = self.read_file('traces.toml').replace('"FROM_DESIGN_REF_CLK_PORT"', '"ref_clk_port"')
-        self.write_file('traces.toml', sTraces)
         sPart = self.read_file('part.toml')
         sPart = re.sub(r'value = "FROM_DATASHEET\w*"', 'value = 2', sPart)
         sPart = re.sub(r'max_frequency = "FROM_DATASHEET\w*"', 'max_frequency = 50', sPart)
@@ -77,13 +75,12 @@ class TestRmiiTemplate(unittest.TestCase):
         self.assertEqual(2, self.run_stacv(['generate', 'xdc', 'rmii_config.toml']))
         self.assertEqual('ERROR: [rmii_config_006] rmii_config.toml key "name" in [ref_clk] (line 36) is FROM_DESIGN_REF_CLK_NAME; replace it with the name in your design\n', self.oStderr.getvalue())
 
-    def test_a_reference_clock_port_still_to_fill_in_in_the_traces_is_an_error(self):
+    def test_the_clock_pin_renamed_to_the_datasheet_name_needs_no_change_to_the_traces(self):
         self.assertEqual(0, self.create_rmii())
         self.fill_in()
-        self.write_file('traces.toml', self.read_file('traces.toml').replace('"ref_clk_port"', '"FROM_DESIGN_REF_CLK_PORT"'))
+        self.write_file('part.toml', self.read_file('part.toml').replace('name = "REF_CLK"', 'name = "RMII_CLKIN"'))
         os.chdir(self.sDirectory)
-        self.assertEqual(2, self.run_stacv(['generate', 'xdc', 'rmii_config.toml']))
-        self.assertEqual('ERROR: [traces_config_012] traces.toml key "device_pin" of trace ref_clk_to_device is FROM_DESIGN_REF_CLK_PORT; replace it with the name in your design or the part\'s datasheet\n', self.oStderr.getvalue())
+        self.assertEqual(0, self.run_stacv(['generate', 'xdc', 'rmii_config.toml']))
 
     def test_an_spi_option_is_an_error(self):
         self.assertEqual(2, self.run_stacv(['create', 'template', 'rmii', '--mode', '0']))

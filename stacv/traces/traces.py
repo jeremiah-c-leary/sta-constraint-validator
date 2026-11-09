@@ -70,7 +70,6 @@ def build_trace(dTrace, iTrace, oDefaultDelay, oLocation):
     oTrace.name = READER.get_required_string(dTrace, 'name', oLocation)
     oLocation.set_trace_name(oTrace.name)
     if 'source' in dTrace:
-        check_source_trace_has_no_signal(dTrace, oTrace.name, oLocation)
         return build_source_trace(dTrace, oTrace, oDefaultDelay, oLocation)
     read_trace_ends(dTrace, oTrace, oLocation)
     if 'device_to_part' in dTrace:
@@ -94,21 +93,35 @@ def read_trace_ends(dTrace, oTrace, oLocation):
     oTrace.part_pin = READER.get_required_string(dTrace, 'part_pin', oLocation)
 
 
-def check_source_trace_has_no_signal(dTrace, sTraceName, oLocation):
-    if 'if_signal' in dTrace:
-        READER.raise_error(11, oLocation.filename, f'trace {sTraceName} from a clock source gives if_signal; a trace from a clock source names its pin')
-
-
 def build_source_trace(dTrace, oTrace, oDefaultDelay, oLocation):
     # A clock source, such as an oscillator, drives the device and the part on separate traces.
-    # Each trace runs from the source to one pin; the traces of one source share its name.
+    # Each trace runs from the source to one pin; the traces of one source share its name.  The pin is named, or
+    # found by the signal of the interface standard the trace gives, at the end its delay runs to.
     oTrace.source = READER.get_required_string(dTrace, 'source', oLocation)
+    if 'if_signal' in dTrace:
+        return build_source_trace_by_signal(dTrace, oTrace, oDefaultDelay, oLocation)
     if 'device_pin' in dTrace:
         oTrace.device_pin = read_source_trace_pin(dTrace, oTrace.name, 'device_pin', oLocation)
         oTrace.source_to_device = build_trace_delay(dTrace, oTrace.name, 'source_to_device', oDefaultDelay, oLocation)
     if 'part_pin' in dTrace:
         oTrace.part_pin = read_source_trace_pin(dTrace, oTrace.name, 'part_pin', oLocation)
         oTrace.source_to_part = build_trace_delay(dTrace, oTrace.name, 'source_to_part', oDefaultDelay, oLocation)
+    if oTrace.source_to_device is None and oTrace.source_to_part is None:
+        READER.raise_error(7, oLocation.filename, f'trace {oTrace.name} has neither source_to_device nor source_to_part')
+    return oTrace
+
+
+def build_source_trace_by_signal(dTrace, oTrace, oDefaultDelay, oLocation):
+    # The trace names no pin: its end is the device's or the part's, as its delay says, and the signal names the pin.
+    if 'device_pin' in dTrace or 'part_pin' in dTrace:
+        READER.raise_error(11, oLocation.filename, f'trace {oTrace.name} gives if_signal and a pin; give if_signal, or the pin')
+    oTrace.if_signal = READER.get_required_string(dTrace, 'if_signal', oLocation)
+    if 'source_to_device' in dTrace:
+        oTrace.source_to_device = build_trace_delay(dTrace, oTrace.name, 'source_to_device', oDefaultDelay, oLocation)
+    if 'source_to_part' in dTrace:
+        oTrace.source_to_part = build_trace_delay(dTrace, oTrace.name, 'source_to_part', oDefaultDelay, oLocation)
+    if oTrace.source_to_device is not None and oTrace.source_to_part is not None:
+        READER.raise_error(7, oLocation.filename, f'trace {oTrace.name} gives both source_to_device and source_to_part; a trace from a clock source runs to one end')
     if oTrace.source_to_device is None and oTrace.source_to_part is None:
         READER.raise_error(7, oLocation.filename, f'trace {oTrace.name} has neither source_to_device nor source_to_part')
     return oTrace

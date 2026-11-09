@@ -14,3 +14,6 @@ class Trace():
         self.source = None
         self.source_to_device = None
         self.source_to_part = None
+
+    def is_from_source(self):
+        return self.source is not None
